@@ -1,0 +1,3391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLASHR — Proposal Kit (Reference)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!--
+    ============================================================
+    SLASHR PROPOSAL KIT — v11.0
+
+    Ce fichier est une REFERENCE de composants CSS + markup.
+    Ce n'est PAS un template a remplir.
+
+    L'agent utilise ce kit pour generer un HTML sur-mesure
+    pour chaque deal. Chaque phrase, titre, section est ecrit
+    pour CE prospect. Le kit fournit les outils visuels,
+    l'agent fournit l'intelligence.
+
+    ============================================================
+    STRUCTURE : 4 ONGLETS MVP (toujours presents)
+    ============================================================
+
+    1. STRATEGIE    — Onglet principal, arc narratif libre, decision-driving
+    2. CAS CLIENTS  — Social proof, 2-4 cas comparables au prospect
+    3. ROI INTERACTIF — Simulateur, hypotheses sourcees, 3 scenarios
+    4. LIVRABLES & METHODE — Phase 1 Audit + Phase 2 Accompagnement (4 piliers)
+
+    ============================================================
+    CATALOGUE DE COMPOSANTS — par role narratif
+    ============================================================
+
+    COMPARER (montrer des ecarts, des contrastes)
+    ├── VS block           — face-a-face 2 entites (prospect vs concurrent)
+    ├── Bar chart           — benchmark horizontal anime (3-6 barres)
+    ├── Comparison matrix   — [NEW] tableau comparatif multi-criteres (3+ colonnes)
+    └── Before/After        — [NEW] transformation en 2 panneaux avec fleche
+
+    QUANTIFIER (chiffres, metriques, scores)
+    ├── KPI card            — chiffre + label + sous-texte
+    │   ├── .kpi            — standard (grille 2/3/4)
+    │   ├── .kpi-large      — [NEW] 1 chiffre full-width, dramatise
+    │   └── .kpi-mini       — [NEW] inline compact (icone + chiffre + texte)
+    ├── Stat row            — [NEW] rangee horizontale de stats legeres
+    ├── Cost card           — chiffre d'impact (cout de l'inaction)
+    ├── Progress bar        — [NEW] barre de progression / gauge visuelle
+    ├── Donut chart         — [NEW] repartition en % (SVG anime)
+    └── Number ticker       — [NEW] compteur anime au scroll
+
+    CITER (voix du prospect, social proof)
+    ├── Verbatim box        — citation prospect (bordure magenta)
+    ├── Pull quote          — [NEW] grande citation centree, rupture de rythme
+    └── Testimonial card    — [NEW] photo + citation + nom/role (cas client)
+
+    STRUCTURER (organiser, sequencer, hierarchiser)
+    ├── Timeline            — roadmap 3 phases (orange/magenta/violet)
+    ├── Routine grid        — process en 4 etapes numerotees
+    ├── Funnel              — [NEW] etapes connectees par des fleches
+    └── Accordion           — [NEW] details cachees sous un resume cliquable
+
+    ALERTER (attirer l'attention, conclure, recommander)
+    ├── Highlight box       — encadre avec bordure coloree
+    │   ├── (default)       — bordure orange (strategique)
+    │   ├── .highlight-magenta — [NEW] bordure magenta (alerte)
+    │   ├── .highlight-violet  — [NEW] bordure violet (conviction)
+    │   └── .highlight-gradient— [NEW] bordure gradient (conclusion forte)
+    └── Callout banner      — [NEW] bandeau full-width avec fond gradient
+
+    VENDRE (conversion, investissement, ROI)
+    ├── Pricing card        — scenarios investissement (.recommended)
+    ├── ROI Simulator       — sliders interactifs + calcul JS
+    └── CTA full-width      — appel a l'action avec blobs
+
+    CONTEXTUALISER (situation, donnees, details)
+    ├── Context card        — icone + titre + description
+    ├── Card                — generique (titre + paragraphe)
+    │   ├── .card           — standard
+    │   ├── .card-accent    — [NEW] bordure top gradient
+    │   └── .card-icon      — [NEW] avec icone ronde en haut
+    ├── Table               — donnees structurees
+    └── Tags                — brand/generic labels
+
+    DIAGNOSTIQUER (S7 Search System — scoring, priorisation)
+    ├── S7 Overview Grid    — 7 force cards avec score 0-5 + etat Primary/Secondary/Deferred
+    ├── S7 Insight Callout  — highlight contrainte principale + pourquoi ca bloque
+    └── S7 Priority Table   — Force / Diagnostic / Action / Horizon (90j, 6m, 12m)
+
+    STRUCTURE DE PAGE
+    ├── Nav                 — fixe, blur, onglets dynamiques
+    ├── Hero                — full-width avec blobs gradient
+    ├── Section             — label + titre + intro
+    ├── Grids               — 2, 3, 4 colonnes
+    └── Footer              — credits
+
+    ============================================================
+  -->
+
+  <style>
+    /* ============================================================
+       DESIGN SYSTEM — Variables
+       ============================================================ */
+    :root {
+      --orange: #E74601;
+      --orange-light: #FF9011;
+      --magenta: #CE08A9;
+      --violet: #8962FD;
+      --green: #4ade80;
+      --bg: #1a1a1a;
+      --surface: #2C2E34;
+      --surface-alt: #25272E;
+      --surface-hover: #3a3d47;
+      --text: #ffffff;
+      --text-70: rgba(255,255,255,0.7);
+      --text-50: rgba(255,255,255,0.5);
+      --text-30: rgba(255,255,255,0.3);
+      --border: rgba(255,255,255,0.1);
+      --border-hover: rgba(255,255,255,0.2);
+      --gradient: linear-gradient(90deg, #E74601, #CE08A9, #8962FD);
+      --font-display: "Funnel Display", "Sora", "DM Sans", sans-serif;
+      --font-body: "Inter", -apple-system, sans-serif;
+      --radius: 14px;
+      --radius-full: 9999px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-70);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       NAV — Fixe, blur, onglets dynamiques
+       L'agent choisit quels onglets afficher.
+       ============================================================ */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(26,26,26,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 30px;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 8px;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-right: auto;
+    }
+
+    .nav-logo span {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-tab {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-50);
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      border: none;
+      background: none;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-family: var(--font-body);
+    }
+
+    .nav-tab:hover { color: var(--text-70); background: rgba(255,255,255,0.05); }
+    .nav-tab.active { color: var(--text); background: var(--surface); }
+
+    /* ============================================================
+       MAIN CONTAINER
+       ============================================================ */
+    .main { max-width: 1100px; margin: 0 auto; padding: 0 30px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ============================================================
+       HERO — Full-width, blobs gradient, toujours present
+       ============================================================ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 80px 30px;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+      width: 100vw;
+    }
+
+    .hero-blobs {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .hero-blobs::before, .hero-blobs::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.3;
+    }
+
+    .hero-blobs::before {
+      background: var(--orange);
+      width: 500px; height: 500px;
+      bottom: -15%; left: -5%;
+    }
+
+    .hero-blobs::after {
+      background: var(--magenta);
+      width: 600px; height: 400px;
+      bottom: -10%; left: 25%;
+    }
+
+    .hero-blob-3 {
+      position: absolute;
+      background: var(--violet);
+      width: 500px; height: 450px;
+      bottom: -15%; right: -5%;
+      border-radius: 50%;
+      filter: blur(150px);
+      opacity: 0.25;
+    }
+
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-70);
+      padding: 6px 18px;
+      border-radius: var(--radius-full);
+      margin-bottom: 40px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(44px, 8vw, 80px);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 3vw, 26px);
+      font-weight: 400;
+      color: var(--text-50);
+      margin-bottom: 10px;
+    }
+
+    .hero-date {
+      font-size: 14px;
+      color: var(--text-30);
+      margin-bottom: 50px;
+    }
+
+    .hero-scroll {
+      width: 24px;
+      height: 40px;
+      border: 2px solid var(--text-30);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .hero-scroll::after {
+      content: '';
+      width: 4px; height: 8px;
+      background: var(--text-50);
+      border-radius: 2px;
+      position: absolute;
+      top: 6px; left: 50%;
+      transform: translateX(-50%);
+      animation: scrollBounce 2s infinite;
+    }
+
+    @keyframes scrollBounce {
+      0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      50% { opacity: 0.3; transform: translateX(-50%) translateY(12px); }
+    }
+
+    /* ============================================================
+       SECTION — Label + Titre + Intro
+       ============================================================ */
+    .section {
+      padding: 100px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+
+    .section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .section-intro {
+      font-size: 17px;
+      color: var(--text-70);
+      max-width: 680px;
+      margin-bottom: 50px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       GRIDS — 2, 3, 4 colonnes
+       ============================================================ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  COMPARER  ═══════════════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* ============================================================
+       VS BLOCK — Face-a-face 2 entites
+       Usage : prospect vs concurrent principal
+       ============================================================ */
+    .vs-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin-bottom: 40px; align-items: stretch; }
+    .vs-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; text-align: center;
+    }
+    .vs-card h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+    .vs-separator {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 16px; font-family: var(--font-display);
+      font-size: 20px; font-weight: 700; color: var(--text-30);
+    }
+    .vs-metric { margin-bottom: 16px; }
+    .vs-metric-value {
+      font-family: var(--font-display); font-size: 28px; font-weight: 700;
+      color: var(--text); line-height: 1;
+    }
+    .vs-metric-value.bad { color: var(--text-50); }
+    .vs-metric-value.good { color: var(--green); }
+    .vs-metric-label { font-size: 11px; color: var(--text-50); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ============================================================
+       BAR CHART — Benchmark concurrentiel anime
+       Usage : comparaison trafic prospect vs concurrents
+       ============================================================ */
+    .chart-container { margin-bottom: 50px; }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+      margin-bottom: 20px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 80px;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .bar-label { font-size: 14px; font-weight: 600; color: var(--text-70); text-align: right; }
+    .bar-label.is-prospect { color: var(--text); }
+
+    .bar-track { height: 32px; background: var(--surface); border-radius: 8px; overflow: hidden; }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+      width: 0;
+    }
+
+    .bar-fill.orange { background: var(--gradient); }
+    .bar-fill.muted { background: var(--text-30); }
+
+    .bar-value { font-size: 14px; font-weight: 700; color: var(--text-70); text-align: right; }
+    .bar-value.is-prospect { color: var(--orange); }
+
+    /* ============================================================
+       COMPARISON MATRIX — [NEW] Tableau comparatif multi-criteres
+       Usage : comparer 3+ options (SLASHR vs agence vs freelance,
+               ou SEO vs SEA vs Social)
+       ============================================================ */
+    .matrix-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .matrix-wrap table { width: 100%; border-collapse: collapse; }
+
+    .matrix-wrap th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+      background: var(--surface-alt);
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .matrix-wrap th:first-child { text-align: left; }
+
+    .matrix-wrap th.recommended {
+      color: var(--orange);
+      position: relative;
+    }
+
+    .matrix-wrap td {
+      font-size: 14px;
+      color: var(--text-70);
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .matrix-wrap td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .matrix-wrap td.recommended-col {
+      background: rgba(231,70,1,0.04);
+    }
+
+    .matrix-check { color: var(--green); font-weight: 700; font-size: 16px; }
+    .matrix-cross { color: var(--text-30); font-size: 16px; }
+    .matrix-partial { color: var(--orange-light); font-size: 16px; }
+
+    /* ============================================================
+       BEFORE/AFTER — [NEW] Transformation en 2 panneaux
+       Usage : montrer l'etat actuel vs l'objectif apres intervention
+       ============================================================ */
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      margin-bottom: 40px;
+      align-items: stretch;
+    }
+
+    .ba-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+    }
+
+    .ba-panel.before { }
+    .ba-panel.after {
+      border-color: rgba(231,70,1,0.3);
+    }
+
+    .ba-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      margin-bottom: 20px;
+    }
+
+    .ba-panel.before .ba-tag {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-50);
+    }
+
+    .ba-panel.after .ba-tag {
+      background: rgba(231,70,1,0.15);
+      color: var(--orange);
+    }
+
+    .ba-panel h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .ba-panel p { font-size: 14px; color: var(--text-70); line-height: 1.5; }
+    .ba-panel ul { list-style: none; margin-top: 12px; }
+    .ba-panel ul li {
+      font-size: 13px; color: var(--text-70); padding: 4px 0 4px 18px; position: relative;
+    }
+    .ba-panel ul li::before {
+      content: ''; position: absolute; left: 0; top: 11px;
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+    .ba-panel.before ul li::before { background: var(--text-30); }
+    .ba-panel.after ul li::before { background: var(--orange); }
+
+    .ba-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      font-size: 28px;
+      color: var(--orange);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  QUANTIFIER  ═════════════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* ============================================================
+       KPI CARD — Standard
+       Usage : metriques cles en grille (2/3/4 colonnes)
+       ============================================================ */
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .kpi:hover { border-color: var(--border-hover); }
+
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value.magenta { color: var(--magenta); }
+    .kpi-value.violet { color: var(--violet); }
+    .kpi-value.green { color: var(--green); }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+    }
+
+    .kpi-sub { font-size: 12px; color: var(--text-30); margin-top: 4px; }
+
+    /* ============================================================
+       KPI LARGE — [NEW] 1 chiffre dramatise, full-width
+       Usage : un seul chiffre qu'on veut mettre en avant
+       ============================================================ */
+    .kpi-large {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 32px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .kpi-large .kpi-value {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 10vw, 96px);
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .kpi-large .kpi-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-70);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .kpi-large .kpi-sub {
+      font-size: 14px;
+      color: var(--text-50);
+      margin-top: 8px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ============================================================
+       KPI MINI — [NEW] Compact inline (icone + chiffre + texte)
+       Usage : lister 6-8 metriques sans prendre trop de place
+       ============================================================ */
+    .kpi-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .kpi-mini {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      transition: border-color 0.2s;
+    }
+
+    .kpi-mini:hover { border-color: var(--border-hover); }
+
+    .kpi-mini-icon {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: rgba(231,70,1,0.1);
+    }
+
+    .kpi-mini-icon.magenta { background: rgba(206,8,169,0.1); }
+    .kpi-mini-icon.violet { background: rgba(137,98,253,0.1); }
+
+    .kpi-mini-data { flex: 1; }
+
+    .kpi-mini-value {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .kpi-mini-label {
+      font-size: 11px;
+      color: var(--text-50);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       STAT ROW — [NEW] Rangee horizontale de stats legeres
+       Usage : metriques secondaires, apercu rapide sans cards
+       ============================================================ */
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 32px;
+      margin-bottom: 40px;
+    }
+
+    .stat-row-item {
+      text-align: center;
+      flex: 1;
+      position: relative;
+    }
+
+    .stat-row-item + .stat-row-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10%; bottom: 10%;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .stat-row-value {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-row-value.orange { color: var(--orange); }
+    .stat-row-value.magenta { color: var(--magenta); }
+    .stat-row-value.violet { color: var(--violet); }
+    .stat-row-value.green { color: var(--green); }
+
+    .stat-row-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+    }
+
+    /* ============================================================
+       COST CARD — Chiffre d'impact (cout de l'inaction)
+       ============================================================ */
+    .cost-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .cost-card:hover { border-color: var(--border-hover); }
+
+    .cost-value {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .cost-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+      margin-bottom: 12px;
+    }
+
+    .cost-desc { font-size: 13px; color: var(--text-70); line-height: 1.5; }
+
+    /* ============================================================
+       PROGRESS BAR — [NEW] Barre de progression / gauge
+       Usage : score technique, maturite, % du gap comble
+       ============================================================ */
+    .progress-group { margin-bottom: 40px; }
+
+    .progress-item {
+      margin-bottom: 20px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .progress-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-value {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--orange);
+    }
+
+    .progress-track {
+      height: 10px;
+      background: var(--surface);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: var(--gradient);
+      transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+      width: 0;
+    }
+
+    .progress-fill.orange { background: var(--orange); }
+    .progress-fill.magenta { background: var(--magenta); }
+    .progress-fill.violet { background: var(--violet); }
+    .progress-fill.green { background: var(--green); }
+
+    .progress-sub {
+      font-size: 12px;
+      color: var(--text-30);
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       DONUT CHART — [NEW] Repartition en % (SVG anime)
+       Usage : part marque vs hors-marque, repartition trafic
+       ============================================================ */
+    .donut-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .donut-item { text-align: center; }
+
+    .donut-svg {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 16px;
+      transform: rotate(-90deg);
+    }
+
+    .donut-track {
+      fill: none;
+      stroke: var(--surface);
+      stroke-width: 10;
+    }
+
+    .donut-fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .donut-fill.orange { stroke: var(--orange); }
+    .donut-fill.magenta { stroke: var(--magenta); }
+    .donut-fill.violet { stroke: var(--violet); }
+    .donut-fill.green { stroke: var(--green); }
+
+    .donut-center {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .donut-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+    }
+
+    /* ============================================================
+       NUMBER TICKER — [NEW] Compteur anime au scroll
+       Usage : dramatiser un chiffre cle a l'apparition
+       Le JS anime de 0 au nombre cible.
+       ============================================================ */
+    .ticker-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+
+    .ticker-value {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 8vw, 80px);
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .ticker-suffix {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 600;
+      color: var(--text-50);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  CITER  ══════════════════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* ============================================================
+       VERBATIM BOX — Citation prospect (bordure magenta)
+       ============================================================ */
+    .verbatim-box {
+      background: var(--surface);
+      border-left: 3px solid var(--magenta);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 22px 28px;
+      margin-bottom: 40px;
+      font-size: 16px;
+      line-height: 1.6;
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .verbatim-box .source {
+      display: block;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--text-50);
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ============================================================
+       PULL QUOTE — [NEW] Grande citation centree, rupture de rythme
+       Usage : phrase strategique forte qui merite d'etre lue seule
+       ============================================================ */
+    .pull-quote {
+      text-align: center;
+      padding: 60px 40px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .pull-quote::before {
+      content: '"';
+      font-family: var(--font-display);
+      font-size: 120px;
+      font-weight: 700;
+      color: var(--orange);
+      opacity: 0.15;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      line-height: 1;
+    }
+
+    .pull-quote p {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pull-quote .pull-source {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-50);
+      margin-top: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ============================================================
+       TESTIMONIAL CARD — [NEW] Photo + citation + nom/role
+       Usage : social proof, cas client, reference
+       ============================================================ */
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .testimonial {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+
+    .testimonial:hover { border-color: var(--border-hover); }
+
+    .testimonial-text {
+      font-size: 15px;
+      color: var(--text-70);
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--surface-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .testimonial-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .testimonial-role {
+      font-size: 12px;
+      color: var(--text-50);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  STRUCTURER  ═════════════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* ============================================================
+       TIMELINE — Phases orange/magenta/violet
+       ============================================================ */
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 50px;
+    }
+
+    .phase {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .phase-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      margin-bottom: 16px;
+    }
+
+    .phase-1 .phase-tag { background: rgba(231,70,1,0.15); color: var(--orange); }
+    .phase-2 .phase-tag { background: rgba(206,8,169,0.15); color: var(--magenta); }
+    .phase-3 .phase-tag { background: rgba(137,98,253,0.15); color: var(--violet); }
+
+    .phase h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .phase p { font-size: 14px; color: var(--text-70); line-height: 1.5; }
+
+    .phase ul { list-style: none; margin-top: 14px; }
+
+    .phase ul li {
+      font-size: 13px;
+      color: var(--text-70);
+      padding: 5px 0 5px 18px;
+      position: relative;
+    }
+
+    .phase ul li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 12px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
+
+    .phase-1 ul li::before { background: var(--orange); }
+    .phase-2 ul li::before { background: var(--magenta); }
+    .phase-3 ul li::before { background: var(--violet); }
+
+    /* ============================================================
+       ROUTINE GRID — Process en etapes numerotees
+       ============================================================ */
+    .routine-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-bottom: 40px;
+    }
+
+    .routine-step {
+      background: var(--surface);
+      padding: 24px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .routine-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .routine-step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+
+    .routine-num {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .routine-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .routine-desc { font-size: 12px; color: var(--text-50); }
+
+    /* ============================================================
+       FUNNEL — [NEW] Etapes connectees par des fleches
+       Usage : parcours utilisateur, pipeline de conversion
+       ============================================================ */
+    .funnel {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-bottom: 40px;
+    }
+
+    .funnel-step {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .funnel-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .funnel-step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+
+    .funnel-step + .funnel-step { border-left: none; }
+
+    .funnel-arrow {
+      flex-shrink: 0;
+      width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+      font-size: 18px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .funnel-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .funnel-value {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .funnel-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+    }
+
+    .funnel-sub {
+      font-size: 12px;
+      color: var(--text-30);
+      margin-top: 4px;
+    }
+
+    /* ============================================================
+       ACCORDION — [NEW] Details cachees sous un resume cliquable
+       Usage : FAQ, details methodologiques, scope detaille
+       ============================================================ */
+    .accordion { margin-bottom: 40px; }
+
+    .accordion-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .accordion-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 20px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      text-align: left;
+      transition: color 0.2s;
+    }
+
+    .accordion-trigger:hover { color: var(--orange); }
+
+    .accordion-icon {
+      font-size: 18px;
+      color: var(--text-50);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+
+    .accordion-item.open .accordion-icon {
+      transform: rotate(45deg);
+      color: var(--orange);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .accordion-item.open .accordion-content {
+      max-height: 500px;
+    }
+
+    .accordion-body {
+      padding: 0 24px 20px;
+      font-size: 14px;
+      color: var(--text-70);
+      line-height: 1.6;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  ALERTER  ════════════════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* ============================================================
+       HIGHLIGHT BOX — Encadre avec bordure coloree
+       Variantes : (default) orange, .highlight-magenta,
+                   .highlight-violet, .highlight-gradient
+       ============================================================ */
+    .highlight-box {
+      background: var(--surface);
+      border-left: 3px solid var(--orange);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 22px 28px;
+      margin-bottom: 40px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .highlight-box strong { color: var(--text); }
+
+    .highlight-box.highlight-magenta { border-left-color: var(--magenta); }
+    .highlight-box.highlight-violet { border-left-color: var(--violet); }
+    .highlight-box.highlight-gradient {
+      border-left: none;
+      border-image: var(--gradient) 1;
+      border-left-width: 3px;
+      border-left-style: solid;
+    }
+
+    /* ============================================================
+       CALLOUT BANNER — [NEW] Bandeau full-width avec fond gradient
+       Usage : conclusion forte, recommandation finale, rupture
+       ============================================================ */
+    .callout-banner {
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+      width: 100vw;
+      padding: 48px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .callout-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gradient);
+      opacity: 0.08;
+    }
+
+    .callout-banner > * { position: relative; z-index: 1; }
+
+    .callout-banner h3 {
+      font-family: var(--font-display);
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .callout-banner p {
+      font-size: 15px;
+      color: var(--text-70);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  VENDRE  ═════════════════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* ============================================================
+       PRICING CARD — Nom + Prix + Scope
+       Ajouter .recommended pour le scenario recommande
+       ============================================================ */
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 50px; }
+
+    .pricing {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      text-align: center;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .pricing:hover { transform: translateY(-2px); }
+
+    .pricing.recommended {
+      border: 2px solid transparent;
+      background-image: linear-gradient(var(--surface), var(--surface)), var(--gradient);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      position: relative;
+    }
+
+    .pricing.recommended::before {
+      content: 'Recommandé';
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--gradient);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 16px;
+      border-radius: var(--radius-full);
+    }
+
+    .pricing-name { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .pricing-price { font-family: var(--font-display); font-size: 36px; font-weight: 700; color: var(--text); margin: 16px 0 4px; }
+    .pricing-period { font-size: 13px; color: var(--text-50); margin-bottom: 16px; }
+    .pricing-scope { font-size: 13px; color: var(--text-70); line-height: 1.5; text-align: left; }
+    .pricing-scope ul { list-style: none; margin-top: 8px; }
+    .pricing-scope ul li { padding: 3px 0 3px 16px; position: relative; font-size: 13px; color: var(--text-70); }
+    .pricing-scope ul li::before { content: '→'; position: absolute; left: 0; color: var(--text-50); }
+
+    /* ============================================================
+       ROI SIMULATOR — Sliders interactifs + calcul JS
+       ============================================================ */
+    .sim-row {
+      display: grid;
+      grid-template-columns: 240px 1fr 120px;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .sim-label { font-size: 14px; font-weight: 600; color: var(--text-70); }
+    .sim-sub { font-size: 11px; color: var(--text-30); margin-top: 2px; }
+
+    .sim-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--surface);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .sim-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--orange);
+      cursor: pointer;
+      border: 3px solid var(--bg);
+      box-shadow: 0 0 0 2px var(--orange);
+    }
+
+    .sim-value {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .sim-results {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 50px;
+      margin-bottom: 40px;
+    }
+
+    .sim-result {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+    }
+
+    .sim-result-value {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .sim-result-value.orange { color: var(--orange); }
+    .sim-result-value.magenta { color: var(--magenta); }
+    .sim-result-value.violet { color: var(--violet); }
+
+    .sim-result-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+    }
+
+    /* ============================================================
+       CTA — Full-width avec blobs
+       ============================================================ */
+    .cta-section {
+      text-align: center;
+      padding: 100px 30px;
+      position: relative;
+      overflow: hidden;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+      width: 100vw;
+    }
+
+    .cta-section .hero-blobs { opacity: 0.5; }
+
+    .cta-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section p {
+      color: var(--text-70);
+      max-width: 500px;
+      margin: 0 auto 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-wrap {
+      display: inline-block;
+      background: var(--gradient);
+      border-radius: var(--radius-full);
+      padding: 2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 40px;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .cta-btn:hover { background: transparent; }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  CONTEXTUALISER  ═════════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* ============================================================
+       CONTEXT CARD — Icone + Titre + Description
+       ============================================================ */
+    .context-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .context-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+
+    .context-card:hover { border-color: var(--border-hover); }
+
+    .context-icon {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(231,70,1,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .context-body h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .context-body p { font-size: 14px; color: var(--text-70); line-height: 1.55; }
+    .context-body strong { color: var(--text); }
+
+    /* ============================================================
+       CARD — Generique + variantes
+       .card         — standard (titre + paragraphe)
+       .card-accent  — [NEW] bordure top gradient
+       .card-icon    — [NEW] icone ronde en en-tete
+       ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover { border-color: var(--border-hover); }
+    .card h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .card p { font-size: 14px; color: var(--text-70); line-height: 1.5; }
+
+    /* Card accent — bordure top gradient */
+    .card-accent {
+      border-top: 3px solid transparent;
+      border-image: var(--gradient) 1;
+      border-image-slice: 1 1 0 1;
+    }
+
+    /* Card icon — icone ronde en haut */
+    .card-icon .card-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .card-icon .card-icon-circle.orange { background: rgba(231,70,1,0.15); }
+    .card-icon .card-icon-circle.magenta { background: rgba(206,8,169,0.15); }
+    .card-icon .card-icon-circle.violet { background: rgba(137,98,253,0.15); }
+
+    /* ============================================================
+       QUICK WIN CARD — Icone + Titre + Description + Impact
+       ============================================================ */
+    .qw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 50px; }
+
+    .qw {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .qw-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .qw-icon.orange { background: rgba(231,70,1,0.15); color: var(--orange); }
+    .qw-icon.magenta { background: rgba(206,8,169,0.15); color: var(--magenta); }
+    .qw-icon.violet { background: rgba(137,98,253,0.15); color: var(--violet); }
+
+    .qw h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .qw p { font-size: 13px; color: var(--text-70); line-height: 1.5; }
+    .qw .qw-impact { font-size: 12px; font-weight: 600; color: var(--orange); margin-top: 10px; }
+
+    /* ============================================================
+       TABLE — Donnees structurees
+       ============================================================ */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-50);
+      background: var(--surface-alt);
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    td {
+      font-size: 14px;
+      color: var(--text-70);
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    tr.prospect td { color: var(--text); font-weight: 600; background: rgba(231,70,1,0.04); }
+    td.highlight { color: var(--orange); font-weight: 700; }
+    td.pos-good { color: #4ade80; font-weight: 600; }
+    td.pos-mid { color: var(--orange-light); font-weight: 600; }
+    td.pos-bad { color: var(--text-50); }
+
+    .tag-brand {
+      display: inline-block;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      background: rgba(206,8,169,0.15); color: var(--magenta);
+      padding: 2px 8px; border-radius: var(--radius-full);
+    }
+
+    .tag-generic {
+      display: inline-block;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      background: rgba(137,98,253,0.15); color: var(--violet);
+      padding: 2px 8px; border-radius: var(--radius-full);
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  DIAGNOSTIQUER : S7 Search System  ═════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    /* --- S7 Overview Grid : 7 force cards + score + state --- */
+    .s7-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 32px 0;
+    }
+    .s7-grid > :nth-child(n+5) { /* rangee du bas : 3 cartes centrees */ }
+
+    .s7-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      position: relative;
+      transition: border-color 0.25s ease;
+    }
+    .s7-card:hover { border-color: var(--border-hover); }
+    .s7-card[data-state="primary"] { border-color: var(--orange); }
+    .s7-card[data-state="secondary"] { border-color: var(--magenta); }
+    .s7-card[data-state="deferred"] { border-color: var(--border); opacity: 0.6; }
+
+    .s7-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .s7-card-id {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-50);
+    }
+    .s7-card[data-state="primary"] .s7-card-id { color: var(--orange); }
+    .s7-card[data-state="secondary"] .s7-card-id { color: var(--magenta); }
+
+    .s7-badge {
+      display: inline-block;
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+    }
+    .s7-badge-primary {
+      background: rgba(231,70,1,0.15); color: var(--orange);
+    }
+    .s7-badge-secondary {
+      background: rgba(206,8,169,0.15); color: var(--magenta);
+    }
+    .s7-badge-deferred {
+      background: rgba(255,255,255,0.06); color: var(--text-50);
+    }
+
+    .s7-card-title {
+      font-family: var(--font-body);
+      font-size: 15px; font-weight: 600;
+      color: var(--text-90);
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+
+    .s7-score {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .s7-score-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .s7-score-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+    .s7-card[data-state="primary"] .s7-score-fill {
+      background: linear-gradient(90deg, var(--orange), var(--orange-light));
+    }
+    .s7-card[data-state="secondary"] .s7-score-fill {
+      background: linear-gradient(90deg, var(--magenta), var(--magenta-alt));
+    }
+    .s7-card[data-state="deferred"] .s7-score-fill {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .s7-score-value {
+      font-size: 13px; font-weight: 700;
+      color: var(--text-70);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .s7-card-diagnostic {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-50);
+      line-height: 1.45;
+    }
+
+
+    /* --- S7 Insight Callout : contrainte principale --- */
+    .s7-insight {
+      background: linear-gradient(135deg, rgba(231,70,1,0.08), rgba(206,8,169,0.06));
+      border: 1px solid rgba(231,70,1,0.25);
+      border-left: 4px solid var(--orange);
+      border-radius: var(--radius-md);
+      padding: 28px 32px;
+      margin: 32px 0;
+    }
+
+    .s7-insight-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--orange);
+      margin-bottom: 8px;
+    }
+
+    .s7-insight-constraint {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 3vw, 24px);
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+
+    .s7-insight-why {
+      font-size: 14px;
+      color: var(--text-70);
+      line-height: 1.55;
+    }
+    .s7-insight-why strong {
+      color: var(--text-90);
+    }
+
+
+    /* --- S7 Prioritization Table : Force / Diagnostic / Action / Horizon --- */
+    .s7-priority-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 32px 0;
+    }
+
+    .s7-priority-table thead th {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-50);
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .s7-priority-table thead th:first-child { border-radius: 8px 0 0 0; }
+    .s7-priority-table thead th:last-child { border-radius: 0 8px 0 0; }
+
+    .s7-priority-table tbody td {
+      font-size: 14px;
+      color: var(--text-70);
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      vertical-align: top;
+    }
+    .s7-priority-table tbody tr:last-child td { border-bottom: none; }
+
+    .s7-priority-table tbody td:first-child {
+      font-weight: 600;
+      color: var(--text-90);
+      white-space: nowrap;
+    }
+
+    .s7-priority-table .s7-horizon {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+    }
+    .s7-horizon-90j {
+      background: rgba(231,70,1,0.12);
+      color: var(--orange);
+    }
+    .s7-horizon-6m {
+      background: rgba(137,98,253,0.12);
+      color: var(--violet);
+    }
+    .s7-horizon-12m {
+      background: rgba(206,8,169,0.12);
+      color: var(--magenta);
+    }
+
+    .s7-priority-table tbody tr[data-priority="primary"] td:first-child {
+      border-left: 3px solid var(--orange);
+      padding-left: 13px;
+    }
+    .s7-priority-table tbody tr[data-priority="secondary"] td:first-child {
+      border-left: 3px solid var(--magenta);
+      padding-left: 13px;
+    }
+    .s7-priority-table tbody tr[data-priority="deferred"] {
+      opacity: 0.5;
+    }
+
+
+    /* ════════════════════════════════════════════════════════════
+       ═══  STRUCTURE DE PAGE  ══════════════════════════════════
+       ════════════════════════════════════════════════════════════ */
+
+    .footer {
+      text-align: center;
+      padding: 30px 0;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-30);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 900px) {
+      .grid-4, .grid-3, .timeline, .qw-grid, .pricing-grid, .sim-results, .routine-grid { grid-template-columns: 1fr; }
+      .grid-2, .context-grid { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 120px 1fr 60px; }
+      .sim-row { grid-template-columns: 1fr; gap: 8px; }
+      .nav-inner { overflow-x: auto; }
+      .context-card { flex-direction: column; gap: 12px; }
+      .vs-grid { grid-template-columns: 1fr; }
+      .vs-separator { padding: 12px 0; }
+      .before-after { grid-template-columns: 1fr; }
+      .ba-arrow { padding: 12px 0; transform: rotate(90deg); }
+      .funnel { flex-direction: column; }
+      .funnel-arrow { width: auto; height: 32px; transform: rotate(90deg); }
+      .stat-row { flex-direction: column; gap: 16px; padding: 24px; }
+      .stat-row-item + .stat-row-item::before { display: none; }
+      .donut-grid { grid-template-columns: repeat(2, 1fr); }
+      .kpi-mini-grid { grid-template-columns: 1fr; }
+      .testimonial-grid { grid-template-columns: 1fr; }
+      .s7-grid { grid-template-columns: 1fr; }
+      .s7-insight { padding: 20px 20px 20px 24px; }
+      .s7-priority-table { font-size: 13px; }
+      .s7-priority-table thead th,
+      .s7-priority-table tbody td { padding: 10px 12px; }
+    }
+
+    /* ============================================================
+       PRINT
+       ============================================================ */
+    @media print {
+      body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .nav { display: none; }
+      .tab-content { display: block !important; }
+      .section { page-break-inside: avoid; }
+      .accordion-content { max-height: none !important; }
+      .s7-grid { grid-template-columns: repeat(3, 1fr); }
+      .s7-card { break-inside: avoid; }
+      .s7-card[data-state="deferred"] { opacity: 0.5; }
+      .s7-insight { break-inside: avoid; }
+      .s7-priority-table { break-inside: avoid; }
+
+      /* Board-ready A4 — resume decisionnel + radar + pricing sur 1 page */
+      .highlight-gradient { break-inside: avoid; }
+      .pricing-grid { break-inside: avoid; }
+      .timeline { break-inside: avoid; }
+      .cta-section { display: none; } /* masquer les CTA en print */
+      button[onclick="window.print()"] { display: none; } /* masquer le bouton print en print */
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     MARKUP REFERENCE — Exemples de chaque composant
+     L'agent s'en inspire pour generer le HTML sur-mesure.
+     ============================================================ -->
+
+<!-- NAV — 4 onglets MVP (toujours presents) -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo"><span>SLASHR</span></div>
+    <button class="nav-tab active" data-tab="strategie">Stratégie</button>
+    <button class="nav-tab" data-tab="cas-clients">Cas Clients</button>
+    <button class="nav-tab" data-tab="roi">ROI Interactif</button>
+    <button class="nav-tab" data-tab="livrables">Livrables & Méthode</button>
+  </div>
+</nav>
+
+<div class="main">
+<div class="tab-content active" id="tab-strategie">
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+    <span class="hero-tag">SLASHR × Nom du Prospect</span>
+    <h1>Nom du<br>Prospect</h1>
+    <p class="hero-subtitle">Proposition stratégique Search & IA</p>
+    <p class="hero-date">Mois 2026 — Document confidentiel</p>
+    <div class="hero-scroll"></div>
+  </section>
+
+
+  <!-- ═══ COMPARER : VS Block ═══ -->
+  <section class="section">
+    <div class="section-label">Le constat</div>
+    <h2>Titre sur-mesure</h2>
+    <p class="section-intro">Intro prospect-specific.</p>
+
+    <div class="vs-grid">
+      <div class="vs-card">
+        <h3>Prospect</h3>
+        <div class="vs-metric">
+          <div class="vs-metric-value good">30M€</div>
+          <div class="vs-metric-label">CA total</div>
+        </div>
+        <div class="vs-metric">
+          <div class="vs-metric-value bad">153</div>
+          <div class="vs-metric-label">Mots-clés</div>
+        </div>
+      </div>
+      <div class="vs-separator">VS</div>
+      <div class="vs-card">
+        <h3>Concurrent</h3>
+        <div class="vs-metric">
+          <div class="vs-metric-value">—</div>
+          <div class="vs-metric-label">CA total</div>
+        </div>
+        <div class="vs-metric">
+          <div class="vs-metric-value good">5 448</div>
+          <div class="vs-metric-label">Mots-clés</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ COMPARER : Bar Chart ═══ -->
+  <section class="section">
+    <div class="chart-container">
+      <div class="chart-title">Trafic organique — Benchmark sectoriel</div>
+      <div class="bar-row">
+        <div class="bar-label is-prospect">Mon Prospect</div>
+        <div class="bar-track"><div class="bar-fill orange" data-width="15"></div></div>
+        <div class="bar-value is-prospect">1 250</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Concurrent 1</div>
+        <div class="bar-track"><div class="bar-fill muted" data-width="65"></div></div>
+        <div class="bar-value">5 400</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Concurrent 2</div>
+        <div class="bar-track"><div class="bar-fill muted" data-width="100"></div></div>
+        <div class="bar-value">8 200</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ COMPARER : Comparison Matrix [NEW] ═══ -->
+  <section class="section">
+    <div class="section-label">Comparatif</div>
+    <h2>Pourquoi un cabinet Search</h2>
+
+    <div class="matrix-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Critère</th>
+            <th class="recommended">Cabinet Search</th>
+            <th>Agence SEO</th>
+            <th>Freelance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Stratégie d'acquisition</td>
+            <td class="recommended-col"><span class="matrix-check">✓</span></td>
+            <td><span class="matrix-partial">◐</span></td>
+            <td><span class="matrix-cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Coordination refonte</td>
+            <td class="recommended-col"><span class="matrix-check">✓</span></td>
+            <td><span class="matrix-cross">✗</span></td>
+            <td><span class="matrix-cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Monitoring GEO/IA</td>
+            <td class="recommended-col"><span class="matrix-check">✓</span></td>
+            <td><span class="matrix-cross">✗</span></td>
+            <td><span class="matrix-cross">✗</span></td>
+          </tr>
+          <tr>
+            <td>Exécution contenu</td>
+            <td class="recommended-col"><span class="matrix-check">✓</span></td>
+            <td><span class="matrix-check">✓</span></td>
+            <td><span class="matrix-partial">◐</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- ═══ COMPARER : Before/After [NEW] ═══ -->
+  <section class="section">
+    <div class="section-label">Transformation</div>
+    <h2>Avant / après la stratégie Search</h2>
+
+    <div class="before-after">
+      <div class="ba-panel before">
+        <span class="ba-tag">Aujourd'hui</span>
+        <h3>Site vitrine sans acquisition</h3>
+        <ul>
+          <li>153 mots-clés — tous de marque</li>
+          <li>0 trafic hors-marque</li>
+          <li>50K€ de CA web / an</li>
+          <li>Aucune page catégorie optimisée</li>
+        </ul>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-panel after">
+        <span class="ba-tag">Objectif M12</span>
+        <h3>Machine d'acquisition Search</h3>
+        <ul>
+          <li>Architecture 4 clusters thématiques</li>
+          <li>+6 300 visites hors-marque / mois</li>
+          <li>200K€ de CA web / an</li>
+          <li>Pages saisonnières Noël pré-positionnées</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ QUANTIFIER : KPI Standard ═══ -->
+  <section class="section">
+    <div class="section-label">Diagnostic</div>
+    <h2>Les chiffres clés</h2>
+
+    <div class="grid-4">
+      <div class="kpi">
+        <div class="kpi-value">1 250</div>
+        <div class="kpi-label">Visites / mois</div>
+        <div class="kpi-sub">source: DataForSEO</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value magenta">89</div>
+        <div class="kpi-label">Mots-clés</div>
+        <div class="kpi-sub">positions 1-100</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value violet">72%</div>
+        <div class="kpi-label">Trafic marque</div>
+        <div class="kpi-sub">dépendance</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value green">×4.2</div>
+        <div class="kpi-label">Gap concurrent</div>
+        <div class="kpi-sub">vs leader</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ QUANTIFIER : KPI Large [NEW] ═══ -->
+  <div class="kpi-large">
+    <div class="kpi-value">21 000</div>
+    <div class="kpi-label">Visites par mois que vos concurrents captent — pas vous.</div>
+    <div class="kpi-sub">Gap hors-marque calculé sur la moyenne La Trinitaine + Maison du Biscuit</div>
+  </div>
+
+
+  <!-- ═══ QUANTIFIER : KPI Mini [NEW] ═══ -->
+  <div class="kpi-mini-grid">
+    <div class="kpi-mini">
+      <div class="kpi-mini-icon">🔍</div>
+      <div class="kpi-mini-data">
+        <div class="kpi-mini-value">153</div>
+        <div class="kpi-mini-label">Mots-clés positionnés</div>
+      </div>
+    </div>
+    <div class="kpi-mini">
+      <div class="kpi-mini-icon magenta">📊</div>
+      <div class="kpi-mini-data">
+        <div class="kpi-mini-value">6 473</div>
+        <div class="kpi-mini-label">ETV mensuel</div>
+      </div>
+    </div>
+    <div class="kpi-mini">
+      <div class="kpi-mini-icon violet">🎯</div>
+      <div class="kpi-mini-data">
+        <div class="kpi-mini-value">99</div>
+        <div class="kpi-mini-label">Lighthouse Performance</div>
+      </div>
+    </div>
+    <div class="kpi-mini">
+      <div class="kpi-mini-icon">⚡</div>
+      <div class="kpi-mini-data">
+        <div class="kpi-mini-value">×4,3</div>
+        <div class="kpi-mini-label">Gap concurrent</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══ QUANTIFIER : Stat Row [NEW] ═══ -->
+  <div class="stat-row">
+    <div class="stat-row-item">
+      <div class="stat-row-value orange">153</div>
+      <div class="stat-row-label">Mots-clés</div>
+    </div>
+    <div class="stat-row-item">
+      <div class="stat-row-value magenta">~100%</div>
+      <div class="stat-row-label">Marque</div>
+    </div>
+    <div class="stat-row-item">
+      <div class="stat-row-value violet">×4,3</div>
+      <div class="stat-row-label">Gap</div>
+    </div>
+    <div class="stat-row-item">
+      <div class="stat-row-value green">99</div>
+      <div class="stat-row-label">Lighthouse</div>
+    </div>
+  </div>
+
+
+  <!-- ═══ QUANTIFIER : Cost Cards ═══ -->
+  <section class="section">
+    <div class="section-label">L'enjeu</div>
+    <h2>Ce que l'inaction coûte</h2>
+
+    <div class="grid-3">
+      <div class="cost-card">
+        <div class="cost-value">6 900</div>
+        <div class="cost-label">Visites perdues / mois</div>
+        <div class="cost-desc">Trafic captés par vos concurrents sur vos requêtes.</div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-value">34K€</div>
+        <div class="cost-label">ETV perdu / mois</div>
+        <div class="cost-desc">Valeur équivalente en achat média.</div>
+      </div>
+      <div class="cost-card">
+        <div class="cost-value">12</div>
+        <div class="cost-label">Mois de retard</div>
+        <div class="cost-desc">Chaque mois sans action creuse l'écart.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ QUANTIFIER : Progress Bar [NEW] ═══ -->
+  <section class="section">
+    <div class="section-label">Maturité Search</div>
+    <h2>Où en êtes-vous</h2>
+
+    <div class="progress-group">
+      <div class="progress-item">
+        <div class="progress-header">
+          <span class="progress-label">Performance technique</span>
+          <span class="progress-value">99/100</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill green" data-width="99"></div>
+        </div>
+        <div class="progress-sub">Lighthouse — fondation solide</div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-header">
+          <span class="progress-label">Architecture de contenu</span>
+          <span class="progress-value">15/100</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill orange" data-width="15"></div>
+        </div>
+        <div class="progress-sub">153 keywords vs 5 448 chez le concurrent</div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-header">
+          <span class="progress-label">Acquisition hors-marque</span>
+          <span class="progress-value">2/100</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" data-width="2"></div>
+        </div>
+        <div class="progress-sub">Quasi inexistante — tout le potentiel est devant</div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-header">
+          <span class="progress-label">Visibilité GEO/IA</span>
+          <span class="progress-value">?/100</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill violet" data-width="0"></div>
+        </div>
+        <div class="progress-sub">Non mesurée — Janus peut commencer immédiatement</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ QUANTIFIER : Donut Chart [NEW] ═══ -->
+  <div class="donut-grid">
+    <div class="donut-item">
+      <!-- circumference = 2 * PI * 52 ≈ 326.7 -->
+      <!-- pour 95% : dashoffset = 326.7 * (1 - 0.95) = 16.3 -->
+      <svg class="donut-svg" viewBox="0 0 120 120">
+        <circle class="donut-track" cx="60" cy="60" r="52" />
+        <circle class="donut-fill magenta" cx="60" cy="60" r="52"
+          stroke-dasharray="326.7"
+          stroke-dashoffset="16.3" />
+      </svg>
+      <div class="donut-center">95%</div>
+      <div class="donut-label">Trafic marque</div>
+    </div>
+    <div class="donut-item">
+      <svg class="donut-svg" viewBox="0 0 120 120">
+        <circle class="donut-track" cx="60" cy="60" r="52" />
+        <circle class="donut-fill orange" cx="60" cy="60" r="52"
+          stroke-dasharray="326.7"
+          stroke-dashoffset="310" />
+      </svg>
+      <div class="donut-center">5%</div>
+      <div class="donut-label">Trafic hors-marque</div>
+    </div>
+    <div class="donut-item">
+      <svg class="donut-svg" viewBox="0 0 120 120">
+        <circle class="donut-track" cx="60" cy="60" r="52" />
+        <circle class="donut-fill green" cx="60" cy="60" r="52"
+          stroke-dasharray="326.7"
+          stroke-dashoffset="3.3" />
+      </svg>
+      <div class="donut-center">99</div>
+      <div class="donut-label">Score Lighthouse</div>
+    </div>
+  </div>
+
+
+  <!-- ═══ QUANTIFIER : Number Ticker [NEW] ═══ -->
+  <div class="ticker-row">
+    <span class="ticker-value" data-target="21000">0</span>
+    <span class="ticker-suffix">visites/mois perdues</span>
+  </div>
+
+
+  <!-- ═══ CITER : Verbatim Box ═══ -->
+  <div class="verbatim-box">
+    « Citation exacte du prospect, tiree du transcript ou des emails. »
+    <span class="source">— Prénom, R1</span>
+  </div>
+
+
+  <!-- ═══ CITER : Pull Quote [NEW] ═══ -->
+  <div class="pull-quote">
+    <p>Le marché ne vous attend pas.<br>Il est déjà en train de choisir vos concurrents.</p>
+    <div class="pull-source">Analyse SLASHR — Février 2026</div>
+  </div>
+
+
+  <!-- ═══ CITER : Testimonial Card [NEW] ═══ -->
+  <div class="testimonial-grid">
+    <div class="testimonial">
+      <div class="testimonial-text">« Résultat concret obtenu par un client — chiffres et impact. »</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">👤</div>
+        <div>
+          <div class="testimonial-name">Prénom Nom</div>
+          <div class="testimonial-role">Poste — Entreprise</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-text">« Autre témoignage avec des résultats vérifiables et datés. »</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">👤</div>
+        <div>
+          <div class="testimonial-name">Prénom Nom</div>
+          <div class="testimonial-role">Poste — Entreprise</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══ STRUCTURER : Timeline ═══ -->
+  <section class="section">
+    <div class="section-label">Le plan</div>
+    <h2>Roadmap sur-mesure</h2>
+
+    <div class="timeline">
+      <div class="phase phase-1">
+        <span class="phase-tag">M1 — M3</span>
+        <h3>Phase 1 : Fondations</h3>
+        <p>Description de la phase.</p>
+        <ul>
+          <li>Action 1</li>
+          <li>Action 2</li>
+        </ul>
+      </div>
+      <div class="phase phase-2">
+        <span class="phase-tag">M3 — M6</span>
+        <h3>Phase 2 : Accélération</h3>
+        <p>Description de la phase.</p>
+        <ul>
+          <li>Action 1</li>
+          <li>Action 2</li>
+        </ul>
+      </div>
+      <div class="phase phase-3">
+        <span class="phase-tag">M6 — M12</span>
+        <h3>Phase 3 : Autorité</h3>
+        <p>Description de la phase.</p>
+        <ul>
+          <li>Action 1</li>
+          <li>Action 2</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ STRUCTURER : Routine Grid ═══ -->
+  <div class="routine-grid">
+    <div class="routine-step">
+      <div class="routine-num">01</div>
+      <div class="routine-title">Audit data</div>
+      <div class="routine-desc">Description courte du process.</div>
+    </div>
+    <div class="routine-step">
+      <div class="routine-num">02</div>
+      <div class="routine-title">Specs livrées</div>
+      <div class="routine-desc">Description courte du process.</div>
+    </div>
+    <div class="routine-step">
+      <div class="routine-num">03</div>
+      <div class="routine-title">Exécution</div>
+      <div class="routine-desc">Description courte du process.</div>
+    </div>
+    <div class="routine-step">
+      <div class="routine-num">04</div>
+      <div class="routine-title">Pilotage</div>
+      <div class="routine-desc">Description courte du process.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══ STRUCTURER : Funnel [NEW] ═══ -->
+  <section class="section">
+    <div class="section-label">Parcours</div>
+    <h2>De la visite à la conversion</h2>
+
+    <div class="funnel">
+      <div class="funnel-step">
+        <div class="funnel-icon">🔍</div>
+        <div class="funnel-value">12 700</div>
+        <div class="funnel-label">Visites / mois</div>
+        <div class="funnel-sub">Objectif M12</div>
+      </div>
+      <div class="funnel-arrow">→</div>
+      <div class="funnel-step">
+        <div class="funnel-icon">📄</div>
+        <div class="funnel-value">65%</div>
+        <div class="funnel-label">Fiches produits</div>
+        <div class="funnel-sub">Taux de clic</div>
+      </div>
+      <div class="funnel-arrow">→</div>
+      <div class="funnel-step">
+        <div class="funnel-icon">🛒</div>
+        <div class="funnel-value">2,0%</div>
+        <div class="funnel-label">Conversion</div>
+        <div class="funnel-sub">Benchmark e-com</div>
+      </div>
+      <div class="funnel-arrow">→</div>
+      <div class="funnel-step">
+        <div class="funnel-icon">💰</div>
+        <div class="funnel-value">200K€</div>
+        <div class="funnel-label">CA annuel</div>
+        <div class="funnel-sub">Objectif Y1</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ STRUCTURER : Accordion [NEW] ═══ -->
+  <section class="section">
+    <div class="section-label">Détails</div>
+    <h2>Questions fréquentes</h2>
+
+    <div class="accordion">
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          Comment se passe la coordination avec notre agence web ?
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-body">
+            Nous livrons un cahier des charges technique Search complet à votre agence web avant chaque sprint de développement. Architecture URL, données structurées, templates SEO-ready — tout est documenté pour que l'implémentation soit correcte dès le premier déploiement.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          Que se passe-t-il si les résultats ne sont pas au rendez-vous ?
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-body">
+            Chaque phase de 3 mois se termine par un bilan data complet. Si un territoire sous-performe, on réalloue les ressources. Si un territoire surperforme, on accélère. Les données guident — pas le plan initial.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          Quel est le scope exact de chaque scénario ?
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-body">
+            Le détail complet est disponible dans la section Investissement. En résumé : Socle = fondations refonte, Performance = acquisition + contenu, Croissance = international + B2B + IA.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ ALERTER : Highlight Box (variantes) ═══ -->
+  <!-- Default (orange) -->
+  <div class="highlight-box">
+    <strong>Notre lecture :</strong> interprétation stratégique data-first, avec recommandation claire.
+  </div>
+
+  <!-- Magenta (alerte) -->
+  <div class="highlight-box highlight-magenta">
+    <strong>Point d'attention :</strong> un risque ou une contrainte à anticiper.
+  </div>
+
+  <!-- Violet (conviction) -->
+  <div class="highlight-box highlight-violet">
+    <strong>Notre conviction :</strong> position assumée de SLASHR sur un sujet stratégique.
+  </div>
+
+  <!-- Gradient (conclusion forte) -->
+  <div class="highlight-box highlight-gradient">
+    <strong>En synthèse :</strong> conclusion d'une section majeure, bilan stratégique.
+  </div>
+
+
+  <!-- ═══ ALERTER : Callout Banner [NEW] ═══ -->
+  <div class="callout-banner">
+    <h3>Le trafic de marque est un acquis. Le trafic hors-marque est un choix.</h3>
+    <p>Chaque mois sans architecture Search, ce sont 21 000 visiteurs potentiels qui découvrent vos concurrents — pas vous.</p>
+  </div>
+
+
+  <!-- ═══ CONTEXTUALISER : Context Cards ═══ -->
+  <section class="section">
+    <div class="section-label">Votre contexte</div>
+    <h2>Titre contexte</h2>
+
+    <div class="context-grid">
+      <div class="context-card">
+        <div class="context-icon">🏛️</div>
+        <div class="context-body">
+          <h3>Titre du point</h3>
+          <p>Description avec des <strong>données réelles</strong> du prospect.</p>
+        </div>
+      </div>
+      <div class="context-card">
+        <div class="context-icon">🎯</div>
+        <div class="context-body">
+          <h3>Objectif identifié</h3>
+          <p>Chiffre ou verbatim concret.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ CONTEXTUALISER : Card variantes ═══ -->
+  <div class="grid-3">
+    <!-- Card standard -->
+    <div class="card">
+      <h3>Card standard</h3>
+      <p>Titre + paragraphe. Le composant le plus polyvalent.</p>
+    </div>
+
+    <!-- Card accent (bordure top gradient) -->
+    <div class="card card-accent">
+      <h3>Card accent</h3>
+      <p>Même structure, avec une bordure top en gradient pour attirer l'œil.</p>
+    </div>
+
+    <!-- Card icon (icone ronde) -->
+    <div class="card card-icon">
+      <div class="card-icon-circle orange">🤖</div>
+      <h3>Card avec icône</h3>
+      <p>Icône ronde colorée en en-tête pour ajouter une dimension visuelle.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══ CONTEXTUALISER : Quick Win Cards ═══ -->
+  <div class="qw-grid">
+    <div class="qw">
+      <div class="qw-icon orange">⚡</div>
+      <h3>Quick win 1</h3>
+      <p>Description avec données réelles.</p>
+      <div class="qw-impact">Impact estimé : +X positions</div>
+    </div>
+    <div class="qw">
+      <div class="qw-icon magenta">🔍</div>
+      <h3>Quick win 2</h3>
+      <p>Description.</p>
+      <div class="qw-impact">Impact estimé : +Y%</div>
+    </div>
+    <div class="qw">
+      <div class="qw-icon violet">📊</div>
+      <h3>Quick win 3</h3>
+      <p>Description.</p>
+      <div class="qw-impact">Impact estimé : +Z visites</div>
+    </div>
+  </div>
+
+
+  <!-- ═══ CONTEXTUALISER : Table ═══ -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Keyword</th><th>Position</th><th>Volume</th><th>Type</th></tr>
+      </thead>
+      <tbody>
+        <tr class="prospect"><td>keyword 1</td><td class="pos-good">3</td><td class="highlight">2 400</td><td><span class="tag-brand">Marque</span></td></tr>
+        <tr><td>keyword 2</td><td class="pos-mid">14</td><td>880</td><td><span class="tag-generic">Générique</span></td></tr>
+        <tr><td>keyword 3</td><td class="pos-bad">47</td><td>320</td><td><span class="tag-generic">Générique</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ═══ DIAGNOSTIQUER : S7 Overview Grid ═══ -->
+  <section class="section">
+    <div class="section-label">Diagnostic S7</div>
+    <h2>Les 7 forces de votre<br>visibilité Search</h2>
+    <p class="section-intro">Chaque force est évaluée sur 5. La contrainte principale détermine la priorité d'action.</p>
+
+    <!-- REGLE : exactement 1 PRIMARY, 1-2 SECONDARY, reste DEFERRED.
+         Les noms correspondent aux 7 piliers SLASHR (cf. context/s7_search_operating_model.md).
+         Chaque diagnostic DOIT etre specifique au prospect — jamais "Diagnostic court." -->
+    <div class="s7-grid">
+      <div class="s7-card" data-state="secondary">
+        <div class="s7-card-header">
+          <span class="s7-card-id">S1</span>
+          <span class="s7-badge s7-badge-secondary">Secondaire</span>
+        </div>
+        <div class="s7-card-title">Intentions de recherche</div>
+        <div class="s7-score">
+          <div class="s7-score-bar"><div class="s7-score-fill" style="width:60%"></div></div>
+          <span class="s7-score-value">3/5</span>
+        </div>
+        <div class="s7-card-diagnostic">{Diagnostic specifique : ex. "340 requetes cibles non couvertes sur un univers de 850 — 3% de couverture vs 15-40% chez les concurrents."}</div>
+      </div>
+
+      <div class="s7-card" data-state="primary">
+        <div class="s7-card-header">
+          <span class="s7-card-id">S2</span>
+          <span class="s7-badge s7-badge-primary">Prioritaire</span>
+        </div>
+        <div class="s7-card-title">Architecture & technique</div>
+        <div class="s7-score">
+          <div class="s7-score-bar"><div class="s7-score-fill" style="width:20%"></div></div>
+          <span class="s7-score-value">1/5</span>
+        </div>
+        <div class="s7-card-diagnostic">{Diagnostic specifique : ex. "Lighthouse 34, 40% des pages non indexees. Tant que l'architecture n'est pas corrigee, le contenu ne peut pas ranker."}</div>
+      </div>
+
+      <div class="s7-card" data-state="secondary">
+        <div class="s7-card-header">
+          <span class="s7-card-id">S3</span>
+          <span class="s7-badge s7-badge-secondary">Secondaire</span>
+        </div>
+        <div class="s7-card-title">Création de contenu</div>
+        <div class="s7-score">
+          <div class="s7-score-bar"><div class="s7-score-fill" style="width:40%"></div></div>
+          <span class="s7-score-value">2/5</span>
+        </div>
+        <div class="s7-card-diagnostic">{Diagnostic specifique : ex. "23 pages indexees sur un univers de 850 requetes. Gap de contenu = 97% du potentiel non exploite."}</div>
+      </div>
+
+      <div class="s7-card" data-state="deferred">
+        <div class="s7-card-header">
+          <span class="s7-card-id">S4</span>
+          <span class="s7-badge s7-badge-deferred">Différé</span>
+        </div>
+        <div class="s7-card-title">UX & Conversion</div>
+        <div class="s7-score">
+          <div class="s7-score-bar"><div class="s7-score-fill" style="width:60%"></div></div>
+          <span class="s7-score-value">3/5</span>
+        </div>
+        <div class="s7-card-diagnostic">{Diagnostic specifique + pourquoi differe : ex. "UX correcte mais pas prioritaire tant que le trafic est insuffisant pour mesurer la conversion."}</div>
+      </div>
+
+      <div class="s7-card" data-state="deferred">
+        <div class="s7-card-header">
+          <span class="s7-card-id">S5</span>
+          <span class="s7-badge s7-badge-deferred">Différé</span>
+        </div>
+        <div class="s7-card-title">Autorité, signaux de confiance</div>
+        <div class="s7-score">
+          <div class="s7-score-bar"><div class="s7-score-fill" style="width:40%"></div></div>
+          <span class="s7-score-value">2/5</span>
+        </div>
+        <div class="s7-card-diagnostic">{Diagnostic specifique + pourquoi differe : ex. "DA 18 vs 35 chez le concurrent — mais sans contenu a linker, le link building est premature."}</div>
+      </div>
+
+      <div class="s7-card" data-state="deferred">
+        <div class="s7-card-header">
+          <span class="s7-card-id">S6</span>
+          <span class="s7-badge s7-badge-deferred">Différé</span>
+        </div>
+        <div class="s7-card-title">Diffusion multicanale</div>
+        <div class="s7-score">
+          <div class="s7-score-bar"><div class="s7-score-fill" style="width:20%"></div></div>
+          <span class="s7-score-value">1/5</span>
+        </div>
+        <div class="s7-card-diagnostic">{Diagnostic specifique + pourquoi differe : ex. "Absent de YouTube et des reponses IA — a activer une fois les fondations Search en place (M6+)."}</div>
+      </div>
+
+      <div class="s7-card" data-state="deferred">
+        <div class="s7-card-header">
+          <span class="s7-card-id">S7</span>
+          <span class="s7-badge s7-badge-deferred">Différé</span>
+        </div>
+        <div class="s7-card-title">Amplification</div>
+        <div class="s7-score">
+          <div class="s7-score-bar"><div class="s7-score-fill" style="width:60%"></div></div>
+          <span class="s7-score-value">3/5</span>
+        </div>
+        <div class="s7-card-diagnostic">{Diagnostic specifique + pourquoi differe : ex. "Budget SEA actif mais non synergise avec l'organique — a optimiser apres Phase 1."}</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ DIAGNOSTIQUER : S7 Insight Callout ═══ -->
+  <!-- SYNTHESE OBLIGATOIRE apres la grille S7 : contrainte + leviers + insight.
+       L'insight central doit echouer au test de substitution (specifique a CE prospect). -->
+  <div class="s7-insight">
+    <div class="s7-insight-label">Contrainte principale — S2</div>
+    <div class="s7-insight-constraint">{Titre specifique : ex. "L'architecture technique empeche le contenu d'etre indexe"}</div>
+    <div class="s7-insight-why"><strong>Pourquoi c'est le verrou :</strong> {explication concrete, data-first : ex. "Avec un Lighthouse a 34 et 40% des pages non indexees, chaque contenu publie a une probabilite de 60% de ne jamais apparaitre dans Google. Corriger S2 debloque S1 et S3."}</div>
+  </div>
+
+  <!-- ═══ DIAGNOSTIQUER : S7 Insight central (1 phrase) ═══ -->
+  <div class="highlight-box highlight-gradient">
+    <p><strong>Insight :</strong> {1 phrase memorable, non substituable — ex. "{Prospect} a la notoriete pour dominer son marche search, mais son site ne laisse pas Google le decouvrir."}</p>
+  </div>
+
+
+  <!-- ═══ DIAGNOSTIQUER : S7 Prioritization Table ═══ -->
+  <div class="table-wrap">
+    <table class="s7-priority-table">
+      <thead>
+        <tr>
+          <th>Force</th>
+          <th>Diagnostic</th>
+          <th>Action</th>
+          <th>Horizon</th>
+        </tr>
+      </thead>
+      <!-- REGLE : exactement 1 primary, 1-2 secondary, reste deferred.
+           Les diagnostics et actions doivent etre specifiques au prospect. -->
+      <tbody>
+        <tr data-priority="primary">
+          <td>S2 — Architecture & technique</td>
+          <td>{Diagnostic data-first : ex. "Lighthouse 34, 40% pages non indexees"}</td>
+          <td>{Action concrete : ex. "Audit technique complet + cahier des charges dev"}</td>
+          <td><span class="s7-horizon s7-horizon-90j">90 jours</span></td>
+        </tr>
+        <tr data-priority="secondary">
+          <td>S1 — Intentions de recherche</td>
+          <td>{Diagnostic : ex. "3% couverture semantique vs 15-40% concurrents"}</td>
+          <td>{Action : ex. "Cartographie semantique + 5 clusters prioritaires"}</td>
+          <td><span class="s7-horizon s7-horizon-90j">90 jours</span></td>
+        </tr>
+        <tr data-priority="secondary">
+          <td>S3 — Création de contenu</td>
+          <td>{Diagnostic : ex. "23 pages vs 200+ chez le leader"}</td>
+          <td>{Action : ex. "Production 3 contenus/mois sur clusters cibles"}</td>
+          <td><span class="s7-horizon s7-horizon-6m">6 mois</span></td>
+        </tr>
+        <tr data-priority="deferred">
+          <td>S5 — Autorité, signaux de confiance</td>
+          <td>{Diagnostic + pourquoi differe}</td>
+          <td>{Action differee : ex. "A activer M4 — apres production contenu"}</td>
+          <td><span class="s7-horizon s7-horizon-12m">12 mois</span></td>
+        </tr>
+        <tr data-priority="deferred">
+          <td>S4 — UX & Conversion</td>
+          <td>{Diagnostic + pourquoi differe}</td>
+          <td>{Action differee : ex. "Prioritaire une fois le trafic suffisant"}</td>
+          <td><span class="s7-horizon s7-horizon-12m">12 mois</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ═══ VENDRE : CTA (fin de l'onglet Strategie) ═══ -->
+  <section class="cta-section">
+    <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+    <h2>Prêts à explorer<br>votre potentiel ?</h2>
+    <p>Texte CTA sur-mesure.</p>
+    <div class="cta-wrap">
+      <a href="mailto:contact@slashr.fr" class="cta-btn">Planifier un échange</a>
+    </div>
+  </section>
+
+</div><!-- /tab-content strategie -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     ONGLET 2 : CAS CLIENTS
+     Social proof — 2-4 cas comparables au prospect
+     Composants : Testimonial cards, Before/After, KPI cards, Highlight box
+     ════════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-cas-clients">
+
+  <section class="section">
+    <div class="section-label">Résultats clients</div>
+    <h2>Des entreprises comme la vôtre,<br>des résultats mesurables</h2>
+    <p class="section-intro">Chaque cas est comparable à votre situation — même secteur, même problématique, même ambition.</p>
+  </section>
+
+  <!-- Cas client 1 — Before/After + Testimonial -->
+  <section class="section">
+    <div class="section-label">Cas #1 — Secteur similaire</div>
+    <h2>Titre sur-mesure du cas client</h2>
+    <p class="section-intro">Situation initiale et contexte comparable au prospect.</p>
+
+    <div class="before-after">
+      <div class="ba-panel before">
+        <span class="ba-tag">Avant</span>
+        <h3>Situation initiale</h3>
+        <ul>
+          <li>Chiffre clé 1 (avant intervention)</li>
+          <li>Chiffre clé 2</li>
+          <li>Chiffre clé 3</li>
+        </ul>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-panel after">
+        <span class="ba-tag">Après 12 mois</span>
+        <h3>Résultats</h3>
+        <ul>
+          <li>Chiffre clé 1 (après intervention)</li>
+          <li>Chiffre clé 2</li>
+          <li>Chiffre clé 3</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="testimonial-grid">
+      <div class="testimonial">
+        <div class="testimonial-text">« Citation du client avec résultat concret et impact business. »</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">👤</div>
+          <div>
+            <div class="testimonial-name">Prénom Nom</div>
+            <div class="testimonial-role">Poste — Entreprise</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- "So what" — lien avec la situation du prospect -->
+    <div class="highlight-box">
+      <strong>Ce que ça signifie pour vous :</strong> interprétation spécifique liant ce cas à la situation du prospect.
+    </div>
+  </section>
+
+  <!-- Cas client 2 — KPI cards + Testimonial -->
+  <section class="section">
+    <div class="section-label">Cas #2 — Problématique similaire</div>
+    <h2>Titre sur-mesure du cas client</h2>
+
+    <div class="grid-3">
+      <div class="kpi">
+        <div class="kpi-value">x3.8</div>
+        <div class="kpi-label">Trafic hors-marque</div>
+        <div class="kpi-sub">en 12 mois</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value magenta">+180K€</div>
+        <div class="kpi-label">CA organique</div>
+        <div class="kpi-sub">attribuable</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value violet">47</div>
+        <div class="kpi-label">Keywords top 10</div>
+        <div class="kpi-sub">vs 8 au démarrage</div>
+      </div>
+    </div>
+
+    <div class="testimonial-grid">
+      <div class="testimonial">
+        <div class="testimonial-text">« Citation du client — résultat vérifiable. »</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">👤</div>
+          <div>
+            <div class="testimonial-name">Prénom Nom</div>
+            <div class="testimonial-role">Poste — Entreprise</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /tab-content cas-clients -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     ONGLET 3 : ROI INTERACTIF
+     Simulateur avec hypothèses sourcées
+     Composants : KPI cards, Table, ROI Simulator, Highlight box
+     ════════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-roi">
+
+  <section class="section">
+    <div class="section-label">Retour sur investissement</div>
+    <h2>Simulez votre ROI</h2>
+    <p class="section-intro">Les hypothèses sont pré-remplies avec vos données réelles. Ajustez les paramètres pour explorer les scénarios.</p>
+  </section>
+
+  <!-- Hypothèses sourcées -->
+  <section class="section">
+    <div class="section-label">Hypothèses</div>
+    <h2>D'où viennent ces chiffres</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Hypothèse</th><th>Valeur</th><th>Source</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Trafic organique actuel</td><td class="highlight">1 250 / mois</td><td>DataForSEO — domain_rank_overview</td></tr>
+          <tr><td>Multiplicateur cible</td><td class="highlight">×3.0</td><td>Gap vs Concurrent #1 (ratio x4.3, conservateur)</td></tr>
+          <tr><td>Taux de conversion</td><td class="highlight">2.0%</td><td>Benchmark e-commerce alimentaire</td></tr>
+          <tr><td>Panier moyen</td><td class="highlight">45 €</td><td>Estimation sectorielle</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box highlight-violet">
+      <strong>Méthodologie :</strong> le ROI est calculé sur la base du gap concurrentiel réel. Le multiplicateur est conservateur — il représente 70% du gap identifié, pas 100%.
+    </div>
+  </section>
+
+  <!-- Simulateur interactif -->
+  <section class="section">
+    <div class="sim-row">
+      <div><div class="sim-label">Trafic actuel</div><div class="sim-sub">Visites / mois</div></div>
+      <input type="range" class="sim-slider" id="sim-traffic" min="100" max="50000" value="1250" step="50">
+      <div class="sim-value" id="val-traffic">1 250</div>
+    </div>
+    <div class="sim-row">
+      <div><div class="sim-label">Multiplicateur</div><div class="sim-sub">Gap concurrentiel</div></div>
+      <input type="range" class="sim-slider" id="sim-multi" min="1.5" max="10" value="3" step="0.5">
+      <div class="sim-value" id="val-multi">×3.0</div>
+    </div>
+    <div class="sim-row">
+      <div><div class="sim-label">Taux de conversion</div><div class="sim-sub">E-commerce</div></div>
+      <input type="range" class="sim-slider" id="sim-cvr" min="0.5" max="8" value="2" step="0.5">
+      <div class="sim-value" id="val-cvr">2.0%</div>
+    </div>
+    <div class="sim-row">
+      <div><div class="sim-label">Panier moyen</div><div class="sim-sub">Valeur par commande</div></div>
+      <input type="range" class="sim-slider" id="sim-aov" min="10" max="500" value="45" step="5">
+      <div class="sim-value" id="val-aov">45 €</div>
+    </div>
+    <div class="sim-row">
+      <div><div class="sim-label">Investissement</div><div class="sim-sub">Budget / mois</div></div>
+      <input type="range" class="sim-slider" id="sim-invest" min="1000" max="20000" value="4000" step="500">
+      <div class="sim-value" id="val-invest">4 000 €</div>
+    </div>
+
+    <div class="sim-results">
+      <div class="sim-result">
+        <div class="sim-result-value orange" id="res-traffic">3 750</div>
+        <div class="sim-result-label">Visites / mois à M12</div>
+      </div>
+      <div class="sim-result">
+        <div class="sim-result-value magenta" id="res-ca">40 500 €</div>
+        <div class="sim-result-label">CA organique annuel</div>
+      </div>
+      <div class="sim-result">
+        <div class="sim-result-value violet" id="res-roi">×0.8</div>
+        <div class="sim-result-label">ROI année 1</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scénarios pricing (résumé — détail dans onglet Livrables) -->
+  <section class="section">
+    <div class="section-label">Scénarios</div>
+    <h2>Trois niveaux d'engagement</h2>
+
+    <div class="pricing-grid">
+      <div class="pricing">
+        <div class="pricing-name">Essentiel</div>
+        <div class="pricing-price">X K€</div>
+        <div class="pricing-period">/mois HT — engagement 12 mois</div>
+        <div class="pricing-scope">Scope résumé du scénario.</div>
+      </div>
+      <div class="pricing recommended">
+        <div class="pricing-name">Performance</div>
+        <div class="pricing-price">Y K€</div>
+        <div class="pricing-period">/mois HT — engagement 12 mois</div>
+        <div class="pricing-scope">Scope résumé du scénario recommandé.</div>
+      </div>
+      <div class="pricing">
+        <div class="pricing-name">Croissance</div>
+        <div class="pricing-price">Z K€</div>
+        <div class="pricing-period">/mois HT — engagement 12 mois</div>
+        <div class="pricing-scope">Scope résumé du scénario premium.</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /tab-content roi -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     ONGLET 4 : LIVRABLES & METHODE
+     Transparence — ce que SLASHR livre concrètement
+     Composants : Timeline, Routine grid, Cards, Accordion, Pricing, CTA
+     ════════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-livrables">
+
+  <!-- ═══ RESUME DECISIONNEL (6 bullets max) ═══ -->
+  <!-- C'est la premiere chose que le decideur voit dans cet onglet.
+       Ce qu'il retient, ce qu'il presente a son board. -->
+  <section class="section">
+    <div class="section-label">En résumé</div>
+    <h2>L'essentiel en 6 points</h2>
+
+    <div class="highlight-box highlight-gradient">
+      <ol style="margin:0; padding-left:20px; line-height:1.8;">
+        <li><strong>{Douleur business chiffree}</strong> — {ex. "Votre trafic organique hors-marque represente 3% de votre potentiel"}</li>
+        <li><strong>{Cout de l'inaction}</strong> — {ex. "Chaque mois = ~340 visites cedees aux concurrents, soit ~X€ de CA"}</li>
+        <li><strong>{Levier principal}</strong> — {ex. "La contrainte technique (Lighthouse 34) bloque 40% de votre indexation"}</li>
+        <li><strong>{Quick wins 90 jours}</strong> — {ex. "Audit technique + 5 clusters cibles = premiers resultats M3"}</li>
+        <li><strong>{ROI attendu}</strong> — {ex. "Scenario conservateur : x3 trafic organique a M12, ROI x2.8"}</li>
+        <li><strong>{Investissement}</strong> — {ex. "A partir de X K€/mois (scenario Performance recommande)"}</li>
+      </ol>
+    </div>
+
+    <!-- Bouton board-ready print -->
+    <div style="text-align:center; margin-top:24px;">
+      <button onclick="window.print()" class="cta-btn" style="font-size:14px; padding:12px 32px;">
+        📄 Version imprimable (A4)
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══ METHODE S7 ═══ -->
+  <section class="section">
+    <div class="section-label">Notre approche</div>
+    <h2>Comment nous analysons<br>et priorisons</h2>
+    <p class="section-intro">Notre grille d'analyse en 7 forces identifie les leviers a plus fort impact. On ne travaille pas les 7 — on concentre les ressources sur les 2-3 qui debloquent le plus de valeur.</p>
+
+    <div class="accordion">
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          Les 7 forces de notre grille d'analyse
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-body">
+            <ol style="margin:0; padding-left:20px; line-height:1.8;">
+              <li><strong>Intentions de recherche</strong> — alignement offre/demande search</li>
+              <li><strong>Architecture & technique</strong> — sante et performance du site</li>
+              <li><strong>Creation de contenu</strong> — couverture de l'univers semantique</li>
+              <li><strong>UX & Conversion</strong> — monetisation du trafic</li>
+              <li><strong>Autorite, signaux de confiance</strong> — credibilite du domaine</li>
+              <li><strong>Diffusion multicanale</strong> — presence YouTube, IA, Social</li>
+              <li><strong>Amplification</strong> — synergie paid/organic</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TRAJECTOIRE 90 JOURS — Phase 1 ═══ -->
+  <section class="section">
+    <div class="section-label">Phase 1 — 90 jours</div>
+    <h2>Diagnostic & activation prioritaire</h2>
+    <p class="section-intro">{Intro specifique : ex. "3 mois pour debloquer votre contrainte principale et poser les fondations de croissance."}</p>
+
+    <div class="timeline">
+      <div class="phase phase-1">
+        <span class="phase-tag">M1 — Cadrage & audit</span>
+        <h3>{Titre specifique}</h3>
+        <p>{Description adaptee au deal}</p>
+        <ul>
+          <li>{Livrable 1}</li>
+          <li>{Livrable 2}</li>
+          <li>{Livrable 3}</li>
+        </ul>
+      </div>
+      <div class="phase phase-2">
+        <span class="phase-tag">M2 — Quick wins & fondations</span>
+        <h3>{Titre specifique}</h3>
+        <p>{Description adaptee au deal}</p>
+        <ul>
+          <li>{Action 1}</li>
+          <li>{Action 2}</li>
+          <li>{Action 3}</li>
+        </ul>
+      </div>
+      <div class="phase phase-3">
+        <span class="phase-tag">M3 — Activation & premiers resultats</span>
+        <h3>{Titre specifique}</h3>
+        <p>{Description adaptee au deal}</p>
+        <ul>
+          <li>{KPI 1}</li>
+          <li>{KPI 2}</li>
+          <li>{KPI 3}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TRAJECTOIRE 6 MOIS — Phase 2 "Run" ═══ -->
+  <section class="section">
+    <div class="section-label">Phase 2 — Run</div>
+    <h2>Montee en puissance</h2>
+    <p class="section-intro">{Intro specifique : ex. "Apres les fondations, on active les leviers secondaires et on mesure l'impact."}</p>
+
+    <div class="highlight-box highlight-orange">
+      <p><strong>M4-M6 :</strong> {description concrete de la montee en puissance — quels piliers S7 passent de DEFERRED a actif, quels KPIs sont attendus}</p>
+    </div>
+
+    <!-- Intensite du scenario recommande -->
+    <div class="routine-grid">
+      <div class="routine-step">
+        <div class="routine-num">01</div>
+        <div class="routine-title">Pilotage</div>
+        <div class="routine-desc">{Description adaptee}. Comite bi-mensuel.</div>
+      </div>
+      <div class="routine-step">
+        <div class="routine-num">02</div>
+        <div class="routine-title">Production</div>
+        <div class="routine-desc">{Description adaptee}. {X} priorites/mois.</div>
+      </div>
+      <div class="routine-step">
+        <div class="routine-num">03</div>
+        <div class="routine-title">Monitoring</div>
+        <div class="routine-desc">{Description adaptee}. Hebdomadaire.</div>
+      </div>
+      <div class="routine-step">
+        <div class="routine-num">04</div>
+        <div class="routine-title">Reporting</div>
+        <div class="routine-desc">{Description adaptee}. Mensuel.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PRICING ═══ -->
+  <section class="section">
+    <div class="section-label">Investissement</div>
+    <h2>Trois intensites,<br>un objectif</h2>
+
+    <div class="pricing-grid">
+      <div class="pricing">
+        <div class="pricing-name">Essentiel</div>
+        <div class="pricing-price">X K€</div>
+        <div class="pricing-period">/mois HT — engagement 12 mois</div>
+        <div class="pricing-scope">Phase 1 (90j) + Run a 1 priorite/mois. Pilotage + monitoring + reporting. Execution internalisee.</div>
+      </div>
+      <div class="pricing recommended">
+        <div class="pricing-name">Performance</div>
+        <div class="pricing-price">Y K€</div>
+        <div class="pricing-period">/mois HT — engagement 12 mois</div>
+        <div class="pricing-scope">Phase 1 (90j) + Run a 2 priorites/mois. 4 piliers. Production deleguee.</div>
+      </div>
+      <div class="pricing">
+        <div class="pricing-name">Croissance</div>
+        <div class="pricing-price">Z K€</div>
+        <div class="pricing-period">/mois HT — engagement 12 mois</div>
+        <div class="pricing-scope">Phase 1 (90j) + Run a 3+ priorites/mois. Search complet (SEO + GEO + Social + SEA).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="section-label">Questions</div>
+    <h2>Questions fréquentes</h2>
+
+    <div class="accordion">
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          Comment se passe la coordination avec notre équipe / agence web ?
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-body">
+            Nous livrons un cahier des charges technique Search complet avant chaque sprint de développement. Architecture URL, données structurées, templates SEO-ready — tout est documenté.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          Que se passe-t-il si les résultats ne sont pas au rendez-vous ?
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-body">
+            Chaque phase de 3 mois se termine par un bilan data complet. Si un territoire sous-performe, on réalloue les ressources. Les données guident — pas le plan initial.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-trigger">
+          Quel est le scope exact de chaque scénario ?
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-body">
+            Le détail est dans les cards ci-dessus. En résumé : Essentiel = stratégie + pilotage, Performance = stratégie + exécution déléguée, Croissance = Search complet multi-leviers.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+    <h2>Prêts à démarrer ?</h2>
+    <p>Texte CTA sur-mesure.</p>
+    <div class="cta-wrap">
+      <a href="mailto:contact@slashr.fr" class="cta-btn">Planifier un échange</a>
+    </div>
+  </section>
+
+</div><!-- /tab-content livrables -->
+
+</div><!-- /main -->
+
+<footer class="footer">
+  SLASHR — Cabinet stratégique Search & IA — Document confidentiel
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT — Onglets + Animations + Accordion + Ticker
+     ============================================================ -->
+<script>
+  // Tab switching
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Bar chart + Progress bar animation on scroll
+  const animObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Bar charts
+        entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+        // Progress bars
+        entry.target.querySelectorAll('.progress-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.chart-container, .progress-group').forEach(c => animObserver.observe(c));
+
+  // Number ticker animation
+  const tickerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.target);
+        if (isNaN(target) || el.dataset.animated) return;
+        el.dataset.animated = 'true';
+        const duration = 1500;
+        const start = performance.now();
+        const fmt = n => n.toLocaleString('fr-FR');
+
+        function tick(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = fmt(Math.round(target * eased));
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.ticker-value').forEach(t => tickerObserver.observe(t));
+
+  // Accordion
+  document.querySelectorAll('.accordion-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.accordion-item');
+      const wasOpen = item.classList.contains('open');
+
+      // Close all in same accordion
+      item.closest('.accordion').querySelectorAll('.accordion-item').forEach(i => {
+        i.classList.remove('open');
+      });
+
+      // Toggle current
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ROI Simulator
+  const fmt = n => n.toLocaleString('fr-FR');
+
+  function updateSim() {
+    const traffic = +document.getElementById('sim-traffic').value;
+    const multi = +document.getElementById('sim-multi').value;
+    const cvr = +document.getElementById('sim-cvr').value;
+    const aov = +document.getElementById('sim-aov').value;
+    const invest = +document.getElementById('sim-invest').value;
+
+    document.getElementById('val-traffic').textContent = fmt(traffic);
+    document.getElementById('val-multi').textContent = '×' + multi.toFixed(1);
+    document.getElementById('val-cvr').textContent = cvr.toFixed(1) + '%';
+    document.getElementById('val-aov').textContent = fmt(aov) + ' €';
+    document.getElementById('val-invest').textContent = fmt(invest) + ' €';
+
+    const targetTraffic = Math.round(traffic * multi);
+    const annualCA = Math.round(targetTraffic * (cvr / 100) * aov * 12);
+    const roi = invest > 0 ? (annualCA / (invest * 12)) : 0;
+
+    document.getElementById('res-traffic').textContent = fmt(targetTraffic);
+    document.getElementById('res-ca').textContent = fmt(annualCA) + ' €';
+    document.getElementById('res-roi').textContent = '×' + roi.toFixed(1);
+  }
+
+  document.querySelectorAll('.sim-slider').forEach(s => {
+    s.addEventListener('input', updateSim);
+  });
+
+  updateSim();
+</script>
+
+</body>
+</html>

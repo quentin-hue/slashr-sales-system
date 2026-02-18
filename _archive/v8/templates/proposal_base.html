@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{entreprise}} — Proposition SLASHR</title>
+  <style>
+    /* === SLASHR Design System v8.0 === */
+    /* Ref: agence-slashr.fr + context/design_system.md */
+
+    /* Fonts — avec fallback robuste pour usage offline */
+    @import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;600;700&family=Inter:wght@400;600;700&display=swap');
+
+    :root {
+      /* Colors */
+      --color-orange: #E74601;
+      --color-orange-light: #FF9011;
+      --color-magenta: #CE08A9;
+      --color-violet: #8962FD;
+      --color-bg: #1a1a1a;
+      --color-surface: #2C2E34;
+      --color-surface-alt: #25272E;
+      --color-text-primary: #ffffff;
+      --color-text-secondary: rgba(255,255,255,0.7);
+      --color-text-muted: rgba(255,255,255,0.5);
+      --color-border: rgba(238,238,238,0.15);
+      --color-border-hover: rgba(255,255,255,0.2);
+
+      /* Gradients */
+      --gradient-brand: linear-gradient(90deg, #E74601, #CE08A9, #8962FD);
+      --gradient-orange: linear-gradient(90deg, #E74601, #FF9011);
+
+      /* Typography — fallback robuste sans connexion */
+      --font-display: "Funnel Display", "Sora", "DM Sans", "Helvetica Neue", Arial, sans-serif;
+      --font-body: "Inter", "Geist", "SF Pro", "Segoe UI", -apple-system, sans-serif;
+
+      /* Spacing (base 7.5px) */
+      --space-1: 7.5px;
+      --space-2: 15px;
+      --space-3: 22.5px;
+      --space-4: 30px;
+      --space-6: 45px;
+      --space-8: 60px;
+      --space-12: 90px;
+
+      /* Radius */
+      --radius-sm: 11px;
+      --radius-md: 14px;
+      --radius-lg: 37.5px;
+      --radius-full: 9999px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text-secondary);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === Layout === */
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--space-8) var(--space-4);
+    }
+
+    section {
+      margin-bottom: var(--space-12);
+    }
+
+    /* === Typography === */
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 600;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: var(--color-text-primary);
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    h3 {
+      font-family: var(--font-body);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    p {
+      margin-bottom: var(--space-2);
+    }
+
+    .text-muted {
+      color: var(--color-text-muted);
+    }
+
+    .text-orange {
+      color: var(--color-orange);
+    }
+
+    .text-magenta {
+      color: var(--color-magenta);
+    }
+
+    /* === Cover Section === */
+    .cover {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      margin-bottom: var(--space-12);
+      border-radius: 0 0 40px 40px;
+    }
+
+    .cover .gradient-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .cover .gradient-bg::before,
+    .cover .gradient-bg::after,
+    .cover .gradient-bg .blob {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+    }
+
+    .cover .gradient-bg::before {
+      background: var(--color-orange);
+      width: 50%;
+      height: 60%;
+      bottom: -10%;
+      left: -5%;
+    }
+
+    .cover .gradient-bg::after {
+      background: var(--color-magenta);
+      width: 70%;
+      height: 50%;
+      bottom: -5%;
+      left: 15%;
+    }
+
+    .cover .gradient-bg .blob {
+      background: var(--color-violet);
+      width: 50%;
+      height: 55%;
+      bottom: -10%;
+      right: -5%;
+      filter: blur(175px);
+    }
+
+    .cover > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover h1 {
+      margin-bottom: var(--space-4);
+    }
+
+    .cover .subtitle {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 3vw, 24px);
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-6);
+    }
+
+    .cover .date {
+      color: var(--color-text-muted);
+      font-size: 14px;
+      margin-bottom: var(--space-2);
+    }
+
+    .cover .tag {
+      display: inline-block;
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      font-size: 11.25px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      margin-bottom: var(--space-4);
+    }
+
+    /* === Cards === */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .card-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    /* === KPI Cards === */
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      text-align: center;
+    }
+
+    .kpi-card .kpi-value {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--color-orange);
+      line-height: 1;
+      margin-bottom: var(--space-1);
+    }
+
+    .kpi-card .kpi-label {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-card .kpi-detail {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: var(--space-1);
+    }
+
+    /* === Tables === */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: var(--space-4);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      background: var(--color-surface-alt);
+    }
+
+    td {
+      color: var(--color-text-secondary);
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.highlight {
+      color: var(--color-orange);
+      font-weight: 700;
+    }
+
+    /* Ligne du prospect dans le benchmark */
+    tr.prospect-row td {
+      color: var(--color-text-primary);
+      font-weight: 700;
+      background: var(--color-surface-alt);
+    }
+
+    /* === Bullets === */
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: var(--space-4);
+    }
+
+    ul li {
+      padding: var(--space-1) 0;
+      padding-left: var(--space-3);
+      position: relative;
+      color: var(--color-text-secondary);
+    }
+
+    ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-orange);
+    }
+
+    /* === Timeline / Phase Cards === */
+    .phase-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      position: relative;
+    }
+
+    .phase-card .phase-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-2);
+    }
+
+    .phase-card.phase-1 .phase-tag {
+      background: rgba(231, 70, 1, 0.15);
+      color: var(--color-orange);
+    }
+
+    .phase-card.phase-2 .phase-tag {
+      background: rgba(206, 8, 169, 0.15);
+      color: var(--color-magenta);
+    }
+
+    .phase-card.phase-3 .phase-tag {
+      background: rgba(137, 98, 253, 0.15);
+      color: var(--color-violet);
+    }
+
+    .phase-card h3 {
+      margin-bottom: var(--space-1);
+    }
+
+    .phase-card p {
+      font-size: 14px;
+    }
+
+    /* === Pricing Cards === */
+    .pricing-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      text-align: center;
+    }
+
+    .pricing-card.recommended {
+      border: 2px solid transparent;
+      background-image: linear-gradient(var(--color-surface), var(--color-surface)), var(--gradient-brand);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      position: relative;
+    }
+
+    .pricing-card.recommended::before {
+      content: 'Recommand\00e9';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gradient-brand);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 16px;
+      border-radius: var(--radius-full);
+    }
+
+    .pricing-card .pricing-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .pricing-card .price {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin: var(--space-2) 0;
+    }
+
+    .pricing-card .price-period {
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
+
+    .pricing-card .pricing-scope {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-2);
+    }
+
+    /* === CTA — style aligne sur agence-slashr.fr (gradient border + fond) === */
+    .cta-wrapper {
+      display: inline-block;
+      background: var(--gradient-brand);
+      border-radius: var(--radius-full);
+      padding: 2px;
+      transition: all 0.3s;
+    }
+
+    .cta-wrapper:hover {
+      opacity: 0.9;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      padding: 15px 40px;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .cta-button:hover {
+      background: transparent;
+      color: white;
+    }
+
+    /* === Divider === */
+    .divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: var(--space-8) 0;
+    }
+
+    /* === Next Steps / Close === */
+    .close-section {
+      text-align: center;
+      padding: var(--space-12) 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .close-section .gradient-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .close-section .gradient-bg::before {
+      content: '';
+      position: absolute;
+      background: var(--color-orange);
+      width: 40%;
+      height: 50%;
+      bottom: -20%;
+      left: 10%;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.25;
+    }
+
+    .close-section .gradient-bg::after {
+      content: '';
+      position: absolute;
+      background: var(--color-violet);
+      width: 40%;
+      height: 50%;
+      bottom: -20%;
+      right: 10%;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.25;
+    }
+
+    .close-section > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .close-section h2 {
+      margin-bottom: var(--space-4);
+    }
+
+    .close-section p {
+      margin-bottom: var(--space-6);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* === Blockquote (highlight box) === */
+    .highlight-box {
+      background: var(--color-surface);
+      border-left: 3px solid var(--color-orange);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-4);
+      color: var(--color-text-secondary);
+    }
+
+    .highlight-box strong {
+      color: var(--color-text-primary);
+    }
+
+    /* === Footer === */
+    .footer {
+      text-align: center;
+      padding: var(--space-4) 0;
+      color: var(--color-text-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--color-border);
+      margin-top: var(--space-8);
+    }
+
+    /* === Print / PDF === */
+    @media print {
+      body { background: var(--color-bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cover { min-height: 90vh; page-break-after: always; }
+      section { page-break-inside: avoid; }
+      .card, .kpi-card, .pricing-card, .phase-card, .highlight-box { page-break-inside: avoid; }
+      table { page-break-inside: avoid; }
+      .close-section { page-break-before: always; }
+    }
+
+    /* === Responsive === */
+    @media (max-width: 768px) {
+      .card-grid-3 { grid-template-columns: 1fr; }
+      .page { padding: var(--space-4) var(--space-2); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- 1. COUVERTURE -->
+    <section class="cover">
+      <div class="gradient-bg"><div class="blob"></div></div>
+      <span class="tag">SLASHR &mdash; Cabinet strat&eacute;gique Search & IA</span>
+      <h1>{{entreprise}}</h1>
+      <p class="subtitle">Proposition strat&eacute;gique Search & IA</p>
+      <p class="date">{{date}}</p>
+    </section>
+
+    <!-- 2. R&Eacute;SUM&Eacute; EX&Eacute;CUTIF -->
+    <section class="executive-summary">
+      <h2>En r&eacute;sum&eacute;</h2>
+      {{resume_executif}}
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 3. DIAGNOSTIC -->
+    <section class="diagnostic">
+      <h2>Diagnostic &mdash; O&ugrave; vous en &ecirc;tes</h2>
+
+      <div class="card-grid">
+        {{kpi_cards}}
+      </div>
+
+      {{diagnostic_content}}
+
+      <h3>Benchmark concurrentiel</h3>
+      {{benchmark_table}}
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 4. L'OPPORTUNIT&Eacute; -->
+    <section class="opportunity">
+      <h2>L'opportunit&eacute;</h2>
+      {{opportunity_content}}
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 5. NOTRE APPROCHE -->
+    <section class="approach">
+      <h2>Notre approche</h2>
+      {{approach_intro}}
+
+      <div class="card-grid-3">
+        {{phase_cards}}
+      </div>
+
+      <h3>Quick wins &mdash; 90 premiers jours</h3>
+      {{quick_wins}}
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 6. &Eacute;QUIPE ET EX&Eacute;CUTION -->
+    <section class="team">
+      <h2>&Eacute;quipe et ex&eacute;cution</h2>
+      {{team_content}}
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 7. INVESTISSEMENT -->
+    <section class="pricing">
+      <h2>Investissement</h2>
+      <p>{{pricing_intro}}</p>
+
+      <div class="card-grid-3">
+        {{pricing_cards}}
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 8. BUSINESS CASE -->
+    <section class="roi">
+      <h2>Business case</h2>
+      {{roi_chain}}
+
+      <h3>Hypoth&egrave;ses</h3>
+      {{roi_hypotheses_table}}
+
+      <div class="highlight-box">
+        <strong>Concr&egrave;tement :</strong> {{roi_concrete}}
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 9. PROCHAINES &Eacute;TAPES -->
+    <section class="close-section">
+      <div class="gradient-bg"></div>
+      <h2>Prochaines &eacute;tapes</h2>
+      {{next_steps}}
+      <span class="cta-wrapper">
+        <a class="cta-button" href="mailto:{{closer_email}}">D&eacute;marrer le projet</a>
+      </span>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <p>Document confidentiel &mdash; pr&eacute;par&eacute; pour {{entreprise}} | SLASHR &mdash; Cabinet strat&eacute;gique Search & IA | {{date}}</p>
+    </div>
+
+  </div>
+</body>
+</html>
