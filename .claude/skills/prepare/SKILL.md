@@ -12,71 +12,32 @@ disable-model-invocation: true
 
 Le deal doit avoir ete qualifie (`/qualify`). Score >= 60 (GO) ou CONDITIONNEL valide par le manager.
 
+## Etape 0 — Verification prerequis (OBLIGATOIRE avant toute collecte)
+
+Avant de lancer la collecte, verifier que le deal est pret :
+
+```bash
+TOKEN=$(cat ~/.pipedrive_token)
+curl -s "https://api.pipedrive.com/v1/deals/{deal_id}?api_token=$TOKEN"
+```
+
+Checker dans la reponse :
+1. **`r1_score` (field `e529595ef908cdf5851df4355bbce866f322fcae`)** : doit exister et etre > 0. Si absent ou null → STOP : "Ce deal n'a pas ete qualifie. Lance `/qualify {deal_id}` d'abord."
+2. **Score >= 40** : si < 40 (NURTURE) → STOP : "Score {score}/100 = NURTURE. Ce deal n'est pas eligible a /prepare."
+3. **Score 40-59** (CONDITIONNEL) → AVERTISSEMENT : "Score {score}/100 = CONDITIONNEL. Confirmer avec le closer avant de continuer." Attendre confirmation.
+4. **`dossier_r1_link` (field `1fd2ec1073fa60e11fb59bddfec7a2f6656c4b0c`)** : si absent → AVERTISSEMENT : "Pas de dossier Drive renseigne. La collecte Drive sera ignoree." Continuer sans le module Drive.
+
+Si les checks passent → continuer avec les etapes suivantes.
+
 ## Etapes
 
 1. Lis `agents/shared.md` (preambule partage : role, sources, regles)
-2. Lis `agents/prepare.md` (processus complet en 3 passes sequentielles)
+2. Lis `agents/prepare.md` (routeur — architecture 3 passes)
 3. Lis `templates/proposal-kit.html` (kit CSS + catalogue de 27 composants organises par role narratif)
-4. Suis le processus en 3 passes decrit dans prepare.md :
-
-### Pass 1 — DATA & STRATEGY ENGINE
-
-Collecte + structuration + analyse + **diagnostic S7**. Outputs internes : **`strategy_plan_internal.md`** puis **Structured Data Brief (SDB)**.
-
-**Collecte (10 modules) :**
-
-**Toujours actifs :**
-- Module 1 — Pipedrive (deal, contact, org, notes, activites, emails)
-- Module 2 — Drive (fichiers du dossier R1, types par prefixe)
-- Module 3 — SEO (domain_rank_overview + ranked_keywords top 30 + keywords_for_site top 20)
-- Module 4 — Benchmark (competitors_domain top 10 + domain_rank_overview x3 concurrents + domain_intersection)
-
-**Conditionnels (activer selon les criteres decrits dans prepare.md) :**
-- Module 5 — GEO / IA
-- Module 6 — SEA / Paid
-- Module 7 — Social Search
-- Module 8 — Technique / UX
-- Module 9 — Tendances / Saisonnalite
-- Module 10 — Contenu / Semantique
-
-**Structuration :** organiser les donnees en categories (PROSPECT_PROFILE, PAIN_POINTS, SEARCH_STATE, COMPETITIVE_GAP, OPPORTUNITIES, etc.)
-
-**Analyse :** comprendre le prospect, diagnostiquer, construire la strategie, selectionner les cas clients, calculer le ROI.
-
-**S7 Strategy Engine (Etape 1.4) :** pipeline obligatoire avant le SDB.
-1. Lecture marche/demande
-2. Diagnostic 7 forces (score 0-5 + SO WHAT par force — cf. `context/s7_search_operating_model.md`)
-3. Classification : exactement 1 PRIMARY + 1-2 SECONDARY + reste DEFERRED (chaque DEFERRED justifie)
-4. Synthese obligatoire : contrainte + leviers + insight central (non substituable)
-5. Trajectoire 90 jours (M1/M2/M3) + 6 mois (M4-M6)
-6. ROI conservateur (hypotheses explicites)
-7. Resume decisionnel (6 bullets max)
-
-Output : **`strategy_plan_internal.md`** sauvegarde dans le dossier Drive du deal (prefixe `INTERNAL-` → exclu des outputs prospect). Ce fichier alimente le SDB.
-
-### Pass 2 — NARRATIVE ARCHITECT
-
-Plan narratif complet. Output interne : **Narrative Blueprint (NBP)**.
-
-- Choisir le hook (quelle info ouvre apres le hero)
-- Definir l'arc emotionnel (classique, urgence, opportunite, technique, custom)
-- Planifier les **4 onglets MVP** :
-  - **Strategie** : arc libre, sections libres + **section S7 "Lecture strategique" obligatoire** (radar 7 forces, contrainte principale, leviers, insight). Les anciens onglets conditionnels (SEO, GEO, SEA, Social, Tech) deviennent des sections DANS Strategie
-  - **Cas Clients** : 2-4 cas matche au prospect depuis `context/case_studies.md`
-  - **ROI Interactif** : hypotheses pre-remplies + simulateur + 3 scenarios
-  - **Livrables & Methode** : **resume decisionnel** (6 bullets) + **board-ready A4** (bouton print) + **sous-section Methode S7** + **trajectoire 90j** (M1/M2/M3) + **trajectoire 6 mois** (M4-M6) + pricing par intensite (Essentiel/Performance/Croissance) + FAQ
-- Integrer les avantages competitifs (tisses apres chaque data block, jamais standalone)
-- Tests : anti-generique + tonalite (zero pression, zero dramatisation)
-- **Regle S7** : ne jamais recommander de travailler les 7 forces — max 3 leviers actifs
-
-### Pass 3 — DESIGN ORCHESTRATOR
-
-Generation HTML. Le seul output visible.
-
-- Mapping composants par role narratif (COMPARER, DIAGNOSTIQUER, QUANTIFIER, CITER, STRUCTURER, ALERTER, VENDRE, CONTEXTUALISER)
-- Regles de composition : rythme visuel, "so what" apres chaque data, expertise traduite en impact business
-- Structure : 4 onglets toujours presents, nav fixe
-- Ce n'est PAS un template a trous. Chaque phrase, titre, section est ecrit pour CE prospect
+4. Execute les 3 passes dans l'ordre :
+   - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + S7 + SDB)
+   - **Pass 2** : lis `agents/prepare-pass2.md` et execute (arc narratif + NBP)
+   - **Pass 3** : lis `agents/prepare-pass3.md` et execute (HTML + validation)
 
 ## Collecte Pipedrive
 

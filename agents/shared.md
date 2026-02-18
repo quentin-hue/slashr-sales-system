@@ -46,6 +46,16 @@ Toutes les commandes prennent un `deal_id`. On recupere automatiquement :
 
 Reference IDs et field keys : `context/pipedrive_reference.md`
 
+#### Strategie de collecte des emails
+
+Le filtre `deal_id` ne fonctionne pas cote serveur sur les endpoints mailbox. Pour eviter de telecharger l'integralite des emails du compte :
+
+1. **Paginer** : utiliser `?limit=50&start=0` pour limiter les resultats par page
+2. **Filtrer tot** : des la reception des threads, ne garder que ceux dont `deal_id == {id}`. Ne PAS telecharger les messages des threads non lies au deal
+3. **Limiter les messages** : pour chaque thread retenu, ne recuperer que les 10 derniers messages (les plus recents sont les plus pertinents)
+4. **Utiliser les snippets** : le champ `snippet` du thread suffit souvent pour le contexte. Ne telecharger le `body` complet que si le snippet est insuffisant
+5. **Si aucun thread ne matche** : ne pas insister. Les emails ne sont pas toujours synchronises. Passer aux autres sources
+
 ### Google Drive (documentation)
 
 Le champ `dossier_r1_link` contient l'URL du dossier Drive. Extraire le folder ID.
@@ -72,6 +82,46 @@ transcript > notes_closer > emails Pipedrive > document_prospect > notes Pipedri
 ```
 
 Si une info apparait dans plusieurs sources, la source la plus fiable prime.
+
+### Fallbacks API — que faire quand une source echoue
+
+| Source | Erreur typique | Comportement |
+|--------|---------------|-------------|
+| **Pipedrive — deal** | 404, token expire | **STOP.** Le deal n'existe pas ou le token est invalide. Informer le closer. |
+| **Pipedrive — contact/org** | person_id/org_id null | Continuer sans ces donnees. Mentionner "contact non renseigne dans Pipedrive" dans le scoring/SDB. |
+| **Pipedrive — emails** | Aucun thread matche le deal_id | Normal — les emails ne sont pas toujours synchronises. Continuer avec les autres sources. |
+| **Google Drive** | Dossier inaccessible, 403, 404 | Continuer sans les fichiers Drive. Mentionner "dossier Drive inaccessible" dans le scoring/SDB. |
+| **Google Drive — fichier** | Fichier corrompu, format non supporte | Ignorer ce fichier, continuer avec les autres. |
+| **DataForSEO — domain_rank_overview** | Domaine inconnu (pas de donnees) | Le prospect n'a probablement pas de trafic organique. Scorer Fit en consequence. Mentionner "aucune donnee DataForSEO" dans l'analyse. |
+| **DataForSEO — ranked_keywords** | Timeout, erreur 500, resultat vide | Continuer avec les donnees disponibles. Le domain_rank_overview suffit pour un diagnostic de base. |
+| **DataForSEO — competitors_domain** | Pas de concurrents trouves | Demander au closer de fournir des noms de concurrents. A defaut, mentionner "benchmark non disponible" dans le SDB. |
+| **DataForSEO — module conditionnel (5-10)** | Echec d'un module conditionnel | Le module est conditionnel par definition — l'ignorer et continuer. Mentionner dans le SDB quel module a echoue. |
+
+**Regle generale :** ne jamais bloquer l'execution entiere pour l'echec d'une source secondaire. Seul l'echec du deal Pipedrive est bloquant. Pour le reste : degrader gracieusement, documenter ce qui manque, et continuer.
+
+### Cache inter-skills — eviter la double collecte
+
+`/qualify` et `/prepare` collectent les memes sources Pipedrive + Drive. Pour eviter de re-telecharger les donnees quand `/prepare` est lance juste apres `/qualify` :
+
+1. **Apres `/qualify`** : sauvegarder un fichier `DEAL-{deal_id}-cache.json` dans `/tmp/slashr/` avec les donnees collectees (deal, contact, org, notes, activites, fichiers Drive). Inclure un timestamp `collected_at`.
+2. **Au debut de `/prepare`** : verifier si `/tmp/slashr/DEAL-{deal_id}-cache.json` existe et si `collected_at` < 2 heures. Si oui, utiliser le cache au lieu de re-collecter les modules 1 et 2. Si non (cache absent ou expire), collecter normalement.
+3. **Donnees cachees** : uniquement Pipedrive (modules 1) et Drive (module 2). Les donnees DataForSEO ne sont PAS cachees car `/qualify` ne collecte qu'un `domain_rank_overview` tandis que `/prepare` collecte beaucoup plus.
+4. **Invalidation** : le cache expire apres 2 heures. Si le closer modifie le deal entre-temps, il relance `/qualify` qui ecrase le cache.
+
+**Format du cache :**
+```json
+{
+  "deal_id": 123,
+  "collected_at": "2025-01-15T14:30:00Z",
+  "deal": { ... },
+  "contact": { ... },
+  "organization": { ... },
+  "notes": [ ... ],
+  "activities": [ ... ],
+  "emails": [ ... ],
+  "drive_files": [ ... ]
+}
+```
 
 ---
 

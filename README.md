@@ -1,4 +1,4 @@
-# SLASHR Sales Closing System — v8.0
+# SLASHR Sales Closing System — v11.0
 
 Systeme de closing structure pilote par Claude Code. Un deal ID Pipedrive = tout le contexte automatiquement.
 
@@ -8,13 +8,8 @@ Systeme de closing structure pilote par Claude Code. Un deal ID Pipedrive = tout
 
 | Commande | Quand | Output | Stockage |
 |----------|-------|--------|----------|
-| `/analyse <deal_id>` | Apres R1 | DEAL-*.md (qualification) | Google Drive |
-| `/deck <deal_id>` | R2 a preparer | DECK-*.md (audit + slides + ammunition) | Google Drive |
-| `/proposal <deal_id>` | Apres /deck, avant/apres R2 | PROPOSAL-*.html (proposition commerciale) | Google Drive |
-| `/relances <deal_id>` | 48h apres R2 sans signature | RELANCES-*.md (3 emails) | Google Drive |
-| `/onboarding <deal_id>` | Deal signe | ONBOARDING-*.md (kit lancement) | Google Drive |
-| `/status <deal_id>` | A tout moment | Affichage inline | Pas de fichier |
-| `/recalibration [periode]` | Trimestriel | RECALIBRATION-*.md | Google Drive |
+| `/qualify <deal_id>` | Apres R1 | Scoring terminal + update Pipedrive | Terminal |
+| `/prepare <deal_id>` | R2 a preparer | PROPOSAL-*.html + INTERNAL-S7-*.md | Google Drive |
 | `/pipedrive <deal_id> <action>` | Sync CRM | Mise a jour Pipedrive | Pipedrive |
 
 ---
@@ -23,29 +18,28 @@ Systeme de closing structure pilote par Claude Code. Un deal ID Pipedrive = tout
 
 ```
 slashr-sales-system/
-├── CLAUDE.md                          <- Router (commandes + API sequences)
+├── CLAUDE.md                          <- Router (commandes + regles)
 ├── README.md                          <- Ce fichier
-├── context/
-│   ├── sales_process.md               <- Closer handbook
-│   ├── positioning.md                 <- Positionnement SLASHR
-│   ├── design_system.md               <- Identite visuelle
-│   └── pipedrive_reference.md         <- Source unique IDs Pipedrive
+├── .claude/skills/
+│   ├── qualify/SKILL.md               <- Skill /qualify
+│   └── prepare/SKILL.md              <- Skill /prepare
 ├── agents/
-│   ├── shared.md                      <- Preambule partage
-│   ├── analyse.md                     <- Mode ANALYSE
-│   ├── deck.md                        <- Mode DECK
-│   ├── proposal.md                    <- Mode PROPOSAL
-│   ├── relances.md                    <- Mode RELANCES
-│   ├── onboarding.md                  <- Mode ONBOARDING
-│   ├── status.md                      <- Mode STATUS
-│   └── recalibration.md              <- Mode RECALIBRATION
+│   ├── shared.md                      <- Preambule partage (role, sources, regles)
+│   ├── qualify.md                     <- Processus scoring
+│   └── prepare.md                     <- Processus proposition (3 passes + 4 onglets MVP)
 ├── templates/
-│   ├── followups.md                   <- Templates relances
-│   └── proposal_base.html             <- Template HTML proposition
-├── contracts/
-│   └── deal_closure.schema.md         <- Format debrief deal
+│   └── proposal-kit.html             <- Kit CSS + 27 composants par role narratif
+├── context/
+│   ├── pipedrive_reference.md         <- IDs Pipedrive
+│   ├── sales_process.md               <- Closer handbook
+│   ├── positioning.md                 <- Positionnement SLASHR + structure offre
+│   ├── design_system.md               <- Identite visuelle
+│   ├── case_studies.md                <- Bibliotheque cas clients
+│   ├── s7_search_operating_model.md   <- Modele S7 (diagnostic vs activation)
+│   ├── pricing_rules.md               <- Logique de calcul budgets (interne)
+│   └── output_contract.md             <- Frontiere client/interne
 ├── setup/
-│   └── google_drive_setup.md          <- Setup Google Drive API
+│   └── google_drive_setup.md          <- Guide setup Google Drive API
 └── _archive/                          <- Versions precedentes
 ```
 
@@ -55,12 +49,10 @@ slashr-sales-system/
 
 | Outil | Role |
 |-------|------|
-| Claude Code | Agent IA — 8 commandes |
+| Claude Code | Agent IA — 3 commandes |
 | Pipedrive | CRM + source de verite (API REST) |
 | Google Drive | Stockage sources + outputs (API Service Account) |
 | DataForSEO | Enrichissement data prospect (MCP tools) |
-| Google Slides | Template deck R2 (copier-coller manuel) |
-| Gmail | Envoi relances (copier-coller manuel) |
 
 ---
 

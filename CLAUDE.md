@@ -48,7 +48,10 @@ slashr-sales-system/
 ├── agents/
 │   ├── shared.md                      ← Preambule partage (role, sources, regles)
 │   ├── qualify.md                     ← Processus scoring
-│   └── prepare.md                     ← Processus proposition (3 passes + 4 onglets MVP + arc narratif dynamique)
+│   ├── prepare.md                     ← Routeur proposition (3 passes sequentielles)
+│   ├── prepare-pass1.md               ← Pass 1 : Data & Strategy Engine (collecte + S7 + SDB)
+│   ├── prepare-pass2.md               ← Pass 2 : Narrative Architect (arc + NBP)
+│   └── prepare-pass3.md               ← Pass 3 : Design Orchestrator (HTML + validation)
 ├── templates/
 │   └── proposal-kit.html             ← Kit CSS + 27 composants par role narratif (reference, pas template)
 ├── context/
@@ -56,7 +59,10 @@ slashr-sales-system/
 │   ├── sales_process.md               ← Closer handbook
 │   ├── positioning.md                 ← Positionnement SLASHR + structure offre (Audit + Accompagnement)
 │   ├── design_system.md               ← Identite visuelle
-│   └── case_studies.md                ← Bibliotheque cas clients (reference pour onglet Cas Clients)
+│   ├── case_studies.md                ← Bibliotheque cas clients (reference pour onglet Cas Clients)
+│   ├── s7_search_operating_model.md   ← Modele S7 (diagnostic vs activation)
+│   ├── pricing_rules.md               ← Logique de calcul budgets Phase 1 & Phase 2 (interne)
+│   └── output_contract.md             ← Frontiere client/interne (ce qui est visible vs masque)
 ├── setup/
 │   └── google_drive_setup.md          ← Guide setup Google Drive API
 └── _archive/                          ← Versions precedentes
@@ -64,21 +70,12 @@ slashr-sales-system/
 
 ---
 
-## Regles absolues
+## Regles critiques (rappel)
 
 1. **DRAFTS** — jamais partages au prospect sans validation du closer
 2. **Jamais de contact prospect** — tu produis des outils pour le closer
 3. **Francais** — tous les outputs en francais
-4. **Data-first** — chaque affirmation appuyee par une source ou un chiffre
-5. **Scoring transparent** — chaque note justifiee en 1 ligne
-6. **Pipedrive = source de verite** — tout passe par le deal ID
-7. **Tonalite partenaire strategique** — on montre les donnees et on recommande
-8. **Perimetre adapte** — Search global ou SEO seul selon le besoin
-9. **ROI conservateur** — CTR reels > CTR estimes, pas de projections gonflees
-10. **Ne jamais inventer de data** absente des sources
-11. **Test de substitution** — si la phrase marche pour n'importe quel prospect, c'est trop generique
-12. **Zero pression commerciale** — pas de "ne manquez pas", "il est urgent de"
-13. **Zero dramatisation** — les donnees suffisent, pas de "catastrophe" ou "crise"
-14. **Avantages competitifs tisses** — jamais de section "Pourquoi SLASHR" standalone
+4. **Ne jamais inventer de data** absente des sources
+5. **Pipedrive = source de verite** — tout passe par le deal ID
 
-> Regles completes : `agents/shared.md`
+> **Regles completes (17 regles) : `agents/shared.md`** — c'est la reference unique. Les regles ci-dessus sont un rappel des plus critiques, pas une liste exhaustive.

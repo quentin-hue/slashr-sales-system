@@ -83,35 +83,45 @@ SLASHR se positionne sur le **Search au sens large**, mais le périmètre s'adap
 
 L'engagement SLASHR s'articule en 2 phases distinctes. Selon le deal, on propose Phase 1 seule ou Phase 1 + Phase 2.
 
-### Phase 1 — Audit stratégique (ponctuel, 4-6 semaines)
+### Phase 1 — Mission structurante (ponctuelle)
 
-L'audit est le socle. On ne recommande rien sans avoir cartographié le terrain.
+Phase 1 = mission calibree selon les leviers actives. Ce n'est pas un pack.
+Detail des blocs et calcul : voir `context/pricing_rules.md`.
 
-| Livrable | Contenu |
-|----------|---------|
-| Rapport d'audit | Diagnostic Search complet (SEO, GEO/IA, benchmark, technique) — données sourcées |
-| Cartographie des opportunités | Clusters thématiques, gaps concurrentiels, territoires à prendre |
-| Roadmap priorisée | Actions par phase (M1-3, M3-6, M6-12) avec impact/effort |
-| Cahier des charges technique | Spécifications pour l'équipe dev/intégration |
+| Bloc | Condition | Detail interne |
+|------|-----------|----------------|
+| **Audit SEO** | Toujours | Etude lexicale + diagnostic + benchmark |
+| **Refonte SEO** | Si refonte prevue | AMOA SEO + redirections + recette & monitoring |
+| **Activation contenu** | Toujours | Specification pages piliers |
+| **SEA setup** | Si SEA | Audit + structure compte + strategie |
+| **GEO setup** | Si GEO/IA | Audit visibilite IA + donnees structurees |
+| **Social setup** | Si Social | Audit presence + strategie Social Search |
 
-### Phase 2 — Accompagnement structuré (récurrent, engagement 12 mois)
+**Affichage client :** scope qualitatif + budget global. Jamais de jours, jamais de TJM, jamais de sous-composants.
 
-L'accompagnement est organisé en 4 piliers. L'intensité de chaque pilier s'adapte au deal.
+### Phase 2 — Orchestration mensuelle (recurrente, engagement 12 mois)
+
+Chaque levier active en Phase 1 implique un run mensuel incompressible.
+Detail : voir `context/pricing_rules.md`.
 
 | Pilier | Contenu | Cadence |
 |--------|---------|---------|
-| **Pilotage** | Gouvernance, ajustements stratégiques, coordination avec les autres prestas | Comité bi-mensuel |
-| **Production** | Contenu SEO, optimisations techniques, link building, données structurées | En continu |
+| **Pilotage** | Gouvernance, ajustements strategiques, coordination prestas | Comite bi-mensuel |
+| **Production** | Contenu SEO, optimisations techniques, link building, donnees structurees | En continu |
 | **Monitoring** | Tracking positions, alertes IA (Janus), veille concurrentielle | Hebdomadaire |
 | **Reporting** | Dashboard live, revue mensuelle, bilan trimestriel | Mensuel |
 
-### Scénarios d'engagement
+### Niveaux d'intensite
 
-| Scénario | Contenu | Pour qui |
-|----------|---------|----------|
-| **Essentiel** | Phase 1 + Phase 2 (piliers Pilotage + Monitoring + Reporting) | PME, besoin structuré mais exécution internalisée |
-| **Performance** | Phase 1 + Phase 2 complète (4 piliers) | ETI, exécution déléguée, objectifs ambitieux |
-| **Croissance** | Phase 1 + Phase 2 complète + périmètre Search élargi (GEO, Social, SEA) | Grands comptes, multi-marchés, ambition forte |
+| Niveau | Budget mensuel | Scope | Pour qui |
+|--------|---------------|-------|----------|
+| **Essentiel** | Pilotage + monitoring | Execution internalisee | PME, besoin structure |
+| **Performance** | + production deleguee | Execution deleguee | ETI, objectifs ambitieux |
+| **Croissance** | + multi-leviers + amplification | Multi-canaux actifs | Grands comptes, ambition forte |
+
+**Affichage client :** scope qualitatif + budget mensuel. Jamais de jours/mois, jamais de TJM.
+
+**Regle :** si un levier a un setup Phase 1, il doit avoir un run Phase 2 (et inversement).
 
 **Règle :** les scénarios sont des repères, pas des formules figées. L'agent adapte le contenu de chaque scénario au deal.
 

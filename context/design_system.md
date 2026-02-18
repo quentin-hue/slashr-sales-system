@@ -102,8 +102,9 @@ Bordure animee avec un segment de gradient qui tourne. Utilise sur les CTA princ
 | Police | Role | Source |
 |--------|------|--------|
 | **Funnel Display** | Titres display (h1 hero, grandes accroches) | Google Fonts |
-| **Geist Sans** | Corps de texte, UI, boutons, descriptions | Vercel |
-| **Inter** | Fallback body, headings h2/h3 | Google Fonts |
+| **Inter** | Corps de texte, UI, boutons, descriptions, headings h2/h3 | Google Fonts |
+
+> **Note :** Geist Sans (Vercel) etait utilise sur le site web SLASHR. Pour les propositions HTML generees, **Inter** est la police body de reference car disponible sur Google Fonts sans CDN externe.
 
 ### 4.2 Echelle typographique
 
@@ -112,10 +113,10 @@ Bordure animee avec un segment de gradient qui tourne. Utilise sur les CTA princ
 | **Display XL** | `clamp(40px, 8vw, 90px)` | 600 | 95% | -0.03em | Funnel Display | Hero h1 |
 | **Display L** | `clamp(36px, 7vw, 72px)` | 600 | 95% | -0.03em | Funnel Display | Service hero h1 |
 | **Heading** | `clamp(28px, 5vw, 45px)` | 700 | 110% | -0.04em | Inter | Titres de section h2 |
-| **Title** | 20px | 700 | 130% | -0.01em | Geist | Titres de cartes h3 |
-| **Subtitle** | `clamp(14px, 2.5vw, 18.75px)` | 600 | 130% | -0.01em | Geist | Sous-titres hero |
-| **Body** | 15px | 400 | 145% | 0 | Geist | Texte courant |
-| **Small / Tag** | 11.25px | 700 | 140% | -0.01em | Geist | Tags, badges, labels |
+| **Title** | 20px | 700 | 130% | -0.01em | Inter | Titres de cartes h3 |
+| **Subtitle** | `clamp(14px, 2.5vw, 18.75px)` | 600 | 130% | -0.01em | Inter | Sous-titres hero |
+| **Body** | 15px | 400 | 145% | 0 | Inter | Texte courant |
+| **Small / Tag** | 11.25px | 700 | 140% | -0.01em | Inter | Tags, badges, labels |
 
 ### 4.3 Polices alternatives (presentations)
 
@@ -124,7 +125,7 @@ Si Funnel Display n'est pas disponible :
 | Originale | Alternative Google | Alternative systeme |
 |-----------|--------------------|--------------------|
 | Funnel Display | Sora, DM Sans | -- |
-| Geist Sans | Inter | SF Pro (macOS), Segoe UI (Windows) |
+| Inter | -- | SF Pro (macOS), Segoe UI (Windows) |
 
 ---
 
@@ -247,8 +248,8 @@ Texte      #ffffff
 
 ```
 Titres display : Funnel Display (600-700)
-Corps / UI     : Geist Sans (400-600)
-Fallback       : Inter / Sora
+Corps / UI     : Inter (400-700)
+Fallback       : SF Pro / Segoe UI / Sora
 ```
 
 ### Espacements cles

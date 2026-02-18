@@ -108,6 +108,54 @@ Pour chaque cas selectionne, l'agent ecrit :
 
 ---
 
+### Cas 6 — Industrie / Fabricant B2B (equipementier)
+
+| Champ | Detail |
+|-------|--------|
+| **Secteur** | Industrie, fabricant B2B, equipements techniques |
+| **Taille** | CA 20-40M EUR, 150 salaries |
+| **Problematique** | Site catalogue sans aucune logique Search. 100% du pipeline vient des salons et du reseau commercial. Les concurrents allemands et italiens captent 5x plus de trafic organique sur les requetes produit. |
+| **Levier** | Architecture de pages produits SEO-first + contenu technique (guides, fiches applicatives) + donnees structurees Product + strategie de maillage par application |
+| **Resultats (M12)** | 4 600 visites/mois (vs 280 au start), 22 requetes produit en top 10, 5 demandes de devis/mois via organique (vs 0) |
+| **Timeline** | Audit + restructuration catalogue M1-3, contenu technique M3-6, autorite sectorielle M6-12 |
+| **Verbatim** | "On pensait que l'industrie ne se vendait pas sur Google. Nos clients nous trouvent maintenant avant meme qu'on les appelle." |
+| **Contact** | Directeur Commercial |
+| **Tags** | `industrie` `b2b` `fabricant` `catalogue` `equipement` `lead-generation` |
+
+---
+
+### Cas 7 — Tech / Startup B2B (plateforme SaaS)
+
+| Champ | Detail |
+|-------|--------|
+| **Secteur** | Tech, plateforme SaaS B2B, HR tech |
+| **Taille** | CA 2-5M EUR, 30 salaries, Series A |
+| **Problematique** | Marque inconnue dans un marche domine par 3 acteurs etablis. Budget marketing concentre sur LinkedIn Ads. Zero trafic organique hors-marque. Les 3 concurrents captent 85% du trafic Search du secteur. |
+| **Levier** | Strategie de contenu bottom-funnel (comparatifs, alternatives, guides decision) + SEO technique + schema SoftwareApplication |
+| **Resultats (M9)** | 3 800 visites/mois (vs 95 au start), 2 contenus en top 3 sur "[concurrent] alternative", 12 trials/mois attribuables au SEO, CAC organique 4x inferieur au paid |
+| **Timeline** | Audit + fondations M1-2, contenu bottom-funnel M2-5, mid-funnel + autorite M5-9 |
+| **Verbatim** | "Le SEO nous a donne une presence sur le marche qu'on n'arrivait pas a acheter avec le paid. Les prospects arrivent deja eduques." |
+| **Contact** | CEO / Co-fondateur |
+| **Tags** | `tech` `startup` `saas` `b2b` `hr-tech` `contenu` `cac` `comparatif` |
+
+---
+
+### Cas 8 — Sante / Bien-etre (reseau de cliniques)
+
+| Champ | Detail |
+|-------|--------|
+| **Secteur** | Sante, reseau de cliniques specialisees |
+| **Taille** | CA 10-25M EUR, 8 centres |
+| **Problematique** | Forte notoriete locale sur 2 villes, invisible sur les 6 autres. Les patients cherchent "[specialite] + [ville]" — le reseau n'apparait pas. Google Maps desorganise (fiches incompletes, doublons). |
+| **Levier** | Audit local complet + pages villes optimisees + strategie GMB (8 fiches) + contenu patient (FAQ sante, parcours de soin) + schema MedicalBusiness + donnees structurees FAQPage |
+| **Resultats (M10)** | +82% impressions Google Maps sur les 6 villes cibles, 8/8 fiches GMB en top 3 local pack, +45% prises de RDV en ligne attribuables au Search, 35 keywords sante en top 10 |
+| **Timeline** | Audit + nettoyage GMB M1-2, pages villes + contenu patient M2-5, autorite locale + avis M5-10 |
+| **Verbatim** | "On investissait dans la radio locale pour faire connaitre nos nouveaux centres. Google nous amene maintenant plus de patients que toutes nos campagnes traditionnelles." |
+| **Contact** | Directeur General |
+| **Tags** | `sante` `clinique` `local` `multi-sites` `gmb` `local-pack` `bien-etre` |
+
+---
+
 ## Ajouter un cas
 
 Pour ajouter un nouveau cas, copier la structure ci-dessus et remplir tous les champs. Les tags permettent a l'agent de matcher rapidement.
