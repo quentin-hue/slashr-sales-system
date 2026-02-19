@@ -60,14 +60,38 @@ Le filtre `deal_id` ne fonctionne pas cote serveur sur les endpoints mailbox. Po
 
 Le champ `dossier_r1_link` contient l'URL du dossier Drive. Extraire le folder ID.
 
-- Lister les fichiers (exclure les outputs systeme : `DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`)
-- Telecharger et typer chaque fichier par prefixe :
-  - `transcript*` → transcript
-  - `notes*` → notes_closer
-  - `cdc*` / `brief*` / `spec*` / `rfp*` → document_prospect
-  - Autre → document
+#### Listing des fichiers
 
-**Pas d'emails dans Drive** — ils sont dans Pipedrive via la synchro.
+- Lister les fichiers du dossier **et de ses sous-dossiers** (recursion max 3 niveaux)
+- Pour chaque sous-dossier trouve (`mimeType == 'application/vnd.google-apps.folder'`), lister recursivement ses fichiers
+- Exclure les outputs systeme : `DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`
+
+#### Formats supportes et methode de lecture
+
+| Format | mimeType | Methode de lecture |
+|--------|----------|-------------------|
+| **Google Docs** | `application/vnd.google-apps.document` | `GET /files/{id}/export?mimeType=text/plain` |
+| **Google Sheets** | `application/vnd.google-apps.spreadsheet` | `GET /files/{id}/export?mimeType=text/csv` |
+| **Google Slides** | `application/vnd.google-apps.presentation` | `GET /files/{id}/export?mimeType=text/plain` |
+| **PDF** | `application/pdf` | `GET /files/{id}?alt=media` |
+| **Fichiers texte** (`.txt`, `.md`, `.csv`) | `text/*` | `GET /files/{id}?alt=media` |
+
+**Formats ignores** (log un warning dans le terminal) : images, videos, fichiers binaires, archives ZIP.
+
+> **Note Google Sheets** : l'export CSV ne retourne que le premier onglet. Si le fichier a plusieurs onglets, les onglets supplementaires sont ignores. C'est suffisant pour la collecte — le contenu cle est generalement dans le premier onglet.
+
+#### Typage par prefixe
+
+- `transcript*` → transcript
+- `notes*` → notes_closer
+- `cdc*` / `brief*` / `spec*` / `rfp*` → document_prospect
+- Autre → document
+
+#### Regles
+
+- **Pas d'emails dans Drive** — ils sont dans Pipedrive via la synchro
+- **Limite de taille** : ignorer les fichiers dont l'export depasse 100 000 caracteres (log un warning). Cela evite qu'un Sheets volumineux noie le contexte
+- **Warning fichier ignore** : quand un fichier est ignore (format non supporte ou taille excessive), afficher dans le terminal : `⚠️ Drive : fichier ignore — {nom} ({raison})`
 
 Credentials : `~/.google_service_account.json` (voir `setup/google_drive_setup.md`)
 
