@@ -53,6 +53,7 @@ slashr-sales-system/
 │   ├── prepare.md                     ← Routeur proposition (3 passes sequentielles)
 │   ├── prepare-pass1.md               ← Pass 1 : Data & Strategy Engine (collecte + S7 + SDB)
 │   ├── prepare-pass2.md               ← Pass 2 : Narrative Architect (arc + NBP)
+│   ├── prepare-pass2-onglet4.md       ← Pass 2 : Spec detaillee onglet Livrables & Methode
 │   └── prepare-pass3.md               ← Pass 3 : Design Orchestrator (HTML + validation)
 ├── tools/
 │   ├── validate_proposal.py          ← Validation HTML automatisee (39 regles, 3 layers)

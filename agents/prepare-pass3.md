@@ -4,6 +4,17 @@
 
 ---
 
+## Rappel regles critiques (avant toute generation)
+
+> **Zero pression commerciale** : pas de "ne manquez pas", "il est urgent de", "derniere chance". Inclut "Chaque mois/jour sans X". (cf. `agents/shared.md`, regle 14)
+> **Zero dramatisation** : pas de "catastrophe", "crise", "vous perdez tout". Les donnees suffisent. (cf. regle 15)
+> **Francais** : tous les outputs en francais. (cf. regle 3)
+> **Verbatims = citations exactes** entre guillemets. (cf. regle 12)
+> **Pas de tiret cadratin** (`—`, `&mdash;`) dans aucun output. Remplacer par `:`, `,`, `.`, `·`. (cf. regle 18)
+> **Pas de sur-engineering** : le closer copie-colle, on ne complique pas. (cf. regle 7)
+
+---
+
 ## Gates qualite avant export (obligatoire)
 
 ### 1) Contradiction check

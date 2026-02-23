@@ -326,7 +326,22 @@ def check_layer2(parser, html_raw):
 
     # R28b: Cout inaction avec impacts chiffres
     has_cout = "inaction" in livr
-    results.append(("R28b", "Sous-bloc \"cout de l'inaction\" present", has_cout))
+    # Verify that "inaction" section contains actual numbers (not just the word)
+    if has_cout:
+        # Extract text around "inaction" and check for digits
+        inaction_positions = [m.start() for m in re.finditer(r'inaction', livr)]
+        has_numbers_near_inaction = False
+        for pos in inaction_positions:
+            context_window = livr[pos:min(pos + 500, len(livr))]
+            if re.search(r'\d[\d\s,.]*\d', context_window):
+                has_numbers_near_inaction = True
+                break
+        if not has_numbers_near_inaction:
+            results.append(("R28b", "Sous-bloc \"cout de l'inaction\" present MAIS sans impacts chiffres", False))
+        else:
+            results.append(("R28b", "Sous-bloc \"cout de l'inaction\" avec impacts chiffres", True))
+    else:
+        results.append(("R28b", "Sous-bloc \"cout de l'inaction\" absent", False))
 
     return results
 
