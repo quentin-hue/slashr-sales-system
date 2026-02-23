@@ -1,4 +1,4 @@
-# SLASHR — Design System v1.0
+# SLASHR — Design System v2.0
 
 > Document de reference pour l'identite visuelle Slashr.
 > Utilisable pour tous les supports : site web, reseaux sociaux, presentations, print.
@@ -75,15 +75,25 @@ Direction : gauche -> droite (90deg)
 #E74601 -> #CE08A9 -> #8962FD
 ```
 
-### 3.2 Hero Gradient (3 blobs floutes)
+### 3.2 Hero Gradient (3 blobs floutes — V2)
 
-Fond de section hero : trois ellipses colorees positionnees en bas, tres floutees, sur fond `#1a1a1a`.
+Fond de section hero : trois ellipses avec **gradients bicolores**, positionnees en bas, tres floutees, sur fond `#1a1a1a`. Technique GPU-optimized.
 
-- **Blob Orange** : bas gauche, 50% largeur, blur 100px
-- **Blob Magenta** : centre bas, 70% largeur, blur 100px
-- **Blob Violet** : bas droite, 50% largeur, blur 175px
+| Couche | Position | Taille | Gradient | Blur |
+|--------|----------|--------|----------|------|
+| Orange (::before) | `left:-15%, bottom:-10%` | 50% x 50% | `linear-gradient(239.24deg, #E74601 43.16%, #FF9011 70.85%)` | 100px |
+| Magenta (::after) | `left:20%, bottom:0%` | 70% x 45% | `linear-gradient(239.24deg, #CE08A9 43.16%, #CE16B5 70.85%)` | 100px |
+| Violet (div) | `right:-10%, bottom:-5%` | 50% x 55% | `linear-gradient(180deg, #8962FD 0%, #AD21FE 100%)` | 175px |
 
-> **Pour reproduire sur un autre support :** Placer 3 cercles flous en bas du visuel (orange a gauche, magenta au centre, violet a droite) sur fond `#1a1a1a`. Les cercles debordent du cadre.
+**Optimisation GPU :** Chaque blob utilise `transform: translateZ(0)` et `backface-visibility: hidden`.
+
+**Z-index :** Blobs en `z-index: 1`, contenu texte en `z-index: 10`. Exclure les blobs du selecteur generique via `.hero > *:not(.hero-blobs):not(.hero-blob-3)`.
+
+**Border-radius :** Le hero a des coins arrondis en bas : `border-radius: 0 0 40px 40px` (mobile), `0 0 75px 75px` (desktop >= 900px).
+
+**Centrage :** `height: 100vh`, `padding-top: 56px` (compense la nav fixe), `justify-content: center`.
+
+> **Pour reproduire :** Placer 3 cercles flous avec gradients bicolores en bas du visuel sur fond `#1a1a1a`. Les cercles debordent du cadre. Utiliser le meme angle (239.24deg) pour orange et magenta, 180deg pour violet.
 
 ### 3.3 Gradient Texte
 
@@ -142,6 +152,26 @@ L'unite de base est **7.5px**. Tous les espacements sont des multiples :
 | `space-4` | 30px | Entre elements moyens |
 | `space-8` | 60px | Entre blocs majeurs |
 
+### 5.2 Conteneurs (largeurs max)
+
+| Token | Valeur | Usage |
+|-------|--------|-------|
+| `max-w-content` | 1280px | Conteneur principal (slides, nav-inner, grilles) |
+| `max-w-text` | 680px | Blocs de texte (section-intro, paragraphes longs) |
+
+> **Note :** Equivalent Tailwind `max-w-7xl`. Toutes les proposals HTML utilisent `max-width: 1280px` comme largeur de reference.
+
+### 5.3 Sections (proposals HTML)
+
+Les proposals utilisent un systeme **scroll-snap slide-by-slide** :
+
+| Element | Padding | Notes |
+|---------|---------|-------|
+| Section standard (inside .slide) | `padding: 0` | Pas de padding propre, le `.slide` gere l'espacement |
+| Slide | `padding: 60px 30px` | Centrage vertical via flexbox |
+| Hero | `padding: 30px` | Full-width, blobs gradient |
+| CTA section | `padding: 100px 30px` | Full-width, blobs gradient |
+
 ---
 
 ## 6. Rayons de bordure
@@ -159,11 +189,13 @@ L'unite de base est **7.5px**. Tous les espacements sont des multiples :
 
 ### 7.1 Boutons
 
-**Primary (blanc sur fond sombre) :**
-- Fond : `#ffffff`, Texte : `#2C2E34`
-- Padding : 30px horizontal x 15px vertical
+**Primary / CTA (blanc, border gradient au hover) :**
+- Fond : `#ffffff`, Texte : `#1a1a1a`
+- Padding : 14px vertical x 40px horizontal
 - Border-radius : full (pill)
-- Hover : bordure gradient brand (2px)
+- Technique : wrapper `.cta-wrap` avec `padding: 2px` et `background: transparent`
+- Hover : le wrapper passe a `background: var(--gradient)` — cree une bordure gradient de 2px
+- Transition : 300ms
 
 **Secondary (bordure blanche) :**
 - Fond : transparent, Bordure : 1px solid white
@@ -181,7 +213,10 @@ L'unite de base est **7.5px**. Tous les espacements sont des multiples :
 - Border-radius : 14-15px
 - Padding : 24-32px
 - Bordure : 1px white/10
-- Hover : bordure gradient brand
+- Hover : `border-color: white/20` + `transform: scale(1.02)`
+- Transition : `border-color 0.3s, transform 0.3s`
+- **Pas de box-shadow** : la profondeur est geree par blur/opacity, pas par des ombres
+- Variante gradient border : wrapper technique (meme principe que CTA wrap)
 
 ### 7.3 Tags / Badges
 
@@ -260,3 +295,53 @@ x2    : 15px
 x4    : 30px
 x8    : 60px
 ```
+
+---
+
+## 10. Interactions & Animations (V2)
+
+### 10.1 Transitions
+
+| Element | Proprietes | Duree | Easing |
+|---------|-----------|-------|--------|
+| Cartes (card, kpi, testimonial, s7-card) | `border-color, transform` | 300ms | ease (defaut) |
+| Pricing cards | `border-color, transform` | 300ms | ease |
+| Boutons CTA | `background` (wrapper) | 300ms | ease |
+| Nav tabs | `all` | 200ms | ease |
+
+### 10.2 Hover effects
+
+| Element | Effet |
+|---------|-------|
+| Cartes generiques | `border-color: white/20` + `transform: scale(1.02)` |
+| KPI cards | `border-color: white/20` + `transform: scale(1.02)` |
+| Testimonials | `border-color: white/20` + `transform: scale(1.02)` |
+| S7 cards | `border-color: white/20` + `transform: scale(1.02)` |
+| Pricing cards | `transform: scale(1.02)` |
+| CTA button | Wrapper passe de `transparent` a `var(--gradient)` (bordure gradient 2px) |
+
+> **Regle : pas de `translateY` ni de `box-shadow`.** L'elevation se fait par `scale(1.02)` uniquement. La profondeur visuelle est geree par blur/opacity sur les gradients, pas par des ombres portees.
+
+### 10.3 Scroll-snap (proposals HTML)
+
+```
+html        → height: 100%
+body        → height: 100%; overflow: hidden
+.main       → height: calc(100vh - 56px); margin-top: 56px; overflow: hidden
+.tab-content → scroll-snap-type: y proximity; overflow-y: auto
+.slide       → min-height: calc(100vh - 56px); scroll-snap-align: start
+.hero        → scroll-snap-align: start
+.cta-section → scroll-snap-align: start
+```
+
+> **`proximity` et non `mandatory`** : permet aux sliders interactifs (ROI) de fonctionner sans blocage.
+
+### 10.4 Profondeur
+
+La profondeur est obtenue **exclusivement** par :
+- Blur sur les gradient blobs (`filter: blur(100-175px)`)
+- Opacity sur les bordures (`white/10` → `white/20` au hover)
+- Scale subtil au hover (`1.02`)
+- Backdrop blur sur la nav (`blur(20px)`)
+
+**Jamais de `box-shadow`** sur les composants.

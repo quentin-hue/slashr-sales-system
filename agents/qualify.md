@@ -1,4 +1,4 @@
-# Mode QUALIFY — Scoring terminal (v9.0)
+# Mode QUALIFY : Scoring terminal (v9.0)
 
 > **Prerequis :** `agents/shared.md` lu.
 
@@ -6,7 +6,7 @@
 
 ## Objectif
 
-Scorer un deal rapidement et peupler Pipedrive. Pas de fichier genere — tout se passe dans le terminal. Rejouable a volonte (nouveau mail, nouveau doc, nouvelle info → re-qualify).
+Scorer un deal rapidement et peupler Pipedrive. Pas de fichier genere, tout se passe dans le terminal. Rejouable a volonte (nouveau mail, nouveau doc, nouvelle info → re-qualify).
 
 ---
 
@@ -38,24 +38,33 @@ Pas de ranked_keywords, pas de competitors. C'est juste pour alimenter le score 
 
 ---
 
-## Scoring — grille simplifiee
+## Scoring : grille simplifiee (v11.1)
 
-| Critere | Poids | 5/5 | 3/5 | 1/5 |
-|---------|-------|-----|-----|-----|
-| **Douleur** (x6) | 30 max | Perte CA chiffree + verbatim | Douleur claire non chiffree | Aucune douleur |
-| **Urgence** (x5) | 25 max | Deadline < 6 sem, pression board | Objectif annuel, volonte d'agir | Pas de timeline |
-| **Budget** (x4) | 20 max | Enveloppe precise | Indices forts (budget paid connu) | Aucun signal |
-| **Decideur** (x3) | 15 max | C-level en call, signe seul | Influenceur fort, decideur accessible | Operationnel seul |
-| **Fit** (x2) | 10 max | Multi-marches, CA > 10M, gap > x3 | Besoin reel, trafic existant | Site vitrine, aucun trafic |
+> Objectif : mesurer la **qualite decisionnelle** du deal, pas seulement l'intérêt SEO.
+> Score = somme(note x poids). Max = 100.
 
-**Score = somme(note x poids). Max = 100.**
+| Critere | Poids | 5/5 | 4/5 | 3/5 | 2/5 | 1/5 |
+|---------|-------|-----|-----|-----|-----|-----|
+| **Douleur** | x6 (30) | Perte CA **chiffrée** + verbatim | Pain très clair + ordre de grandeur | Douleur claire non chiffrée | Signal faible / implicite | Aucune douleur |
+| **Urgence** | x5 (25) | Deadline < 6 sem + contrainte externe (board / refonte / saison) | Deadline < 3 mois | Objectif annuel, volonté d'agir | "On verra" / pas prioritaire | Pas de timeline |
+| **Budget** | x4 (20) | Enveloppe précise validable | Fourchette crédible | Indices forts (paid connu / historique) | Hypothèse faible | Aucun signal |
+| **Décideur** | x3 (15) | C-level en R1, signe seul | C-level accessible + sponsor fort | Head of / Directeur, process clair | Opérationnel + accès flou | Opérationnel seul |
+| **Fit** | x2 (10) | Multi-marches / complexité + gros gap Search | Besoin clair + potentiel observable | Besoin réel mais scope limité | Petit site / faible potentiel | Vitrine / aucun trafic |
 
-**Seuils :**
-- >= 60 → GO (preparer la proposition)
+### KO rules (anti-faux positifs)
+
+Appliquer ces règles **avant** le total :
+
+- Si **Budget = 1/5** ET **Décideur <= 2/5** → statut = NURTURE (même si le total dépasse 40).
+- Si **Urgence = 1/5** ET **Douleur <= 2/5** → statut = NURTURE.
+- Si **Décideur = 1/5** ET aucune preuve d'accès au décideur → statut max = CONDITIONNEL.
+- Si données insuffisantes : scorer au **médian 3/5** (pas au max). Le 1/5 est réservé à un signal négatif confirmé.
+
+### Seuils (inchangés)
+
+- >= 60 → GO (préparer la proposition)
 - 40-59 → CONDITIONNEL (valider avec le manager)
 - < 40 → NURTURE (pas de proposition)
-
-**Critere non documente → scorer au median (3/5).** Le minimum (1/5) est reserve aux signaux negatifs confirmes.
 
 ---
 
@@ -73,15 +82,15 @@ Pas de ranked_keywords, pas de competitors. C'est juste pour alimenter le score 
 
 ```
 ═══════════════════════════════════════════════
-  QUALIFY — {Entreprise} (Deal #{deal_id})
+  QUALIFY · {Entreprise} (Deal #{deal_id})
 ═══════════════════════════════════════════════
 
-  Contact     {Prenom Nom} — {Role}
+  Contact     {Prenom Nom} · {Role}
   Domaine(s)  {domaine1}, {domaine2}
   Stage       {stage Pipedrive}
 
 ───────────────────────────────────────────────
-  SCORE : {score}/100 — {GO | CONDITIONNEL | NURTURE}
+  SCORE : {score}/100 · {GO | CONDITIONNEL | NURTURE}
 ───────────────────────────────────────────────
 
   Douleur     {note}/5  {justification courte}

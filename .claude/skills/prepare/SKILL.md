@@ -29,15 +29,32 @@ Checker dans la reponse :
 
 Si les checks passent → continuer avec les etapes suivantes.
 
+## Checklist de lecture (OBLIGATOIRE — tout lire AVANT de commencer)
+
+L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1. Ne pas lire un fichier = ne pas connaitre la regle = generer un output non conforme.
+
+| # | Fichier | Contenu | Quand |
+|---|---------|---------|-------|
+| 1 | `agents/shared.md` | Preambule partage : role, sources, 18 regles | Avant tout |
+| 2 | `agents/prepare.md` | Routeur — architecture 3 passes | Avant tout |
+| 3 | `context/positioning.md` | Positionnement, tonalite, structure offre | Avant tout |
+| 4 | `context/s7_search_operating_model.md` | Modele S7 : scoring, classification, anti-patterns | Avant tout |
+| 5 | `context/pricing_rules.md` | Calcul budgets Phase 1 & Phase 2 (interne) | Avant tout |
+| 6 | `context/output_contract.md` | Frontiere client/interne (visible vs masque) | Avant tout |
+| 6b | `context/validation_rules.md` | 39 regles de validation (3 layers) | Avant tout |
+| 6c | `context/s7_quick_reference.md` | Digest compact S7 (7 forces, echelle, classification) | Avant tout |
+| 7 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
+| 8 | `context/case_studies.md` | Bibliotheque cas clients | Avant Pass 2 |
+| 9 | `templates/proposal-kit.html` | Kit CSS + 27 composants par role narratif | Avant Pass 3 |
+| 10 | `context/proposal-kit-reference.md` | Aide-memoire classes CSS condensees | Avant Pass 3 |
+
 ## Etapes
 
-1. Lis `agents/shared.md` (preambule partage : role, sources, regles)
-2. Lis `agents/prepare.md` (routeur — architecture 3 passes)
-3. Lis `templates/proposal-kit.html` (kit CSS + catalogue de 27 composants organises par role narratif)
-4. Execute les 3 passes dans l'ordre :
+1. Lis les fichiers 1-6c de la checklist ci-dessus
+2. Execute les 3 passes dans l'ordre :
    - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + S7 + SDB)
-   - **Pass 2** : lis `agents/prepare-pass2.md` et execute (arc narratif + NBP)
-   - **Pass 3** : lis `agents/prepare-pass3.md` et execute (HTML + validation)
+   - **Pass 2** : lis fichiers 7-8, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet 4.
+   - **Pass 3** : lis fichiers 9-10, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`)
 
 ## Collecte Pipedrive
 

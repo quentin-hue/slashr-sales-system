@@ -41,7 +41,7 @@
     QUANTIFIER (chiffres, metriques, scores)
     ├── KPI card            — chiffre + label + sous-texte
     │   ├── .kpi            — standard (grille 2/3/4)
-    │   ├── .kpi-large      — [NEW] 1 chiffre full-width, dramatise
+    │   ├── .kpi-large      — 1 chiffre floating hero-style, glow + gradient
     │   └── .kpi-mini       — [NEW] inline compact (icone + chiffre + texte)
     ├── Stat row            — [NEW] rangee horizontale de stats legeres
     ├── Cost card           — chiffre d'impact (cout de l'inaction)
@@ -87,19 +87,51 @@
     ├── S7 Insight Callout  — highlight contrainte principale + pourquoi ca bloque
     └── S7 Priority Table   — Force / Diagnostic / Action / Horizon (90j, 6m, 12m)
 
-    STRUCTURE DE PAGE
-    ├── Nav                 — fixe, blur, onglets dynamiques
-    ├── Hero                — full-width avec blobs gradient
-    ├── Section             — label + titre + intro
+    STRUCTURE DE PAGE — scroll-snap slide-by-slide
+    ├── Nav                 — fixe, blur, onglets dynamiques (56px)
+    ├── Main                — scroll container (100vh - 56px)
+    ├── Tab-content          — scroll-snap-type: y proximity
+    ├── Slide (.slide)       — snap target, centrage vertical, max-width 1280px
+    ├── Hero                — full-width avec blobs gradient (snap target)
+    ├── Section             — label + titre + intro (inside .slide)
     ├── Grids               — 2, 3, 4 colonnes
-    └── Footer              — credits
+    └── CTA section          — full-width snap target avec blobs
+
+    ============================================================
+  -->
+
+  <!--
+    ============================================================
+    TABLE DES MATIERES
+    ============================================================
+
+    SECTION                                    ~LINE
+    ────────────────────────────────────────────────
+    CSS Variables & Reset                       ~132
+    LAYOUT (Nav, Main, Tabs, Slides, Hero)      ~174
+    Section (Label + Titre + Intro)             ~384
+    Grids (2, 3, 4 colonnes)                    ~424
+    COMPARER (VS, Bar Chart, Matrix, B/A)       ~431
+    QUANTIFIER (KPI, Stats, Cost, Progress...)  ~624
+    CITER (Verbatim, Pull Quote, Testimonial)   ~1073
+    STRUCTURER (Timeline, Routine, Funnel, Acc.) ~1212
+    ALERTER (Highlight, Callout)                ~1438
+    VENDRE (Pricing, ROI Sim, CTA)              ~1512
+    CONTEXTUALISER (Context, Card, Table, Tags) ~1706
+    DIAGNOSTIQUER (S7 Grid, Insight, Priority)  ~1874
+    STRUCTURE DE PAGE (Footer, Responsive)      ~2088
+    Print / @media print                        ~2129
+    Markup Examples (4 onglets)                  ~2160
+    JavaScript (Tabs, Scroll, Accordion, ROI)   ~3463
 
     ============================================================
   -->
 
   <style>
     /* ============================================================
-       DESIGN SYSTEM — Variables
+       CSS VARIABLES & RESET
+       Variables de couleur, typographie, rayons, gradients.
+       Reset global (margin, padding, box-sizing).
        ============================================================ */
     :root {
       --orange: #E74601;
@@ -125,7 +157,7 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; height: 100%; }
 
     body {
       background: var(--bg);
@@ -134,7 +166,14 @@
       font-size: 15px;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+      height: 100%;
+      overflow: hidden;
     }
+
+    /* ============================================================
+       LAYOUT — structure de page, navigation, conteneurs
+       Nav | Main | Tabs | Slides | Hero | Section | Grids
+       ============================================================ */
 
     /* ============================================================
        NAV — Fixe, blur, onglets dynamiques
@@ -144,14 +183,15 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      background: rgba(26,26,26,0.85);
+      height: 56px;
+      background: rgba(26,26,26,0.95);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
 
     .nav-inner {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 0 30px;
       display: flex;
@@ -194,18 +234,24 @@
     .nav-tab.active { color: var(--text); background: var(--surface); }
 
     /* ============================================================
-       MAIN CONTAINER
+       MAIN CONTAINER — Scroll-snap slide system
+       Each tab-content is a scroll container.
+       Each .slide or .hero is a snap target.
        ============================================================ */
-    .main { max-width: 1100px; margin: 0 auto; padding: 0 30px; }
+    .main { max-width: 100%; margin: 0; padding: 0; height: calc(100vh - 56px); margin-top: 56px; overflow: hidden; }
 
-    .tab-content { display: none; }
+    .tab-content { display: none; height: 100%; overflow-y: auto; scroll-snap-type: y proximity; scroll-behavior: smooth; }
     .tab-content.active { display: block; }
+
+    /* SLIDE — snap target, vertically centered content */
+    .slide { min-height: calc(100vh - 56px); scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center; padding: 60px 30px; max-width: 1280px; margin: 0 auto; box-sizing: border-box; }
+    .slide-full { min-height: calc(100vh - 56px); scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center; width: 100%; box-sizing: border-box; }
 
     /* ============================================================
        HERO — Full-width, blobs gradient, toujours present
        ============================================================ */
     .hero {
-      min-height: 100vh;
+      min-height: calc(100vh - 56px);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -213,49 +259,61 @@
       text-align: center;
       position: relative;
       overflow: hidden;
-      padding: 80px 30px;
-      margin-left: calc(-50vw + 50%);
-      margin-right: calc(-50vw + 50%);
-      width: 100vw;
+      padding: 30px;
+      width: 100%;
+      background: var(--bg);
+      border-radius: 0 0 40px 40px;
+      scroll-snap-align: start;
     }
+    @media (min-width: 900px) { .hero { border-radius: 0 0 75px 75px; } }
+
+    .hero-short { min-height: calc(100vh - 56px); }
 
     .hero-blobs {
       position: absolute;
       inset: 0;
       pointer-events: none;
+      z-index: 1;
     }
 
-    .hero-blobs::before, .hero-blobs::after {
+    /* Blob technique : gradients bicolores, positions bas, GPU-optimized */
+    .hero-blobs::before {
       content: '';
       position: absolute;
-      border-radius: 50%;
+      width: 50%; height: 50%;
+      left: -15%; bottom: -10%;
+      background: linear-gradient(239.24deg, #E74601 43.16%, #FF9011 70.85%);
       filter: blur(100px);
-      opacity: 0.3;
-    }
-
-    .hero-blobs::before {
-      background: var(--orange);
-      width: 500px; height: 500px;
-      bottom: -15%; left: -5%;
+      border-radius: 50%;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .hero-blobs::after {
-      background: var(--magenta);
-      width: 600px; height: 400px;
-      bottom: -10%; left: 25%;
+      content: '';
+      position: absolute;
+      width: 70%; height: 45%;
+      left: 20%; bottom: 0%;
+      background: linear-gradient(239.24deg, #CE08A9 43.16%, #CE16B5 70.85%);
+      filter: blur(100px);
+      border-radius: 50%;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
 
     .hero-blob-3 {
       position: absolute;
-      background: var(--violet);
-      width: 500px; height: 450px;
-      bottom: -15%; right: -5%;
+      width: 50%; height: 55%;
+      right: -10%; bottom: -5%;
+      background: linear-gradient(180deg, #8962FD 0%, #AD21FE 100%);
       border-radius: 50%;
-      filter: blur(150px);
-      opacity: 0.25;
+      filter: blur(175px);
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      z-index: 1;
     }
 
-    .hero > * { position: relative; z-index: 1; }
+    .hero > *:not(.hero-blobs):not(.hero-blob-3) { position: relative; z-index: 10; }
 
     .hero-tag {
       display: inline-block;
@@ -268,7 +326,7 @@
       color: var(--text-70);
       padding: 6px 18px;
       border-radius: var(--radius-full);
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
 
     .hero h1 {
@@ -292,7 +350,7 @@
     .hero-date {
       font-size: 14px;
       color: var(--text-30);
-      margin-bottom: 50px;
+      margin-bottom: 0;
     }
 
     .hero-scroll {
@@ -301,6 +359,7 @@
       border: 2px solid var(--text-30);
       border-radius: 12px;
       position: relative;
+      margin-top: 40px;
       cursor: pointer;
     }
 
@@ -324,26 +383,31 @@
        SECTION — Label + Titre + Intro
        ============================================================ */
     .section {
-      padding: 100px 0;
-      border-top: 1px solid var(--border);
+      padding: 0;
+      border-top: none;
     }
 
     .section-label {
-      font-size: 11px;
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 11.25px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--orange);
-      margin-bottom: 12px;
+      letter-spacing: 0.1em;
+      color: var(--text-70);
+      padding: 6px 18px;
+      border-radius: var(--radius-full);
+      margin-bottom: 16px;
     }
 
     .section h2 {
       font-family: var(--font-display);
-      font-size: clamp(28px, 5vw, 44px);
-      font-weight: 600;
+      font-size: clamp(28px, 5vw, 45px);
+      font-weight: 700;
       color: var(--text);
       line-height: 1.1;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.04em;
       margin-bottom: 16px;
     }
 
@@ -351,7 +415,7 @@
       font-size: 17px;
       color: var(--text-70);
       max-width: 680px;
-      margin-bottom: 50px;
+      margin-bottom: 36px;
       line-height: 1.6;
     }
 
@@ -363,9 +427,10 @@
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  COMPARER  ═══════════════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       COMPARER — montrer des ecarts, des contrastes
+       VS block | Bar chart | Comparison matrix | Before/After
+       ============================================================ */
 
     /* ============================================================
        VS BLOCK — Face-a-face 2 entites
@@ -555,9 +620,11 @@
     }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  QUANTIFIER  ═════════════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       QUANTIFIER — chiffres, metriques, scores, couts
+       KPI card | KPI large | Slide constat | KPI mini | Stat row
+       Cost card | Progress bar | Donut chart | Number ticker
+       ============================================================ */
 
     /* ============================================================
        KPI CARD — Standard
@@ -569,10 +636,10 @@
       border-radius: var(--radius);
       padding: 28px 24px;
       text-align: center;
-      transition: border-color 0.2s;
+      transition: border-color 0.3s, transform 0.3s;
     }
 
-    .kpi:hover { border-color: var(--border-hover); }
+    .kpi:hover { border-color: var(--border-hover); transform: scale(1.02); }
 
     .kpi-value {
       font-family: var(--font-display);
@@ -598,36 +665,60 @@
     .kpi-sub { font-size: 12px; color: var(--text-30); margin-top: 4px; }
 
     /* ============================================================
-       KPI LARGE — [NEW] 1 chiffre dramatise, full-width
-       Usage : un seul chiffre qu'on veut mettre en avant
+       KPI LARGE — Floating hero-style, glow derriere le chiffre
+       Usage : un seul chiffre statement (ex: < 1% de visibilite)
+       Pas de box/border. Le chiffre flotte avec un glow subtil.
        ============================================================ */
     .kpi-large {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 48px 32px;
       text-align: center;
-      margin-bottom: 40px;
+      position: relative;
+      padding: 0;
+    }
+
+    .kpi-large::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 300px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse, rgba(206,8,169,0.10) 0%, rgba(137,98,253,0.05) 50%, transparent 70%);
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .kpi-large > * {
+      position: relative;
+      z-index: 1;
     }
 
     .kpi-large .kpi-value {
       font-family: var(--font-display);
-      font-size: clamp(56px, 10vw, 96px);
+      font-size: clamp(72px, 12vw, 130px);
       font-weight: 700;
-      background: var(--gradient);
+      color: var(--orange);
+      background: linear-gradient(135deg, var(--orange) 0%, var(--magenta) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       line-height: 1;
       margin-bottom: 12px;
+      letter-spacing: -0.04em;
+      display: inline-block;
+      padding-bottom: 0.05em;
     }
 
     .kpi-large .kpi-label {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 400;
       color: var(--text-70);
       text-transform: none;
       letter-spacing: 0;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.4;
     }
 
     .kpi-large .kpi-sub {
@@ -637,6 +728,63 @@
       max-width: 500px;
       margin-left: auto;
       margin-right: auto;
+    }
+
+    /* ============================================================
+       SLIDE CONSTAT — Slide statement avec KPI large + data row
+       Usage : "Votre marque est connue. Mais votre site est invisible."
+       Composants : constat-title, kpi-large, constat-data, constat-source
+       ============================================================ */
+    .slide-constat {
+      align-items: center;
+      text-align: center;
+    }
+
+    .constat-title {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 500;
+      color: var(--text-70);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      max-width: 600px;
+    }
+
+    .constat-data {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .constat-data-item {
+      font-size: 14px;
+      color: var(--text-50);
+      letter-spacing: 0;
+    }
+
+    .constat-data-item strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .constat-data-sep {
+      width: 1px;
+      height: 16px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .constat-source {
+      font-size: 11px;
+      color: var(--text-30);
+      margin-top: 16px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
     }
 
     /* ============================================================
@@ -921,9 +1069,10 @@
     }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  CITER  ══════════════════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       CITER — voix du prospect, social proof, citations
+       Verbatim box | Pull quote | Testimonial card
+       ============================================================ */
 
     /* ============================================================
        VERBATIM BOX — Citation prospect (bordure magenta)
@@ -1016,10 +1165,10 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 28px;
-      transition: border-color 0.2s;
+      transition: border-color 0.3s, transform 0.3s;
     }
 
-    .testimonial:hover { border-color: var(--border-hover); }
+    .testimonial:hover { border-color: var(--border-hover); transform: scale(1.02); }
 
     .testimonial-text {
       font-size: 15px;
@@ -1059,9 +1208,10 @@
     }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  STRUCTURER  ═════════════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       STRUCTURER — organiser, sequencer, hierarchiser
+       Timeline | Routine grid | Funnel | Accordion
+       ============================================================ */
 
     /* ============================================================
        TIMELINE — Phases orange/magenta/violet
@@ -1284,9 +1434,10 @@
     }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  ALERTER  ════════════════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       ALERTER — attirer l'attention, conclure, recommander
+       Highlight box (4 variantes) | Callout banner
+       ============================================================ */
 
     /* ============================================================
        HIGHLIGHT BOX — Encadre avec bordure coloree
@@ -1357,9 +1508,10 @@
     }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  VENDRE  ═════════════════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       VENDRE — conversion, investissement, ROI
+       Pricing card | ROI Simulator | CTA full-width
+       ============================================================ */
 
     /* ============================================================
        PRICING CARD — Nom + Prix + Scope
@@ -1373,10 +1525,10 @@
       border-radius: var(--radius);
       padding: 32px 28px;
       text-align: center;
-      transition: border-color 0.2s, transform 0.2s;
+      transition: border-color 0.3s, transform 0.3s;
     }
 
-    .pricing:hover { transform: translateY(-2px); }
+    .pricing:hover { transform: scale(1.02); }
 
     .pricing.recommended {
       border: 2px solid transparent;
@@ -1494,9 +1646,13 @@
       padding: 100px 30px;
       position: relative;
       overflow: hidden;
-      margin-left: calc(-50vw + 50%);
-      margin-right: calc(-50vw + 50%);
-      width: 100vw;
+      width: 100%;
+      min-height: calc(100vh - 56px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      scroll-snap-align: start;
     }
 
     .cta-section .hero-blobs { opacity: 0.5; }
@@ -1522,32 +1678,35 @@
 
     .cta-wrap {
       display: inline-block;
-      background: var(--gradient);
+      background: transparent;
       border-radius: var(--radius-full);
       padding: 2px;
       position: relative;
       z-index: 1;
+      transition: background 0.3s;
     }
+    .cta-wrap:hover { background: var(--gradient); }
 
     .cta-btn {
       display: inline-block;
-      background: var(--bg);
-      color: var(--text);
+      background: #ffffff;
+      color: var(--bg);
       font-family: var(--font-body);
       font-size: 15px;
       font-weight: 600;
       padding: 14px 40px;
       border-radius: var(--radius-full);
       text-decoration: none;
-      transition: background 0.3s;
+      transition: background 0.3s, color 0.3s;
     }
+    .cta-wrap:hover .cta-btn { background: #ffffff; color: var(--bg); }
 
-    .cta-btn:hover { background: transparent; }
 
-
-    /* ════════════════════════════════════════════════════════════
-       ═══  CONTEXTUALISER  ═════════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       CONTEXTUALISER — situation, donnees, details
+       Context card | Card (standard, accent, icon) | Quick win
+       Table | Tags
+       ============================================================ */
 
     /* ============================================================
        CONTEXT CARD — Icone + Titre + Description
@@ -1599,10 +1758,10 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 28px;
-      transition: border-color 0.2s;
+      transition: border-color 0.3s, transform 0.3s;
     }
 
-    .card:hover { border-color: var(--border-hover); }
+    .card:hover { border-color: var(--border-hover); transform: scale(1.02); }
     .card h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
     .card p { font-size: 14px; color: var(--text-70); line-height: 1.5; }
 
@@ -1711,9 +1870,10 @@
     }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  DIAGNOSTIQUER : S7 Search System  ═════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       DIAGNOSTIQUER — S7 Search System, scoring, priorisation
+       S7 Overview Grid | S7 Insight Callout | S7 Priority Table
+       ============================================================ */
 
     /* --- S7 Overview Grid : 7 force cards + score + state --- */
     .s7-grid {
@@ -1730,9 +1890,9 @@
       border-radius: var(--radius-md);
       padding: 24px 20px;
       position: relative;
-      transition: border-color 0.25s ease;
+      transition: border-color 0.3s, transform 0.3s;
     }
-    .s7-card:hover { border-color: var(--border-hover); }
+    .s7-card:hover { border-color: var(--border-hover); transform: scale(1.02); }
     .s7-card[data-state="primary"] { border-color: var(--orange); }
     .s7-card[data-state="secondary"] { border-color: var(--magenta); }
     .s7-card[data-state="deferred"] { border-color: var(--border); opacity: 0.6; }
@@ -1924,9 +2084,10 @@
     }
 
 
-    /* ════════════════════════════════════════════════════════════
-       ═══  STRUCTURE DE PAGE  ══════════════════════════════════
-       ════════════════════════════════════════════════════════════ */
+    /* ============================================================
+       STRUCTURE DE PAGE — footer, responsive, print
+       Footer | @media (max-width: 900px) | @media print
+       ============================================================ */
 
     .footer {
       text-align: center;
@@ -1965,12 +2126,16 @@
     }
 
     /* ============================================================
-       PRINT
+       PRINT — @media print
+       Affichage A4, masquage nav/CTA, break-inside:avoid
        ============================================================ */
     @media print {
-      body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { background: var(--bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; height: auto; overflow: auto; }
       .nav { display: none; }
-      .tab-content { display: block !important; }
+      .main { height: auto; margin-top: 0; overflow: auto; }
+      .tab-content { display: block !important; height: auto; overflow: visible; scroll-snap-type: none; }
+      .slide { min-height: auto; page-break-inside: avoid; }
+      .hero, .hero-short { min-height: auto; page-break-inside: avoid; }
       .section { page-break-inside: avoid; }
       .accordion-content { max-height: none !important; }
       .s7-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1991,8 +2156,10 @@
 <body>
 
 <!-- ============================================================
-     MARKUP REFERENCE — Exemples de chaque composant
+     MARKUP — exemples de chaque composant (4 onglets MVP)
      L'agent s'en inspire pour generer le HTML sur-mesure.
+     Onglet 1: Strategie | Onglet 2: Cas Clients
+     Onglet 3: ROI Interactif | Onglet 4: Livrables & Methode
      ============================================================ -->
 
 <!-- NAV — 4 onglets MVP (toujours presents) -->
@@ -2184,11 +2351,23 @@
   </section>
 
 
-  <!-- ═══ QUANTIFIER : KPI Large [NEW] ═══ -->
-  <div class="kpi-large">
-    <div class="kpi-value">21 000</div>
-    <div class="kpi-label">Visites par mois que vos concurrents captent — pas vous.</div>
-    <div class="kpi-sub">Gap hors-marque calculé sur la moyenne La Trinitaine + Maison du Biscuit</div>
+  <!-- ═══ QUANTIFIER : KPI Large (floating hero-style) ═══ -->
+  <!-- Usage autonome dans un .slide dédié (.slide-constat) -->
+  <div class="slide slide-constat">
+    <p class="section-label" style="text-align:center;">Constat</p>
+    <h2 class="constat-title">Votre marque est connue.<br>Mais votre site est invisible.</h2>
+    <div class="kpi-large">
+      <div class="kpi-value">&lt; 1%</div>
+      <div class="kpi-label">de visibilité hors-marque</div>
+    </div>
+    <div class="constat-data">
+      <span class="constat-data-item"><strong>14 800</strong> recherches/mois sur votre marque</span>
+      <span class="constat-data-sep"></span>
+      <span class="constat-data-item"><strong>75 000</strong> recherches/mois sur votre marché</span>
+      <span class="constat-data-sep"></span>
+      <span class="constat-data-item"><strong>153</strong> mots-clés indexés, 99,5% liés à la marque</span>
+    </div>
+    <p class="constat-source">Source : DataForSEO</p>
   </div>
 
 
@@ -3280,7 +3459,8 @@
 </footer>
 
 <!-- ============================================================
-     JAVASCRIPT — Onglets + Animations + Accordion + Ticker
+     JAVASCRIPT — interactions et animations
+     Tabs | Scroll animations (bar/progress) | Accordion | Ticker | ROI Simulator
      ============================================================ -->
 <script>
   // Tab switching

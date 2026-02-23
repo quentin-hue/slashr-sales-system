@@ -110,3 +110,37 @@ Croissance : {budget}/mois — + multi-leviers
 3. Le total annuel affiche dans la synthese = Phase 1 + (Phase 2 x 12)
 4. Si un levier est active en Phase 1 setup, il DOIT avoir un run en Phase 2
 5. Si un levier n'a PAS de setup Phase 1, il ne peut PAS avoir de run Phase 2
+
+---
+
+## Quality Rubric (auto-controle obligatoire)
+
+Avant de sortir le livrable final, appliquer ce rubric (0/1 par item) et corriger si besoin.
+
+1) Objectifs business clairs et priorises (pas seulement SEO)
+2) Recommandations reliees explicitement aux objectifs
+3) Faits vs hypotheses clairement distingues
+4) Points manquants explicites + plan B (proxy / assumptions / next access)
+5) Concurrence / marche : au moins 3 insights actionnables
+6) Plan 30/60/90 realiste (priorites + dependances)
+7) KPIs & mesure : comment on prouve le progres (et avec quelles sources)
+8) Budget/charge/coherence : la recommandation colle au budget annonce
+
+**Sortie attendue :**
+- Score: X/8
+- 3 corrections max appliquees avant publication
+- Si score < 6/8 : re-travailler la structure, pas juste ajouter du contenu
+
+---
+
+## Contradiction check (anti-incoherences)
+
+Verifier et corriger toute contradiction de type :
+- Budget faible vs plan trop large
+- Objectif "conversion" mais actions uniquement "contenu"
+- Delais ambitieux sans prerequis (tracking, accès, dev)
+- Recos qui contredisent les contraintes (CMS, ressources, gouvernance)
+- "GEO/IA" annonce mais aucune action concrete associee
+
+Regle : si une contradiction reste, elle doit etre explicitement justifiee (trade-off assume).
+

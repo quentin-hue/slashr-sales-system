@@ -26,7 +26,7 @@ Le S7 est un outil d'arbitrage strategique. Il repond a la question : **que prio
 
 | # | Force | Ce qu'elle mesure | Sources typiques |
 |---|-------|-------------------|------------------|
-| S1 | Intentions de recherche | Alignement offre/demande search, volume, tendance, couverture des requetes cibles | keyword_overview, keywords_for_site, search_intent, google_trends_explore |
+| S1 | Intentions de recherche | Alignement offre/demande search par type d'intent : couverture des requetes commerciales (achat, comparaison) ET des requetes informationnelles captables (recettes, guides, comparatifs ou la marque a une legitimite). Volume, tendance, couverture par bucket intent | keyword_overview, keywords_for_site, search_intent, google_trends_explore, Intent Market Map (Module 4b) |
 | S2 | Architecture & technique | Sante technique du site, performance, structure de donnees, crawlabilite | domain_rank_overview, on_page_lighthouse, on_page_instant_pages |
 | S3 | Creation de contenu | Ratio keywords couverts vs univers semantique, qualite et profondeur du contenu | ranked_keywords, keywords_for_site, keyword_ideas |
 | S4 | UX & Conversion | Experience utilisateur, taux de conversion estime, parcours de monetisation | on_page_lighthouse (performance), transcript, brief |
@@ -67,9 +67,13 @@ Chaque SO WHAT doit repondre a : "Et alors, concretement, pour CE prospect ?"
 - Nommer le prospect ou son secteur specifique
 - Lier a une consequence business concrete
 
-**Exemple :**
+**Exemples :**
 - ❌ "Le contenu est insuffisant et necessite une strategie editoriale"
 - ✅ "Avec 23 pages indexees sur un univers de 850 requetes pertinentes, {Prospect} ne couvre que 3% du potentiel search de son secteur — ses 3 concurrents directs en couvrent 15 a 40%"
+
+**Exemple S1 enrichi (segmentation intent) :**
+- ❌ "Le marche represente 75 000 recherches/mois" (volume brut, sans nuance d'intent)
+- ✅ "Le marche biscuitier genere 12 000 recherches d'achat/mois et 63 000 recherches recette/mois. La Mere Poulard ne capte ni les unes ni les autres. Les requetes recette sont un territoire d'acquisition : 22 200 personnes/mois cherchent 'palet breton' — le fabricant historique devrait etre la reference, pas un blog cuisine."
 
 ---
 

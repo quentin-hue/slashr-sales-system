@@ -1,4 +1,4 @@
-# Mode PREPARE — Proposition interactive (v11.0)
+# Mode PREPARE : Proposition interactive (v11.0)
 
 > **Prerequis :** `agents/shared.md` lu. Le deal doit avoir ete qualifie (`/qualify`).
 
@@ -8,7 +8,7 @@
 
 Collecter toutes les donnees, analyser le deal en profondeur, et generer une proposition HTML interactive sur-mesure. **Un seul fichier HTML uploade dans Drive.**
 
-Le HTML n'est pas un template a trous. C'est un livrable genere par l'agent — chaque phrase, chaque titre, chaque angle est ecrit pour CE prospect, base sur CETTE analyse.
+Le HTML n'est pas un template a trous. C'est un livrable genere par l'agent, chaque phrase, chaque titre, chaque angle est ecrit pour CE prospect, base sur CETTE analyse.
 
 ---
 
@@ -17,34 +17,65 @@ Le HTML n'est pas un template a trous. C'est un livrable genere par l'agent — 
 L'agent execute 3 passes en sequence. Chaque passe produit un document intermediaire structure (interne, jamais dans l'output). La passe suivante consomme ce document comme input principal.
 
 ```
-Pass 1 — DATA & STRATEGY ENGINE    → Structured Data Brief (SDB)
-Pass 2 — NARRATIVE ARCHITECT        → Narrative Blueprint (NBP)
-Pass 3 — DESIGN ORCHESTRATOR        → HTML final (le seul output)
+Pass 1 : DATA & STRATEGY ENGINE    → Structured Data Brief (SDB)
+Pass 2 : NARRATIVE ARCHITECT        → Narrative Blueprint (NBP)
+Pass 3 : DESIGN ORCHESTRATOR        → HTML final (le seul output)
 ```
 
 **Pourquoi 3 passes ?** Separer les preoccupations. La Pass 1 ne pense pas a la narration. La Pass 2 ne pense pas aux composants visuels. La Pass 3 ne reinvente pas la strategie. Chaque passe fait une chose et la fait bien.
 
-> **Note :** La Pass 1 inclut le pipeline S7 (Etape 1.4) qui produit un `strategy_plan_internal.md` avant le SDB. Le S7 est l'etape de priorisation strategique — il alimente directement le SDB.
+> **Note :** La Pass 1 inclut le pipeline S7 (Etape 1.4) qui produit un `strategy_plan_internal.md` avant le SDB. Le S7 est l'etape de priorisation strategique, il alimente directement le SDB.
 
 ---
+
+
+
+---
+
+## Cadre qualite global (/prepare)
+
+Objectif : maximiser la qualite d'analyse tout en restant adaptatif au contexte du deal.
+
+Regles transverses :
+- **Faits / Hypotheses / Manquants** structure le raisonnement (Pass1 + Pass2) puis un resume en Pass3.
+- **Evidence Gate (leger)** : reco structurante = rattachee a un fait OU assumee comme hypothese (confiance + validation).
+- **Contradiction check + Quality Rubric** executes en fin de Pass3 (cf `context/output_contract.md`).
+
+Ce cadre n'impose pas quoi conclure ; il impose seulement la lisibilite, la preuve, et l'honnetete du raisonnement.
+
+## Execution deterministe (performance / fiabilite)
+
+**Performance Budget :** `context/performance_budget.md`
+
+### Cache & replay (obligatoire)
+- Toutes les reponses API doivent etre stockees sous `.cache/deals/{deal_id}/...`
+- Si cache < 24h : reutiliser (ne pas re-fetch)
+- Ecrire les artefacts internes inter-pass :
+  - `.cache/deals/{deal_id}/artifacts/SDB.md`
+  - `.cache/deals/{deal_id}/artifacts/NBP.md`
+
+**But :**
+- Rejouer Pass 2 / Pass 3 sans re-collecter
+- Debugger rapidement un deal (evidence log)
+
 
 ## Execution
 
 Lire et executer chaque passe dans l'ordre :
 
-### Pass 1 — DATA & STRATEGY ENGINE
+### Pass 1 : DATA & STRATEGY ENGINE
 **Fichier :** `agents/prepare-pass1.md`
 
 Collecte (10 modules) + structuration + analyse strategique + diagnostic S7.
 Outputs internes : `strategy_plan_internal.md` puis **Structured Data Brief (SDB)**.
 
-### Pass 2 — NARRATIVE ARCHITECT
+### Pass 2 : NARRATIVE ARCHITECT
 **Fichier :** `agents/prepare-pass2.md`
 
 Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 4 onglets MVP.
 Output interne : **Narrative Blueprint (NBP)**.
 
-### Pass 3 — DESIGN ORCHESTRATOR
+### Pass 3 : DESIGN ORCHESTRATOR
 **Fichier :** `agents/prepare-pass3.md`
 
 Generation HTML a partir du NBP. Mapping composants par role narratif, regles de composition, validation.

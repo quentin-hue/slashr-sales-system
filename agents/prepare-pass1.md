@@ -1,4 +1,4 @@
-# PASS 1 — DATA & STRATEGY ENGINE
+# PASS 1 : DATA & STRATEGY ENGINE
 
 > **Prerequis :** `agents/shared.md` lu, puis `agents/prepare.md` (router).
 
@@ -8,11 +8,11 @@ Collecter, structurer, analyser. Produire un document intermediaire factuellemen
 
 ---
 
-## Etape 1.1 — Collecte (10 modules)
+## Etape 1.1 : Collecte (10 modules)
 
 ### Modules toujours actifs
 
-#### Module 1 — Pipedrive
+#### Module 1 : Pipedrive
 
 Tous les appels decrits dans `shared.md` :
 - Deal (titre, stage, montant, custom fields dont r1_score et decideur_level)
@@ -22,14 +22,14 @@ Tous les appels decrits dans `shared.md` :
 - Activites (calls, meetings, taches)
 - **Emails** : threads inbox + sent filtres par deal_id → messages de chaque thread
 
-#### Module 2 — Drive
+#### Module 2 : Drive
 
 - Lister les fichiers du dossier R1 (via `dossier_r1_link`)
 - Exclure les outputs systeme (`DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`)
 - Telecharger et typer chaque fichier (transcript, notes_closer, document_prospect, document)
 - Concatener avec marqueurs `=== SOURCE: {nom} (type: {type}) ===`
 
-#### Module 3 — SEO
+#### Module 3 : SEO
 
 Pour chaque domaine detecte :
 
@@ -39,7 +39,7 @@ Pour chaque domaine detecte :
 | `ranked_keywords` (top 30) | Keywords, positions, volumes, type marque/generique | Ce sur quoi le prospect se positionne et ce qu'il rate |
 | `keywords_for_site` (top 20) | Keywords pertinents que le domaine pourrait cibler | Opportunites manquees |
 
-#### Module 4 — Benchmark
+#### Module 4 : Benchmark (concurrents semantiques)
 
 | Appel DataForSEO | Donnees | Pourquoi |
 |-------------------|---------|----------|
@@ -47,11 +47,150 @@ Pour chaque domaine detecte :
 | `domain_rank_overview` x top 3 concurrents | Trafic, keywords, ETV de chaque concurrent | Chiffrer le gap et le potentiel |
 | `domain_intersection` (prospect vs top concurrent) | Keywords communs + keywords exclusifs au concurrent | Ce que le prospect perd precisement |
 
+**Filtrage obligatoire des resultats `competitors_domain` :**
+L'endpoint remonte les domaines par intersection de keywords, ce qui favorise les gros sites generiques. Avant d'utiliser ces resultats, classifier chaque domaine :
+
+| Type | Definition | Exemples | Usage |
+|------|-----------|----------|-------|
+| **Concurrent business** | Meme secteur, meme offre, meme cible | tourniayre.com, maisondubiscuit.fr | Benchmark principal, gap analysis |
+| **Concurrent semantique** | Capte les memes keywords mais ne vend pas le meme produit | ouest-france.fr, carrefour.fr, amazon.fr | Contexte ("qui prend le trafic"), pas benchmark |
+| **Bruit** | Reseaux sociaux, annuaires, Wikipedia | facebook.com, pagesjaunes.fr, wikipedia.org | Ignorer |
+
+Si `competitors_domain` ne remonte **aucun concurrent business** (cas frequent pour les niches artisanales), declencher le **Module 4c** ci-dessous.
+
+#### Module 4c : Detection concurrents de niche (conditionnel)
+
+**Activer si :** le Module 4 ne remonte aucun concurrent business (= que du semantique et du bruit).
+
+**Objectif :** trouver les vrais concurrents en analysant les SERPs des keywords commerciaux du prospect, puis construire le Total Addressable Search Market (TASM).
+
+**Etape 1 :** Selectionner 5-8 keywords commerciaux cles
+- Prendre les top keywords hors-marque du prospect (issus du Module 3 `ranked_keywords`)
+- Completer avec 3-5 keywords sectoriels evidents (ex: "{produit} artisanal", "{produit} en ligne", "coffret {produit}")
+- Privilegier les keywords a intent commercial/transactionnel
+
+**Etape 2 :** Analyser les SERPs
+- Appeler `serp_organic_live_regular` sur chaque keyword (location: France, language: fr)
+- Pour chaque SERP, extraire les domaines en top 20
+- Compter les apparitions de chaque domaine sur l'ensemble des SERPs
+
+**Etape 3 :** Identifier les concurrents business
+- Un domaine qui apparait sur 2+ SERPs commerciaux et qui vend un produit comparable = concurrent business
+- Exclure les marketplaces (amazon, cdiscount), les retailers generiques (carrefour, leclerc), les annuaires, les medias
+- Garder les **sites de marque ou fabricant du meme secteur**
+- **Pas de limite** sur le nombre de concurrents identifies — lister tous ceux qui passent le filtre
+
+**Etape 4 :** Deep-dive sur les top 5 concurrents business (par nombre d'apparitions SERP)
+- `domain_rank_overview` sur chacun des 5 → trafic, keywords, ETV
+- `ranked_keywords` (top 50) sur chacun des 5 → univers keyword de chaque concurrent
+- `domain_intersection` (prospect vs top 1 concurrent business) → gap detaille
+
+**Etape 5 :** Construire le TASM (Total Addressable Search Market)
+
+Le TASM est l'union dedupliquee des keywords de tous les concurrents business + le prospect.
+
+1. Collecter les `ranked_keywords` du prospect (Module 3) + des top 5 concurrents (Etape 4)
+2. Dedupliquer par keyword exact
+3. Sommer les volumes de recherche uniques
+4. Segmenter par intent (commercial / info captable / info non-captable) via Module 4b
+
+```
+TASM (Total Addressable Search Market) :
+- Sources : {prospect} + {N} concurrents business (Module 4c)
+- Keywords uniques (brut avant filtrage) : {N_brut} (stocke dans evidence log uniquement)
+- Keywords retenus (filtre secteur) : {N_filtre} (methode: {ne retenir que les kw ou prospect OU concurrent business apparait en top 50})
+- Volume filtre : {X_filtre} recherches/mois
+  - Commercial : {Y} recherches/mois ({%})
+  - Informationnel captable : {Z} recherches/mois ({%})
+  - Non-captable : {W} recherches/mois (ecarte du total)
+- Marche captable : {Y+Z} recherches/mois
+- Part actuelle du prospect : {trafic hors-marque prospect} / {Y+Z} = {%}
+- Gap : {Y+Z - trafic hors-marque prospect} recherches/mois non captees
+```
+
+**Regle :** le TASM est la reference unique pour chiffrer le potentiel dans la proposition. Interdiction d'utiliser un seul keyword comme proxy du marche (ex: "40 000+ recherches/mois" base sur "biscuits" seul). Le chiffre affiche dans la proposition = le TASM captable, pas un keyword isole.
+
+**Regle TASM filtre obligatoire :** le TASM affiche dans le SDB DOIT etre filtre par pertinence sectorielle et segmente par intent. Le volume brut (avant filtrage) est stocke dans l'evidence log sous `tasm_raw_volume` avec la note "NON FILTRE, pour reference uniquement". Le SDB ne contient JAMAIS le volume brut non filtre. Si le filtrage automatique est impossible (pas assez de donnees), l'agent applique un filtre conservateur (ne retenir que les keywords ou le prospect OU un concurrent business apparait en top 50) et documente la methode dans l'evidence log.
+
+**Etape 6 :** Integrer dans le SDB
+
+**Output `COMPETITIVE_GAP` :**
+```
+CONCURRENTS BUSINESS (Module 4c — detection SERP) :
+- {domaine1} : {N} apparitions SERP, {trafic}, {keywords}, top 3 kw exclusifs
+- {domaine2} : ...
+- {domaine3} : ...
+(tous les concurrents business identifies, deep-dive sur top 5)
+Methode : analyse SERP sur {N} keywords commerciaux
+
+TASM : {X} recherches captables/mois (commercial + info captable)
+Part prospect : {%} | Gap : {Y} recherches/mois
+```
+
+**Regle :** si le Module 4c identifie des concurrents business, ceux-ci REMPLACENT les concurrents semantiques comme reference de benchmark dans le gap analysis et le bar chart. Les concurrents semantiques restent mentionnes en contexte ("qui capte le trafic aujourd'hui") mais ne servent pas de reference pour le gap chiffre.
+
+#### Budget checkpoint (obligatoire apres Module 4 + 4c)
+
+Apres l'execution des modules de benchmark (4 + 4c si active), l'agent evalue sa consommation DataForSEO :
+
+| Seuil | Appels consommes | Action |
+|-------|-----------------|--------|
+| **Normal** | < 15 appels | Continuer normalement (modules 4b, 5-10 si pertinents) |
+| **Attention** | 15-25 appels | Modules conditionnels (5-10) : activer uniquement ceux avec signal FORT (mention explicite dans le brief/transcript, pas juste une inference) |
+| **Critique** | > 25 appels | Modules conditionnels (5-10) : activer max 2, privilegier ceux qui alimentent le PRIMARY S7. Les autres → marquer dans le SDB : "Module {N} non active (budget API consomme, data insuffisante)" |
+
+Ce checkpoint est informatif, pas un hard stop. L'objectif est d'eviter les deals ou 40+ appels DataForSEO sont faits alors que 20 suffisaient.
+
+**Comptage typique Module 4c :** `serp_organic_live_regular` x5-8 + `domain_rank_overview` x5 + `ranked_keywords` x5 + `domain_intersection` x1 = 16-19 appels.
+
+#### Module 4b : Segmentation intent du marche
+
+**Toujours actif.** Apres le benchmark (Module 4 + 4c si active), l'agent segmente les keywords du marche par intention de recherche.
+
+**Etape 1 :** Constituer la liste des keywords du marche
+- **Si Module 4c active (TASM disponible)** : utiliser directement l'union dedupliquee des keywords du TASM. Le gros du travail est deja fait — il reste a segmenter par intent.
+- **Sinon** : Top 15-20 keywords hors-marque des concurrents (issus de `ranked_keywords` ou `domain_intersection`) + 10-15 keywords sectoriels identifies dans les clusters (`keyword_ideas`, `keyword_overview`)
+- Dedupliquer
+
+**Etape 2 :** Appeler `search_intent` sur cette liste (max 1000 keywords)
+
+**Etape 3 :** Classer chaque keyword dans 3 buckets
+
+| Bucket | Intent DataForSEO | Definition | Exemple (biscuiterie) |
+|--------|-------------------|------------|-----------------------|
+| **Commercial** | `transactional`, `commercial` | Le chercheur veut acheter ou comparer pour acheter | "coffret biscuit breton", "biscuit artisanal achat" |
+| **Informationnel captable** | `informational` + legitimite marque | Le chercheur ne veut pas acheter MAIS la marque a une legitimite pour capter ce trafic et le rediriger (recette du fabricant, guide de l'expert) | "recette palet breton", "galette bretonne" |
+| **Informationnel non-captable** | `informational` + pas de legitimite | Requete trop eloignee du business, pas monetisable | "histoire de la Bretagne", "culture normande" |
+
+**Criteres de legitimite pour le bucket "Informationnel captable" :**
+- Le prospect est fabricant/expert du produit recherche
+- Un CTA produit naturel existe (recette → "goutez l'original")
+- Un concurrent direct se positionne deja dessus (preuve de marche)
+- Le volume justifie l'investissement (> 500 recherches/mois)
+
+**Etape 4 :** Agreger par bucket
+
+```
+INTENT MARKET MAP:
+- Commercial : {N} keywords, {volume total}/mois
+  Top 5 : {kw1} ({vol}), {kw2} ({vol}), ...
+- Informationnel captable : {N} keywords, {volume total}/mois
+  Top 5 : {kw1} ({vol}), {kw2} ({vol}), ...
+  Strategie : {1 phrase — ex: "contenu recette → CTA produit → funnel acquisition"}
+- Informationnel non-captable : {N} keywords, {volume total}/mois (ecarte)
+- TOTAL marche captable : {commercial + info captable}/mois
+```
+
+**Cette segmentation alimente :**
+- Le score S1 (Intentions de recherche) — un prospect qui ne couvre ni le commercial ni l'informationnel captable a un score plus bas qu'un prospect qui couvre le commercial mais pas l'informationnel
+- La section "Territoires de contenu" dans l'onglet Strategie (Pass 2)
+- Le chiffrage du marche dans les titres et le benchmark (seul le "marche captable" est cite, jamais le brut non-captable)
+
 ---
 
 ### Modules conditionnels
 
-#### Module 5 — GEO / IA
+#### Module 5 : GEO / IA
 
 **Activer si :**
 - Brief/transcript/emails mentionne "IA", "ChatGPT", "Perplexity", "visibilite IA", "GEO", "AI Overview"
@@ -65,7 +204,7 @@ Pour chaque domaine detecte :
 
 Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Perplexity).
 
-#### Module 6 — SEA / Paid
+#### Module 6 : SEA / Paid
 
 **Activer si :**
 - Le prospect fait deja du paid (detectable dans ranked_keywords avec `item_types: ["paid"]`)
@@ -77,7 +216,7 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 | `ranked_keywords` avec `item_types: ["paid"]` | Keywords payes actifs du prospect | Ce qu'il achete deja |
 | `keyword_overview` sur 10-15 keywords strategiques | CPC, competition level, search volume | Valeur du paid vs organique |
 
-#### Module 7 — Social Search
+#### Module 7 : Social Search
 
 **Activer si :**
 - Perimetre Pipedrive inclut Social
@@ -90,7 +229,7 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 | `serp_youtube_video_info_live_advanced` si videos trouvees | Vues, engagement, date | Perf des contenus existants |
 | `kw_data_google_trends_explore` (type: youtube) | Tendance recherches YouTube | Potentiel video/social |
 
-#### Module 8 — Technique / UX
+#### Module 8 : Technique / UX
 
 **Activer si :**
 - Le prospect est en refonte de site
@@ -103,7 +242,7 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 | `on_page_instant_pages` sur 3-5 pages cles | Erreurs SEO on-page, balises, structure | Quick wins techniques |
 | `on_page_content_parsing` sur pages strategiques | Structure H1-H6, liens, contenu | Architecture de contenu |
 
-#### Module 9 — Tendances / Saisonnalite
+#### Module 9 : Tendances / Saisonnalite
 
 **Activer si :**
 - Secteur saisonnier (food, tourisme, retail, mode)
@@ -116,7 +255,7 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 | `kw_data_dfs_trends_explore` marque vs concurrents | Tendance de la marque | Hausse/baisse d'interet |
 | `historical_rank_overview` du prospect | Evolution trafic 12-24 mois | Monte, stagne ou descend |
 
-#### Module 10 — Contenu / Semantique
+#### Module 10 : Contenu / Semantique
 
 **Activer si :**
 - Diagnostic SEO revele un gap de contenu important (peu de keywords hors-marque)
@@ -133,7 +272,7 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 
 ---
 
-## Etape 1.2 — Structuration
+## Etape 1.2 : Structuration
 
 Organiser les donnees brutes en categories exploitables :
 
@@ -141,16 +280,79 @@ Organiser les donnees brutes en categories exploitables :
 |-----------|---------|
 | `PROSPECT_PROFILE` | Secteur, taille, maturite digitale, contexte business |
 | `PAIN_POINTS` | Douleurs identifiees, verbatims exacts, trigger ("pourquoi maintenant") |
-| `SEARCH_STATE` | Metriques actuelles : trafic, keywords, ETV, repartition marque/hors-marque |
-| `COMPETITIVE_GAP` | Concurrents nommes, metriques comparatives, keywords exclusifs, ratio de gap |
-| `OPPORTUNITIES` | Quick wins (pages en top 10-20, donnees structurees manquantes), territoires non couverts, clusters a creer |
+| `SEARCH_STATE` | Metriques actuelles : trafic organique estime (visites/mois), keywords, ETV (valeur EUR/mois), repartition marque/hors-marque. **IMPORTANT : ne pas confondre trafic (visites) et ETV (equivalent budget ads en EUR). Toujours etiqueter clairement : "trafic organique estime" (source: domain_rank_overview, champ etv = visites) vs "valeur trafic" (source: domain_rank_overview, champ estimated_paid_traffic_cost = EUR).** |
+| `COMPETITIVE_GAP` | **Concurrents business** (meme secteur, meme offre) en priorite, concurrents semantiques en contexte. Metriques comparatives, keywords exclusifs, ratio de gap. Si Module 4c active : preciser la source (SERP analysis) et la methode. |
+| `INTENT_MARKET_MAP` | Segmentation intent du marche : buckets Commercial / Info captable / Info non-captable, volumes par bucket, top keywords, strategie par bucket |
+| `OPPORTUNITIES` | Quick wins (pages en top 10-20, donnees structurees manquantes), territoires non couverts par bucket intent, clusters a creer |
 | `RISKS` | Red flags, contraintes (budget, timeline, decideur absent, multi-presta) |
 | `CONDITIONAL_DATA` | Resultats des modules 5-10 (si actives), organises par module |
 | `TONE_CONTEXT` | Ton des echanges email (formel/informel), reactivite, niveau technique du decideur |
 
 ---
 
-## Etape 1.3 — Analyse strategique
+
+---
+
+## Output Pass 1 (SDB thin + Evidence log) — regle de performance
+
+La Pass 1 produit un **SDB compact** (pas de dumps) :
+
+### SDB thin (obligatoire)
+- 8-12 bullets max (constats + opportunites + risques)
+- Tables compactes : top N (N=10 ou 20 max)
+- AUCUN body email complet sauf si absolument necessaire (sinon snippet)
+- AUCUN CSV long : uniquement agregats + top lignes
+
+### Evidence log (obligatoire)
+Pour chaque chiffre cle, conserver :
+- source (Pipedrive/Drive/DataForSEO)
+- endpoint (ex: ranked_keywords)
+- parametres (domain, date)
+- timestamp
+- fichier cache (.cache/...)
+
+Ce log sert au debug et a la rejouabilite.
+
+### Erreurs et fallbacks (obligatoire dans l'evidence log)
+
+Pour chaque erreur API rencontree pendant la collecte :
+- **Endpoint** : URL ou nom de l'endpoint
+- **Status** : code HTTP ou message d'erreur
+- **Impact** : quel bloc du SDB est affecte (ex: "COMPETITIVE_GAP incomplet")
+- **Fallback** : action prise (ex: "utilise domain_rank_overview seul", "module ignore")
+
+Format dans l'evidence log :
+```
+ERRORS & FALLBACKS:
+- dataforseo/ranked_keywords (timeout 20s) → impact: SEARCH_STATE partiel → fallback: domain_rank_overview seul
+- drive/files/abc123 (403 Forbidden) → impact: document_prospect manquant → fallback: collecte sans ce fichier
+```
+
+### Format de source dans le SDB (obligatoire)
+
+Chaque affirmation quantitative dans le SDB DOIT porter une etiquette source inline au format :
+
+`[src: {origine}, {endpoint_ou_fichier}]`
+
+Origines valides : `pipedrive`, `drive`, `dataforseo`, `calcul`, `benchmark`
+
+Exemples :
+- Trafic organique: 20,489 visites/mois `[src: dataforseo, domain_rank_overview]`
+- CA web 2025: 55,745 EUR `[src: drive, recap_ventes-web.xlsx]`
+- CVR implicite: 0.45% `[src: calcul, 1099 commandes / (20489 x 12)]`
+- Migration sans perte: 0% `[src: benchmark, cas client 4]`
+
+Les qualificatifs (ex: "maturite digitale faible") ne necessitent pas de source mais doivent pouvoir etre justifies par au moins un data point de l'evidence log.
+
+**Regle :** si un chiffre apparait dans le SDB sans etiquette `[src:]`, il est rejete a la relecture. L'agent corrige avant de passer a Pass 2.
+
+### Ecriture artefacts (obligatoire)
+Ecrire :
+- `.cache/deals/{deal_id}/artifacts/SDB.md`
+- `.cache/deals/{deal_id}/evidence/evidence_log.md`
+
+
+## Etape 1.3 : Analyse strategique
 
 L'agent repond a ces questions :
 
@@ -167,7 +369,7 @@ L'agent repond a ces questions :
 
 - **Quel est l'etat Search actuel ?** Forces (marque ? positions existantes ?) et faiblesses (gap hors-marque ? zero contenu ?)
 - **Quel est le gap concurrentiel ?** Qui capte le trafic, combien, sur quels termes
-- **Quel est le cout de l'inaction ?** Chiffre en visites, en euros, en mois de retard — **sans dramatiser, juste les donnees**
+- **Quel est le cout de l'inaction ?** Chiffre en visites, en euros, en mois de retard. **Sans dramatiser, juste les donnees**
 - **Y a-t-il des quick wins ?** Pages deja en top 10-20 a optimiser, donnees structurees manquantes, contenus faciles a creer
 
 ### Construire la strategie
@@ -183,14 +385,32 @@ L'agent repond a ces questions :
 ### Selectionner les cas clients
 
 - Consulter `context/case_studies.md`
-- Matcher 2-4 cas selon secteur, problematique, taille
-- Pour chaque cas retenu, noter l'angle de presentation le plus pertinent pour ce prospect
+- Matcher 2-4 cas selon secteur (priorite 1), problematique (priorite 2), taille (priorite 3)
+- Pour chaque cas retenu, structurer :
+  - `match_criteria` : ce qui rend ce cas similaire au prospect (sectoriel, problematique, taille, profil decideur)
+  - `key_metric` : le chiffre-resultat du cas le plus convaincant pour CE prospect
+  - `sdb_juxtaposition` : quel bloc du SDB mettre en regard (pour que Pass 2 construise le parallele)
+  - `angle` : l'angle de presentation adapte a CE prospect (1-2 phrases)
+
+### Pre-grouper les blocs SDB par argument narratif
+
+Avant de rediger le SDB, l'agent identifie 3-5 "arguments decideurs" : les constats que le prospect doit comprendre pour prendre sa decision. Chaque argument est alimente par 1+ blocs de donnees.
+
+L'agent produit les `NARRATIVE_HINTS` dans le SDB : une liste de 3-5 suggestions de regroupement. Ces hints sont des suggestions pour Pass 2, pas des contraintes.
+
+**Exemples de regroupements typiques :**
+- `SEARCH_STATE` + `COMPETITIVE_GAP` → "Le prospect est en retard mesurable"
+- `INTENT_MARKET_MAP` + `OPPORTUNITIES` → "Le potentiel existe et est captable"
+- S7 PRIMARY + `RISKS` → "Le verrou et ses consequences"
+- `ROI` + `STRATEGIE_RECOMMANDEE` → "Le plan et son rendement"
+
+L'agent identifie egalement 2 `TRANSITION_OPPORTUNITIES` : les data blocks apres lesquels un differenciateur SLASHR s'insere naturellement (ex: apres le benchmark concurrentiel → cartographie intent-based).
 
 ---
 
-## Etape 1.4 — S7 Strategy Engine (Internal Only)
+## Etape 1.4 : S7 Strategy Engine (Internal Only)
 
-Pipeline obligatoire. L'agent execute cette sequence **avant** de produire le SDB. Le S7 est un outil interne de priorisation strategique — jamais expose au prospect.
+Pipeline obligatoire. L'agent execute cette sequence **avant** de produire le SDB. Le S7 est un outil interne de priorisation strategique, jamais expose au prospect.
 
 Voir `context/s7_search_operating_model.md` pour le detail du modele S7.
 
@@ -223,59 +443,23 @@ Voir `context/s7_search_operating_model.md` pour le detail du modele S7.
 
 ### Les 7 forces S7
 
-Les 7 forces correspondent aux 7 piliers de la methode de travail SLASHR. Chaque force mesure la maturite du prospect sur ce pilier — pas la difficulte du marche, mais l'etat de CE prospect.
-
-| # | Force | Ce qu'elle mesure | Sources typiques |
-|---|-------|-------------------|------------------|
-| 1 | **Intentions de recherche** | Alignement entre ce que les cibles cherchent et ce que le prospect propose. Volume, tendance, couverture des requetes strategiques | `keyword_overview`, `keywords_for_site`, `search_intent`, `google_trends_explore`, modules 9-10 |
-| 2 | **Architecture & technique** | Sante technique du site, performance, structure de donnees, crawlabilite | `domain_rank_overview`, `on_page_lighthouse`, `on_page_instant_pages`, module 8 |
-| 3 | **Creation de contenu** | Ratio keywords couverts vs univers semantique, qualite et profondeur du contenu existant | `ranked_keywords`, `keywords_for_site`, `keyword_ideas`, module 10 |
-| 4 | **UX & Conversion** | Experience utilisateur, taux de conversion estime, parcours de monetisation du trafic | `on_page_lighthouse` (performance), transcript, brief, donnees prospect, benchmark secteur |
-| 5 | **Autorite, signaux de confiance** | DA, profil de backlinks, notoriete de marque, part marque vs hors-marque | `domain_rank_overview`, `ranked_keywords` (filtre marque), module 4 |
-| 6 | **Diffusion multicanale** | Presence sur les autres canaux Search (YouTube, IA/GEO, Social Search), coherence cross-canal | `serp_youtube_organic`, `serp_organic_live_advanced` (AI Overviews), modules 5-7 |
-| 7 | **Amplification** | Utilisation du paid pour securiser les temps forts, complementarite SEO/SEA, budget pub | `ranked_keywords` (paid), `keyword_overview` (CPC), module 6, transcript/brief |
+> Detail des 7 forces, echelle 0-5, classification : voir `context/s7_quick_reference.md`.
+> Modele complet (diagnostic vs activation, piliers, anti-patterns) : voir `context/s7_search_operating_model.md`.
 
 ### Regle : SO WHAT obligatoire
 
 Apres l'evaluation de **chaque** force S7, l'agent produit un "SO WHAT" de 1-2 phrases maximum, oriente business :
-- Pas de description — une **implication** pour le deal
-- Pas de jargon technique brut — traduit en impact concret
+- Pas de description, une **implication** pour le deal
+- Pas de jargon technique brut, traduit en impact concret
 - Relie a une decision (prioriser, differer, ignorer)
 
-### Regle anti-generique
-
-Les formulations suivantes sont **interdites** dans le diagnostic S7 :
-
-- "les concurrents avancent vite" → remplacer par le delta chiffre (ex: "+4200 visites/mois vs il y a 6 mois")
-- "il est urgent d'agir" → remplacer par la fenetre temporelle factuelle (ex: "pic saisonnier dans 14 semaines, delai de crawl moyen = 8 semaines")
-- "le marche est concurrentiel" → remplacer par les metriques (ex: "4 acteurs au-dessus de 15K visites/mois, KD moyen top 20 keywords = 47")
-- "fort potentiel de croissance" → remplacer par le chiffre cible source (ex: "gap de 8400 visites/mois vs leader, ETV = 12K EUR/an")
-- Toute phrase qui passerait le test de substitution (= fonctionne pour n'importe quel prospect) est rejetee
-
-### Regles de classification (obligatoires)
-
-| Classification | Combien | Definition | Obligation |
-|---------------|---------|------------|------------|
-| **PRIMARY** | Exactement 1 | La contrainte principale — celle qui bloque le plus de valeur. Tant qu'elle n'est pas traitee, les autres leviers ont un impact limite | Justification 2-3 phrases data-first |
-| **SECONDARY** | 1 a 2 | Leviers a fort potentiel, actionnables en parallele ou juste apres le PRIMARY | 1 phrase chacun : pourquoi ce levier amplifie |
-| **DEFERRED** | Le reste | Forces a surveiller, pas a travailler maintenant | 1 phrase obligatoire chacune : "pourquoi pas maintenant" |
-
-**Regle absolue :** maximum 3 leviers actifs (1 PRIMARY + 2 SECONDARY). Meme si le prospect demande les 7.
+> Rappel : 5 formulations interdites, regles de classification, test de substitution (cf. `context/s7_quick_reference.md`).
 
 ### Synthese obligatoire (post-grille)
 
-Apres le scoring des 7 forces, produire **systematiquement** ce bloc. C'est le pivot du diagnostic — il alimente directement le SDB et l'onglet Strategie.
+> Format de synthese : voir `context/s7_quick_reference.md` > "Synthese obligatoire".
 
-```
-CONTRAINTE PRINCIPALE : {force} (score {X}/5)
-→ {1 phrase : pourquoi c'est le verrou — data-first, chiffre}
-
-LEVIERS PRIORITAIRES : {force A} + {force B}
-→ {1 phrase : quel impact attendu si on les active — chiffre}
-
-INSIGHT CENTRAL : {1 phrase memorable, non substituable}
-→ Test : remplacer le nom du prospect → si ca marche encore, recrire
-```
+Produire systematiquement le bloc CONTRAINTE PRINCIPALE + LEVIERS PRIORITAIRES + INSIGHT CENTRAL. C'est le pivot du diagnostic, il alimente directement le SDB et l'onglet Strategie.
 
 ### Output interne : `strategy_plan_internal.md`
 
@@ -284,65 +468,90 @@ L'agent DOIT produire ce document interne (jamais expose au prospect) avant de r
 ```
 === STRATEGY PLAN INTERNAL (S7) ===
 
-S7 SCORES:
-| Force | Score | SO WHAT (business, non generique) |
-|-------|-------|-----------------------------------|
-| S1 — Intentions de recherche | {0-5} | {1-2 phrases specifiques a CE prospect} |
-| S2 — Architecture & technique | {0-5} | {1-2 phrases} |
-| S3 — Creation de contenu | {0-5} | {1-2 phrases} |
-| S4 — UX & Conversion | {0-5} | {1-2 phrases} |
-| S5 — Autorite, signaux de confiance | {0-5} | {1-2 phrases} |
-| S6 — Diffusion multicanale | {0-5} | {1-2 phrases} |
-| S7 — Amplification | {0-5} | {1-2 phrases} |
+S7 SCORES (avec evidence + confiance):
+| Force | Score | Evidence (1 data point minimum) | Confidence | SO WHAT (business) | Projection 6-12M | Interdependance |
+|-------|-------|----------------------------------|------------|---------------------|-------------------|-----------------|
+| S1 · Intentions | {0-5} | {ex: Intent map: 12 400 req/mois commercial, couverture 6%} | {High/Med/Low} | {1-2 phrases} | {voir regle ci-dessous} | {voir regle ci-dessous} |
+| S2 · Arch & tech | {0-5} | {ex: Lighthouse 38, 40% pages non indexees} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
+| S3 · Contenu | {0-5} | {ex: 23 pages indexees vs 850 req pertinentes} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
+| S4 · UX/CVR | {0-5} | {ex: parcours friction, conversion 100% app} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
+| S5 · Autorite | {0-5} | {ex: Domain Rank / part marque vs hors-marque} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
+| S6 · Diffusion | {0-5} | {ex: absence YouTube/IA/social sur intents cles} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
+| S7 · Amplification | {0-5} | {ex: CPC eleve + dependance paid + saisonnalite} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
 
-SYNTHESE:
-CONTRAINTE PRINCIPALE : S{X} — {nom} (score {X}/5)
-→ {pourquoi c'est le verrou — 2-3 phrases data-first}
+INTERDEPENDANCE / SYSTEMIC LIMITATION :
+→ PRIMARY (obligatoire) : 1 phrase qui explique pourquoi cette force limite l'ensemble du systeme. Doit faire reference a au moins une autre force.
+  Ex: "S3 (Contenu) limite le systeme : sans pages cibles, S1 (Intentions) reste non captee et S5 (Autorite) ne peut pas se construire."
+→ SECONDARY (recommande si pertinent) : 1 phrase d'interdependance, comment cette force conditionne ou est conditionnee par d'autres.
+  Ex: "Si S2 echoue (migration mal geree) → S3 (contenu) et S1 (intentions) perdent leur base"
+→ DEFERRED : optionnel, uniquement si la dependance explique le report ("S6 non priorise car S3 n'a pas encore de contenu a diffuser")
+→ Le tiret (—) reste acceptable pour les forces sans interdependance notable.
 
-LEVIERS PRIORITAIRES : S{Y} — {nom} + S{Z} — {nom}
-→ {impact attendu si actives — chiffre}
+PROJECTION 6-12 MOIS (obligatoire pour PRIMARY et SECONDARY) :
+→ Source : keyword_dynamics (solde new vs lost), historical_rank_overview (si Module 9 actif), tendances concurrents (Module 4c dynamics)
+→ Format : "{direction} {delta chiffre} en {horizon}"
+  Ex PRIMARY : "Erosion: -31 kw nets/mois pour LMP, +709 nets pour le leader. A ce rythme, gap x2 en 12 mois."
+  Ex SECONDARY : "Stagnation: trafic stable +/-5% sur 6 mois mais concurrents en progression de +15%"
+→ Si aucune donnee de tendance disponible : "Projection non disponible (pas de donnees historiques)" + ajouter dans MANQUANTS
+→ Pour les forces DEFERRED : optionnel mais recommande si la donnee existe
+→ Anti-dramatisation : la projection est factuelle. Pas de "catastrophe en vue".
+
+CLASSIFICATION (max 3 leviers actifs) :
+- PRIMARY : S{X} (score {X}/5) → {justif 2-3 phrases data-first}
+- SECONDARY : S{Y} + S{Z} → {1 phrase chacun : pourquoi amplifie}
+- DEFERRED : {reste} → {1 phrase chacun : pourquoi pas maintenant}
+
+ROI DRIVERS (pont vers l'onglet ROI) :
+- Driver 1 (Traffic) : {source} → {variable ROI impactée : visites cibles M12}
+- Driver 2 (Conversion) : {source} → {variable ROI impactée : CVR / panier}
+- Driver 3 (Mix marque/hors-marque) : {source} → {variable ROI impactée : part scalable}
+
+PLAN 90 JOURS (aligné PRIMARY uniquement, 3 étapes max) :
+1) {objectif} → {livrable} → {signal attendu}
+2) {objectif} → {livrable} → {signal attendu}
+3) {objectif} → {livrable} → {signal attendu}
 
 INSIGHT CENTRAL : {1 phrase non substituable}
 
-CLASSIFICATION:
-- PRIMARY: S{X} — {nom}
-  Justification: {2-3 phrases avec data points}
-- SECONDARY: S{Y} — {nom}
-  Pourquoi: {1 phrase — impact attendu}
-- SECONDARY: S{Z} — {nom}
-  Pourquoi: {1 phrase — impact attendu}
-- DEFERRED: S{A} — {nom}
-  Pourquoi pas maintenant: {1 phrase}
-- DEFERRED: S{B} — {nom}
-  Pourquoi pas maintenant: {1 phrase}
-- DEFERRED: S{C} — {nom}
-  Pourquoi pas maintenant: {1 phrase}
-- DEFERRED: S{D} — {nom}
-  Pourquoi pas maintenant: {1 phrase}
+SYNTHESE:
+CONTRAINTE PRINCIPALE : S{X} · {nom} (score {X}/5)
+→ {pourquoi c'est le verrou, 2-3 phrases data-first}
 
-TRAJECTOIRE 90 JOURS — Phase 1 "Diagnostic & activation prioritaire":
-- M1 — Cadrage & audit: {actions concretes}
-- M2 — Quick wins & fondations: {actions concretes}
-- M3 — Activation & premiers resultats: {actions + KPIs intermediaires}
+LEVIERS PRIORITAIRES : S{Y} · {nom} + S{Z} · {nom}
+→ {impact attendu si actives, chiffre}
 
-TRAJECTOIRE 6 MOIS — Phase 2 "Run":
+TRAJECTOIRE 90 JOURS · Phase 1 "Diagnostic & activation prioritaire":
+- M1 · Cadrage & audit: {actions concretes}
+- M2 · Quick wins & fondations: {actions concretes}
+- M3 · Activation & premiers resultats: {actions + KPIs intermediaires}
+
+TRAJECTOIRE 6 MOIS · Phase 2 "Run":
 - M4-M6: {piliers actives, montee en puissance, intensite}
 - Objectifs M6: {KPIs cibles sources}
 
 ROI CONSERVATEUR:
-- Hypothese 1: {description} = {valeur} (source: {DataForSEO/GSC/transcript/benchmark})
-- Hypothese 2: {description} = {valeur} (source: {source})
+- Hypothese 1: {description} = {valeur} | Confidence: {High/Med/Low} | Validation: {comment valider} (source: {DataForSEO/GSC/transcript/benchmark})
+- Hypothese 2: {description} = {valeur} | Confidence: {High/Med/Low} | Validation: {comment valider} (source: {source})
 - Hypothese N: ...
 - Calcul: {formule detaillee}
 - ROI estime: x{N} sur {periode}
+- Confidence globale ROI: {High/Medium/Low} (= min des confidences individuelles)
+- Si Confidence globale = Low → ajouter dans le SDB: "Recommandation conditionnelle, validation en Phase 1"
+
+Definitions de confiance ROI :
+| Niveau | Critere | Exemple |
+|--------|---------|---------|
+| **High** | Donnee mesuree directement (prospect OU benchmark concret) | CA WooCommerce, panier moyen reel, positions DataForSEO |
+| **Medium** | Donnee estimee via proxy fiable (DataForSEO ETV, benchmark secteur) | Trafic estime via ETV, CVR moyen secteur |
+| **Low** | Hypothese sans mesure directe ni proxy fort | CVR post-refonte, impact contenu a 12 mois |
 
 RESUME DECISIONNEL (6 bullets max):
-1. {Douleur business chiffree — le probleme}
-2. {Cout de l'inaction — ce que ca coute de ne rien faire}
-3. {Levier principal — ce qu'on recommande}
-4. {Quick wins 90 jours — resultats rapides attendus}
-5. {ROI attendu — retour sur investissement}
-6. {Investissement — fourchette prix}
+1. {Douleur business chiffree : le probleme}
+2. {Cout de l'inaction : ce que ca coute de ne rien faire}
+3. {Levier principal : ce qu'on recommande}
+4. {Quick wins 90 jours : resultats rapides attendus}
+5. {ROI attendu : retour sur investissement}
+6. {Investissement : fourchette prix}
 
 EVIDENCE LOG:
 - {affirmation 1} → source: {DataForSEO endpoint / GSC / transcript p.X / benchmark secteur}
@@ -363,9 +572,13 @@ L'agent DOIT ecrire explicitement ce document interne avant de passer a la Pass 
 
 PROSPECT: {nom} | {secteur} | {taille} | {maturite digitale}
 DECIDEUR: {prenom} {nom} | {role} | {preoccupation principale}
+DECIDEUR_LEVEL: {DECIDEUR | INFLUENCEUR | OPERATIONNEL} [src: pipedrive, decideur_level]
 DOULEUR: {1 phrase} | Verbatim: "{citation exacte}"
 TRIGGER: {pourquoi maintenant}
 TON: {formel/informel} | {reactif/lent} | {technique/business}
+PERIMETRE_SLASHR: {SEO seul / SEO + GEO / Search global / etc.} [src: pipedrive, notes R1]
+REFONTE: {OUI | NON} | {si OUI: timeline, ex: "go mars, MEL juin 2026"} | {CMS prevu si connu}
+MODULES_ACTIFS: [{liste des modules 1-10 actives, ex: 1-Pipedrive, 2-Drive, 3-SEO, 4-Benchmark, 4b-Intent, 4c-Niche, 5-GEO, 8-Technique, 9-Saisonnalite}]
 
 SEARCH STATE:
 - Trafic organique: {X} visites/mois (source: DataForSEO)
@@ -381,9 +594,19 @@ COMPETITIVE GAP:
 - Keywords exclusifs concurrent #1: {top 5 avec volumes}
 - Cout inaction: {visites perdues}/mois = {ETV} EUR/an
 
+INTENT MARKET MAP:
+- Commercial: {N} kw, {volume}/mois — Top: {kw1}, {kw2}, {kw3} [src: dataforseo, search_intent]
+- Info captable: {N} kw, {volume}/mois — Top: {kw1}, {kw2}, {kw3} [src: dataforseo, search_intent]
+  Strategie: {1 phrase — ex: contenu recette → CTA produit}
+- Info non-captable: {volume}/mois (ecarte)
+- TASM captable: {commercial + info captable}/mois [src: dataforseo, TASM Module 4c filtre par Module 4b]
+- Part prospect actuelle: {trafic hors-marque} / {TASM captable} = {%} [src: calcul]
+- Gap: {TASM captable - trafic hors-marque} recherches/mois non captees
+
 OPPORTUNITIES:
 - Quick wins: {liste avec impact estime}
-- Territoires: {clusters keywords non couverts}
+- Territoires commerciaux: {clusters intent commercial non couverts}
+- Territoires informationnels: {clusters info captable non couverts, avec strategie de monetisation}
 - {GEO/IA si module 5 active}: {resultats}
 - {SEA si module 6 active}: {resultats}
 - {Social si module 7 active}: {resultats}
@@ -392,17 +615,26 @@ OPPORTUNITIES:
 - {Contenu si module 10 active}: {resultats}
 
 S7 SYNTHESIS (from strategy_plan_internal.md):
-- Primary constraint: {force limitante}
-- Insight central: {1 phrase}
-- Levers: {forces priorisees}
+- Primary constraint: {force} ({score}/5) : {1 phrase data-first sur le verrou}
+- Systemic limitation: {1 phrase : pourquoi cette force bloque les autres, reference inter-forces}
+- Levers:
+  - {SECONDARY force A} ({score}/5) : {impact chiffre attendu si active}
+  - {SECONDARY force B} ({score}/5) : {impact chiffre attendu si active}
+- Deferred (avec justification) :
+  - {force} : {pourquoi pas maintenant, 1 phrase}
+  - {force} : {idem}
+  - ...
+- Projection PRIMARY: {direction + delta chiffre + horizon, ex: "Erosion: -31 kw nets/mois, ecart double en 12 mois vs leader"}
+- Insight central: {1 phrase non substituable}
+- Confidence globale S7: {High/Medium/Low}
 
 STRATEGIE RECOMMANDEE:
 - Perimetre: {SEO seul / Search global / ...}
 - Scenario recommande: {Essentiel / Performance / Croissance}
 - Phase 1 "Diagnostic & activation prioritaire" (90 jours):
-  - M1 — Cadrage & audit: {livrables}
-  - M2 — Quick wins & fondations: {actions}
-  - M3 — Activation & premiers resultats: {KPIs}
+  - M1 · Cadrage & audit: {livrables}
+  - M2 · Quick wins & fondations: {actions}
+  - M3 · Activation & premiers resultats: {KPIs}
 - Phase 2 "Run" ({scenario}):
   - Intensite: {Essentiel = 1 priorite/mois | Performance = 2 priorites/mois | Croissance = 3+ priorites/mois}
   - Piliers actives: {lesquels, en lien avec S7 SECONDARY}
@@ -410,16 +642,39 @@ STRATEGIE RECOMMANDEE:
 
 ROI:
 - Methode utilisee: {chaine de trafic / ETV proxy}
-- Calcul: {detail — issu du strategy_plan_internal.md}
+- Calcul: {detail, issu du strategy_plan_internal.md}
 - ROI conservateur: {x}
-- Hypotheses: {liste sourcee avec evidence log}
+- Confidence globale: {High/Medium/Low}
+- Hypotheses:
+  - H1: {description} = {valeur} | {High/Med/Low} [src: {source}]
+  - H2: {description} = {valeur} | {High/Med/Low} [src: {source}]
+  - ...
+- Si Low sur 2+ hypotheses: "Recommandation conditionnelle, validation en Phase 1"
 
 CAS CLIENTS RETENUS:
-- Cas {N}: {nom} — angle: {ce qui resonne avec le prospect}
-- Cas {N}: {nom} — angle: {ce qui resonne}
+- Cas {N}: {nom}
+  match_criteria: {ce qui rend ce cas similaire: secteur, problematique, taille, profil decideur}
+  key_metric: {le chiffre-cle qui convaincra, ex: "x3.8 trafic hors-marque en 12 mois"}
+  sdb_juxtaposition: {quel bloc SDB mettre en regard, ex: "SEARCH_STATE 80% marque → cas 92% marque"}
+  angle: {angle de presentation pour CE prospect, 1-2 phrases}
+- Cas {N}: {nom}
+  match_criteria: {idem}
+  key_metric: {idem}
+  sdb_juxtaposition: {idem}
+  angle: {idem}
 
 RED FLAGS: {liste}
 GREEN FLAGS: {liste}
+
+NARRATIVE_HINTS (suggestions pour Pass 2, non-contraignant):
+- Hint 1: {bloc SDB A} + {bloc SDB B} → argument "{nom de l'argument}"
+- Hint 2: {bloc SDB C} + {bloc SDB D} → argument "{nom}"
+- Hint 3: {bloc SDB E} → argument "{nom}" (standalone)
+- ... (3-5 hints max)
+
+TRANSITION_OPPORTUNITIES (2 suggestions pour Pass 2, non-contraignant):
+- After {data block}: "{quel differenciateur SLASHR s'insere naturellement}"
+- After {data block}: "{quel differenciateur}"
 
 === FIN SDB ===
 ```

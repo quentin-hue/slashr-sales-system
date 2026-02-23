@@ -1,12 +1,41 @@
-# PASS 2 — NARRATIVE ARCHITECT
+# PASS 2 : NARRATIVE ARCHITECT
 
 ## Role
 
-Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **4 onglets MVP**. Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels — c'est le role de la Pass 3.**
+---
+
+## Cadre qualite Pass 2 (narration decision-ready)
+
+### Regle : Pass 2 consomme le SDB thin (pas de data brute)
+- Ne jamais coller de dumps (emails entiers, CSV longs, exports bruts).
+- Utiliser les syntheses + references vers evidence.
+
+### Faits / Hypotheses / Manquants (obligatoire)
+Dans la recommendation (NBP), garder 3 sections courtes :
+- **FAITS** : 6 bullets max, sourcés
+- **HYPOTHESES** : 4 bullets max, confiance + validation
+- **MANQUANTS** : 6 bullets max, impact + plan B + acces minimal
+
+### Evidence Gate (leger)
+- Chaque axe de reco doit etre relie a 1 fait OU explicite comme hypothese.
+
+
+Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **4 onglets MVP**. Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
+
+### Champs SDB enrichis (consommes par Pass 2)
+
+- `DECIDEUR_LEVEL` : adapter le ton (DECIDEUR → decision directe, INFLUENCEUR → board-ready A4 crucial, OPERATIONNEL → passage par le N+1)
+- `PERIMETRE_SLASHR` : cadrer la recommandation (ne pas recommander hors perimetre)
+- `REFONTE` : choisir entre structure standard et 3-actes (onglet 4)
+- `MODULES_ACTIFS` : savoir quels blocs de donnees sont disponibles dans le SDB
+- `NARRATIVE_HINTS` : point de depart pour l'etape de deduplication (non-contraignant)
+- `TRANSITION_OPPORTUNITIES` : point de depart pour placer les 2 transitions SLASHR (non-contraignant)
+- `ROI Confidence globale` : determine si le label "Recommandation conditionnelle" est necessaire
+- `CAS CLIENTS RETENUS` enrichis : `match_criteria`, `key_metric`, `sdb_juxtaposition`, `angle` par cas
 
 ---
 
-## Etape 2.1 — Choisir le hook
+## Etape 2.1 : Choisir le hook
 
 Quelle est l'information la plus frappante pour ce prospect ? C'est ca qui ouvre apres le hero dans l'onglet Strategie.
 
@@ -16,11 +45,28 @@ Quelle est l'information la plus frappante pour ce prospect ? C'est ca qui ouvre
 - Paradoxe (forte notoriete, faible visibilite) → ouvrir par le constat
 - Opportunite claire et chiffree → ouvrir par le potentiel
 
+### Cascade narrative ouverture (OBLIGATOIRE)
+
+L'ouverture de la proposition suit une cascade en 3 couches. Chaque couche avance le recit — aucune ne repete la precedente.
+
+| Couche | Role | Contenu | Contrainte |
+|--------|------|---------|------------|
+| Hero subtitle | **QUOI** — la tension | Paradoxe ou contraste, sans data | Max 80 chars, teaser pur |
+| H2 section 1 | **POURQUOI** — le mecanisme | Le fait qui explique la tension | Max 12 mots, 1 fait cle |
+| KPIs section 1 | **PREUVE** — les donnees | Chiffres sources qui prouvent le mecanisme | 3-4 data points, tous sources |
+
+**Test de non-repetition** : lire les 3 couches a la suite. Si deux couches disent la meme chose avec des mots differents, l'une est redondante — la reecrire pour qu'elle apporte un nouvel element.
+
+**Exemple :**
+- Subtitle : "Tout le monde vous cherche. Presque personne n'achete." (tension)
+- H2 : "80% de votre trafic cherche votre nom. Pas vos produits." (mecanisme : dependance brandee)
+- KPIs : 14 800 recherches brandees · 319 kw indexes · 55 745 EUR CA web (preuves)
+
 ---
 
-## Etape 2.2 — Definir l'arc narratif de l'onglet Strategie
+## Etape 2.2 : Definir l'arc narratif de l'onglet Strategie
 
-L'onglet Strategie est une **sequence de sections libres**. L'agent cree les sections qu'il veut, dans l'ordre qu'il veut. Il n'y a pas de liste fixe — il y a un objectif : **emmener ce decideur du constat a la conviction, avec ces donnees, dans ce contexte.**
+L'onglet Strategie est une **sequence de sections libres**. L'agent cree les sections qu'il veut, dans l'ordre qu'il veut. Il n'y a pas de liste fixe, il y a un objectif : **emmener ce decideur du constat a la conviction, avec ces donnees, dans ce contexte.**
 
 ### Arcs types (non limitatifs)
 
@@ -32,16 +78,82 @@ L'onglet Strategie est une **sequence de sections libres**. L'agent cree les sec
 | Technique | Etat actuel → Ce qui marche → Ce qui manque → Architecture cible → Plan → Investissement | Decideur technique, refonte |
 | Custom | Tout autre enchainement justifie par le contexte | Quand aucun arc type ne colle |
 
+### Etape de deduplication (OBLIGATOIRE avant de creer les sections)
+
+Avant de creer les sections, regrouper les blocs du SDB qui alimentent le **meme argument**. Un argument = une section. Plusieurs blocs de data qui disent la meme chose (ex: "le prospect est invisible hors-marque") = 1 section avec plusieurs composants visuels, pas plusieurs sections.
+
+**Processus :**
+1. Lire les `NARRATIVE_HINTS` du SDB (si presents). Ils suggerent des regroupements de blocs par argument decideur.
+2. Partir des hints comme point de depart, puis lister les blocs du SDB qui seront utilises dans l'onglet Strategie.
+3. Pour chaque paire de blocs non encore groupee, se demander : "est-ce que ces deux blocs racontent le meme argument au decideur ?" Si oui, les fusionner dans une seule section.
+4. Le resultat est une liste d'**arguments distincts**, chacun alimente par 1+ blocs de data.
+5. Chaque argument devient 1 section. Pas plus.
+
+Note : les NARRATIVE_HINTS sont des suggestions, pas des contraintes. Pass 2 peut les ignorer ou les recomposer si l'arc narratif le justifie.
+
+**Exemple :** Si le SDB contient SEARCH STATE (200 kw, 75% marque), COMPETITIVE GAP (ratio 1:44, positions Alma vs Oney) et INTENT MARKET MAP (5 500 recherches commerciales non captees), ces 3 blocs racontent le meme argument ("Oney est invisible sur les requetes que les marchands tapent"). Ils deviennent 1 section avec un bar chart + table + KPI cards, pas 3 sections separees.
+
 ### Nombre de sections
 
 Autant que necessaire, pas plus.
-- Un deal simple : 5-6 sections
-- Un deal complexe : 8-10 sections
-- Chaque section doit justifier son existence — si elle n'apporte rien de nouveau, elle n'existe pas
+- Cible : **5-6 sections** (y compris S7, implications, reco, 90 jours, CTA)
+- Maximum absolu : 7 sections. Au-dela, c'est que l'etape de deduplication n'a pas ete faite.
+- Chaque section doit apporter un **nouvel argument**. Si elle reformule un argument deja presente, elle n'existe pas — les donnees sont integrees dans la section existante.
 
 ---
 
-## Etape 2.3 — Planifier les 4 onglets MVP
+## Etape 2.2b : Regles de titrage
+
+Les titres de section sont la colonne vertebrale narrative. Le prospect scrolle et lit les titres avant de lire le contenu. Si les titres ne racontent pas l'histoire, la proposition echoue.
+
+### Integration du contexte deal
+
+Si le deal a un contexte specifique (AO, co-traitance, canal partenaire), l'arc narratif doit le refleter :
+- **AO / co-traitance** : la proposition se positionne comme un perimetre precis dans une reponse globale. Pas un consultant isole. Mentionner la coordination dans la reco ou les 90 jours.
+- **Canal partenaire** : adapter le ton au fait que le prospect arrive via un intermediaire (pas de cold pitch).
+- **Grand groupe** : privilegier la rigueur methodologique, les hypotheses sourcees, le processus structure. Eviter l'emotionnel.
+
+### Le hero porte l'arc narratif
+
+Le `hero-subtitle` est la premiere phrase que le prospect lit apres le nom de son entreprise. Il DOIT poser l'arc narratif choisi a l'Etape 2.2, pas le resumer en jargon marketing.
+
+**Regle du subtitle : teaser, pas data.**
+- Le subtitle cree une **tension** (paradoxe, contraste, question implicite). Il ne la resout pas.
+- **Pas de chiffres dans le subtitle.** Les donnees arrivent dans la premiere section du body ou elles sont contextualisees et sourcees.
+- **Max 80 caracteres** (1 phrase courte ou 2 tres courtes). Au-dela, c'est un paragraphe, pas un teaser.
+- Le subtitle doit etre **factuellement defendable** par l'evidence log — pas de superlatifs inverifiables ("le plus X de France" sans preuve comparative).
+
+| A eviter | Pourquoi | A faire |
+|----------|----------|---------|
+| "Transformer votre visibilite Search" | Jargon generique | "Tout le monde vous cherche. Presque personne n'achete." |
+| "14 800 recherches/mois, position 3 sur 40 500 requetes..." | Trop long, data dans le hero | "La demande existe. Le site ne la capte pas." |
+| "La marque la plus recherchee du biscuit francais" | Superlatif inverifiable | "Vos concurrents captent le trafic que votre site ne voit pas." |
+| "Strategie d'acquisition organique sur-mesure" | Pourrait etre n'importe qui | "4 200 recherches/jour sur votre metier. 0 mene a votre site." |
+
+Le hero-subtitle echoue si :
+- Il pourrait s'appliquer a n'importe quel prospect (test de substitution)
+- Il contient des chiffres detailles (qui appartiennent au body)
+- Il depasse 80 caracteres
+- Il contient un superlatif non sourcable
+
+### Chaque titre de section passe le test "1 lecture"
+
+Un titre doit etre compris en 1 lecture. Regles :
+
+1. **Fait, pas jugement** — le titre est une donnee ou un fait, jamais une interpretation. "14 800 recherches/mois sur votre marque. 0 client acquis via le Search generique." (fait) vs "Votre marque est connue. Mais votre site est invisible." (jugement). Le fait est incontestable, le jugement est discutable.
+2. **Pas de double negation** — "qui capte le trafic que vous ne captez pas" → "La Trinitaine capte 75 000 recherches/mois. Pas vous."
+3. **Pas de structure passive** — "Les territoires que la refonte peut ouvrir" → "4 territoires a capter des la refonte"
+4. **Privilegier le chiffre ou le nom propre** — un titre avec "75 000" ou "La Trinitaine" est plus concret qu'un titre generique
+5. **Privilegier la consequence** — "Sans action, la refonte ne changera rien" plutot que "Ce que cela implique"
+6. **Maximum 12 mots** — au-dela, c'est une phrase, pas un titre
+
+### En scrollant les titres seuls, l'arc narratif est lisible
+
+Test : extraire uniquement les h2 de l'onglet Strategie et les lire dans l'ordre. Ils doivent raconter une histoire coherente, meme sans le contenu des sections.
+
+---
+
+## Etape 2.3 : Planifier les 4 onglets MVP
 
 La proposition HTML a toujours **4 onglets**. Aucun n'est optionnel.
 
@@ -50,28 +162,49 @@ La proposition HTML a toujours **4 onglets**. Aucun n'est optionnel.
 C'est l'onglet principal. Il contient :
 - Le **hero** (nom prospect, accroche, sous-titre)
 - Les **sections libres** suivant l'arc narratif
-- La **section S7 "Lecture strategique"** (obligatoire — voir ci-dessous)
+- La **section S7 "Lecture strategique"** (obligatoire, voir ci-dessous)
 - Le **CTA** en fin d'onglet
 
-**Les anciens onglets conditionnels (SEO, GEO/IA, SEA, Social, Tech/UX) deviennent des SECTIONS dans l'onglet Strategie** quand les donnees le justifient. Un deal avec des donnees GEO aura une section "Visibilite IA" dans l'onglet Strategie — pas un onglet separe.
+**Les anciens onglets conditionnels (SEO, GEO/IA, SEA, Social, Tech/UX) deviennent des SECTIONS dans l'onglet Strategie** quand les donnees le justifient. Un deal avec des donnees GEO aura une section "Visibilite IA" dans l'onglet Strategie, pas un onglet separe.
 
 **Pas de section "Pourquoi SLASHR" standalone.** Les differenciateurs sont tisses apres chaque bloc de donnees, en enchainage naturel (cf. Etape 2.4).
+
+**Regle de placement des metriques Search :**
+- **Onglet Strategie (benchmark)** : utiliser le trafic organique (visites/mois) + split marque/hors-marque. C'est le diagnostic. Le decideur comprend un gap en volume.
+- **Onglet ROI** : utiliser l'ETV (Estimated Traffic Value) comme "equivalent budget Google Ads". Ca valorise le SEO vs le paid et pose l'argument SEA. Formuler : "La Trinitaine genere l'equivalent de X EUR/mois en achat publicitaire grace a son SEO."
+- **Ne jamais afficher l'ETV dans le benchmark** — c'est une metrique d'analyste, pas de decideur. Le prospect comprend "8 000 visites/mois", pas "27 658 EUR d'ETV".
 
 #### Section S7 "Lecture strategique" (obligatoire dans l'onglet Strategie)
 
 Bloc compact qui traduit le diagnostic S7 interne en lecture C-level. Place apres le diagnostic et avant la recommandation dans l'arc narratif.
 
 **Contenu :**
-1. **Radar 7 forces** — visualisation SVG/canvas des 7 scores (0-5). Pas de legende longue : le nom de chaque force + son score suffit.
-2. **Contrainte principale** — 1 highlight box qui nomme la force limitante et son implication business en 1-2 phrases.
-3. **Leviers prioritaires** — 1-2 forces secondaires activees, avec l'impact attendu chiffre.
-4. **Insight central** — 1 phrase de synthese strategique, non generique (doit echouer au test de substitution).
+1. **Radar 7 forces** : visualisation SVG/canvas des 7 scores (0-5). Pas de legende longue : le nom de chaque force + son score suffit.
+2. **Contrainte principale** : 1 highlight box qui nomme la force limitante et son implication business en 1-2 phrases.
+3. **Leviers prioritaires** : 1-2 forces secondaires activees, avec l'impact attendu chiffre.
+4. **Insight central** : 1 phrase de synthese strategique, non generique (doit echouer au test de substitution).
 
 **Regles :**
 - **Ne jamais recommander de travailler les 7 forces.** Le S7 sert a prioriser, pas a tout faire. Si les 7 forces sont affichees dans le radar, seules 2-3 sont mises en avant comme leviers d'action.
-- Les forces non priorisees ne sont pas cachees — elles sont visibles dans le radar mais **pas commentees** (le prospect voit le score, pas une recommandation dessus).
+- Les forces non priorisees ne sont pas cachees, elles sont visibles dans le radar mais **pas commentees** (le prospect voit le score, pas une recommandation dessus).
 - Le texte est C-level : phrases courtes, chiffres, zero jargon SEO non traduit.
-- Le bloc reste **compact** — pas plus de 1 radar + 1 highlight box + 2-3 lignes de leviers + 1 phrase d'insight.
+- Le bloc reste **compact** : pas plus de 1 radar + 1 highlight box + 2-3 lignes de leviers + 1 phrase d'insight.
+
+#### Composant "Territoires de contenu" (donnees Intent Market Map)
+
+Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'est pas une section autonome — c'est un **composant visuel** que l'etape de deduplication peut integrer dans n'importe quelle section de l'onglet Strategie (constat, benchmark, recommandation).
+
+**Contenu du composant :**
+1. **Segmentation du marche** : 1 visualisation (donut chart ou KPI cards) montrant la repartition Commercial / Informationnel captable / (Informationnel non-captable omis). Montrer les volumes.
+2. **Territoire commercial** : les requetes d'achat que le prospect ne capte pas (pages categorie, produit). Composant : cards ou table avec keywords + volumes.
+3. **Territoire informationnel** : pourquoi ces requetes comptent, meme si l'intent n'est pas d'achat. 1 highlight box qui explique le pont specifique a ce prospect. Composant : cards avec le mecanisme (contenu → CTA → conversion).
+4. **SO WHAT** : highlight box qui lie les territoires a la recommandation.
+
+**Regles :**
+- Ne pas presenter le volume brut total sans segmentation. Dire "75 000 recherches/mois" sans preciser que 63 000 sont des recettes est trompeur.
+- Toujours expliquer POURQUOI le territoire informationnel est captable pour CE prospect (legitimite de marque, fabricant, expert).
+- **Ne PAS utiliser ce composant** si la marque n'a pas de legitimite sur le contenu informationnel (ex: revendeur generique, marketplace).
+- Ce composant est **soumis a la deduplication** (Etape 2.3) : s'il repete un argument deja couvert par une autre section, il est fusionne dans cette section, pas affiche en doublon.
 
 ### Onglet 2 : Cas Clients (social proof)
 
@@ -83,6 +216,8 @@ Bloc compact qui traduit le diagnostic S7 interne en lecture C-level. Place apre
 
 L'agent adapte l'angle de presentation de chaque cas pour faire resonner avec la situation du prospect. Un cas identique peut etre presente differemment selon le prospect.
 
+**Point de depart :** le SDB fournit pour chaque cas retenu : `match_criteria`, `key_metric`, `sdb_juxtaposition`, et `angle`. Utiliser `sdb_juxtaposition` pour construire le parallele entre le cas et le prospect (ex: "cas client: 92% marque → x3.8 hors-marque. LMP: 80% marque → potentiel comparable").
+
 ### Onglet 3 : ROI Interactif (engagement)
 
 - **Hypotheses pre-remplies** avec les donnees reelles du SDB (trafic actuel, multiplicateur source du gap, CVR, panier moyen)
@@ -91,142 +226,75 @@ L'agent adapte l'angle de presentation de chaque cas pour faire resonner avec la
 - **3 scenarios calcules** alignes sur les scenarios d'engagement (Essentiel / Performance / Croissance)
 - **Methodologie** : explication en 1-2 phrases de la logique de calcul
 
+**Regle de non-duplication ROI vs Livrables :**
+L'onglet ROI montre les **resultats par scenario** (visites cibles, CA additionnel, ROI). L'onglet Livrables montre le **detail des livrables et les prix**. Les pricing cards (scope + prix) n'apparaissent que dans l'onglet 4. L'onglet 3 affiche les scenarios sous forme de cartes ROI (metriques de resultat), pas de cartes pricing (scope + prix). Si un composant affiche un prix ET un scope de livrables, il est dans l'onglet 4 uniquement.
+
+**Regle Confidence ROI :** si le SDB indique `Confidence globale: Low` ou si 2+ hypotheses ROI sont tagees `Low`, l'onglet ROI DOIT afficher "Hypotheses a confirmer en Phase 1" sous le simulateur, et la carte `.recommended` de l'onglet Livrables recoit le label "Recommandation conditionnelle". Cette decision vient du SDB, Pass 2 ne la recalcule pas.
+
 ### Onglet 4 : Livrables & Methode (transparence)
 
-**Sous-section "Methode S7" dans cet onglet :**
+**Spec complete : `agents/prepare-pass2-onglet4.md`.**
 
-Bloc leger integre dans l'onglet Livrables & Methode (pas un onglet separe). Place avant le pricing ou dans l'accordion FAQ/methodo.
-
-**Contenu :**
-1. **Definition S7** — 2-3 phrases max. Quoi : un cadre d'analyse en 7 forces. Pourquoi : prioriser les actions a plus fort impact, pas tout faire en meme temps.
-2. **7 forces** — liste compacte, 1 ligne par force (nom + ce qu'elle mesure, pas de score — les scores sont dans l'onglet Strategie).
-3. **Regle d'arbitrage** — 1 phrase : "On ne travaille jamais les 7 forces en parallele. Le S7 identifie les 2-3 leviers qui debloquent le plus de valeur pour votre situation."
-
-**Regles :**
-- Pas de jargon "framework", "methodology" — dire "grille d'analyse" ou "cadre de priorisation"
-- Ton : transparent, simple. Le prospect comprend pourquoi on ne fait pas tout.
-- **Ne PAS repeter les scores** — ils sont dans l'onglet Strategie. Ici c'est la methode, pas le diagnostic.
-
-**Resume decisionnel (obligatoire — debut de l'onglet Livrables) :**
-
-Bloc compact de 6 bullets maximum, issu du `strategy_plan_internal.md`. C'est ce que le decideur retient, ce qu'il presente a son board. Chaque bullet est une phrase complete, chiffree, specifique.
-
-1. Le probleme business (douleur chiffree)
-2. Le cout de l'inaction (visites/euros/mois perdus)
-3. Le levier principal (contrainte S7 → action)
-4. Les quick wins 90 jours (resultats rapides)
-5. Le ROI attendu (conservateur, source)
-6. L'investissement (fourchette selon scenario)
-
-**Board-ready A4 (obligatoire — dans le HTML, accessible par bouton) :**
-
-Page print-friendly (CSS `@media print`) qui reprend :
-- En-tete : logo SLASHR + nom prospect + date
-- Les 6 bullets du resume decisionnel
-- Le radar S7 (version print : niveaux de gris ou simplifie)
-- Le ROI en 1 ligne
-- Le pricing recommande
-- 1 CTA : "Prochaine etape : [action datee]"
-
-Le decideur peut imprimer cette page A4 pour son comite de direction. Accessible via un bouton "Version imprimable" dans l'onglet Livrables.
-
-**Phase 1 — Mission structurante (ponctuelle) :**
-
-Phase 1 = mission calibree. Ce n'est PAS un pack. Voir `context/pricing_rules.md` pour le detail des blocs et le calcul.
-
-Blocs :
-- **Audit SEO** (5j, toujours actif)
-- **Refonte SEO** (3-6j, si refonte prevue)
-- **Activation contenu** (1j minimum, toujours actif)
-- **SEA setup** (2j, si SEA dans perimetre)
-- **GEO setup** (2j, si GEO/IA dans perimetre)
-- **Social setup** (2j, si Social dans perimetre)
-
-Budget = total jours x TJM (cf. `context/pricing_rules.md`).
-
-**Regle d'affichage client (STRICTE) :** le HTML affiche le scope qualitatif + le budget global. Jamais de jours, jamais de TJM, jamais de sous-composants internes. Voir `context/output_contract.md`.
-
-Le detail en jours est ecrit dans le fichier `INTERNAL-S7` (section "Budget interne").
-
-**Phase 2 — Orchestration mensuelle (recurrente) :**
-
-Chaque levier active en Phase 1 implique un run mensuel incompressible (1j/mois minimum par levier). Voir `context/pricing_rules.md`.
-
-3 niveaux d'intensite :
-- **Essentiel** (1-2j/mois) : pilotage + monitoring. Execution internalisee.
-- **Performance** (2-3j/mois) : + production deleguee. Pour les prospects qui delegent.
-- **Croissance** (3-4+j/mois) : + multi-leviers + amplification. Ambitions fortes.
-
-Budget mensuel = jours/mois x TJM (cf. `context/pricing_rules.md`).
-
-**Regle d'affichage client (STRICTE) :** le HTML affiche le scope qualitatif par niveau + le budget mensuel. Jamais de jours/mois, jamais de TJM. Voir `context/output_contract.md`.
-
-**Regle de coherence levier :** si un levier a un setup Phase 1, il DOIT avoir un run Phase 2. Si un levier n'a PAS de setup, il ne peut PAS avoir de run.
-
-**Trajectoire 6 mois obligatoire :**
-
-Bloc "M4-M6" qui montre la montee en puissance post-Phase 1 :
-- Quels piliers S7 passent de DEFERRED a actif
-- Quels KPIs sont attendus a M6
-- Comment l'intensite evolue
-
-**Pricing :**
-- 3 scenarios d'intensite (Essentiel / Performance / Croissance)
-- Le scenario recommande est mis en evidence
-- Chaque scenario affiche : scope qualitatif + budget Phase 1 + budget Phase 2/mois + engagement
-
-**FAQ :**
-- 3-5 questions pertinentes pour ce deal
-- Reponses specifiques, pas generiques
-
-**CTA** en fin d'onglet
+Contient : resume decisionnel (6 bullets), board-ready A4, methode S7, Phase 1/Phase 2, investissement v12.0, sous-bloc unique "cout de l'inaction", structure conditionnelle refonte (3 actes) vs standard, FAQ, CTA.
 
 ---
 
-## Etape 2.4 — Integration des avantages competitifs
+## Etape 2.4 : Integration des avantages competitifs
 
-Pour chaque section de l'onglet Strategie qui presente des donnees, formuler la **transition SLASHR** — comment l'expertise SLASHR adresse specifiquement ce constat.
+**Maximum 2 transitions SLASHR dans l'onglet Strategie.** Choisir les 2 moments ou la transition entre le constat et l'expertise SLASHR est la plus naturelle. Les autres sections se passent de transition — les donnees parlent d'elles-memes.
+
+**Point de depart :** consulter `TRANSITION_OPPORTUNITIES` du SDB (si present). Ces 2 suggestions identifient les data blocks ou un differenciateur SLASHR s'insere naturellement. Pass 2 peut les adopter ou les remplacer si l'arc narratif le justifie.
 
 **Regles :**
 - La transition vient **apres** le bloc de donnees, jamais avant
 - Elle est **specifique** au constat presente (pas une phrase generique)
-- Elle est **naturelle** — un enchainage logique, pas une publicite
-- Elle ne mentionne **jamais** "Pourquoi nous" ou "Nos avantages"
+- Elle est **naturelle**, un enchainage logique, pas une publicite
+- Elle ne mentionne **jamais** "Pourquoi nous", "Nos avantages", "Notre methode", ou "C'est exactement ce que..."
+- Elle ne commence **jamais** par "Notre lecture :", "Notre conviction :", "Notre position :", "Notre approche :", ou tout pattern "Notre {X} :". C'est un marqueur d'auto-promotion, pas d'analyse. Remplacer par un enonce factuel ("Concretement :", "Pourquoi {X} :", ou directement le fait sans intro).
+- **Si la transition sonne comme une pub SLASHR, la supprimer.** Le decideur detecte l'auto-promotion.
+
+**Test :** relire la transition en imaginant qu'elle est signee par un concurrent. Si elle marche aussi bien, c'est qu'elle est generique. La reecrire.
 
 **Exemples :**
 
-| Constat presente | Transition SLASHR |
-|------------------|-------------------|
-| Gap concurrentiel x4 en trafic hors-marque | "C'est ce type de gap qu'une architecture Search structuree peut combler. Notre methode identifie les clusters a plus fort potentiel et les priorise par impact business." |
-| Score Lighthouse de 38 | "Ces fondations techniques conditionnent tout le reste. C'est le premier livrable de la Phase 1 Audit : un cahier des charges technique priorise pour votre equipe dev." |
-| 0 resultat IA sur les requetes metier | "La visibilite IA se construit sur des donnees structurees et du contenu expert. C'est ce que notre pilier Production couvre dans l'accompagnement." |
+| Constat presente | ❌ Transition auto-promotionnelle | ✅ Transition naturelle |
+|------------------|----------------------------------|------------------------|
+| Gap concurrentiel x4 | "C'est ce type de gap que notre methode identifie et priorise." | "Combler un gap de cette ampleur ne se fait pas en publiant du contenu au hasard. Ca demande une cartographie par intent d'achat et une priorisation par impact business." |
+| Score Lighthouse de 38 | "C'est le premier livrable de notre Phase 1 Audit." | "Ces fondations techniques conditionnent tout le reste. Le premier chantier est un cahier des charges technique priorise pour l'equipe dev." |
+| 0 resultat IA sur les requetes metier | "C'est ce que notre pilier Production couvre." | "La visibilite IA se construit sur des donnees structurees et du contenu expert. C'est un chantier complementaire au SEO, pas un remplacement." |
 
 ---
 
-## Etape 2.5 — Tests de validation pre-generation
+## Etape 2.5 : Tests de validation pre-generation
 
-### Test anti-generique
+> **Regles completes : `context/validation_rules.md`**. Appliquer Layer 3 (semantic) + Layer 2 regles 22-25 comme checklist avant de passer a Pass 3.
+> Rappel : test de substitution, zero pression, zero dramatisation (cf. `agents/shared.md`, regles 13-15).
 
-Avant de passer a la Pass 3, verifier :
-- [ ] Chaque titre de section contient le nom du prospect OU un element specifique a leur situation
-- [ ] Les donnees referencent des chiffres reels (positions, keywords, volumes)
-- [ ] Le cout d'inaction est calcule avec LEUR gap, pas une formule passe-partout
-- [ ] Les verbatims du prospect apparaissent (si disponibles)
-- [ ] Aucune phrase ne marcherait pour n'importe quel autre prospect
-- [ ] L'arc narratif est justifie par le profil du decideur et le contexte du deal
-- [ ] Les cas clients sont matche au prospect, pas choisis au hasard
-- [ ] La section "Ce que cela implique" contient 3 bullets max en impact business (pas technique)
-- [ ] La section "Decision strategique recommandee" contient une phrase affirmative avec "Nous recommandons"
-- [ ] La sous-section "90 jours" contient 3 etapes max alignees sur la contrainte S7 PRIMARY uniquement
-- [ ] La sequence S7 → Implications → Decision → 90 jours est complete et dans cet ordre
+### Checklist pre-Pass 3 (obligatoire)
 
-### Test de tonalite
+**Anti-generique :**
+- [ ] Chaque titre contient le nom du prospect OU un element specifique
+- [ ] Donnees = chiffres reels, pas de formule passe-partout
+- [ ] Aucune phrase ne marcherait pour un autre prospect (test de substitution)
+- [ ] Le hook est un FAIT (chiffre/verbatim/gap), pas une opinion
+- [ ] Hero-subtitle : teaser sans chiffres, max 80 chars, factuellement defendable
+- [ ] Cascade narrative : subtitle (QUOI) → h2 section 1 (POURQUOI) → KPIs (PREUVE), 3 couches = 3 choses differentes
 
-- [ ] **Zero pression commerciale** — aucune phrase du type "ne manquez pas", "il est urgent de", "derniere chance"
-- [ ] **Zero dramatisation** — aucune phrase du type "catastrophe", "crise", "vous perdez tout". Les donnees parlent d'elles-memes
-- [ ] **Intelligence strategique** — chaque phrase traduit une expertise en impact business mesurable
-- [ ] **Expertise → impact** — pas de jargon technique brut. "DA de 15" → "une autorite de domaine faible qui limite votre capacite a vous positionner sur les requetes concurrentielles"
-- [ ] **Transitions SLASHR naturelles** — chaque differenciateur est lie a un data block, jamais standalone
+**Structure narrative :**
+- [ ] Sequence S7 → Implications → Decision → 90 jours complete et dans cet ordre
+- [ ] "Ce que cela implique" : 3 bullets max, consequences strategiques, pas de chiffrage cout inaction
+- [ ] "Decision strategique recommandee" : phrase affirmative avec "Nous recommandons"
+- [ ] "90 jours" : 3 etapes max alignees sur PRIMARY
+- [ ] Deduplication verifiee : aucune section ne reformule un argument precedent
+- [ ] Maximum 7 sections dans l'onglet Strategie (hero exclu, CTA inclus)
+- [ ] Test des h2 : les titres dans l'ordre = une histoire coherente
+
+**Tonalite :**
+- [ ] Zero pression commerciale (inclut structures anaphoriques "chaque mois/jour sans")
+- [ ] Zero dramatisation
+- [ ] Zero auto-promotion deguisee (pas de "Notre {X} :", pas de "C'est exactement ce que")
+- [ ] Max 2 transitions SLASHR dans l'onglet Strategie
+- [ ] Chaque expertise traduite en impact business (pas de jargon brut)
 
 ---
 
@@ -237,67 +305,120 @@ L'agent DOIT ecrire explicitement ce document interne avant de passer a la Pass 
 ```
 === NARRATIVE BLUEPRINT ===
 
-ARC GLOBAL: {type d'arc choisi} — {justification en 1 ligne liee au decideur et au contexte}
+ARC GLOBAL: {type d'arc choisi}, {justification en 1 ligne liee au decideur et au contexte}
 HOOK: {description du hook et pourquoi il est frappant pour ce prospect}
-PROFIL DECIDEUR: {type} — sensible a: {preoccupation principale}
+PROFIL DECIDEUR: {type}, sensible a: {preoccupation principale}
+DECISION MODE: {Rapide | Comite | AO}, risque principal: {budget | timing | politique interne | multi-interlocuteurs}
+ADAPTATION AU PROFIL DECIDEUR :
+- DG : parler allocation capital, dependance paid, part de marche
+- CMO : parler mix canal, brand vs generic, efficience media
+- Head of E-commerce : parler conversion, panier, ROAS implicite
+- Responsable SEO : parler architecture, intent, couverture cluster
+
+DEDUPLICATION (obligatoire — documenter AVANT de creer les sections) :
+Blocs SDB utilises: {liste des blocs du SDB mobilises}
+Regroupement par argument:
+- Argument 1 "{nom}": blocs {A, B, C} → 1 section
+- Argument 2 "{nom}": blocs {D} → 1 section
+- Argument 3 "{nom}": blocs {E, F} → 1 section
+- ...
+Total sections Strategie: {N} (max 7, hero et CTA exclus du compte)
 
 --- ONGLET STRATEGIE ---
 
-1. {Titre section} — role: {accroche / diagnostic / enjeu / opportunite / recommandation / ...}
+1. {Titre section} · role: {accroche / diagnostic / enjeu / opportunite / recommandation / ...}
    Angle: {description en 1-2 phrases de ce que cette section dit}
    Donnees utilisees: {quelles donnees du SDB alimentent cette section}
    Transition SLASHR: {phrase de transition apres le data block}
    Pourquoi ici: {justification de sa position dans l'arc}
 
-2. {Titre section} — role: {...]
+2. {Titre section} · role: {...]
    ...
 
-X. Section S7 "Lecture strategique" — role: priorisation / conviction
+X. Section S7 "Lecture strategique" · role: priorisation / conviction
    Radar: {7 forces avec scores}
    Contrainte principale: {force + implication business}
    Leviers: {2-3 forces priorisees + impact chiffre}
    Insight: {1 phrase non generique}
-   Pourquoi ici: {apres le diagnostic, avant la recommandation — c'est le pont}
+   Pourquoi ici: {apres le diagnostic, avant la recommandation, c'est le pont}
 
-X+1. Section "Ce que cela implique" — role: verrou narratif decisionnel (OBLIGATOIRE)
-   3 bullets max — reformulation de la contrainte S7 en impact business C-level
-   Ton: direct, affirmatif, zero jargon technique
+X+0.5. Section "Ce que nous ne priorisons pas (maintenant)" · role: transparence strategique (OBLIGATOIRE)
+   3 bullets maximum, issus des DEFERRED du strategy_plan_internal.md.
+   Chaque bullet :
+   - Nom du levier differe
+   - Pourquoi il est differe (justification logique uniquement, liee au diagnostic)
+   - A quel moment il deviendra pertinent (condition ou horizon)
+   Regles :
+   - Ton strategique, pas defensif. C'est un choix d'expert, pas une excuse.
+   - Pas de justification budget ("c'est trop cher" interdit). Justification logique uniquement ("tant que S3 n'est pas traite, S6 n'a pas de contenu a diffuser").
+   - Le prospect doit comprendre que ne PAS faire quelque chose est une decision autant que faire quelque chose.
+   Pourquoi ici: {juste apres le S7, avant les implications — le decideur voit qu'on a arbitre, pas ignore}
+
+OBJECTIONS A PRE-EMPT (max 4, reponses data-first, 2 phrases chacune) :
+1) {objection probable} → {reponse courte + preuve (source/data/verbatim)}
+2) {objection probable} → {reponse courte + preuve}
+3) {objection probable} → {reponse courte + preuve}
+4) {objection probable} → {reponse courte + preuve}
+Regles :
+- Objections typiques : budget, timing, "contenu = SEO 2020", dependance dev, "on a deja une agence", ROI incertain.
+- Reponses : jamais defensives, jamais aggressives. Toujours "les donnees montrent..." + "Phase 1 confirme".
+
+X+1. Section "Ce que cela implique" · role: verrou narratif decisionnel (OBLIGATOIRE)
+   3 bullets max, reformulation de la contrainte S7 en CONSEQUENCES STRATEGIQUES C-level
+   Ton: factuel et affirmatif, zero jargon technique
    Chaque bullet relie la contrainte S7 a une consequence business concrete
-   Pourquoi ici: {le prospect a compris le diagnostic — maintenant il doit voir la decision}
+   INTERDIT dans cette section :
+   - Structure anaphorique ("Chaque mois..." x3) = effet marteau = pression commerciale
+   - Repetition du meme leitmotiv dans les 3 bullets (ex: "sans contenu" x3)
+   - Ton alarmiste ou dramatique. Les donnees suffisent.
+   - Chiffrer le "cout de l'inaction" (visites perdues, euros perdus) : c'est dans le sous-bloc Investissement (onglet 4), pas ici
+   OBLIGATOIRE : les 3 bullets disent 3 choses DIFFERENTES (ex: 1=le verrou strategique, 2=ce qui est deja pret et inexploite, 3=la fenetre d'opportunite qui se ferme)
+   **Donnee de projection :** la colonne "Projection 6-12M" du S7 SCORES (via le SDB > S7 SYNTHESIS > Projection PRIMARY) fournit la donnee chiffree pour le bullet "fenetre qui se ferme". Utiliser cette projection comme source. Ne pas inventer de projection que Pass 1 n'a pas calculee.
+   Pourquoi ici: {le prospect a compris le diagnostic, maintenant il doit voir la decision}
 
-X+2. Section "Decision strategique recommandee" — role: declencheur de decision (OBLIGATOIRE)
+X+2. Section "Decision strategique recommandee" · role: declencheur de decision (OBLIGATOIRE)
    Titre: "Decision strategique recommandee" (avec emoji cible)
    1 phrase tranchee, affirmative, non conditionnelle, non vague
    Liee explicitement a la contrainte S7 PRIMARY
    Format: "Nous recommandons de [action] car [raison liee au S7]."
+   REGLE DE PRECISION STRATEGIQUE :
+   Les termes suivants sont autorises : visibilite, SEO, trafic, notoriete.
+   MAIS ils ne doivent jamais apparaitre seuls ou comme objectif final.
+   Chaque occurrence doit etre :
+   - Qualifiee par un impact business (CA, part de marche, dependance paid, efficience media, etc.)
+   - OU associee a une metrique concrete (hors-marque, intent commercial, segment cible, saisonnalite, etc.)
+   Exemples acceptables :
+   - "Augmenter la part de trafic hors-marque sur les requetes commerciales"
+   - "Reduire la dependance au paid via un actif SEO durable"
+   - "Transformer la notoriete en captation Search mesurable"
+   Exemples interdits :
+   - "Ameliorer la visibilite"
+   - "Optimiser le SEO"
+   - "Augmenter le trafic"
+   - "Gagner en notoriete"
+   Regle : tout objectif formule doit repondre implicitement a la question "pourquoi business ?"
    Pourquoi ici: {la decision doit etre formulee noir sur blanc avant de parler methode}
 
-X+3. Sous-bloc "Ce que cela signifie concretement (90 jours)" — role: projection immediate
+X+3. Sous-bloc "Ce que cela signifie concretement (90 jours)" · role: projection immediate
    3 etapes max alignees strictement sur la contrainte S7 PRIMARY
-   Pas de liste generique — seulement ce qui decoule du diagnostic
+   Pas de liste generique, seulement ce qui decoule du diagnostic
    Chaque etape = action concrete + livrable ou KPI attendu
-   Pourquoi ici: {la decision est prise — le prospect voit immediatement ce que ca donne}
+   Pourquoi ici: {la decision est prise, le prospect voit immediatement ce que ca donne}
 
-N. CTA — toujours en dernier (REGLE v10.4 : CTA DECISIONNEL)
+N. CTA, toujours en dernier (REGLE v10.4 : CTA DECISIONNEL)
    Interdit : "Planifier un echange", "Discuter", "Echanger", "En savoir plus", ou tout verbe passif/generique
    Obligatoire : CTA oriente decision, lie a la trajectoire 90 jours si elle existe
    Exemples : "Demarrer la Phase 1", "Valider le lancement Phase 1", "Activer la Phase 1 (90 jours)"
    Le libelle du bouton CTA doit correspondre a la decision recommandee de la section precedente
    Si aucun verbe d'action strategique n'est present dans le CTA, la generation echoue
 
---- ONGLET LIVRABLES (sous-section Methode S7) ---
-
-Definition: {2-3 phrases — cadre, pourquoi prioriser}
-7 forces: {liste 1 ligne chacune — nom + ce que ca mesure}
-Regle arbitrage: {1 phrase — on ne fait pas tout}
-
 --- ONGLET CAS CLIENTS ---
 
-Cas 1: {entreprise} — {problematique similaire au prospect}
+Cas 1: {entreprise}, {problematique similaire au prospect}
   Avant: {chiffres cles}
   Action: {levier en 1-2 phrases}
   Apres: {chiffres cles + timeline}
-  Citation: "{verbatim}" — {prenom, role}
+  Citation: "{verbatim}", {prenom, role}
   Angle prospect: {pourquoi ce cas parle a CE prospect}
 
 Cas 2: ...
@@ -306,7 +427,7 @@ Cas 2: ...
 
 Hypotheses pre-remplies:
 - Trafic actuel: {X} visites/mois (source: DataForSEO domain_rank_overview)
-- Multiplicateur: {Y} (source: gap vs {concurrent}, ratio x{Z})
+- Visites cibles M12: {Y} visites/mois (source: 30% du gap vs {concurrent})
 - CVR: {W}% (source: {benchmark secteur / donnee prospect / estimation conservatrice})
 - Panier moyen: {V} EUR (source: {donnee prospect / estimation secteur})
 - Investissement mensuel: {fourchette selon scenario}
@@ -315,106 +436,7 @@ Hypotheses pre-remplies:
 
 --- ONGLET LIVRABLES & METHODE (ou "REFONTE & METHODE" si refonte) ---
 
-### Regle narrative v11.2 : la page raconte une histoire en 3 actes, pas une juxtaposition de blocs.
-
-### Structure onglet — conditionnelle selon contexte deal
-
-**SI le deal comporte une refonte prevue** (detectee dans transcript/brief/notes/Pipedrive) :
-
-Ouverture narrative : hero court (60vh) qui pose les 3 objectifs — "Securiser. Activer. Accelerer."
-Label onglet dans la nav : "Refonte & Methode" (pas "Livrables & Methode")
-
-ACTE 1 — "Securiser la refonte"
-   Transition narrative : on commence par la peur — ce que la migration risque de couter si non pilotee
-   - AMOA SEO : {role SLASHR, coordination agence web, comite bi-mensuel}
-   - Plan de redirections : {scope — nombre d'URLs, methode 1:1}
-   - Recette technique : {validation pre-bascule — crawl, indexation, donnees structurees}
-   - Monitoring post-bascule : {alertes, suivi J+1 a J+30, correction immediate}
-   - Rassurance obligatoire : "Objectif : 0 perte de trafic strategique lors de la migration."
-   - Pont narratif vers Acte 2 : relier a un cas client si pertinent
-
-ACTE 2 — "Transformer la refonte en levier de croissance"
-   Transition narrative : on passe de la defense a l'attaque — la refonte devient un accelerateur
-   - Activation du levier S7 PRIMARY : {actions concretes liees a la contrainte principale}
-   - Pages piliers prioritaires : {clusters, volumes, calendrier pre-migration}
-   - Architecture & donnees structurees : {integrees au cahier des charges refonte}
-   - Livraison avant migration : {les pages rankent avant la bascule — la migration les transfere}
-   - Pont narratif vers Acte 3 : projeter vers la montee en puissance post-bascule
-
-ACTE 3 — "Accelerer apres la migration"
-   Transition narrative : le site est securise, les pages rankent — on accelere vers les objectifs business
-   - Production contenu : {rythme — X pages/mois, clusters cibles}
-   - Netlinking : {strategie si pertinente, sinon justifier le report}
-   - Amplification : {pics saisonniers, paid complementaire}
-   - Monitoring & reporting : {routine, frequence, KPIs suivis}
-   - Pont narratif : relier aux pics saisonniers du prospect pour ancrer dans le reel
-
-Chaque acte doit etre coherent avec la contrainte S7 PRIMARY du deal.
-Chaque acte doit contenir un pont narratif (highlight-box) qui fait la transition vers le suivant.
-
-APRES les 3 actes :
-
-Synthese (6 bullets) :
-1. {douleur business chiffree}
-2. {cout inaction}
-3. {levier principal}
-4. {securisation refonte}
-5. {ROI attendu}
-6. {investissement}
-
-Board-ready A4: oui (bouton "Version imprimable")
-
-### Investissement — structure v12.0 : Phase 1 + Phase 2 + 3 intensites
-
-Regle : 2 blocs separes (Phase 1 mission + Phase 2 orchestration) + 3 niveaux d'intensite. Pas 3 packs egaux.
-Le scenario recommande est la decision logique. Les deux autres ajustent l'intensite, pas la strategie.
-
-**Bloc Phase 1 — "Mission structurante" :**
-- Description qualitative de ce que la mission inclut (JAMAIS de jours, JAMAIS de TJM)
-- Liste des livrables produits
-- Budget global EUR HT
-- Timeline ("demarrage sous X jours ouvres")
-
-**Bloc Phase 2 — "Orchestration mensuelle" :**
-- Explication pedagogique : "Chaque levier active necessite un accompagnement mensuel."
-- 3 niveaux d'intensite presentes comme des curseurs, pas comme des packs :
-
-1. **Essentiel** (recommande pour les PME / execution interne) :
-   - Scope : pilotage + monitoring + reporting
-   - Budget : {montant}/mois HT
-   - Engagement : 12 mois
-
-2. **Performance** (recommande — mis en avant visuellement) :
-   - Scope : + production deleguee + accompagnement continu
-   - Budget : {montant}/mois HT
-   - Engagement : 12 mois
-   - Objectifs chiffres : {CA additionnel, timeline}
-
-3. **Croissance** (pour les ambitions fortes / multi-leviers) :
-   - Scope : + leviers additionnels (SEA, GEO, Social) + amplification
-   - Budget : {montant}/mois HT
-   - Engagement : 12 mois
-
-4. Sous-bloc "Ce que coute l'inaction" (OBLIGATOIRE) :
-   - 3 impacts business max, lies aux donnees du diagnostic
-   - Chaque impact = chiffre + source DataForSEO/S7
-   - Composant : s7-insight (meme style visuel que la contrainte S7)
-   - Pas de dramatisation — les chiffres suffisent
-
-FAQ: {3-5 questions pertinentes pour ce deal}
-
-CTA decisionnel unique (v10.4) : {verbe d'action strategique lie a la Phase 1}
-
-**SI le deal NE comporte PAS de refonte** :
-
-Structure standard :
-- Phase 1 (90 jours) : M1/M2/M3
-- Phase 2 (Run) : intensite + piliers + trajectoire M4-M6
-- Synthese (6 bullets) + Board-ready A4
-- Investissement (meme logique v11.3 : 1 reco + 2 variantes + cout inaction)
-- FAQ
-- CTA decisionnel
-
+Structure complete : voir `agents/prepare-pass2-onglet4.md`
 Scenario recommande: {lequel et pourquoi}
 
 === FIN NBP ===

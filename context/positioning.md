@@ -139,6 +139,12 @@ Detail : voir `context/pricing_rules.md`.
 - "On ne vous vend pas un abonnement SEO. On vous propose une stratégie avec des objectifs mesurables à 90 jours"
 - "Notre travail se mesure en visites, en CA, en parts de voix — pas en nombre de backlinks"
 
+## Différenciateur clé : cabinet Search vs agence media
+
+L'agence dit "il y a X recherches, positionnez-vous dessus". Le cabinet dit "il y a 3 types de demande sur votre marché, voici comment les activer chacun".
+
+Cette distinction guide la tonalité des propositions : on ne liste pas des keywords, on cartographie des territoires de demande et on explique comment les activer.
+
 ## Objections fréquentes et repositionnement
 
 | Objection | Réponse type |
