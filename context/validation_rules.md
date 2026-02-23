@@ -17,7 +17,7 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-livrables` avec max 6 `<li>` |
 | 19 | Board-ready A4 / `window.print()` | `@media print` present dans le CSS ET bouton print dans le HTML |
 | 26 | CTA avec verbe strategique | CTA ne contient PAS "Planifier un echange", "Discuter", "Echanger", "En savoir plus" |
-| 29 | Zero jours/TJM/AMOA dans le texte visible | Regex `\b(jours?|TJM|jour-homme|AMOA|etude lexicale|plan redirections|recette|monitoring)\b` absent du body visible |
+| 29 | Zero jours/TJM/AMOA dans le texte visible | Regex `\b(jour[s]?[\s-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recette)\b` absent du body visible. NB : "monitoring" seul est autorise (cf. output_contract.md) |
 | 31 | Accordion FAQ present dans onglet Livrables | `.accordion` present dans `#tab-livrables` |
 | 35 | "Prochaine etape" dans onglet Livrables | Texte "prochaine etape" (case-insensitive) dans `#tab-livrables` |
 | 36 | Pas de pattern "Notre {X} :" | Regex `Notre (lecture|conviction|position|approche|methode|vision)\s*:` absent |

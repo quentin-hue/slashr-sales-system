@@ -43,6 +43,7 @@ L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1
 | 6 | `context/output_contract.md` | Frontiere client/interne (visible vs masque) | Avant tout |
 | 6b | `context/validation_rules.md` | 39 regles de validation (3 layers) | Avant tout |
 | 6c | `context/s7_quick_reference.md` | Digest compact S7 (7 forces, echelle, classification) | Avant tout |
+| 6d | `context/performance_budget.md` | Budget tokens, cache, fraicheur | Avant tout |
 | 7 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
 | 8 | `context/case_studies.md` | Bibliotheque cas clients | Avant Pass 2 |
 | 9 | `templates/proposal-kit.html` | Kit CSS + 27 composants par role narratif | Avant Pass 3 |
@@ -50,7 +51,7 @@ L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1
 
 ## Etapes
 
-1. Lis les fichiers 1-6c de la checklist ci-dessus
+1. Lis les fichiers 1-6d de la checklist ci-dessus
 2. Execute les 3 passes dans l'ordre :
    - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + S7 + SDB)
    - **Pass 2** : lis fichiers 7-8, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet 4.

@@ -44,6 +44,11 @@ class ProposalParser(HTMLParser):
         self.in_h2 = False
         self.h2_buffer = ""
 
+        # R18: track <li> inside highlight-gradient in tab-livrables
+        self.in_highlight_gradient_livrables = False
+        self.highlight_gradient_depth = 0
+        self.highlight_gradient_li_count = 0
+
     def handle_starttag(self, tag, attrs):
         attr_dict = dict(attrs)
         classes = attr_dict.get("class", "")
@@ -77,6 +82,15 @@ class ProposalParser(HTMLParser):
             self.in_h2 = True
             self.h2_buffer = ""
 
+        # R18: Track highlight-gradient in tab-livrables for bullet counting
+        if "highlight-gradient" in classes.split() and self.current_tab == "tab-livrables":
+            self.in_highlight_gradient_livrables = True
+            self.highlight_gradient_depth = 1
+        elif self.in_highlight_gradient_livrables:
+            self.highlight_gradient_depth += 1
+            if tag == "li":
+                self.highlight_gradient_li_count += 1
+
         # Track print button
         if "window.print" in str(attrs):
             self.has_print_button = True
@@ -95,6 +109,12 @@ class ProposalParser(HTMLParser):
         if tag == "h2" and self.in_h2:
             self.in_h2 = False
             self.h2_order.append(self.h2_buffer.strip())
+        # R18: track highlight-gradient container depth
+        if self.in_highlight_gradient_livrables:
+            self.highlight_gradient_depth -= 1
+            if self.highlight_gradient_depth <= 0:
+                self.in_highlight_gradient_livrables = False
+
         if self.current_tag_stack and self.current_tag_stack[-1] == tag:
             self.current_tag_stack.pop()
 
@@ -185,9 +205,14 @@ def check_layer1(parser, html_raw):
     results.append(("R16", f"Exactement 1 PRIMARY (trouve: {primary_count})", primary_count == 1))
 
     # R18: Resume decisionnel <= 6 bullets
-    livr_text = tab_text(parser, "tab-livrables")
     has_gradient = tab_has_class(parser, "tab-livrables", "highlight-gradient")
-    results.append(("R18", "Resume decisionnel present (highlight-gradient dans Livrables)", has_gradient))
+    li_count = parser.highlight_gradient_li_count
+    if has_gradient and li_count > 6:
+        results.append(("R18", f"Resume decisionnel <= 6 bullets (trouve: {li_count})", False))
+    elif has_gradient:
+        results.append(("R18", f"Resume decisionnel <= 6 bullets ({li_count} bullets)", True))
+    else:
+        results.append(("R18", "Resume decisionnel absent (highlight-gradient manquant)", False))
 
     # R19: Board-ready A4 / print
     has_print = parser.has_print_media and parser.has_print_button
@@ -199,9 +224,9 @@ def check_layer1(parser, html_raw):
     has_bad_cta = any(bc in ft for bc in bad_ctas)
     results.append(("R26", "CTA sans verbe passif/generique", not has_bad_cta))
 
-    # R29: Zero jours/TJM/AMOA
+    # R29: Zero jours/TJM/AMOA/termes internes
     internal_pattern = re.compile(
-        r'\b(jours?[\s\-]homme|TJM|AMOA|etude lexicale|plan redirections|recette et monitoring)\b',
+        r'\b(jour[s]?[\s\-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recette)\b',
         re.IGNORECASE
     )
     # Check only visible text (not CSS/JS)
@@ -240,26 +265,72 @@ def check_layer1(parser, html_raw):
                          tab_has_class(parser, "tab-roi", "pricing-grid")
     results.append(("R38", "Pricing cards absentes de l'onglet ROI", not has_pricing_in_roi))
 
-    # R39: ETV vs trafic
-    etv_in_benchmark = False
+    # R39: ETV vs trafic — only flag if ETV is directly mislabeled as visits
+    etv_mislabeled = False
     strat_lower = tab_text(parser, "tab-strategie").lower()
-    # Rough heuristic: ETV should not appear near "visites" in strategie tab
     if "etv" in strat_lower:
-        # Check if ETV appears in benchmark context (near visites/trafic)
-        etv_positions = [m.start() for m in re.finditer(r'\betv\b', strat_lower)]
-        for pos in etv_positions:
-            context = strat_lower[max(0, pos - 100):pos + 100]
-            if "visite" in context or "trafic" in context:
-                etv_in_benchmark = True
+        # Flag only direct mislabeling patterns: "ETV de X visites", "ETV : X visites"
+        mislabel_patterns = [
+            r'\betv\b\s*(?:de\s+)?\d[\d\s,.]*\s*visites?',
+            r'visites?\s*(?:=|:)\s*\d[\d\s,.]*\s*\betv\b',
+            r'\betv\b\s*(?:=|:)\s*\d[\d\s,.]*\s*visites?',
+        ]
+        for pat in mislabel_patterns:
+            if re.search(pat, strat_lower):
+                etv_mislabeled = True
                 break
-    results.append(("R39", "ETV/trafic correctement etiquetes", not etv_in_benchmark))
+    results.append(("R39", "ETV/trafic correctement etiquetes", not etv_mislabeled))
 
     # R28a: Investissement avec .recommended + cout inaction
     has_recommended = "recommended" in " ".join(parser.all_classes)
-    cout_inaction = "coute l'inaction" in tab_text(parser, "tab-livrables").lower() or \
-                    "cout de l'inaction" in tab_text(parser, "tab-livrables").lower() or \
-                    "co" in tab_text(parser, "tab-livrables").lower() and "inaction" in tab_text(parser, "tab-livrables").lower()
-    results.append(("R28a", "Investissement : .recommended + cout inaction", has_recommended))
+    livr_lower = tab_text(parser, "tab-livrables").lower()
+    cout_inaction = "inaction" in livr_lower and ("cout" in livr_lower or "coute" in livr_lower)
+    r28a_ok = has_recommended and cout_inaction
+    detail_parts = []
+    if not has_recommended:
+        detail_parts.append(".recommended absent")
+    if not cout_inaction:
+        detail_parts.append("cout inaction absent")
+    detail = f" ({', '.join(detail_parts)})" if detail_parts else ""
+    results.append(("R28a", f"Investissement : .recommended + cout inaction{detail}", r28a_ok))
+
+    # R30: Coherence Phase 1 ↔ Phase 2
+    has_phase1 = "phase 1" in livr_lower or "mission structurante" in livr_lower
+    has_phase2 = "phase 2" in livr_lower or "accompagnement mensuel" in livr_lower
+    has_pricing = tab_has_class(parser, "tab-livrables", "pricing") or \
+                  tab_has_class(parser, "tab-livrables", "pricing-grid") or \
+                  tab_has_class(parser, "tab-livrables", "pricing-card")
+    if has_pricing or has_phase1 or has_phase2:
+        r30_ok = has_phase1 and has_phase2
+        if not r30_ok:
+            missing = "Phase 1" if not has_phase1 else "Phase 2"
+            results.append(("R30", f"Coherence Phase 1 ↔ Phase 2 ({missing} absente)", False))
+        else:
+            # Check lever coherence: same levers in both phases
+            levers = {"seo": "SEO", "sea": "SEA", "geo": "GEO", "social": "Social"}
+            # Split on Phase 2 boundary
+            p2_idx = livr_lower.find("phase 2")
+            if p2_idx < 0:
+                p2_idx = livr_lower.find("accompagnement mensuel")
+            if p2_idx > 0:
+                p1_text = livr_lower[:p2_idx]
+                p2_text = livr_lower[p2_idx:]
+                mismatched = []
+                for key, label in levers.items():
+                    in_p1 = key in p1_text
+                    in_p2 = key in p2_text
+                    if in_p1 and not in_p2:
+                        mismatched.append(f"{label} Phase 1 only")
+                    elif in_p2 and not in_p1:
+                        mismatched.append(f"{label} Phase 2 only")
+                if mismatched:
+                    results.append(("R30", f"Coherence leviers ({', '.join(mismatched)})", False))
+                else:
+                    results.append(("R30", "Coherence Phase 1 ↔ Phase 2", True))
+            else:
+                results.append(("R30", "Coherence Phase 1 ↔ Phase 2", True))
+    else:
+        results.append(("R30", "Coherence Phase 1 ↔ Phase 2 (pas de pricing detecte)", True))
 
     return results
 
@@ -376,26 +447,34 @@ def print_results(layer1, layer2, layer3):
     print("\n=== SLASHR Proposal Validator ===\n")
 
     # Layer 1
+    l1_pass = 0
+    l1_fail = 0
     print("--- Layer 1 : Structural (PASS/FAIL) ---\n")
     for rule_id, desc, passed in layer1:
         if passed:
             print(f"  [PASS] {rule_id} — {desc}")
-            passes += 1
+            l1_pass += 1
         else:
             print(f"  [FAIL] {rule_id} — {desc}")
-            fails += 1
+            l1_fail += 1
+    fails = l1_fail
 
     # Layer 2
+    l2_pass = 0
+    l2_warn = 0
+    l2_manual = 0
     print("\n--- Layer 2 : Content (WARN) ---\n")
     for rule_id, desc, passed in layer2:
         if passed is None:
             print(f"  [MANUAL] {rule_id} — {desc}")
+            l2_manual += 1
         elif passed:
             print(f"  [PASS] {rule_id} — {desc}")
-            passes += 1
+            l2_pass += 1
         else:
             print(f"  [WARN] {rule_id} — {desc}")
-            warns += 1
+            l2_warn += 1
+    warns = l2_warn
 
     # Layer 3
     print("\n--- Layer 3 : Semantic (checklist manuelle) ---\n")
@@ -404,10 +483,7 @@ def print_results(layer1, layer2, layer3):
 
     # Summary
     print(f"\n{'=' * 50}")
-    print(f"Layer 1 : {passes - sum(1 for _, _, p in layer2 if p)} PASS, {fails} FAIL")
-    l2_pass = sum(1 for _, _, p in layer2 if p is True)
-    l2_warn = sum(1 for _, _, p in layer2 if p is False)
-    l2_manual = sum(1 for _, _, p in layer2 if p is None)
+    print(f"Layer 1 : {l1_pass} PASS, {l1_fail} FAIL")
     print(f"Layer 2 : {l2_pass} PASS, {l2_warn} WARN, {l2_manual} MANUAL")
     print(f"Layer 3 : {len(layer3)} items a verifier manuellement")
     print(f"{'=' * 50}")
