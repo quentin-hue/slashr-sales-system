@@ -1,6 +1,6 @@
-# PASS 2 : ONGLET 4 — Livrables & Methode (ou Refonte & Methode)
+# PASS 2 : ONGLET 3 — Investissement
 
-> Ce fichier est reference par `agents/prepare-pass2.md`. Il definit la structure de l'onglet 4 selon le contexte du deal.
+> Ce fichier est reference par `agents/prepare-pass2.md`. Il definit la structure de l'onglet 3 (Investissement) selon le contexte du deal.
 
 ---
 
@@ -45,7 +45,7 @@ Page print-friendly (CSS `@media print`) qui reprend :
 - 1 CTA : "Prochaine etape : [action datee]"
 - Un encadre "Decision attendue" : {choix scenario} + {date cible} + {prochaine etape}
 
-Le decideur peut imprimer cette page A4 pour son comite de direction. Accessible via un bouton "Version imprimable" dans l'onglet Livrables.
+Le decideur peut imprimer cette page A4 pour son comite de direction. Accessible via un bouton "Version imprimable" dans l'onglet Investissement.
 
 ---
 
@@ -68,13 +68,13 @@ Bloc leger integre dans l'onglet (pas un onglet separe). Place avant le pricing 
 
 **Contenu :**
 1. **Definition S7** : 2-3 phrases max. Quoi : un cadre d'analyse en 7 forces. Pourquoi : prioriser les actions a plus fort impact, pas tout faire en meme temps.
-2. **7 forces** : liste compacte, 1 ligne par force (nom + ce qu'elle mesure, pas de score, les scores sont dans l'onglet Strategie).
+2. **7 forces** : liste compacte, 1 ligne par force (nom + ce qu'elle mesure, pas de score, les scores sont dans l'onglet Diagnostic).
 3. **Regle d'arbitrage** : 1 phrase : "On ne travaille jamais les 7 forces en parallele. Le S7 identifie les 2-3 leviers qui debloquent le plus de valeur pour votre situation."
 
 **Regles :**
 - Pas de jargon "framework", "methodology", dire "grille d'analyse" ou "cadre de priorisation"
 - Ton : transparent, simple. Le prospect comprend pourquoi on ne fait pas tout.
-- **Ne PAS repeter les scores** : ils sont dans l'onglet Strategie. Ici c'est la methode, pas le diagnostic.
+- **Ne PAS repeter les scores** : ils sont dans l'onglet Diagnostic. Ici c'est la methode, pas le diagnostic.
 
 ---
 
@@ -192,47 +192,26 @@ INTERDIT : "Planifier un echange", "Discuter", "Echanger", "En savoir plus".
 
 ### SI refonte prevue
 
-Label onglet dans la nav : "Refonte & Methode" (pas "Livrables & Methode")
-Ouverture narrative : hero court (60vh) qui pose les 3 objectifs : "Securiser. Activer. Accelerer."
+Les 3 actes refonte (Securiser/Transformer/Accelerer) sont dans l'onglet **Diagnostic** (ils font partie du diagnostic contextualise). L'onglet Investissement garde la meme structure quel que soit le contexte :
 
-**ACTE 1 : "Securiser la refonte"**
-Transition narrative : on commence par la peur, ce que la migration risque de couter si non pilotee
-- AMOA SEO : {role SLASHR, coordination agence web, comite bi-mensuel}
-- Plan de redirections : {scope, nombre d'URLs, methode 1:1}
-- Recette technique : {validation pre-bascule, crawl, indexation, donnees structurees}
-- Monitoring post-bascule : {alertes, suivi J+1 a J+30, correction immediate}
-- Rassurance obligatoire : "Objectif : 0 perte de trafic strategique lors de la migration."
-- Pont narratif vers Acte 2 : relier a un cas client si pertinent
-
-**ACTE 2 : "Transformer la refonte en levier de croissance"**
-Transition narrative : on passe de la defense a l'attaque. La refonte devient un accelerateur
-- Activation du levier S7 PRIMARY : {actions concretes liees a la contrainte principale}
-- Pages piliers prioritaires : {clusters, volumes, calendrier pre-migration}
-- Architecture & donnees structurees : {integrees au cahier des charges refonte}
-- Livraison avant migration : {les pages rankent avant la bascule, la migration les transfere}
-- Pont narratif vers Acte 3 : projeter vers la montee en puissance post-bascule
-
-**ACTE 3 : "Accelerer apres la migration"**
-Transition narrative : le site est securise, les pages rankent. On accelere vers les objectifs business
-- Production contenu : {rythme, X pages/mois, clusters cibles}
-- Netlinking : {strategie si pertinente, sinon justifier le report}
-- Amplification : {pics saisonniers, paid complementaire}
-- Monitoring & reporting : {routine, frequence, KPIs suivis}
-- Pont narratif : relier aux pics saisonniers du prospect pour ancrer dans le reel
-
-Chaque acte doit etre coherent avec la contrainte S7 PRIMARY du deal.
-Chaque acte doit contenir un pont narratif (highlight-box) qui fait la transition vers le suivant.
-
-APRES les 3 actes : Resume decisionnel + Methode S7 + Investissement + FAQ + CTA.
+Structure :
+- Resume decisionnel (6 bullets)
+- Board-ready A4
+- Pricing (Phase 1 + Phase 2) avec pont S7
+- Cout de l'inaction
+- Methode S7
+- FAQ
+- Prochaine etape
+- CTA final
 
 ### SI PAS de refonte
 
-Structure standard :
+Structure identique :
 - Resume decisionnel (6 bullets)
-- Phase 1 (90 jours) : M1/M2/M3
-- Phase 2 (Run) : intensite + piliers + trajectoire M4-M6
 - Board-ready A4
+- Pricing (Phase 1 + Phase 2) avec pont S7
+- Cout de l'inaction
 - Methode S7
-- Investissement (Phase 1 + Phase 2 + cout inaction)
 - FAQ
-- CTA decisionnel
+- Prochaine etape
+- CTA final

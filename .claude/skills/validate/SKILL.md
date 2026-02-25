@@ -1,6 +1,6 @@
 ---
 name: validate
-description: Valide un HTML de proposition existant contre les 39 regles (3 layers). Standalone, sans relancer /prepare.
+description: Valide un HTML de proposition existant contre les 44 regles (4 layers). Standalone, sans relancer /prepare.
 ---
 
 # VALIDATE — Validation HTML standalone

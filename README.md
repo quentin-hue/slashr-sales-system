@@ -26,7 +26,7 @@ slashr-sales-system/
 ├── agents/
 │   ├── shared.md                      <- Preambule partage (role, sources, regles)
 │   ├── qualify.md                     <- Processus scoring
-│   └── prepare.md                     <- Processus proposition (3 passes + 4 onglets MVP)
+│   └── prepare.md                     <- Processus proposition (3 passes + 3 onglets MVP)
 ├── templates/
 │   └── proposal-kit.html             <- Kit CSS + 27 composants par role narratif
 ├── context/

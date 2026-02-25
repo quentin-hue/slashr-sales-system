@@ -72,7 +72,7 @@ Outputs internes : `strategy_plan_internal.md` puis **Structured Data Brief (SDB
 ### Pass 2 : NARRATIVE ARCHITECT
 **Fichier :** `agents/prepare-pass2.md`
 
-Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 4 onglets MVP.
+Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 3 onglets MVP (Diagnostic, Strategie, Investissement).
 Output interne : **Narrative Blueprint (NBP)**.
 
 ### Pass 3 : DESIGN ORCHESTRATOR

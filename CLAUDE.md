@@ -11,8 +11,8 @@ Tu es l'IA du systeme de closing SLASHR. Tu operes un agent unique — le **Deal
 | Commande | Type | Action |
 |----------|------|--------|
 | `/qualify <deal_id>` | Skill | Scoring rapide du deal (terminal + Pipedrive). Rejouable. |
-| `/prepare <deal_id>` | Skill | Proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 4 onglets MVP (uploadee dans Drive). |
-| `/validate <path_or_deal_id>` | Skill | Valide un HTML existant contre les 42 regles (4 layers). Standalone. |
+| `/prepare <deal_id>` | Skill | Proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 3 onglets MVP (uploadee dans Drive). |
+| `/validate <path_or_deal_id>` | Skill | Valide un HTML existant contre les 44 regles (4 layers). Standalone. |
 | `/debrief <deal_id>` | Skill | Collecte le resultat (won/lost), feedback closer, alimente la boucle de retroaction. |
 | `/pipedrive <deal_id> <action>` | Inline | Synchroniser le CRM (voir ci-dessous). |
 
@@ -56,10 +56,10 @@ slashr-sales-system/
 │   ├── prepare.md                     ← Routeur proposition (3 passes sequentielles)
 │   ├── prepare-pass1.md               ← Pass 1 : Data & Strategy Engine (collecte + S7 + SDB)
 │   ├── prepare-pass2.md               ← Pass 2 : Narrative Architect (arc + NBP)
-│   ├── prepare-pass2-onglet4.md       ← Pass 2 : Spec detaillee onglet Livrables & Methode
+│   ├── prepare-pass2-onglet4.md       ← Pass 2 : Spec detaillee onglet Investissement
 │   └── prepare-pass3.md               ← Pass 3 : Design Orchestrator (HTML + validation)
 ├── tools/
-│   ├── validate_proposal.py          ← Validation HTML automatisee (39 regles, 3 layers)
+│   ├── validate_proposal.py          ← Validation HTML automatisee (44 regles, 3 layers)
 │   └── preflight_check.py            ← Verification dependances API pre-run
 ├── templates/
 │   └── proposal-kit.html             ← Kit CSS + 27 composants par role narratif (reference, pas template)
@@ -71,7 +71,7 @@ slashr-sales-system/
 │   ├── case_studies.md                ← Bibliotheque cas clients (reference pour onglet Cas Clients)
 │   ├── s7_search_operating_model.md   ← Modele S7 (diagnostic vs activation)
 │   ├── s7_quick_reference.md          ← Digest compact S7 (7 forces, echelle, classification)
-│   ├── validation_rules.md            ← 39 regles de validation consolidees (3 layers)
+│   ├── validation_rules.md            ← 44 regles de validation consolidees (3 layers)
 │   ├── pricing_rules.md               ← Logique de calcul budgets Phase 1 & Phase 2 (interne)
 │   ├── output_contract.md             ← Frontiere client/interne (ce qui est visible vs masque)
 │   ├── performance_budget.md          ← Budgets d'appels, cache, timeouts

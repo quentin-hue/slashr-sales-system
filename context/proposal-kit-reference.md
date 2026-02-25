@@ -15,10 +15,9 @@ Classes : `.nav`, `.nav-inner`, `.nav-logo`, `.nav-tab`, `.nav-tab.active`
 <nav class="nav">
   <div class="nav-inner">
     <div class="nav-logo"><span>SLASHR</span></div>
-    <button class="nav-tab active" data-tab="strategie">Strategie</button>
-    <button class="nav-tab" data-tab="cas-clients">Cas Clients</button>
-    <button class="nav-tab" data-tab="roi">ROI Interactif</button>
-    <button class="nav-tab" data-tab="livrables">Livrables & Methode</button>
+    <button class="nav-tab active" data-tab="diagnostic">Diagnostic</button>
+    <button class="nav-tab" data-tab="strategie">Strategie</button>
+    <button class="nav-tab" data-tab="investissement">Investissement</button>
   </div>
 </nav>
 ```
@@ -31,10 +30,9 @@ Classes : `.main`, `.tab-content`, `.tab-content.active`
 
 ```html
 <div class="main">
-  <div class="tab-content active" id="tab-strategie">...</div>
-  <div class="tab-content" id="tab-cas-clients">...</div>
-  <div class="tab-content" id="tab-roi">...</div>
-  <div class="tab-content" id="tab-livrables">...</div>
+  <div class="tab-content active" id="tab-diagnostic">...</div>
+  <div class="tab-content" id="tab-strategie">...</div>
+  <div class="tab-content" id="tab-investissement">...</div>
 </div>
 ```
 
@@ -66,7 +64,49 @@ Classes : `.hero`, `.hero-short`, `.hero-blobs`, `.hero-blob-3`, `.hero-tag`, `.
 </section>
 ```
 
-Full-height, blobs orange/magenta/violet en fond, scroll indicator anime.
+Full-height, blobs orange/magenta/violet en fond, scroll indicator anime. Utilise uniquement dans l'onglet Diagnostic.
+
+### Header compact (onglets Strategie et Investissement)
+
+Classes : `.tab-header`
+
+```html
+<div class="tab-header">
+  <p class="section-label">Label onglet</p>
+  <h1>Titre de l'onglet</h1>
+  <p class="section-intro">Introduction courte.</p>
+</div>
+```
+
+```css
+/* Header compact — tabs 2 et 3 (pas de hero full-screen) */
+.tab-header {
+  padding: 80px 30px 40px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.tab-header .section-label {
+  color: var(--text-50);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+.tab-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.tab-header .section-intro {
+  color: var(--text-70);
+  font-size: 1.1rem;
+  max-width: 720px;
+}
+```
+
+Remplace le hero full-screen pour les onglets Strategie et Investissement. Pas de blobs, pas de plein ecran. Le contenu demarre directement apres le header.
 
 ### Section (label + titre + intro)
 

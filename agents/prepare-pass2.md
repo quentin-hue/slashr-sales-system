@@ -20,13 +20,13 @@ Dans la recommendation (NBP), garder 3 sections courtes :
 - Chaque axe de reco doit etre relie a 1 fait OU explicite comme hypothese.
 
 
-Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **4 onglets MVP**. Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
+Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **3 onglets MVP** (Diagnostic, Strategie, Investissement). Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
 
 ### Champs SDB enrichis (consommes par Pass 2)
 
 - `DECIDEUR_LEVEL` : adapter le ton (DECIDEUR → decision directe, INFLUENCEUR → board-ready A4 crucial, OPERATIONNEL → passage par le N+1)
 - `PERIMETRE_SLASHR` : cadrer la recommandation (ne pas recommander hors perimetre)
-- `REFONTE` : choisir entre structure standard et 3-actes (onglet 4)
+- `REFONTE` : si refonte, les 3 actes (Securiser/Transformer/Accelerer) sont dans l'onglet Diagnostic
 - `MODULES_ACTIFS` : savoir quels blocs de donnees sont disponibles dans le SDB
 - `NARRATIVE_HINTS` : point de depart pour l'etape de deduplication (non-contraignant)
 - `TRANSITION_OPPORTUNITIES` : point de depart pour placer les 2 transitions SLASHR (non-contraignant)
@@ -37,7 +37,7 @@ Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc em
 
 ## Etape 2.1 : Choisir le hook
 
-Quelle est l'information la plus frappante pour ce prospect ? C'est ca qui ouvre apres le hero dans l'onglet Strategie.
+Quelle est l'information la plus frappante pour ce prospect ? C'est ca qui ouvre apres le hero dans l'onglet Diagnostic.
 
 - Gap concurrentiel massif → ouvrir par le face-a-face
 - Verbatim du prospect qui pose la bonne question → ouvrir par la citation + reponse
@@ -64,9 +64,9 @@ L'ouverture de la proposition suit une cascade en 3 couches. Chaque couche avanc
 
 ---
 
-## Etape 2.2 : Definir l'arc narratif de l'onglet Strategie
+## Etape 2.2 : Definir l'arc narratif de l'onglet Diagnostic
 
-L'onglet Strategie est une **sequence de sections libres**. L'agent cree les sections qu'il veut, dans l'ordre qu'il veut. Il n'y a pas de liste fixe, il y a un objectif : **emmener ce decideur du constat a la conviction, avec ces donnees, dans ce contexte.**
+L'onglet Diagnostic est une **sequence de sections libres**. L'agent cree les sections qu'il veut, dans l'ordre qu'il veut. Il n'y a pas de liste fixe, il y a un objectif : **emmener ce decideur du constat a la conviction, avec ces donnees, dans ce contexte.**
 
 ### Arcs types (non limitatifs)
 
@@ -84,7 +84,7 @@ Avant de creer les sections, regrouper les blocs du SDB qui alimentent le **meme
 
 **Processus :**
 1. Lire les `NARRATIVE_HINTS` du SDB (si presents). Ils suggerent des regroupements de blocs par argument decideur.
-2. Partir des hints comme point de depart, puis lister les blocs du SDB qui seront utilises dans l'onglet Strategie.
+2. Partir des hints comme point de depart, puis lister les blocs du SDB qui seront utilises dans l'onglet Diagnostic.
 3. Pour chaque paire de blocs non encore groupee, se demander : "est-ce que ces deux blocs racontent le meme argument au decideur ?" Si oui, les fusionner dans une seule section.
 4. Le resultat est une liste d'**arguments distincts**, chacun alimente par 1+ blocs de data.
 5. Chaque argument devient 1 section. Pas plus.
@@ -95,9 +95,8 @@ Note : les NARRATIVE_HINTS sont des suggestions, pas des contraintes. Pass 2 peu
 
 ### Nombre de sections
 
-Autant que necessaire, pas plus.
-- Cible : **5-6 sections** (y compris S7, implications, reco, 90 jours, CTA)
-- Maximum absolu : 7 sections. Au-dela, c'est que l'etape de deduplication n'a pas ete faite.
+Pas de plafond de sections. La deduplication (1 argument = 1 section) est le seul garde-fou.
+- Si le diagnostic justifie 12 sections, il y a 12 sections. Si 4 suffisent, 4.
 - Chaque section doit apporter un **nouvel argument**. Si elle reformule un argument deja presente, elle n'existe pas — les donnees sont integrees dans la section existante.
 
 ---
@@ -149,34 +148,49 @@ Un titre doit etre compris en 1 lecture. Regles :
 
 ### En scrollant les titres seuls, l'arc narratif est lisible
 
-Test : extraire uniquement les h2 de l'onglet Strategie et les lire dans l'ordre. Ils doivent raconter une histoire coherente, meme sans le contenu des sections.
+Test : extraire uniquement les h2 de l'onglet Diagnostic et les lire dans l'ordre. Ils doivent raconter une histoire coherente, meme sans le contenu des sections.
 
 ---
 
-## Etape 2.3 : Planifier les 4 onglets MVP
+## Etape 2.3 : Planifier les 3 onglets MVP
 
-La proposition HTML a toujours **4 onglets**. Aucun n'est optionnel.
+La proposition HTML a toujours **3 onglets**. Aucun n'est optionnel.
 
-### Onglet 1 : Strategie (decision-driving)
+```
+Onglet 1 : Diagnostic — "Voici votre situation"
+Onglet 2 : Strategie — "Voici ce qu'on recommande"
+Onglet 3 : Investissement — "Voici ce que ca coute"
+```
+
+### Onglet 1 : Diagnostic ("Voici votre situation")
 
 C'est l'onglet principal. Il contient :
-- Le **hero** (nom prospect, accroche, sous-titre)
-- Les **sections libres** suivant l'arc narratif
-- La **section S7 "Lecture strategique"** (obligatoire, voir ci-dessous)
-- Le **CTA** en fin d'onglet
+- Le **hero** (full screen, contexte client tisse : pas juste le nom, mais le contexte business : AO, refonte, objectif CA, etc.)
+- Les **sections libres** du diagnostic : constat, benchmark, territoires, S7, deferred, implications
+- Les **cas clients inline** (micro-benchmarks integres dans les sections pertinentes)
+- Un **SO WHAT obligatoire** sur chaque section (highlight box avec impact business chiffre)
 
-**Les anciens onglets conditionnels (SEO, GEO/IA, SEA, Social, Tech/UX) deviennent des SECTIONS dans l'onglet Strategie** quand les donnees le justifient. Un deal avec des donnees GEO aura une section "Visibilite IA" dans l'onglet Strategie, pas un onglet separe.
+**Contexte client tisse :** le hero et la premiere section prouvent que le diagnostic est personnalise. Le hero-subtitle tisse le contexte business (AO, refonte, objectif, etc.). La premiere section ouvre sur une donnee que le prospect ne connaissait pas SUR LUI.
+
+**Les anciens onglets conditionnels (SEO, GEO/IA, SEA, Social, Tech/UX) deviennent des SECTIONS dans l'onglet Diagnostic** quand les donnees le justifient. Un deal avec des donnees GEO aura une section "Visibilite IA" dans l'onglet Diagnostic, pas un onglet separe.
 
 **Pas de section "Pourquoi SLASHR" standalone.** Les differenciateurs sont tisses apres chaque bloc de donnees, en enchainage naturel (cf. Etape 2.4).
 
 **Regle de placement des metriques Search :**
-- **Onglet Strategie (benchmark)** : utiliser le trafic organique (visites/mois) + split marque/hors-marque. C'est le diagnostic. Le decideur comprend un gap en volume.
-- **Onglet ROI** : utiliser l'ETV (Estimated Traffic Value) comme "equivalent budget Google Ads". Ca valorise le SEO vs le paid et pose l'argument SEA. Formuler : "La Trinitaine genere l'equivalent de X EUR/mois en achat publicitaire grace a son SEO."
+- **Onglet Diagnostic (benchmark)** : utiliser le trafic organique (visites/mois) + split marque/hors-marque. C'est le diagnostic. Le decideur comprend un gap en volume.
+- **Section ROI (onglet Strategie)** : utiliser l'ETV (Estimated Traffic Value) comme "equivalent budget Google Ads". Ca valorise le SEO vs le paid et pose l'argument SEA. Formuler : "La Trinitaine genere l'equivalent de X EUR/mois en achat publicitaire grace a son SEO."
 - **Ne jamais afficher l'ETV dans le benchmark** — c'est une metrique d'analyste, pas de decideur. Le prospect comprend "8 000 visites/mois", pas "27 658 EUR d'ETV".
 
-#### Section S7 "Lecture strategique" (obligatoire dans l'onglet Strategie)
+**SO WHAT obligatoire :** chaque section de l'onglet Diagnostic se termine par un highlight box qui traduit les donnees en impact business chiffre, specifique au prospect. Un bar chart sans interpretation est un dashboard, pas une proposition.
 
-Bloc compact qui traduit le diagnostic S7 interne en lecture C-level. Place apres le diagnostic et avant la recommandation dans l'arc narratif.
+**Micro-benchmark inline :** apres chaque section diagnostic ou un cas client est pertinent, inserer un composant micro-benchmark :
+- Format : {Prospect} : {metrique} → {Cas} (avant) : {metrique} → {Cas} (apres) : {metrique}
+- Source : SDB > CAS CLIENTS RETENUS > sdb_juxtaposition
+- Maximum 2-3 micro-benchmarks dans l'onglet, places la ou ils renforcent le plus l'argument
+
+#### Section S7 "Lecture strategique" (obligatoire dans l'onglet Diagnostic)
+
+Bloc compact qui traduit le diagnostic S7 interne en lecture C-level. Place apres le diagnostic et avant les implications dans l'arc narratif.
 
 **Contenu :**
 1. **Radar 7 forces** : visualisation SVG/canvas des 7 scores (0-5). Pas de legende longue : le nom de chaque force + son score suffit.
@@ -192,7 +206,7 @@ Bloc compact qui traduit le diagnostic S7 interne en lecture C-level. Place apre
 
 #### Composant "Territoires de contenu" (donnees Intent Market Map)
 
-Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'est pas une section autonome — c'est un **composant visuel** que l'etape de deduplication peut integrer dans n'importe quelle section de l'onglet Strategie (constat, benchmark, recommandation).
+Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'est pas une section autonome — c'est un **composant visuel** que l'etape de deduplication peut integrer dans n'importe quelle section de l'onglet Diagnostic (constat, benchmark, recommandation).
 
 **Contenu du composant :**
 1. **Segmentation du marche** : 1 visualisation (donut chart ou KPI cards) montrant la repartition Commercial / Informationnel captable / (Informationnel non-captable omis). Montrer les volumes.
@@ -206,48 +220,35 @@ Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'e
 - **Ne PAS utiliser ce composant** si la marque n'a pas de legitimite sur le contenu informationnel (ex: revendeur generique, marketplace).
 - Ce composant est **soumis a la deduplication** (Etape 2.3) : s'il repete un argument deja couvert par une autre section, il est fusionne dans cette section, pas affiche en doublon.
 
-### Onglet 2 : Cas Clients (social proof)
+### Onglet 2 : Strategie ("Voici ce qu'on recommande")
 
-2-4 cas clients comparables au prospect, selectionnes dans le SDB. Pour chaque cas :
-- **Micro-benchmark comparatif** (bandeau visuel obligatoire) : juxtaposition chiffree entre la situation du prospect et celle du cas client.
-  Format : `{Prospect} : {metrique actuelle} → {Cas client} (avant) : {metrique comparable} → {Cas client} (apres) : {metrique resultat}`
-  Ex : "LMP : 319 kw → La Trinitaine (avant) : 412 kw → La Trinitaine (apres) : 5 643 kw"
-  Source : `sdb_juxtaposition` du SDB.
-- **Situation initiale** en chiffres
-- **Ce qu'on a fait** en 1-2 phrases
-- **Resultats** en chiffres + timeline
-- **Citation client** si disponible dans `context/case_studies.md`
+Header compact (pas de hero full-screen). L'onglet ouvre directement sur la decision strategique.
 
-L'agent adapte l'angle de presentation de chaque cas pour faire resonner avec la situation du prospect. Un cas identique peut etre presente differemment selon le prospect.
+- **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet au lieu d'etre enterree en fin de scroll
+- **90 jours** (M1/M2/M3) : plan d'action immediat
+- **ROI Simulateur** : hypotheses sourcees + sliders + scenarios (absorbe l'ex-onglet ROI Interactif)
+  - **Hypotheses pre-remplies** avec les donnees reelles du SDB (trafic actuel, multiplicateur source du gap, CVR, panier moyen)
+  - **Source de chaque hypothese** visible (pas de chiffres sans provenance)
+  - **Chaine de calcul visible** : H1 x H2 x H3 = resultat. Chaque hypothese affiche son niveau de confiance.
+  - **Intervalle ROI** : borne basse (conservatrice) par defaut, borne haute via simulateur. Le chiffre unique est interdit.
+  - **Simulateur interactif** (sliders) : recalcul en temps reel
+  - **3 scenarios calcules** alignes sur Essentiel / Performance / Croissance
+  - **Methodologie** : explication en 1-2 phrases de la logique de calcul
+- **CTA intermediaire leger** (lien texte, pas full-width)
 
-**Point de depart :** le SDB fournit pour chaque cas retenu : `match_criteria`, `key_metric`, `sdb_juxtaposition`, et `angle`. Le `sdb_juxtaposition` alimente directement le micro-benchmark visuel.
+**Regle Confidence ROI :** si le SDB indique `Confidence globale: Low` ou si 2+ hypotheses ROI sont tagees `Low`, la section ROI DOIT afficher "Hypotheses a confirmer en Phase 1" sous le simulateur, et la carte `.recommended` de l'onglet Investissement recoit le label "Recommandation conditionnelle".
 
-### Onglet 3 : ROI Interactif (engagement)
-
-- **Hypotheses pre-remplies** avec les donnees reelles du SDB (trafic actuel, multiplicateur source du gap, CVR, panier moyen)
-- **Source de chaque hypothese** visible (pas de chiffres sans provenance)
-- **Chaine de calcul visible** : H1 x H2 x H3 = resultat. Le prospect voit quels maillons sont solides (High) et lesquels sont des estimations (Low). Chaque hypothese affiche son niveau de confiance.
-- **Intervalle ROI** : afficher la borne basse (conservatrice) par defaut, avec la borne haute accessible via le simulateur. Le chiffre unique est interdit — toujours un intervalle.
-- **Simulateur interactif** (sliders que le prospect manipule) — les sliders correspondent aux hypotheses de la chaine. Bouger un slider = recalcul en temps reel.
-- **3 scenarios calcules** alignes sur les scenarios d'engagement (Essentiel / Performance / Croissance)
-- **Methodologie** : explication en 1-2 phrases de la logique de calcul
-
-**Regle de non-duplication ROI vs Livrables :**
-L'onglet ROI montre les **resultats par scenario** (visites cibles, CA additionnel, ROI). L'onglet Livrables montre le **detail des livrables et les prix**. Les pricing cards (scope + prix) n'apparaissent que dans l'onglet 4. L'onglet 3 affiche les scenarios sous forme de cartes ROI (metriques de resultat), pas de cartes pricing (scope + prix). Si un composant affiche un prix ET un scope de livrables, il est dans l'onglet 4 uniquement.
-
-**Regle Confidence ROI :** si le SDB indique `Confidence globale: Low` ou si 2+ hypotheses ROI sont tagees `Low`, l'onglet ROI DOIT afficher "Hypotheses a confirmer en Phase 1" sous le simulateur, et la carte `.recommended` de l'onglet Livrables recoit le label "Recommandation conditionnelle". Cette decision vient du SDB, Pass 2 ne la recalcule pas.
-
-### Onglet 4 : Livrables & Methode (transparence)
+### Onglet 3 : Investissement ("Voici ce que ca coute")
 
 **Spec complete : `agents/prepare-pass2-onglet4.md`.**
 
-Contient : resume decisionnel (6 bullets), board-ready A4, methode S7, Phase 1/Phase 2, investissement v12.0, sous-bloc unique "cout de l'inaction", structure conditionnelle refonte (3 actes) vs standard, FAQ, CTA.
+Header compact (pas de hero full-screen). Contient : resume decisionnel (6 bullets), board-ready A4, pricing cards Phase 1/Phase 2 avec pont S7, sous-bloc unique "cout de l'inaction", methode S7, FAQ accordion, prochaine etape, CTA final.
 
 ---
 
 ## Etape 2.4 : Integration des avantages competitifs
 
-**Maximum 2 transitions SLASHR dans l'onglet Strategie.** Choisir les 2 moments ou la transition entre le constat et l'expertise SLASHR est la plus naturelle. Les autres sections se passent de transition — les donnees parlent d'elles-memes.
+**Maximum 2 transitions SLASHR dans l'onglet Diagnostic.** Choisir les 2 moments ou la transition entre le constat et l'expertise SLASHR est la plus naturelle. Les autres sections se passent de transition — les donnees parlent d'elles-memes.
 
 **Point de depart :** consulter `TRANSITION_OPPORTUNITIES` du SDB (si present). Ces 2 suggestions identifient les data blocks ou un differenciateur SLASHR s'insere naturellement. Pass 2 peut les adopter ou les remplacer si l'arc narratif le justifie.
 
@@ -292,14 +293,14 @@ Contient : resume decisionnel (6 bullets), board-ready A4, methode S7, Phase 1/P
 - [ ] "Decision strategique recommandee" : phrase affirmative avec "Nous recommandons"
 - [ ] "90 jours" : 3 etapes max alignees sur PRIMARY
 - [ ] Deduplication verifiee : aucune section ne reformule un argument precedent
-- [ ] Maximum 7 sections dans l'onglet Strategie (hero exclu, CTA inclus)
-- [ ] Test des h2 : les titres dans l'ordre = une histoire coherente
+- [ ] Test des h2 : les titres de l'onglet Diagnostic dans l'ordre = une histoire coherente
+- [ ] SO WHAT : chaque section Diagnostic a un highlight box avec impact business chiffre
 
 **Tonalite :**
 - [ ] Zero pression commerciale (inclut structures anaphoriques "chaque mois/jour sans")
 - [ ] Zero dramatisation
 - [ ] Zero auto-promotion deguisee (pas de "Notre {X} :", pas de "C'est exactement ce que")
-- [ ] Max 2 transitions SLASHR dans l'onglet Strategie
+- [ ] Max 2 transitions SLASHR dans l'onglet Diagnostic
 - [ ] Chaque expertise traduite en impact business (pas de jargon brut)
 
 ---
@@ -328,14 +329,16 @@ Regroupement par argument:
 - Argument 2 "{nom}": blocs {D} → 1 section
 - Argument 3 "{nom}": blocs {E, F} → 1 section
 - ...
-Total sections Strategie: {N} (max 7, hero et CTA exclus du compte)
+Total sections Diagnostic: {N} (pas de plafond, deduplication seul garde-fou)
 
---- ONGLET STRATEGIE ---
+--- ONGLET DIAGNOSTIC ---
 
-1. {Titre section} · role: {accroche / diagnostic / enjeu / opportunite / recommandation / ...}
+1. {Titre section} · role: {accroche / diagnostic / enjeu / opportunite / ...}
    Angle: {description en 1-2 phrases de ce que cette section dit}
    Donnees utilisees: {quelles donnees du SDB alimentent cette section}
-   Transition SLASHR: {phrase de transition apres le data block}
+   SO WHAT: {highlight box : impact business chiffre pour ce prospect}
+   Cas client inline: {si pertinent : Prospect: metrique → Cas (avant): metrique → Cas (apres): metrique}
+   Transition SLASHR: {phrase de transition apres le data block, si applicable}
    Pourquoi ici: {justification de sa position dans l'arc}
 
 2. {Titre section} · role: {...]
@@ -346,7 +349,7 @@ X. Section S7 "Lecture strategique" · role: priorisation / conviction
    Contrainte principale: {force + implication business}
    Leviers: {2-3 forces priorisees + impact chiffre}
    Insight: {1 phrase non generique}
-   Pourquoi ici: {apres le diagnostic, avant la recommandation, c'est le pont}
+   Pourquoi ici: {apres le diagnostic, avant les implications, c'est le pont}
 
 X+0.5. Section "Ce que nous ne priorisons pas (maintenant)" · role: transparence strategique (OBLIGATOIRE)
    3 bullets maximum, issus des DEFERRED du strategy_plan_internal.md.
@@ -359,15 +362,6 @@ X+0.5. Section "Ce que nous ne priorisons pas (maintenant)" · role: transparenc
    - Pas de justification budget ("c'est trop cher" interdit). Justification logique uniquement ("tant que S3 n'est pas traite, S6 n'a pas de contenu a diffuser").
    - Le prospect doit comprendre que ne PAS faire quelque chose est une decision autant que faire quelque chose.
    Pourquoi ici: {juste apres le S7, avant les implications — le decideur voit qu'on a arbitre, pas ignore}
-
-OBJECTIONS A PRE-EMPT (max 4, reponses data-first, 2 phrases chacune) :
-1) {objection probable} → {reponse courte + preuve (source/data/verbatim)}
-2) {objection probable} → {reponse courte + preuve}
-3) {objection probable} → {reponse courte + preuve}
-4) {objection probable} → {reponse courte + preuve}
-Regles :
-- Objections typiques : budget, timing, "contenu = SEO 2020", dependance dev, "on a deja une agence", ROI incertain.
-- Reponses : jamais defensives, jamais aggressives. Toujours "les donnees montrent..." + "Phase 1 confirme".
 
 X+1. Section "Ce que cela implique" · role: verrou narratif decisionnel (OBLIGATOIRE)
    **Triplet structure obligatoire** — exactement 3 bullets, chacun avec un role distinct :
@@ -383,11 +377,22 @@ X+1. Section "Ce que cela implique" · role: verrou narratif decisionnel (OBLIGA
    - Structure anaphorique ("Chaque mois..." x3) = effet marteau = pression commerciale
    - Repetition du meme leitmotiv dans les 3 bullets (ex: "sans contenu" x3)
    - Ton alarmiste ou dramatique. Les donnees suffisent.
-   - Chiffrer le "cout de l'inaction" en euros : c'est dans le sous-bloc Investissement (onglet 4), pas ici
+   - Chiffrer le "cout de l'inaction" en euros : c'est dans le sous-bloc Investissement (onglet 3), pas ici
    - Inventer une projection que Pass 1 n'a pas calculee. Le bullet 3 utilise UNIQUEMENT la Projection PRIMARY du SDB.
-   Pourquoi ici: {le prospect a compris le diagnostic, maintenant il doit voir la decision}
+   Pourquoi ici: {le prospect a compris le diagnostic, maintenant il doit voir les implications}
 
-X+2. Section "Decision strategique recommandee" · role: declencheur de decision (OBLIGATOIRE)
+OBJECTIONS A PRE-EMPT (max 4, reponses data-first, 2 phrases chacune) :
+1) {objection probable} → {reponse courte + preuve (source/data/verbatim)}
+2) {objection probable} → {reponse courte + preuve}
+3) {objection probable} → {reponse courte + preuve}
+4) {objection probable} → {reponse courte + preuve}
+Regles :
+- Objections typiques : budget, timing, "contenu = SEO 2020", dependance dev, "on a deja une agence", ROI incertain.
+- Reponses : jamais defensives, jamais aggressives. Toujours "les donnees montrent..." + "Phase 1 confirme".
+
+--- ONGLET STRATEGIE ---
+
+1. Section "Decision strategique recommandee" · role: declencheur de decision (OUVRE l'onglet)
    Titre: "Decision strategique recommandee" (avec emoji cible)
    1 phrase tranchee, affirmative, non conditionnelle, non vague
    Liee explicitement a la contrainte S7 PRIMARY
@@ -408,47 +413,29 @@ X+2. Section "Decision strategique recommandee" · role: declencheur de decision
    - "Augmenter le trafic"
    - "Gagner en notoriete"
    Regle : tout objectif formule doit repondre implicitement a la question "pourquoi business ?"
-   Pourquoi ici: {la decision doit etre formulee noir sur blanc avant de parler methode}
 
-X+3. Sous-bloc "Ce que cela signifie concretement (90 jours)" · role: projection immediate
+2. Sous-bloc "Ce que cela signifie concretement (90 jours)" · role: projection immediate
    3 etapes max alignees strictement sur la contrainte S7 PRIMARY
    Pas de liste generique, seulement ce qui decoule du diagnostic
    Chaque etape = action concrete + livrable ou KPI attendu
-   Pourquoi ici: {la decision est prise, le prospect voit immediatement ce que ca donne}
 
-N. CTA, toujours en dernier (REGLE v10.4 : CTA DECISIONNEL)
-   Interdit : "Planifier un echange", "Discuter", "Echanger", "En savoir plus", ou tout verbe passif/generique
-   Obligatoire : CTA oriente decision, lie a la trajectoire 90 jours si elle existe
-   Exemples : "Demarrer la Phase 1", "Valider le lancement Phase 1", "Activer la Phase 1 (90 jours)"
-   Le libelle du bouton CTA doit correspondre a la decision recommandee de la section precedente
-   Si aucun verbe d'action strategique n'est present dans le CTA, la generation echoue
+3. ROI Simulateur · role: quantification de l'impact
+   Chaine de calcul (visible dans le simulateur) :
+     H1: Trafic actuel = {X} visites/mois [Confidence: {H/M/L}] (source: DataForSEO)
+     H2: Visites cibles M12 = {Y_bas} - {Y_haut} visites/mois [Confidence: {H/M/L}] (source: gap analysis)
+     H3: CVR = {W_bas}% - {W_haut}% [Confidence: {H/M/L}] (source: {benchmark / prospect})
+     H4: Panier moyen = {V} EUR [Confidence: {H/M/L}] (source: {prospect})
+     → Resultat : H2 x H3 x H4 = {CA_bas} - {CA_haut} EUR/an additionnel
+     → ROI intervalle : x{N_bas} - x{N_haut}
+     → ROI affiche (defaut) : x{N_bas} (borne basse conservatrice)
+   3 scenarios: Essentiel ({prix}) / Performance ({prix}) / Croissance ({prix})
 
---- ONGLET CAS CLIENTS ---
+4. CTA intermediaire leger (lien texte, pas full-width)
+   Interdit : "Planifier un echange", "Discuter", "Echanger", "En savoir plus"
+   Obligatoire : CTA oriente decision, lie a la trajectoire 90 jours
+   Exemples : "Demarrer la Phase 1", "Valider le lancement Phase 1"
 
-Cas 1: {entreprise}, {problematique similaire au prospect}
-  Micro-benchmark: {Prospect}: {metrique} → {Cas} (avant): {metrique} → {Cas} (apres): {metrique}
-  Avant: {chiffres cles}
-  Action: {levier en 1-2 phrases}
-  Apres: {chiffres cles + timeline}
-  Citation: "{verbatim}", {prenom, role}
-  Angle prospect: {pourquoi ce cas parle a CE prospect}
-
-Cas 2: ...
-
---- ONGLET ROI INTERACTIF ---
-
-Chaine de calcul (visible dans le simulateur) :
-  H1: Trafic actuel = {X} visites/mois [Confidence: {H/M/L}] (source: DataForSEO)
-  H2: Visites cibles M12 = {Y_bas} - {Y_haut} visites/mois [Confidence: {H/M/L}] (source: gap analysis)
-  H3: CVR = {W_bas}% - {W_haut}% [Confidence: {H/M/L}] (source: {benchmark / prospect})
-  H4: Panier moyen = {V} EUR [Confidence: {H/M/L}] (source: {prospect})
-  → Resultat : H2 x H3 x H4 = {CA_bas} - {CA_haut} EUR/an additionnel
-  → ROI intervalle : x{N_bas} - x{N_haut}
-  → ROI affiche (defaut) : x{N_bas} (borne basse conservatrice)
-
-3 scenarios: Essentiel ({prix}) / Performance ({prix}) / Croissance ({prix})
-
---- ONGLET LIVRABLES & METHODE (ou "REFONTE & METHODE" si refonte) ---
+--- ONGLET INVESTISSEMENT ---
 
 Structure complete : voir `agents/prepare-pass2-onglet4.md`
 Scenario recommande: {lequel et pourquoi}

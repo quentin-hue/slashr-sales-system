@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-SLASHR Proposal Validator — v1.1
+SLASHR Proposal Validator — v2.0
 
-Valide un HTML de proposition contre les 42 regles de validation.
+Valide un HTML de proposition contre les 44 regles de validation (3 onglets : Diagnostic, Strategie, Investissement).
 - Layer 1 (Structural) : PASS/FAIL — echec = REJECT
 - Layer 2 (Content) : WARN — correction recommandee
 - Layer 3 (Semantic) : checklist affichee pour revue manuelle
@@ -41,20 +41,20 @@ class ProposalParser(HTMLParser):
         self.in_style = False
         self.in_script = False
         self.current_tag_stack = []
-        self.h2_order = []  # h2 texts in order within tab-strategie
+        self.h2_order = []  # h2 texts in order within tab-diagnostic
         self.in_h2 = False
         self.h2_buffer = ""
 
-        # R18: track <li> inside highlight-gradient in tab-livrables
-        self.in_highlight_gradient_livrables = False
+        # R18: track <li> inside highlight-gradient in tab-investissement
+        self.in_highlight_gradient_investissement = False
         self.highlight_gradient_depth = 0
         self.highlight_gradient_li_count = 0
 
         # Layer 4 quality metrics
-        self.strat_paragraphs = []  # list of paragraph texts in tab-strategie
-        self.strat_h2s = []  # list of h2 texts in tab-strategie
-        self.in_p_strat = False
-        self.p_strat_buffer = ""
+        self.diag_paragraphs = []  # list of paragraph texts in tab-diagnostic
+        self.diag_h2s = []  # list of h2 texts in tab-diagnostic
+        self.in_p_diag = False
+        self.p_diag_buffer = ""
 
         # R42: "Ce que cela implique" li tracking
         self.implique_detected = False  # text "ce que cela implique" seen
@@ -92,19 +92,19 @@ class ProposalParser(HTMLParser):
         if tag == "script":
             self.in_script = True
 
-        # Track h2 inside tab-strategie
-        if tag == "h2" and self.current_tab == "tab-strategie":
+        # Track h2 inside tab-diagnostic
+        if tag == "h2" and self.current_tab == "tab-diagnostic":
             self.in_h2 = True
             self.h2_buffer = ""
 
-        # R18: Track highlight-gradient in tab-livrables for bullet counting
+        # R18: Track highlight-gradient in tab-investissement for bullet counting
         # Void elements (br, hr, img, etc.) don't have closing tags, so skip depth tracking
         void_elements = {'br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base',
                          'col', 'embed', 'param', 'source', 'track', 'wbr'}
-        if "highlight-gradient" in classes.split() and self.current_tab == "tab-livrables":
-            self.in_highlight_gradient_livrables = True
+        if "highlight-gradient" in classes.split() and self.current_tab == "tab-investissement":
+            self.in_highlight_gradient_investissement = True
             self.highlight_gradient_depth = 1
-        elif self.in_highlight_gradient_livrables and tag not in void_elements:
+        elif self.in_highlight_gradient_investissement and tag not in void_elements:
             self.highlight_gradient_depth += 1
             if tag == "li":
                 self.highlight_gradient_li_count += 1
@@ -113,10 +113,10 @@ class ProposalParser(HTMLParser):
         if "window.print" in str(attrs):
             self.has_print_button = True
 
-        # Layer 4: Track <p> in tab-strategie for density metric
-        if tag == "p" and self.current_tab == "tab-strategie" and "section-label" not in classes:
-            self.in_p_strat = True
-            self.p_strat_buffer = ""
+        # Layer 4: Track <p> in tab-diagnostic for density metric
+        if tag == "p" and self.current_tab == "tab-diagnostic" and "section-label" not in classes:
+            self.in_p_diag = True
+            self.p_diag_buffer = ""
 
         # R42: Track <li> in "Ce que cela implique" section
         if self.implique_detected and not self.implique_list_done:
@@ -141,16 +141,16 @@ class ProposalParser(HTMLParser):
             self.in_h2 = False
             self.h2_order.append(self.h2_buffer.strip())
         # R18: track highlight-gradient container depth
-        if self.in_highlight_gradient_livrables:
+        if self.in_highlight_gradient_investissement:
             self.highlight_gradient_depth -= 1
             if self.highlight_gradient_depth <= 0:
-                self.in_highlight_gradient_livrables = False
+                self.in_highlight_gradient_investissement = False
 
         # Layer 4: close <p> tracking
-        if tag == "p" and self.in_p_strat:
-            self.in_p_strat = False
-            if self.p_strat_buffer.strip():
-                self.strat_paragraphs.append(self.p_strat_buffer.strip())
+        if tag == "p" and self.in_p_diag:
+            self.in_p_diag = False
+            if self.p_diag_buffer.strip():
+                self.diag_paragraphs.append(self.p_diag_buffer.strip())
 
         # R42: close <li> and <ul>/<ol> in implique section
         if tag == "li" and self.in_implique_li:
@@ -187,11 +187,11 @@ class ProposalParser(HTMLParser):
             self.h2_buffer += data
 
         # Layer 4: accumulate paragraph text
-        if self.in_p_strat:
-            self.p_strat_buffer += data
+        if self.in_p_diag:
+            self.p_diag_buffer += data
 
         # R42: detect "Ce que cela implique" section and accumulate li text
-        if self.current_tab == "tab-strategie" and "ce que cela implique" in data.lower():
+        if self.current_tab == "tab-diagnostic" and "ce que cela implique" in data.lower():
             self.implique_detected = True
         if self.in_implique_li:
             self.implique_li_buffer += data
@@ -239,29 +239,29 @@ def check_layer1(parser, html_raw):
     has_bg = "#1a1a1a" in parser.css_content or "#1a1a1a" in html_raw
     results.append(("R3", "Fond sombre #1a1a1a", has_bg))
 
-    # R5: 4 onglets non-vides
-    required_tabs = ["tab-strategie", "tab-cas-clients", "tab-roi", "tab-livrables"]
+    # R5: 3 onglets non-vides
+    required_tabs = ["tab-diagnostic", "tab-strategie", "tab-investissement"]
     tabs_ok = all(
         tab_id in parser.tabs and len(parser.tabs[tab_id]) > 2
         for tab_id in required_tabs
     )
     missing = [t for t in required_tabs if t not in parser.tabs or len(parser.tabs.get(t, [])) <= 2]
     detail = f" (manquants/vides: {', '.join(missing)})" if missing else ""
-    results.append(("R5", f"4 onglets non-vides{detail}", tabs_ok))
+    results.append(("R5", f"3 onglets non-vides{detail}", tabs_ok))
 
-    # R14: Section S7 dans onglet Strategie
-    strat_text = tab_text(parser, "tab-strategie").lower()
-    has_s7 = tab_has_class(parser, "tab-strategie", "s7-grid") or \
-             tab_has_class(parser, "tab-strategie", "s7-card") or \
-             "s7-grid" in strat_text or "s7-card" in strat_text
-    results.append(("R14", "Section S7 dans onglet Strategie", has_s7))
+    # R14: Section S7 dans onglet Diagnostic
+    diag_text = tab_text(parser, "tab-diagnostic").lower()
+    has_s7 = tab_has_class(parser, "tab-diagnostic", "s7-grid") or \
+             tab_has_class(parser, "tab-diagnostic", "s7-card") or \
+             "s7-grid" in diag_text or "s7-card" in diag_text
+    results.append(("R14", "Section S7 dans onglet Diagnostic", has_s7))
 
     # R16: Exactement 1 PRIMARY
     primary_count = parser.data_states.count("primary")
     results.append(("R16", f"Exactement 1 PRIMARY (trouve: {primary_count})", primary_count == 1))
 
     # R18: Resume decisionnel <= 6 bullets
-    has_gradient = tab_has_class(parser, "tab-livrables", "highlight-gradient")
+    has_gradient = tab_has_class(parser, "tab-investissement", "highlight-gradient")
     li_count = parser.highlight_gradient_li_count
     if has_gradient and li_count > 6:
         results.append(("R18", f"Resume decisionnel <= 6 bullets (trouve: {li_count})", False))
@@ -294,14 +294,14 @@ def check_layer1(parser, html_raw):
     else:
         results.append(("R29", "Zero jours/TJM/AMOA dans le texte visible", True))
 
-    # R31: Accordion FAQ dans Livrables
-    has_accordion = tab_has_class(parser, "tab-livrables", "accordion")
-    results.append(("R31", "Accordion FAQ dans onglet Livrables", has_accordion))
+    # R31: Accordion FAQ dans Investissement
+    has_accordion = tab_has_class(parser, "tab-investissement", "accordion")
+    results.append(("R31", "Accordion FAQ dans onglet Investissement", has_accordion))
 
-    # R35: "Prochaine etape" dans Livrables
-    has_next = "prochaine" in tab_text(parser, "tab-livrables").lower() and \
-               "tape" in tab_text(parser, "tab-livrables").lower()
-    results.append(("R35", "\"Prochaine etape\" dans Livrables", has_next))
+    # R35: "Prochaine etape" dans Investissement
+    has_next = "prochaine" in tab_text(parser, "tab-investissement").lower() and \
+               "tape" in tab_text(parser, "tab-investissement").lower()
+    results.append(("R35", "\"Prochaine etape\" dans Investissement", has_next))
 
     # R36: Pas de "Notre {X} :"
     notre_pattern = re.compile(
@@ -316,14 +316,14 @@ def check_layer1(parser, html_raw):
     has_anaphore = bool(anaphore_pattern.search(visible))
     results.append(("R37", "Pas de structure anaphorique \"Chaque mois/jour sans\"", not has_anaphore))
 
-    # R38: Pricing cards exclusives a Livrables (pas dans ROI)
-    has_pricing_in_roi = tab_has_class(parser, "tab-roi", "pricing") or \
-                         tab_has_class(parser, "tab-roi", "pricing-grid")
-    results.append(("R38", "Pricing cards absentes de l'onglet ROI", not has_pricing_in_roi))
+    # R38: Pricing cards exclusives a Investissement (pas dans Strategie)
+    has_pricing_in_strat = tab_has_class(parser, "tab-strategie", "pricing") or \
+                           tab_has_class(parser, "tab-strategie", "pricing-grid")
+    results.append(("R38", "Pricing cards absentes de l'onglet Strategie", not has_pricing_in_strat))
 
     # R39: ETV vs trafic — only flag if ETV is directly mislabeled as visits
     etv_mislabeled = False
-    strat_lower = tab_text(parser, "tab-strategie").lower()
+    strat_lower = tab_text(parser, "tab-diagnostic").lower()
     if "etv" in strat_lower:
         # Flag only direct mislabeling patterns: "ETV de X visites", "ETV : X visites"
         mislabel_patterns = [
@@ -339,7 +339,7 @@ def check_layer1(parser, html_raw):
 
     # R28a: Investissement avec .recommended + cout inaction
     has_recommended = "recommended" in " ".join(parser.all_classes)
-    livr_lower = tab_text(parser, "tab-livrables").lower()
+    livr_lower = tab_text(parser, "tab-investissement").lower()
     cout_inaction = "inaction" in livr_lower and ("cout" in livr_lower or "coute" in livr_lower)
     r28a_ok = has_recommended and cout_inaction
     detail_parts = []
@@ -353,9 +353,9 @@ def check_layer1(parser, html_raw):
     # R30: Coherence Phase 1 ↔ Phase 2
     has_phase1 = "phase 1" in livr_lower or "mission structurante" in livr_lower
     has_phase2 = "phase 2" in livr_lower or "accompagnement mensuel" in livr_lower
-    has_pricing = tab_has_class(parser, "tab-livrables", "pricing") or \
-                  tab_has_class(parser, "tab-livrables", "pricing-grid") or \
-                  tab_has_class(parser, "tab-livrables", "pricing-card")
+    has_pricing = tab_has_class(parser, "tab-investissement", "pricing") or \
+                  tab_has_class(parser, "tab-investissement", "pricing-grid") or \
+                  tab_has_class(parser, "tab-investissement", "pricing-card")
     if has_pricing or has_phase1 or has_phase2:
         r30_ok = has_phase1 and has_phase2
         if not r30_ok:
@@ -404,15 +404,16 @@ def check_layer1(parser, html_raw):
 
 def check_layer2(parser, html_raw):
     results = []
+    diag = tab_text(parser, "tab-diagnostic").lower()
     strat = tab_text(parser, "tab-strategie").lower()
-    livr = tab_text(parser, "tab-livrables").lower()
+    livr = tab_text(parser, "tab-investissement").lower()
 
     # R20: Trajectoire 90j M1/M2/M3
     has_m1m2m3 = all(f"m{i}" in livr or f"m{i}" in strat for i in [1, 2, 3])
     results.append(("R20", "Trajectoire 90j avec M1/M2/M3", has_m1m2m3))
 
-    # R22: "Ce que cela implique"
-    has_implies = "ce que cela implique" in strat
+    # R22: "Ce que cela implique" (dans onglet Diagnostic)
+    has_implies = "ce que cela implique" in diag
     results.append(("R22", "Section \"Ce que cela implique\" presente", has_implies))
 
     # R23: "Nous recommandons"
@@ -423,11 +424,11 @@ def check_layer2(parser, html_raw):
     has_decision = "decision strategique" in strat or "décision stratégique" in strat
     results.append(("R24", "Section \"Decision strategique\" presente", has_decision))
 
-    # R25: Sequence Diagnostic → S7 → Implications → Decision → 90j
+    # R25: Sequence Diagnostic → S7 → Implications (tab-diagnostic) puis Decision → 90j (tab-strategie)
     sequence_markers = [
-        ("diagnostic", "diagnostic" in strat or "lecture strategique" in strat),
-        ("s7", "s7" in strat or tab_has_class(parser, "tab-strategie", "s7-grid")),
-        ("implications", "ce que cela implique" in strat),
+        ("diagnostic", "diagnostic" in diag or "lecture strategique" in diag),
+        ("s7", "s7" in diag or tab_has_class(parser, "tab-diagnostic", "s7-grid")),
+        ("implications", "ce que cela implique" in diag),
         ("decision", "decision strategique" in strat or "nous recommandons" in strat),
         ("90j", "90 jours" in strat or "90j" in strat),
     ]
@@ -458,7 +459,7 @@ def check_layer2(parser, html_raw):
     # R10: Differenciateurs lies a un data block
     results.append(("R10", "Differenciateurs lies a un data block (verification manuelle)", None))
 
-    # R28b: Cout inaction avec impacts chiffres
+    # R28b: Cout inaction avec impacts chiffres (dans onglet Investissement)
     has_cout = "inaction" in livr
     # Verify that "inaction" section contains actual numbers (not just the word)
     if has_cout:
@@ -505,19 +506,19 @@ LAYER3_CHECKLIST = [
 def check_layer4(parser, html_raw):
     results = []
 
-    # R40: Densite de donnees dans l'onglet Strategie
+    # R40: Densite de donnees dans l'onglet Diagnostic
     # >= 50% des paragraphes contiennent au moins 1 chiffre
-    paragraphs = parser.strat_paragraphs
+    paragraphs = parser.diag_paragraphs
     if paragraphs:
         has_number = sum(1 for p in paragraphs if re.search(r'\d', p))
         ratio = has_number / len(paragraphs)
         pct = int(ratio * 100)
         ok = ratio >= 0.5
-        results.append(("R40", f"Densite donnees onglet Strategie : {pct}% paragraphes avec chiffre (seuil: 50%)", ok))
+        results.append(("R40", f"Densite donnees onglet Diagnostic : {pct}% paragraphes avec chiffre (seuil: 50%)", ok))
     else:
-        results.append(("R40", "Densite donnees : aucun paragraphe detecte dans l'onglet Strategie", False))
+        results.append(("R40", "Densite donnees : aucun paragraphe detecte dans l'onglet Diagnostic", False))
 
-    # R41: Specificite des titres h2 dans tab-strategie
+    # R41: Specificite des titres h2 dans tab-diagnostic
     # >= 60% des h2 contiennent un nom propre (majuscule non initiale) ou un chiffre
     h2s = parser.h2_order
     if h2s:
@@ -539,7 +540,7 @@ def check_layer4(parser, html_raw):
         ok = ratio >= 0.6
         results.append(("R41", f"Specificite titres h2 : {pct}% avec nom propre/chiffre ({specific}/{len(h2s)}, seuil: 60%)", ok))
     else:
-        results.append(("R41", "Specificite titres : aucun h2 dans l'onglet Strategie", False))
+        results.append(("R41", "Specificite titres : aucun h2 dans l'onglet Diagnostic", False))
 
     # R42: Triplet "Ce que cela implique" — 3 <li>, le 3e contient un chiffre (projection)
     lis = parser.implique_lis
@@ -554,6 +555,33 @@ def check_layer4(parser, html_raw):
     else:
         results.append(("R42", "Section 'Ce que cela implique' non detectee", None))
 
+    # R43: SO WHAT — chaque .slide dans #tab-diagnostic contient un .highlight-box
+    diag_slides = []
+    diag_slide_highlight = []
+    in_diag_slide = False
+    current_slide_has_highlight = False
+    for tag, classes, _ in parser.tab_elements.get("tab-diagnostic", []):
+        cls_list = classes.split()
+        if "slide" in cls_list and tag in ("div", "section"):
+            if in_diag_slide:
+                diag_slides.append(current_slide_has_highlight)
+            in_diag_slide = True
+            current_slide_has_highlight = False
+        if in_diag_slide and "highlight-box" in cls_list:
+            current_slide_has_highlight = True
+    if in_diag_slide:
+        diag_slides.append(current_slide_has_highlight)
+    if diag_slides:
+        missing = sum(1 for h in diag_slides if not h)
+        ok = missing == 0
+        results.append(("R43", f"SO WHAT dans chaque section Diagnostic : {len(diag_slides) - missing}/{len(diag_slides)} sections OK", ok))
+    else:
+        results.append(("R43", "SO WHAT : aucune section detectee dans l'onglet Diagnostic", None))
+
+    # R44: Au moins 1 .micro-benchmark dans #tab-diagnostic
+    has_micro = tab_has_class(parser, "tab-diagnostic", "micro-benchmark")
+    results.append(("R44", "Au moins 1 micro-benchmark dans onglet Diagnostic", has_micro))
+
     return results
 
 
@@ -566,7 +594,7 @@ def print_results(layer1, layer2, layer3, layer4):
     warns = 0
     passes = 0
 
-    print("\n=== SLASHR Proposal Validator v1.1 ===\n")
+    print("\n=== SLASHR Proposal Validator v2.0 ===\n")
 
     # Layer 1
     l1_pass = 0

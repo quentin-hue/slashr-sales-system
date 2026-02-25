@@ -58,7 +58,7 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 
 | Composant | Usage | Quand le choisir |
 |-----------|-------|------------------|
-| Radar S7 | Heptagramme SVG, 7 axes (0-5), fond sombre, accents orange/violet | Section S7 "Lecture strategique" dans l'onglet Strategie, toujours |
+| Radar S7 | Heptagramme SVG, 7 axes (0-5), fond sombre, accents orange/violet | Section S7 "Lecture strategique" dans l'onglet Diagnostic, toujours |
 | S7 constraint highlight | Highlight box (orange) + force limitante + implication 1-2 phrases | Apres le radar : contrainte principale |
 | S7 levers row | 2-3 KPI mini alignes horizontalement, 1 force = 1 chiffre d'impact | Sous le radar : leviers prioritaires |
 
@@ -81,16 +81,16 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 |-----------|-------|------------------|
 | Verbatim box | Citation prospect (bordure magenta) | Reprendre une phrase exacte du R1 ou des emails |
 | Pull quote | Grande citation centree | Phrase strategique forte, rupture de rythme |
-| Testimonial card | Avatar + citation + nom/role | Social proof, resultat client (onglet Cas Clients) |
+| Testimonial card | Avatar + citation + nom/role | Social proof, resultat client (onglet Diagnostic (cas clients inline)) |
 
 #### STRUCTURER : organiser, sequencer, hierarchiser
 
 | Composant | Usage | Quand le choisir |
 |-----------|-------|------------------|
-| Timeline | Roadmap phases | Plan en 2-3 phases temporelles (onglet Livrables) |
-| Routine grid | Etapes numerotees horizontales | Process repetitif, 4 piliers (onglet Livrables) |
+| Timeline | Roadmap phases | Plan en 2-3 phases temporelles (onglet Investissement) |
+| Routine grid | Etapes numerotees horizontales | Process repetitif, 4 piliers (onglet Investissement) |
 | Funnel | Etapes connectees par des fleches | Parcours conversion, pipeline, flux |
-| Accordion | Details cachees sous un resume | FAQ, scope detaille, methodologie (onglet Livrables) |
+| Accordion | Details cachees sous un resume | FAQ, scope detaille, methodologie (onglet Investissement) |
 
 #### ALERTER : attirer l'attention, recommander
 
@@ -106,9 +106,9 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 
 | Composant | Usage | Quand le choisir |
 |-----------|-------|------------------|
-| Pricing card | Scenarios investissement | 2-3 niveaux, `.recommended` pour le conseille (onglet Livrables) |
-| ROI Simulator | Sliders interactifs + calcul JS | Onglet ROI Interactif |
-| CTA full-width | Appel a l'action avec blobs | Toujours en fin d'onglet Strategie ET Livrables |
+| Pricing card | Scenarios investissement | 2-3 niveaux, `.recommended` pour le conseille (onglet Investissement) |
+| ROI Simulator | Sliders interactifs + calcul JS | Onglet Strategie (section ROI) |
+| CTA full-width | Appel a l'action avec blobs | En fin d'onglet Investissement uniquement (CTA principal) |
 
 #### CONTEXTUALISER : situation, donnees, details
 
@@ -148,48 +148,43 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 
 ---
 
-## Etape 3.3 : Structure des 4 onglets
+## Etape 3.3 : Structure des 3 onglets
 
-### Nav fixe avec 4 tabs
+### Nav fixe avec 3 tabs
 
 ```
-Strategie | Cas Clients | ROI Interactif | Livrables & Methode
+Diagnostic | Strategie | Investissement
 ```
 
-Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
+Les 3 onglets sont **toujours presents**. Aucun n'est optionnel.
 
 ### Composants specifiques par onglet
 
-**Onglet Strategie** : composition libre (catalogue complet)
-- Hero → sections libres → **section S7** → recommandation → CTA
+**Onglet Diagnostic** : composition libre, hero full screen (catalogue complet)
+- Hero complet (blobs, contexte client tisse) → sections libres → **section S7** → deferred → implications
 - Tout composant du catalogue est utilisable
 - **Section S7 obligatoire** : Radar S7 + S7 constraint highlight + S7 levers row + Pull quote (insight central)
+- **Cas clients inline** : composant micro-benchmark (.micro-benchmark) insere apres les sections pertinentes (max 2-3 dans l'onglet)
+- **SO WHAT obligatoire** : chaque section se termine par un highlight box qui traduit les donnees en impact business chiffre
 
-**Onglet Cas Clients** : composants social proof
-- Testimonial cards pour les citations clients
-- Before/After pour les transformations
-- KPI cards / Stat row pour les chiffres avant/apres
-- Highlight box pour le "so what" (lien avec la situation du prospect)
-
-**Onglet ROI Interactif** : composants engagement
-- KPI cards pour les hypotheses sourcees
-- Table pour le detail des hypotheses
-- ROI Simulator (sliders + calcul JS)
-- Pricing cards pour les 3 scenarios (avec lien vers onglet Livrables)
+**Onglet Strategie** : header compact, pas de hero full-screen
+- Remplacer le hero full-screen par un **header compact** : `.tab-header` avec section-label + h2 + section-intro. Pas de blobs.
+- **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet
+- **Timeline 90 jours** : M1/M2/M3
+- **ROI Simulator** : hypotheses sourcees + sliders + calcul JS + 3 scenarios
 - Highlight box violet pour la conviction ROI
+- **CTA intermediaire leger** (lien texte, pas full-width)
 
-**Onglet Livrables & Methode** : composants structure
+**Onglet Investissement** : header compact, pas de hero full-screen
+- Meme format **header compact** (`.tab-header`)
 - **Resume decisionnel** : Highlight box (gradient) avec 6 bullets, en haut de l'onglet, c'est la premiere chose que le decideur voit
 - **Board-ready A4** : bouton "Version imprimable" qui declenche `window.print()`, page `@media print` avec resume + radar S7 + ROI + pricing
-- **Sous-section Methode S7** : Card (accent) avec definition 2-3 phrases + liste compacte 7 forces (1 ligne chacune) + 1 phrase d'arbitrage. Peut etre dans un Accordion "Notre methode d'analyse".
-- **Trajectoire 90 jours** : Timeline 3 etapes (M1 → M2 → M3) avec livrables specifiques par mois
-- **Trajectoire 6 mois** : Card ou Timeline M4-M6 avec montee en puissance et KPIs
-- Routine grid (intensite du scenario recommande : priorites/mois)
-- Accordion (FAQ + scope detaille)
-- **Accordion "Questions frequentes"** : reprend les OBJECTIONS A PRE-EMPT du NBP. Chaque item : titre = objection formulee comme question, contenu = reponse data-first + source courte (DataForSEO / GSC / verbatim / benchmark). Si une objection n'a pas de source → ajouter "a confirmer en Phase 1".
 - **Investissement v12.0** : 2 blocs separes. (1) **Phase 1 "Mission structurante"** : card accent, scope qualitatif + livrables + budget global HT, SANS jours ni TJM. (2) **Phase 2 "Orchestration mensuelle"** : 3 niveaux d'intensite (Essentiel/Performance/Croissance), le recommande en `.recommended` avec border gradient, les autres compacts. Scope qualitatif + budget mensuel HT, SANS jours/mois ni TJM. Sous chaque scenario, ajouter une ligne : "Ce que ca debloque en priorite : {PRIMARY S7} (+ {SECONDARY si utile})". PRIMARY/SECONDARY issus du strategy_plan_internal.md. Ne jamais mentionner jours/TJM. + sous-bloc "Ce que coute l'inaction" (composant s7-insight avec 3 impacts business chiffres).
 - **Recommandation conditionnelle** : si Confidence = Low sur 2+ ROI drivers, la carte `.recommended` conserve son statut mais affiche un label supplementaire : "Recommandation conditionnelle — validation des hypotheses en Phase 1".
-- CTA full-width
+- **Sous-section Methode S7** : Card (accent) avec definition 2-3 phrases + liste compacte 7 forces (1 ligne chacune) + 1 phrase d'arbitrage. Peut etre dans un Accordion "Notre methode d'analyse".
+- **Accordion "Questions frequentes"** : reprend les OBJECTIONS A PRE-EMPT du NBP. Chaque item : titre = objection formulee comme question, contenu = reponse data-first + source courte (DataForSEO / GSC / verbatim / benchmark). Si une objection n'a pas de source → ajouter "a confirmer en Phase 1".
+- **Prochaine etape** : bloc 3 lignes (decision, date, action)
+- **CTA full-width** (unique CTA principal de la proposition)
 
 ---
 
@@ -207,7 +202,7 @@ Voir `context/design_system.md` pour les couleurs, typographies, gradients, espa
 
 ## Etape 3.5 : Validation
 
-> **Regles de validation completes : `context/validation_rules.md`** (39 regles, 3 layers).
+> **Regles de validation completes : `context/validation_rules.md`** (44 regles, 4 layers).
 
 Appliquer les 3 layers dans l'ordre :
 
@@ -263,7 +258,7 @@ Apres la generation du HTML et avant l'upload Drive :
 - Toujours afficher un tableau "Hypothèses & sources" (DataForSEO, benchmark secteur, verbatim prospect, etc.)
 - Si Confidence = Low sur 2+ drivers → afficher un avertissement soft : "Hypothèses à confirmer en Phase 1"
 
-### Simulateur interactif (onglet ROI Interactif)
+### Simulateur interactif (section ROI dans l'onglet Strategie)
 
 Le simulateur ROI utilise des sliders que le prospect peut manipuler :
 - **Trafic actuel** (pre-rempli avec la donnee reelle, lecture seule ou ajustable)
@@ -298,7 +293,7 @@ Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
 S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-4 onglets : Strategie ({N} sections + S7) | Cas Clients ({N} cas) | ROI Interactif | Livrables & Methode
+3 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement
 
 DRAFT, a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.

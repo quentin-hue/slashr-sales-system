@@ -1,6 +1,6 @@
 # Validation Rules — Proposition HTML
 
-> Reference unique des 39 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
+> Reference unique des 44 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
 
 ---
 
@@ -11,21 +11,21 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | # | Regle | Test |
 |---|-------|------|
 | 3 | Fond sombre `#1a1a1a` present | CSS `background` ou `--bg` contient `#1a1a1a` |
-| 5 | 4 onglets non-vides : `tab-strategie`, `tab-cas-clients`, `tab-roi`, `tab-livrables` | 4 `div.tab-content` avec contenu non-placeholder |
-| 14 | Section S7 dans l'onglet Strategie | `s7-grid` ou `s7-card` present dans `#tab-strategie` |
-| 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` dans la section S7 |
-| 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-livrables` avec max 6 `<li>` |
+| 5 | 3 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement` | 3 `div.tab-content` avec contenu non-placeholder |
+| 14 | Section S7 dans l'onglet Diagnostic | `s7-grid` ou `s7-card` present dans `#tab-diagnostic` |
+| 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` dans `#tab-diagnostic` |
+| 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-investissement` avec max 6 `<li>` |
 | 19 | Board-ready A4 / `window.print()` | `@media print` present dans le CSS ET bouton print dans le HTML ET section `.board-ready-a4` presente avec : resume decisionnel, pricing recommande, "decision attendue" |
 | 26 | CTA avec verbe strategique | CTA ne contient PAS "Planifier un echange", "Discuter", "Echanger", "En savoir plus" |
 | 29 | Zero jours/TJM/AMOA dans le texte visible | Regex `\b(jour[s]?[\s-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recette)\b` absent du body visible. NB : "monitoring" seul est autorise (cf. output_contract.md) |
-| 31 | Accordion FAQ present dans onglet Livrables | `.accordion` present dans `#tab-livrables` |
-| 35 | "Prochaine etape" dans onglet Livrables | Texte "prochaine etape" (case-insensitive) dans `#tab-livrables` |
+| 31 | Accordion FAQ present dans onglet Investissement | `.accordion` present dans `#tab-investissement` |
+| 35 | "Prochaine etape" dans onglet Investissement | Texte "prochaine etape" (case-insensitive) dans `#tab-investissement` |
 | 36 | Pas de pattern "Notre {X} :" | Regex `Notre (lecture|conviction|position|approche|methode|vision)\s*:` absent |
 | 37 | Pas de structure anaphorique "Chaque mois/jour sans" | Regex `Chaque (mois|jour|semaine) sans` absent |
-| 38 | Pricing cards exclusives a l'onglet Livrables | `.pricing` ou `.pricing-grid` absent de `#tab-roi` |
+| 38 | Pricing cards exclusives a l'onglet Investissement | `.pricing` ou `.pricing-grid` absent de `#tab-strategie` |
 | 39 | ETV vs trafic correctement etiquetes | "ETV" n'apparait pas la ou c'est du trafic (visites) et inversement |
 | 27a | Si refonte : 3 actes narratifs + "0 perte de trafic strategique" | Conditionnel : si le deal implique une refonte |
-| 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" | `.recommended` present + section cout inaction dans `#tab-livrables` |
+| 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" | `.recommended` present + section cout inaction dans `#tab-investissement` |
 | 30 | Coherence levier : setup Phase 1 ↔ run Phase 2 | Chaque levier avec Phase 1 a un Phase 2 et inversement |
 
 ---
@@ -37,10 +37,10 @@ Regles verifiables par heuristiques. Echec = WARNING, correction recommandee.
 | # | Regle | Test |
 |---|-------|------|
 | 20 | Trajectoire 90j decoupee M1/M2/M3 | Texte "M1", "M2", "M3" presents dans la section trajectoire |
-| 22 | Section "Ce que cela implique" presente | Texte "ce que cela implique" (case-insensitive) dans `#tab-strategie` |
+| 22 | Section "Ce que cela implique" presente | Texte "ce que cela implique" (case-insensitive) dans `#tab-diagnostic` |
 | 23 | "Nous recommandons" dans la decision | Texte "nous recommandons" present dans la section decision |
-| 24 | Section "Decision strategique" presente | Texte "decision strategique" present dans `#tab-strategie` |
-| 25 | Sequence Diagnostic → S7 → Implications → Decision → 90j | Les sections apparaissent dans cet ordre dans le DOM |
+| 24 | Section "Decision strategique" presente | Texte "decision strategique" present dans `#tab-strategie` (ouvre l'onglet Strategie) |
+| 25 | Sequence Diagnostic → S7 → Implications (tab-diagnostic) puis Decision → 90j (tab-strategie) | Les sections apparaissent dans cet ordre dans le DOM |
 | 28b | Sous-bloc "Ce que coute l'inaction" avec impacts lies au diagnostic | Section cout inaction presente avec donnees chiffrees |
 | 32 | Pricing cards avec "Ce que ca debloque" | Texte "ce que ca debloque" dans chaque `.pricing` card |
 | 33 | Si Confidence Low : label "Recommandation conditionnelle" | Conditionnel : label present sur `.recommended` si applicable |
@@ -76,9 +76,11 @@ Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING 
 
 | # | Regle | Test | Seuil |
 |---|-------|------|-------|
-| 40 | Densite de donnees dans l'onglet Strategie | Ratio paragraphes contenant ≥ 1 chiffre / total paragraphes dans `#tab-strategie` | ≥ 50% des paragraphes |
-| 41 | Specificite des titres h2 | % de `h2` dans `#tab-strategie` contenant un nom propre OU un chiffre | ≥ 60% des h2 |
+| 40 | Densite de donnees dans l'onglet Diagnostic | Ratio paragraphes contenant ≥ 1 chiffre / total paragraphes dans `#tab-diagnostic` | ≥ 50% des paragraphes |
+| 41 | Specificite des titres h2 | % de `h2` dans `#tab-diagnostic` contenant un nom propre OU un chiffre | ≥ 60% des h2 |
 | 42 | Triplet "Ce que cela implique" | Section "Ce que cela implique" contient exactement 3 `<li>`, le 3e contient un chiffre (projection) | 3 li, chiffre dans le 3e |
+| 43 | SO WHAT : chaque section Diagnostic a un highlight-box | Chaque `.slide` dans `#tab-diagnostic` contient au moins 1 `.highlight-box` | Toutes les sections |
+| 44 | Au moins 1 micro-benchmark dans Diagnostic | `.micro-benchmark` present dans `#tab-diagnostic` | ≥ 1 |
 
 ---
 

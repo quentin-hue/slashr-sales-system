@@ -1,6 +1,6 @@
 ---
 name: prepare
-description: Genere la proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 4 onglets MVP, uploadee dans Drive.
+description: Genere la proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 3 onglets MVP (Diagnostic, Strategie, Investissement), uploadee dans Drive.
 disable-model-invocation: true
 ---
 
@@ -41,7 +41,7 @@ L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1
 | 4 | `context/s7_search_operating_model.md` | Modele S7 : scoring, classification, anti-patterns | Avant tout |
 | 5 | `context/pricing_rules.md` | Calcul budgets Phase 1 & Phase 2 (interne) | Avant tout |
 | 6 | `context/output_contract.md` | Frontiere client/interne (visible vs masque) | Avant tout |
-| 6b | `context/validation_rules.md` | 39 regles de validation (3 layers) | Avant tout |
+| 6b | `context/validation_rules.md` | 44 regles de validation (4 layers) | Avant tout |
 | 6c | `context/s7_quick_reference.md` | Digest compact S7 (7 forces, echelle, classification) | Avant tout |
 | 6d | `context/performance_budget.md` | Budget tokens, cache, fraicheur | Avant tout |
 | 7 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
@@ -54,7 +54,7 @@ L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1
 1. Lis les fichiers 1-6d de la checklist ci-dessus
 2. Execute les 3 passes dans l'ordre :
    - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + S7 + SDB)
-   - **Pass 2** : lis fichiers 7-8, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet 4.
+   - **Pass 2** : lis fichiers 7-8, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet 3 (Investissement).
    - **Pass 3** : lis fichiers 9-10, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`)
 
 ## Collecte Pipedrive
@@ -102,7 +102,7 @@ Le champ `dossier_r1_link` du deal contient l'URL du dossier. Extraire le folder
 
 | Fichier | Audience | Contenu |
 |---------|----------|---------|
-| `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | **Prospect** (via closer) | Proposition HTML interactive — 4 onglets avec section S7 |
+| `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | **Prospect** (via closer) | Proposition HTML interactive — 3 onglets (Diagnostic + S7, Strategie, Investissement) |
 | `INTERNAL-S7-{YYYYMMDD}-{entreprise-slug}.md` | **Interne seulement** | Diagnostic S7 complet (scores, classification PRIMARY/SECONDARY/DEFERRED, synthese, trajectoires, ROI, resume decisionnel, evidence log) |
 
 > Le prefixe `INTERNAL-` garantit que le fichier est exclu des outputs prospect (cf. Module 2 : exclure `DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`).
@@ -115,7 +115,7 @@ Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
 S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-4 onglets : Strategie ({N} sections + S7) | Cas Clients ({N} cas) | ROI Interactif | Livrables & Methode
+3 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement
 
 DRAFT — a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.
