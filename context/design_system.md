@@ -345,3 +345,58 @@ La profondeur est obtenue **exclusivement** par :
 - Backdrop blur sur la nav (`blur(20px)`)
 
 **Jamais de `box-shadow`** sur les composants.
+
+---
+
+## 11. Board-ready A4 — Spec print layout
+
+Le board-ready A4 est une version imprimable de la proposition, destinee aux comites de direction. Accessible via un bouton "Version imprimable" dans l'onglet Livrables.
+
+### 11.1 Contenu obligatoire (1 page A4)
+
+| Ordre | Element | Source | Contrainte |
+|-------|---------|--------|------------|
+| 1 | En-tete | Design system | Logo SLASHR (petit, discret) + nom prospect + date |
+| 2 | Insight central | S7 SYNTHESIS | 1 phrase, en gras, centree |
+| 3 | Resume decisionnel | strategy_plan_internal.md | 6 bullets max, numerotes |
+| 4 | Radar S7 simplifie | Onglet Strategie | Version niveaux de gris, labels + scores, pas de couleur |
+| 5 | ROI en 1 ligne | Onglet ROI | "ROI conservateur : x{N_bas} sur {periode}" |
+| 6 | Pricing recommande | Onglet Livrables | Scenario recommande uniquement : Phase 1 + Phase 2/mois |
+| 7 | Decision attendue | NBP | Encadre : {scenario} + {date cible} + {prochaine etape} |
+| 8 | CTA | NBP | 1 ligne : "Prochaine etape : {action datee}" |
+
+### 11.2 Hierarchie typographique print
+
+| Element | Taille | Poids | Couleur |
+|---------|--------|-------|---------|
+| Nom prospect | 18pt | 700 | `#1a1a1a` |
+| Insight central | 14pt | 700 | `#1a1a1a` |
+| Resume bullets | 10pt | 400 | `#333333` |
+| Radar labels | 9pt | 600 | `#555555` |
+| ROI / Pricing | 11pt | 600 | `#1a1a1a` |
+| Decision attendue | 11pt | 700 | `#E74601` (accent) |
+| Footer | 8pt | 400 | `#999999` |
+
+### 11.3 Elements masques en print
+
+```css
+@media print {
+  /* Masquer */
+  .nav, .tab-nav, .cta-section, .slider-container,
+  .accordion, .faq, .hero-blobs, .hero-blob-3,
+  .btn-print, footer, .scroll-indicator { display: none !important; }
+
+  /* Forcer fond blanc */
+  body, .main, .tab-content, .slide { background: #ffffff !important; color: #1a1a1a !important; }
+
+  /* Forcer 1 page */
+  .board-ready-a4 { page-break-after: always; max-height: 100vh; overflow: hidden; }
+}
+```
+
+### 11.4 Regles
+
+- **1 page maximum** — si ca depasse, reduire les bullets (4 au lieu de 6) ou le radar
+- **Lisible en noir et blanc** — tout doit fonctionner sans couleur (impression N&B)
+- **Autonome** — un decideur qui ne lit QUE cette page comprend le probleme, la solution et l'investissement
+- **Pas de gradient, pas de blob, pas d'animation** — c'est un document professionnel sobre

@@ -499,7 +499,14 @@ PROJECTION 6-12 MOIS (obligatoire pour PRIMARY et SECONDARY) :
 CLASSIFICATION (max 3 leviers actifs) :
 - PRIMARY : S{X} (score {X}/5) → {justif 2-3 phrases data-first}
 - SECONDARY : S{Y} + S{Z} → {1 phrase chacun : pourquoi amplifie}
-- DEFERRED : {reste} → {1 phrase chacun : pourquoi pas maintenant}
+- DEFERRED-SEQUENTIAL : {forces} → {1 phrase chacun : "sera active quand {condition}"}
+- DEFERRED-SCOPE : {forces} → {1 phrase chacun : "hors perimetre car {raison}"}
+
+ARC_CHOICE_RATIONALE :
+- Arc retenu : {Classique | Urgence | Opportunite | Technique | Custom}
+- Raison liee au decideur : {1 phrase — profil decideur + contexte}
+- Raison liee aux donnees : {1 phrase — quel pattern dans le SDB oriente cet arc}
+- Arc ecarte : {quel arc a ete considere et pourquoi rejete}
 
 ROI DRIVERS (pont vers l'onglet ROI) :
 - Driver 1 (Traffic) : {source} → {variable ROI impactée : visites cibles M12}
@@ -529,14 +536,17 @@ TRAJECTOIRE 6 MOIS · Phase 2 "Run":
 - M4-M6: {piliers actives, montee en puissance, intensite}
 - Objectifs M6: {KPIs cibles sources}
 
-ROI CONSERVATEUR:
-- Hypothese 1: {description} = {valeur} | Confidence: {High/Med/Low} | Validation: {comment valider} (source: {DataForSEO/GSC/transcript/benchmark})
-- Hypothese 2: {description} = {valeur} | Confidence: {High/Med/Low} | Validation: {comment valider} (source: {source})
+ROI CONSERVATEUR (intervalle obligatoire) :
+- Hypothese 1: {description} = {valeur_basse} - {valeur_haute} | Confidence: {High/Med/Low} | Validation: {comment valider} (source: {DataForSEO/GSC/transcript/benchmark})
+- Hypothese 2: {description} = {valeur_basse} - {valeur_haute} | Confidence: {High/Med/Low} | Validation: {comment valider} (source: {source})
 - Hypothese N: ...
-- Calcul: {formule detaillee}
-- ROI estime: x{N} sur {periode}
+- Chaine de calcul : H1 ({valeur}) x H2 ({valeur}) x ... = {resultat}
+- ROI intervalle : x{N_bas} - x{N_haut} sur {periode}
+- ROI affiche (conservateur) : x{N_bas} (borne basse de l'intervalle)
 - Confidence globale ROI: {High/Medium/Low} (= min des confidences individuelles)
 - Si Confidence globale = Low → ajouter dans le SDB: "Recommandation conditionnelle, validation en Phase 1"
+
+> **Regle intervalle** : chaque hypothese a une borne basse (conservatrice) et une borne haute (optimiste realiste). Le ROI affiche au prospect = borne basse. L'intervalle complet est dans le simulateur ROI (onglet 3) pour que le prospect explore lui-meme.
 
 Definitions de confiance ROI :
 | Niveau | Critere | Exemple |
@@ -620,11 +630,14 @@ S7 SYNTHESIS (from strategy_plan_internal.md):
 - Levers:
   - {SECONDARY force A} ({score}/5) : {impact chiffre attendu si active}
   - {SECONDARY force B} ({score}/5) : {impact chiffre attendu si active}
-- Deferred (avec justification) :
-  - {force} : {pourquoi pas maintenant, 1 phrase}
+- Deferred-Sequential (avec condition d'activation) :
+  - {force} : sera active quand {condition}, horizon {X mois}
   - {force} : {idem}
-  - ...
-- Projection PRIMARY: {direction + delta chiffre + horizon, ex: "Erosion: -31 kw nets/mois, ecart double en 12 mois vs leader"}
+- Deferred-Scope (hors perimetre) :
+  - {force} : hors perimetre car {raison}
+  - {force} : {idem}
+- Projection PRIMARY (obligatoire) : {direction} {delta chiffre} {source} → {projection X mois}
+- Projection SECONDARY (obligatoire pour chaque) : {direction} {delta} → {horizon}
 - Insight central: {1 phrase non substituable}
 - Confidence globale S7: {High/Medium/Low}
 
@@ -640,15 +653,16 @@ STRATEGIE RECOMMANDEE:
   - Piliers actives: {lesquels, en lien avec S7 SECONDARY}
   - M4-M6: {trajectoire concrete}
 
-ROI:
+ROI (intervalle) :
 - Methode utilisee: {chaine de trafic / ETV proxy}
-- Calcul: {detail, issu du strategy_plan_internal.md}
-- ROI conservateur: {x}
-- Confidence globale: {High/Medium/Low}
-- Hypotheses:
-  - H1: {description} = {valeur} | {High/Med/Low} [src: {source}]
-  - H2: {description} = {valeur} | {High/Med/Low} [src: {source}]
+- Chaine de calcul : H1 x H2 x H3 = resultat (chaine visible dans le simulateur)
+- Hypotheses (avec intervalle) :
+  - H1: {description} = {basse} - {haute} | {High/Med/Low} [src: {source}]
+  - H2: {description} = {basse} - {haute} | {High/Med/Low} [src: {source}]
   - ...
+- ROI intervalle : x{N_bas} - x{N_haut} sur {periode}
+- ROI affiche : x{N_bas} (borne basse conservatrice)
+- Confidence globale: {High/Medium/Low}
 - Si Low sur 2+ hypotheses: "Recommandation conditionnelle, validation en Phase 1"
 
 CAS CLIENTS RETENUS:

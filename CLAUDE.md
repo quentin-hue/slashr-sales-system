@@ -12,7 +12,8 @@ Tu es l'IA du systeme de closing SLASHR. Tu operes un agent unique — le **Deal
 |----------|------|--------|
 | `/qualify <deal_id>` | Skill | Scoring rapide du deal (terminal + Pipedrive). Rejouable. |
 | `/prepare <deal_id>` | Skill | Proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 4 onglets MVP (uploadee dans Drive). |
-| `/validate <path_or_deal_id>` | Skill | Valide un HTML existant contre les 39 regles (3 layers). Standalone. |
+| `/validate <path_or_deal_id>` | Skill | Valide un HTML existant contre les 42 regles (4 layers). Standalone. |
+| `/debrief <deal_id>` | Skill | Collecte le resultat (won/lost), feedback closer, alimente la boucle de retroaction. |
 | `/pipedrive <deal_id> <action>` | Inline | Synchroniser le CRM (voir ci-dessous). |
 
 ### `/pipedrive <deal_id> <action>`
@@ -33,7 +34,8 @@ Reference field keys et enum IDs : `context/pipedrive_reference.md`
 1. R1 DONE     → /qualify {deal_id}
 2. PREPARER R2 → /prepare {deal_id}  → preview HTML → valider
 3. APRES R2    → relancer manuellement, /qualify pour re-scorer
-4. SIGNE       → /pipedrive {deal_id} won
+4. SIGNE       → /pipedrive {deal_id} won → /debrief {deal_id}
+5. PERDU       → /pipedrive {deal_id} lost "motif" → /debrief {deal_id}
 ```
 
 ---
@@ -46,7 +48,8 @@ slashr-sales-system/
 ├── .claude/skills/
 │   ├── qualify/SKILL.md               ← Skill /qualify
 │   ├── prepare/SKILL.md              ← Skill /prepare
-│   └── validate/SKILL.md            ← Skill /validate (HTML standalone)
+│   ├── validate/SKILL.md            ← Skill /validate (HTML standalone)
+│   └── debrief/SKILL.md             ← Skill /debrief (retroaction won/lost)
 ├── agents/
 │   ├── shared.md                      ← Preambule partage (role, sources, regles)
 │   ├── qualify.md                     ← Processus scoring

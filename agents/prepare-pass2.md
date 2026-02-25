@@ -209,6 +209,10 @@ Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'e
 ### Onglet 2 : Cas Clients (social proof)
 
 2-4 cas clients comparables au prospect, selectionnes dans le SDB. Pour chaque cas :
+- **Micro-benchmark comparatif** (bandeau visuel obligatoire) : juxtaposition chiffree entre la situation du prospect et celle du cas client.
+  Format : `{Prospect} : {metrique actuelle} → {Cas client} (avant) : {metrique comparable} → {Cas client} (apres) : {metrique resultat}`
+  Ex : "LMP : 319 kw → La Trinitaine (avant) : 412 kw → La Trinitaine (apres) : 5 643 kw"
+  Source : `sdb_juxtaposition` du SDB.
 - **Situation initiale** en chiffres
 - **Ce qu'on a fait** en 1-2 phrases
 - **Resultats** en chiffres + timeline
@@ -216,13 +220,15 @@ Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'e
 
 L'agent adapte l'angle de presentation de chaque cas pour faire resonner avec la situation du prospect. Un cas identique peut etre presente differemment selon le prospect.
 
-**Point de depart :** le SDB fournit pour chaque cas retenu : `match_criteria`, `key_metric`, `sdb_juxtaposition`, et `angle`. Utiliser `sdb_juxtaposition` pour construire le parallele entre le cas et le prospect (ex: "cas client: 92% marque → x3.8 hors-marque. LMP: 80% marque → potentiel comparable").
+**Point de depart :** le SDB fournit pour chaque cas retenu : `match_criteria`, `key_metric`, `sdb_juxtaposition`, et `angle`. Le `sdb_juxtaposition` alimente directement le micro-benchmark visuel.
 
 ### Onglet 3 : ROI Interactif (engagement)
 
 - **Hypotheses pre-remplies** avec les donnees reelles du SDB (trafic actuel, multiplicateur source du gap, CVR, panier moyen)
 - **Source de chaque hypothese** visible (pas de chiffres sans provenance)
-- **Simulateur interactif** (sliders que le prospect manipule)
+- **Chaine de calcul visible** : H1 x H2 x H3 = resultat. Le prospect voit quels maillons sont solides (High) et lesquels sont des estimations (Low). Chaque hypothese affiche son niveau de confiance.
+- **Intervalle ROI** : afficher la borne basse (conservatrice) par defaut, avec la borne haute accessible via le simulateur. Le chiffre unique est interdit — toujours un intervalle.
+- **Simulateur interactif** (sliders que le prospect manipule) — les sliders correspondent aux hypotheses de la chaine. Bouger un slider = recalcul en temps reel.
 - **3 scenarios calcules** alignes sur les scenarios d'engagement (Essentiel / Performance / Croissance)
 - **Methodologie** : explication en 1-2 phrases de la logique de calcul
 
@@ -364,16 +370,21 @@ Regles :
 - Reponses : jamais defensives, jamais aggressives. Toujours "les donnees montrent..." + "Phase 1 confirme".
 
 X+1. Section "Ce que cela implique" · role: verrou narratif decisionnel (OBLIGATOIRE)
-   3 bullets max, reformulation de la contrainte S7 en CONSEQUENCES STRATEGIQUES C-level
+   **Triplet structure obligatoire** — exactement 3 bullets, chacun avec un role distinct :
+
+   | # | Role | Contenu | Source SDB |
+   |---|------|---------|-----------|
+   | 1 | **Verrou systemique** | La contrainte PRIMARY et ce qu'elle bloque concretement. Factuel, C-level. | S7 SYNTHESIS > Primary constraint + Systemic limitation |
+   | 2 | **Actif inexploite** | Ce qui est DEJA en place chez le prospect et qui n'est pas utilise. Ton positif : le prospect a des atouts. | SDB > SEARCH_STATE forces, GREEN FLAGS, ou donnee specifique |
+   | 3 | **Fenetre temporelle** | Projection chiffree issue du S7. Le delta mesurable si rien ne change. | SDB > S7 SYNTHESIS > Projection PRIMARY (obligatoire) |
+
    Ton: factuel et affirmatif, zero jargon technique
-   Chaque bullet relie la contrainte S7 a une consequence business concrete
    INTERDIT dans cette section :
    - Structure anaphorique ("Chaque mois..." x3) = effet marteau = pression commerciale
    - Repetition du meme leitmotiv dans les 3 bullets (ex: "sans contenu" x3)
    - Ton alarmiste ou dramatique. Les donnees suffisent.
-   - Chiffrer le "cout de l'inaction" (visites perdues, euros perdus) : c'est dans le sous-bloc Investissement (onglet 4), pas ici
-   OBLIGATOIRE : les 3 bullets disent 3 choses DIFFERENTES (ex: 1=le verrou strategique, 2=ce qui est deja pret et inexploite, 3=la fenetre d'opportunite qui se ferme)
-   **Donnee de projection :** la colonne "Projection 6-12M" du S7 SCORES (via le SDB > S7 SYNTHESIS > Projection PRIMARY) fournit la donnee chiffree pour le bullet "fenetre qui se ferme". Utiliser cette projection comme source. Ne pas inventer de projection que Pass 1 n'a pas calculee.
+   - Chiffrer le "cout de l'inaction" en euros : c'est dans le sous-bloc Investissement (onglet 4), pas ici
+   - Inventer une projection que Pass 1 n'a pas calculee. Le bullet 3 utilise UNIQUEMENT la Projection PRIMARY du SDB.
    Pourquoi ici: {le prospect a compris le diagnostic, maintenant il doit voir la decision}
 
 X+2. Section "Decision strategique recommandee" · role: declencheur de decision (OBLIGATOIRE)
@@ -415,6 +426,7 @@ N. CTA, toujours en dernier (REGLE v10.4 : CTA DECISIONNEL)
 --- ONGLET CAS CLIENTS ---
 
 Cas 1: {entreprise}, {problematique similaire au prospect}
+  Micro-benchmark: {Prospect}: {metrique} → {Cas} (avant): {metrique} → {Cas} (apres): {metrique}
   Avant: {chiffres cles}
   Action: {levier en 1-2 phrases}
   Apres: {chiffres cles + timeline}
@@ -425,12 +437,14 @@ Cas 2: ...
 
 --- ONGLET ROI INTERACTIF ---
 
-Hypotheses pre-remplies:
-- Trafic actuel: {X} visites/mois (source: DataForSEO domain_rank_overview)
-- Visites cibles M12: {Y} visites/mois (source: 30% du gap vs {concurrent})
-- CVR: {W}% (source: {benchmark secteur / donnee prospect / estimation conservatrice})
-- Panier moyen: {V} EUR (source: {donnee prospect / estimation secteur})
-- Investissement mensuel: {fourchette selon scenario}
+Chaine de calcul (visible dans le simulateur) :
+  H1: Trafic actuel = {X} visites/mois [Confidence: {H/M/L}] (source: DataForSEO)
+  H2: Visites cibles M12 = {Y_bas} - {Y_haut} visites/mois [Confidence: {H/M/L}] (source: gap analysis)
+  H3: CVR = {W_bas}% - {W_haut}% [Confidence: {H/M/L}] (source: {benchmark / prospect})
+  H4: Panier moyen = {V} EUR [Confidence: {H/M/L}] (source: {prospect})
+  → Resultat : H2 x H3 x H4 = {CA_bas} - {CA_haut} EUR/an additionnel
+  → ROI intervalle : x{N_bas} - x{N_haut}
+  → ROI affiche (defaut) : x{N_bas} (borne basse conservatrice)
 
 3 scenarios: Essentiel ({prix}) / Performance ({prix}) / Croissance ({prix})
 

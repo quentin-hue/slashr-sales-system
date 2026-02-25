@@ -15,7 +15,7 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | 14 | Section S7 dans l'onglet Strategie | `s7-grid` ou `s7-card` present dans `#tab-strategie` |
 | 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` dans la section S7 |
 | 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-livrables` avec max 6 `<li>` |
-| 19 | Board-ready A4 / `window.print()` | `@media print` present dans le CSS ET bouton print dans le HTML |
+| 19 | Board-ready A4 / `window.print()` | `@media print` present dans le CSS ET bouton print dans le HTML ET section `.board-ready-a4` presente avec : resume decisionnel, pricing recommande, "decision attendue" |
 | 26 | CTA avec verbe strategique | CTA ne contient PAS "Planifier un echange", "Discuter", "Echanger", "En savoir plus" |
 | 29 | Zero jours/TJM/AMOA dans le texte visible | Regex `\b(jour[s]?[\s-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recette)\b` absent du body visible. NB : "monitoring" seul est autorise (cf. output_contract.md) |
 | 31 | Accordion FAQ present dans onglet Livrables | `.accordion` present dans `#tab-livrables` |
@@ -70,10 +70,22 @@ Regles non-automatisables, revue par l'agent. Affichees comme checklist.
 
 ---
 
+## Layer 4 : Quality Metrics (3 regles, WARN)
+
+Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING avec score.
+
+| # | Regle | Test | Seuil |
+|---|-------|------|-------|
+| 40 | Densite de donnees dans l'onglet Strategie | Ratio paragraphes contenant ≥ 1 chiffre / total paragraphes dans `#tab-strategie` | ≥ 50% des paragraphes |
+| 41 | Specificite des titres h2 | % de `h2` dans `#tab-strategie` contenant un nom propre OU un chiffre | ≥ 60% des h2 |
+| 42 | Triplet "Ce que cela implique" | Section "Ce que cela implique" contient exactement 3 `<li>`, le 3e contient un chiffre (projection) | 3 li, chiffre dans le 3e |
+
+---
+
 ## Utilisation par passe
 
 | Passe | Utilisation |
 |-------|-----------|
 | **Pass 2** (Narrative Architect) | Appliquer Layer 3 en entier + Layer 2 regles 22-25 comme checklist pre-generation |
 | **Pass 3** (Design Orchestrator) | Appliquer les 3 layers comme gate de validation. Layer 1 FAIL = REJECT |
-| **`validate_proposal.py`** | Automatise Layer 1 (PASS/FAIL) + Layer 2 (WARN). Layer 3 affichee comme checklist manuelle |
+| **`validate_proposal.py`** | Automatise Layer 1 (PASS/FAIL) + Layer 2 (WARN) + Layer 4 (Quality Metrics). Layer 3 affichee comme checklist manuelle |

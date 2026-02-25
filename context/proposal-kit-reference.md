@@ -234,6 +234,46 @@ Classes : `.s7-grid`, `.s7-card`, `.s7-card[data-state="primary|secondary|deferr
 
 Grille 4 colonnes. `data-state` controle la bordure et l'opacite (deferred = 0.6). Score fill colore selon l'etat.
 
+### S7 Radar Interactif — visualisation 7 forces avec tooltips
+
+Classes : `.s7-radar-wrap`, `.s7-radar-svg`, `.s7-radar-point`, `.s7-radar-point[data-state]`, `.s7-radar-tooltip`, `.s7-radar-label`
+
+```html
+<div class="s7-radar-wrap">
+  <svg class="s7-radar-svg" viewBox="0 0 400 400">
+    <!-- Grille radar (pentagones concentriques) -->
+    <polygon class="s7-radar-grid" points="..." fill="none" stroke="rgba(255,255,255,0.1)" />
+    <!-- ... 5 niveaux -->
+    <!-- Forme du prospect -->
+    <polygon class="s7-radar-shape" points="..." fill="rgba(231,70,1,0.15)" stroke="#E74601" />
+    <!-- Points interactifs -->
+    <circle class="s7-radar-point" data-state="primary" data-force="S3" cx="200" cy="50" r="8" />
+    <circle class="s7-radar-point" data-state="secondary" data-force="S2" cx="350" cy="150" r="8" />
+    <circle class="s7-radar-point" data-state="deferred" data-force="S5" cx="350" cy="300" r="8" />
+  </svg>
+  <!-- Labels autour du radar -->
+  <div class="s7-radar-label" style="top:5%;left:50%">S1 · Intentions <span>2/5</span></div>
+  <!-- ... 6 autres labels -->
+  <!-- Tooltip (affiche au hover/click) -->
+  <div class="s7-radar-tooltip" id="tooltip-S3" style="display:none">
+    <div class="s7-radar-tooltip-title">S3 · Contenu — 1/5</div>
+    <div class="s7-radar-tooltip-badge primary">Prioritaire</div>
+    <div class="s7-radar-tooltip-text">SO WHAT simplifie pour le prospect.</div>
+  </div>
+</div>
+```
+
+**Interactivite (JS) :**
+- Hover/click sur un point ou un label = affiche le tooltip correspondant
+- Points PRIMARY = orange plein, SECONDARY = violet plein, DEFERRED = gris semi-transparent
+- Le tooltip affiche : nom force + score + badge classification + SO WHAT 1 phrase (C-level)
+- Mobile : click toggle, pas hover
+
+**Regles :**
+- Le radar remplace le listing statique des 7 forces — il est plus compact et plus engageant
+- Les SO WHAT dans les tooltips sont des versions **simplifiees** (1 phrase max, C-level) des SO WHAT du strategy_plan_internal.md
+- Ne pas surcharger : le radar est un outil d'exploration, pas un dump de donnees
+
 ### S7 Insight Callout — contrainte principale
 
 Classes : `.s7-insight`, `.s7-insight-label`, `.s7-insight-constraint`, `.s7-insight-why`
@@ -788,6 +828,43 @@ Classes : `.tag-brand`, `.tag-generic`
 ```
 
 Badges inline. `.tag-brand` = magenta, `.tag-generic` = violet.
+
+---
+
+## PROUVER
+
+### Micro-benchmark — juxtaposition prospect vs cas client
+
+Classes : `.micro-benchmark`, `.mb-step`, `.mb-step.mb-prospect`, `.mb-step.mb-before`, `.mb-step.mb-after`, `.mb-arrow`, `.mb-value`, `.mb-label`
+
+```html
+<div class="micro-benchmark">
+  <div class="mb-step mb-prospect">
+    <div class="mb-value">319</div>
+    <div class="mb-label">LMP (vous)</div>
+  </div>
+  <div class="mb-arrow">&rarr;</div>
+  <div class="mb-step mb-before">
+    <div class="mb-value">412</div>
+    <div class="mb-label">Cas client (avant)</div>
+  </div>
+  <div class="mb-arrow">&rarr;</div>
+  <div class="mb-step mb-after">
+    <div class="mb-value">5 643</div>
+    <div class="mb-label">Cas client (apres)</div>
+  </div>
+</div>
+```
+
+**Style :**
+- Flex horizontal, fleches orange entre les steps
+- `.mb-prospect` : bordure orange, fond surface
+- `.mb-before` : bordure grise, fond surface
+- `.mb-after` : bordure verte, fond surface, valeur en vert
+- Valeurs en gros (1.5rem, 700), labels en petit (0.85rem, text-70)
+- Mobile : passe en vertical
+
+**Usage :** bandeau en tete de chaque cas client dans l'onglet Cas Clients. Alimente par `sdb_juxtaposition` du SDB.
 
 ---
 

@@ -31,8 +31,24 @@
 
 - **PRIMARY** (exactement 1) : contrainte qui bloque le plus de valeur. Justification 2-3 phrases data-first
 - **SECONDARY** (1-2) : leviers a fort potentiel. 1 phrase chacun
-- **DEFERRED** (le reste) : 1 phrase obligatoire "pourquoi pas maintenant"
+- **DEFERRED-SEQUENTIAL** : forces qui seront activees quand PRIMARY/SECONDARY traite. "Sera active quand {condition}"
+- **DEFERRED-SCOPE** : forces hors perimetre ou non pertinentes. "Hors perimetre car {raison}"
 - **Max 3 leviers actifs** (1 PRIMARY + 2 SECONDARY), meme si le prospect demande les 7
+- **Tiebreak** : si 2 forces a ≤ 1 point d'ecart → Confidence departage (High > Medium > Low)
+
+## Anchors quantitatifs (reperes)
+
+| Force | 0-1 | 2 | 3 | 4-5 |
+|-------|-----|---|---|-----|
+| S1 | < 5% TASM | 5-15% TASM | 15-35% TASM | > 35% TASM |
+| S2 | Lighthouse < 50 | 50-79 | 80-89 | 90+ |
+| S3 | < 5% kw couverts | 5-15% | 15-30% | > 30% |
+| S4 | CVR < 0.3% | 0.3-0.7% | 0.7-1.5% | > 1.5% |
+| S5 | DR < 20 | 20-35 | 35-50 | 50+ |
+| S6 | 0 canal | 1 canal inactif | 2+ canaux irreguliers | Multi-canal actif |
+| S7 | 0 paid | < 500 EUR/mois | Paid actif, pas de synergie | Strategie integree |
+
+> Reperes indicatifs. Ajuster ±1 selon contexte sectoriel. Ecart ≥ 2 = justifier dans l'evidence log.
 
 ## 5 formulations interdites dans le diagnostic
 
@@ -51,5 +67,10 @@ CONTRAINTE PRINCIPALE : {force} (score {X}/5)
 LEVIERS PRIORITAIRES : {force A} + {force B}
 → {impact attendu si actives, chiffre}
 
+PROJECTION PRIMARY : {direction} {delta chiffre} {source} → {horizon}
+PROJECTION SECONDARY : {direction} {delta} → {horizon}
+
 INSIGHT CENTRAL : {1 phrase non substituable}
 ```
+
+> Projection obligatoire pour PRIMARY + SECONDARY. Format strict, source identifiee.

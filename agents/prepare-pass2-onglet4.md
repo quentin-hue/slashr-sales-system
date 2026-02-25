@@ -130,6 +130,8 @@ Regle : 2 blocs separes (Phase 1 mission + Phase 2 orchestration) + 3 niveaux d'
 Le scenario recommande est la decision logique. Les deux autres ajustent l'intensite, pas la strategie.
 
 **Bloc Phase 1 : "Mission structurante" :**
+- **Pont S7** (sous-titre) : {1 phrase qui relie la mission au diagnostic}
+  Ex : "Poser les fondations Search avant la refonte — securiser ce qui existe, preparer ce qui manque"
 - Description qualitative de ce que la mission inclut (JAMAIS de jours, JAMAIS de TJM)
 - Liste des livrables produits
 - Budget global EUR HT
@@ -140,20 +142,28 @@ Le scenario recommande est la decision logique. Les deux autres ajustent l'inten
 - 3 niveaux d'intensite presentes comme des curseurs, pas comme des packs :
 
 1. **Essentiel** (recommande pour les PME / execution interne) :
+   - **Pont S7** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
+     Ex : "Pilotage de votre visibilite produit et suivi des positions cles"
    - Scope : pilotage + monitoring + reporting
    - Budget : {montant}/mois HT
    - Engagement : 12 mois
 
 2. **Performance** (recommande, mis en avant visuellement) :
+   - **Pont S7** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
+     Ex : "Ce qui construit votre visibilite produit et securise votre migration"
    - Scope : + production deleguee + accompagnement continu
    - Budget : {montant}/mois HT
    - Engagement : 12 mois
    - Objectifs chiffres : {CA additionnel, timeline}
 
 3. **Croissance** (pour les ambitions fortes / multi-leviers) :
+   - **Pont S7** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
+     Ex : "Visibilite produit + contenus + diffusion multi-canal : le search comme levier de croissance"
    - Scope : + leviers additionnels (SEA, GEO, Social) + amplification
    - Budget : {montant}/mois HT
    - Engagement : 12 mois
+
+> **Regle Pont S7 :** chaque pricing card a un sous-titre de 1 phrase qui relie l'investissement au diagnostic S7. Pas de jargon S7 ("PRIMARY S3") — traduit en impact client ("Ce qui construit votre visibilite produit"). Le sous-titre repond a la question implicite du prospect : "Qu'est-ce que je paie exactement et pourquoi ?"
 
 **Sous-bloc "Ce que coute l'inaction" (OBLIGATOIRE, unique endroit) :**
 - C'est le **seul endroit** de toute la proposition ou le cout de l'inaction est detaille

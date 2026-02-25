@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-SLASHR Proposal Validator — v1.0
+SLASHR Proposal Validator — v1.1
 
-Valide un HTML de proposition contre les 39 regles de validation.
+Valide un HTML de proposition contre les 42 regles de validation.
 - Layer 1 (Structural) : PASS/FAIL — echec = REJECT
 - Layer 2 (Content) : WARN — correction recommandee
 - Layer 3 (Semantic) : checklist affichee pour revue manuelle
+- Layer 4 (Quality Metrics) : WARN — metriques de qualite redactionnelle
 
 Usage:
     python3 tools/validate_proposal.py <path_to_html>
@@ -49,6 +50,20 @@ class ProposalParser(HTMLParser):
         self.highlight_gradient_depth = 0
         self.highlight_gradient_li_count = 0
 
+        # Layer 4 quality metrics
+        self.strat_paragraphs = []  # list of paragraph texts in tab-strategie
+        self.strat_h2s = []  # list of h2 texts in tab-strategie
+        self.in_p_strat = False
+        self.p_strat_buffer = ""
+
+        # R42: "Ce que cela implique" li tracking
+        self.implique_detected = False  # text "ce que cela implique" seen
+        self.in_implique_list = False  # inside the first ul/ol after detection
+        self.implique_list_done = False  # first list already collected
+        self.implique_lis = []
+        self.in_implique_li = False
+        self.implique_li_buffer = ""
+
     def handle_starttag(self, tag, attrs):
         attr_dict = dict(attrs)
         classes = attr_dict.get("class", "")
@@ -83,10 +98,13 @@ class ProposalParser(HTMLParser):
             self.h2_buffer = ""
 
         # R18: Track highlight-gradient in tab-livrables for bullet counting
+        # Void elements (br, hr, img, etc.) don't have closing tags, so skip depth tracking
+        void_elements = {'br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base',
+                         'col', 'embed', 'param', 'source', 'track', 'wbr'}
         if "highlight-gradient" in classes.split() and self.current_tab == "tab-livrables":
             self.in_highlight_gradient_livrables = True
             self.highlight_gradient_depth = 1
-        elif self.in_highlight_gradient_livrables:
+        elif self.in_highlight_gradient_livrables and tag not in void_elements:
             self.highlight_gradient_depth += 1
             if tag == "li":
                 self.highlight_gradient_li_count += 1
@@ -94,6 +112,19 @@ class ProposalParser(HTMLParser):
         # Track print button
         if "window.print" in str(attrs):
             self.has_print_button = True
+
+        # Layer 4: Track <p> in tab-strategie for density metric
+        if tag == "p" and self.current_tab == "tab-strategie" and "section-label" not in classes:
+            self.in_p_strat = True
+            self.p_strat_buffer = ""
+
+        # R42: Track <li> in "Ce que cela implique" section
+        if self.implique_detected and not self.implique_list_done:
+            if tag in ("ul", "ol") and not self.in_implique_list:
+                self.in_implique_list = True
+            if self.in_implique_list and tag == "li":
+                self.in_implique_li = True
+                self.implique_li_buffer = ""
 
         # Store element info for tab
         if self.current_tab and self.current_tab in self.tab_elements:
@@ -114,6 +145,21 @@ class ProposalParser(HTMLParser):
             self.highlight_gradient_depth -= 1
             if self.highlight_gradient_depth <= 0:
                 self.in_highlight_gradient_livrables = False
+
+        # Layer 4: close <p> tracking
+        if tag == "p" and self.in_p_strat:
+            self.in_p_strat = False
+            if self.p_strat_buffer.strip():
+                self.strat_paragraphs.append(self.p_strat_buffer.strip())
+
+        # R42: close <li> and <ul>/<ol> in implique section
+        if tag == "li" and self.in_implique_li:
+            self.in_implique_li = False
+            if self.implique_li_buffer.strip():
+                self.implique_lis.append(self.implique_li_buffer.strip())
+        if tag in ("ul", "ol") and self.in_implique_list:
+            self.in_implique_list = False
+            self.implique_list_done = True
 
         if self.current_tag_stack and self.current_tag_stack[-1] == tag:
             self.current_tag_stack.pop()
@@ -139,6 +185,16 @@ class ProposalParser(HTMLParser):
 
         if self.in_h2:
             self.h2_buffer += data
+
+        # Layer 4: accumulate paragraph text
+        if self.in_p_strat:
+            self.p_strat_buffer += data
+
+        # R42: detect "Ce que cela implique" section and accumulate li text
+        if self.current_tab == "tab-strategie" and "ce que cela implique" in data.lower():
+            self.implique_detected = True
+        if self.in_implique_li:
+            self.implique_li_buffer += data
 
 
 # ---------------------------------------------------------------------------
@@ -308,10 +364,17 @@ def check_layer1(parser, html_raw):
         else:
             # Check lever coherence: same levers in both phases
             levers = {"seo": "SEO", "sea": "SEA", "geo": "GEO", "social": "Social"}
-            # Split on Phase 2 boundary
-            p2_idx = livr_lower.find("phase 2")
+            # Split on Phase 2 section heading (not first mention in resume)
+            # Look for "accompagnement mensuel" first (heading-only), then
+            # fall back to "mission structurante" boundary (end of Phase 1 card)
+            p2_idx = livr_lower.find("accompagnement mensuel")
             if p2_idx < 0:
-                p2_idx = livr_lower.find("accompagnement mensuel")
+                # Find the Phase 2 section: look for "phase 2" after "mission structurante"
+                p1_section = livr_lower.find("mission structurante")
+                if p1_section > 0:
+                    p2_idx = livr_lower.find("phase 2", p1_section)
+                else:
+                    p2_idx = livr_lower.rfind("phase 2")
             if p2_idx > 0:
                 p1_text = livr_lower[:p2_idx]
                 p2_text = livr_lower[p2_idx:]
@@ -436,15 +499,74 @@ LAYER3_CHECKLIST = [
 
 
 # ---------------------------------------------------------------------------
+# Layer 4 — Quality Metrics (WARN)
+# ---------------------------------------------------------------------------
+
+def check_layer4(parser, html_raw):
+    results = []
+
+    # R40: Densite de donnees dans l'onglet Strategie
+    # >= 50% des paragraphes contiennent au moins 1 chiffre
+    paragraphs = parser.strat_paragraphs
+    if paragraphs:
+        has_number = sum(1 for p in paragraphs if re.search(r'\d', p))
+        ratio = has_number / len(paragraphs)
+        pct = int(ratio * 100)
+        ok = ratio >= 0.5
+        results.append(("R40", f"Densite donnees onglet Strategie : {pct}% paragraphes avec chiffre (seuil: 50%)", ok))
+    else:
+        results.append(("R40", "Densite donnees : aucun paragraphe detecte dans l'onglet Strategie", False))
+
+    # R41: Specificite des titres h2 dans tab-strategie
+    # >= 60% des h2 contiennent un nom propre (majuscule non initiale) ou un chiffre
+    h2s = parser.h2_order
+    if h2s:
+        specific = 0
+        for h2 in h2s:
+            has_digit = bool(re.search(r'\d', h2))
+            # Detect proper nouns: words starting with uppercase that are not
+            # the first word and not common French words
+            words = h2.split()
+            has_proper = False
+            for i, w in enumerate(words):
+                if i > 0 and w[0:1].isupper() and len(w) > 2:
+                    has_proper = True
+                    break
+            if has_digit or has_proper:
+                specific += 1
+        ratio = specific / len(h2s)
+        pct = int(ratio * 100)
+        ok = ratio >= 0.6
+        results.append(("R41", f"Specificite titres h2 : {pct}% avec nom propre/chiffre ({specific}/{len(h2s)}, seuil: 60%)", ok))
+    else:
+        results.append(("R41", "Specificite titres : aucun h2 dans l'onglet Strategie", False))
+
+    # R42: Triplet "Ce que cela implique" — 3 <li>, le 3e contient un chiffre (projection)
+    lis = parser.implique_lis
+    if lis:
+        count_ok = len(lis) == 3
+        third_has_number = len(lis) >= 3 and bool(re.search(r'\d', lis[2]))
+        ok = count_ok and third_has_number
+        detail = f"{len(lis)} li"
+        if len(lis) >= 3:
+            detail += f", 3e li {'contient' if third_has_number else 'NE contient PAS'} un chiffre"
+        results.append(("R42", f"Triplet 'Ce que cela implique' : {detail}", ok))
+    else:
+        results.append(("R42", "Section 'Ce que cela implique' non detectee", None))
+
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Output
 # ---------------------------------------------------------------------------
 
-def print_results(layer1, layer2, layer3):
+def print_results(layer1, layer2, layer3, layer4):
     fails = 0
     warns = 0
     passes = 0
 
-    print("\n=== SLASHR Proposal Validator ===\n")
+    print("\n=== SLASHR Proposal Validator v1.1 ===\n")
 
     # Layer 1
     l1_pass = 0
@@ -481,11 +603,29 @@ def print_results(layer1, layer2, layer3):
     for rule_id, question in layer3:
         print(f"  [ ] {rule_id} — {question}")
 
+    # Layer 4
+    l4_pass = 0
+    l4_warn = 0
+    l4_manual = 0
+    print("\n--- Layer 4 : Quality Metrics (WARN) ---\n")
+    for rule_id, desc, passed in layer4:
+        if passed is None:
+            print(f"  [MANUAL] {rule_id} — {desc}")
+            l4_manual += 1
+        elif passed:
+            print(f"  [PASS] {rule_id} — {desc}")
+            l4_pass += 1
+        else:
+            print(f"  [WARN] {rule_id} — {desc}")
+            l4_warn += 1
+    warns += l4_warn
+
     # Summary
     print(f"\n{'=' * 50}")
     print(f"Layer 1 : {l1_pass} PASS, {l1_fail} FAIL")
     print(f"Layer 2 : {l2_pass} PASS, {l2_warn} WARN, {l2_manual} MANUAL")
     print(f"Layer 3 : {len(layer3)} items a verifier manuellement")
+    print(f"Layer 4 : {l4_pass} PASS, {l4_warn} WARN, {l4_manual} MANUAL")
     print(f"{'=' * 50}")
 
     if fails > 0:
@@ -546,8 +686,9 @@ def main():
     layer1 = check_layer1(parser, html_raw)
     layer2 = check_layer2(parser, html_raw)
     layer3 = LAYER3_CHECKLIST
+    layer4 = check_layer4(parser, html_raw)
 
-    exit_code = print_results(layer1, layer2, layer3)
+    exit_code = print_results(layer1, layer2, layer3, layer4)
     sys.exit(exit_code)
 
 
