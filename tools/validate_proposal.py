@@ -11,6 +11,7 @@ Valide un HTML de proposition contre les 44 regles de validation (3 onglets : Di
 Usage:
     python3 tools/validate_proposal.py <path_to_html>
     python3 tools/validate_proposal.py .cache/deals/560/artifacts/PROPOSAL-*.html
+    python3 tools/validate_proposal.py --nbp <path_to_nbp.md>
 
 Python 3.9, stdlib uniquement (html.parser, re, os, sys).
 """
@@ -56,13 +57,18 @@ class ProposalParser(HTMLParser):
         self.in_p_diag = False
         self.p_diag_buffer = ""
 
-        # R42: "Ce que cela implique" li tracking
+        # R42: "Ce que cela implique" tracking (highlight-boxes OR li)
         self.implique_detected = False  # text "ce que cela implique" seen
-        self.in_implique_list = False  # inside the first ul/ol after detection
-        self.implique_list_done = False  # first list already collected
-        self.implique_lis = []
+        self.implique_done = False  # stop collecting when next slide starts
+        self.implique_items = []  # list of text items (from highlight-box or li)
+        # li tracking
+        self.in_implique_list = False
         self.in_implique_li = False
         self.implique_li_buffer = ""
+        # highlight-box tracking
+        self.in_implique_highlight = False
+        self.implique_highlight_depth = 0
+        self.implique_highlight_buffer = ""
 
     def handle_starttag(self, tag, attrs):
         attr_dict = dict(attrs)
@@ -118,13 +124,25 @@ class ProposalParser(HTMLParser):
             self.in_p_diag = True
             self.p_diag_buffer = ""
 
-        # R42: Track <li> in "Ce que cela implique" section
-        if self.implique_detected and not self.implique_list_done:
-            if tag in ("ul", "ol") and not self.in_implique_list:
-                self.in_implique_list = True
-            if self.in_implique_list and tag == "li":
-                self.in_implique_li = True
-                self.implique_li_buffer = ""
+        # R42: Track items in "Ce que cela implique" section (highlight-boxes OR li)
+        if self.implique_detected and not self.implique_done:
+            # Stop when a new slide starts
+            if "slide" in classes.split() and tag in ("div", "section"):
+                self.implique_done = True
+            # Track highlight-boxes as items
+            elif "highlight-box" in classes.split() and not self.in_implique_highlight:
+                self.in_implique_highlight = True
+                self.implique_highlight_depth = 1
+                self.implique_highlight_buffer = ""
+            elif self.in_implique_highlight and tag not in void_elements:
+                self.implique_highlight_depth += 1
+            # Track li inside ul/ol as items
+            if not self.implique_done and not self.in_implique_highlight:
+                if tag in ("ul", "ol") and not self.in_implique_list:
+                    self.in_implique_list = True
+                if self.in_implique_list and tag == "li":
+                    self.in_implique_li = True
+                    self.implique_li_buffer = ""
 
         # Store element info for tab
         if self.current_tab and self.current_tab in self.tab_elements:
@@ -152,14 +170,20 @@ class ProposalParser(HTMLParser):
             if self.p_diag_buffer.strip():
                 self.diag_paragraphs.append(self.p_diag_buffer.strip())
 
-        # R42: close <li> and <ul>/<ol> in implique section
+        # R42: close highlight-box, <li> and <ul>/<ol> in implique section
+        if self.in_implique_highlight:
+            self.implique_highlight_depth -= 1
+            if self.implique_highlight_depth <= 0:
+                self.in_implique_highlight = False
+                if self.implique_highlight_buffer.strip():
+                    self.implique_items.append(self.implique_highlight_buffer.strip())
+                self.implique_highlight_buffer = ""
         if tag == "li" and self.in_implique_li:
             self.in_implique_li = False
             if self.implique_li_buffer.strip():
-                self.implique_lis.append(self.implique_li_buffer.strip())
+                self.implique_items.append(self.implique_li_buffer.strip())
         if tag in ("ul", "ol") and self.in_implique_list:
             self.in_implique_list = False
-            self.implique_list_done = True
 
         if self.current_tag_stack and self.current_tag_stack[-1] == tag:
             self.current_tag_stack.pop()
@@ -190,11 +214,13 @@ class ProposalParser(HTMLParser):
         if self.in_p_diag:
             self.p_diag_buffer += data
 
-        # R42: detect "Ce que cela implique" section and accumulate li text
+        # R42: detect "Ce que cela implique" section and accumulate item text
         if self.current_tab == "tab-diagnostic" and "ce que cela implique" in data.lower():
             self.implique_detected = True
         if self.in_implique_li:
             self.implique_li_buffer += data
+        if self.in_implique_highlight:
+            self.implique_highlight_buffer += data
 
 
 # ---------------------------------------------------------------------------
@@ -282,7 +308,7 @@ def check_layer1(parser, html_raw):
 
     # R29: Zero jours/TJM/AMOA/termes internes
     internal_pattern = re.compile(
-        r'\b(jour[s]?[\s\-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recette)\b',
+        r'\b(jour[s]?[\s\-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recettage|recette fonctionnelle|phase de recette)\b',
         re.IGNORECASE
     )
     # Check only visible text (not CSS/JS)
@@ -337,18 +363,35 @@ def check_layer1(parser, html_raw):
                 break
     results.append(("R39", "ETV/trafic correctement etiquetes", not etv_mislabeled))
 
-    # R28a: Investissement avec .recommended + cout inaction
+    # R28a: Investissement avec .recommended + cout inaction (AVANT pricing)
     has_recommended = "recommended" in " ".join(parser.all_classes)
     livr_lower = tab_text(parser, "tab-investissement").lower()
     cout_inaction = "inaction" in livr_lower and ("cout" in livr_lower or "coute" in livr_lower)
+    # Check order: cout inaction should appear BEFORE first pricing element
+    inaction_before_pricing = True
+    if cout_inaction:
+        inv_elements = parser.tab_elements.get("tab-investissement", [])
+        inaction_pos = -1
+        pricing_pos = -1
+        for i, (tag, classes, _) in enumerate(inv_elements):
+            cls_list = classes.split()
+            if inaction_pos < 0 and "s7-insight" in cls_list:
+                inaction_pos = i
+            if pricing_pos < 0 and ("pricing" in cls_list or "pricing-grid" in cls_list):
+                pricing_pos = i
+        if inaction_pos >= 0 and pricing_pos >= 0:
+            inaction_before_pricing = inaction_pos < pricing_pos
     r28a_ok = has_recommended and cout_inaction
     detail_parts = []
     if not has_recommended:
         detail_parts.append(".recommended absent")
     if not cout_inaction:
         detail_parts.append("cout inaction absent")
+    if cout_inaction and not inaction_before_pricing:
+        detail_parts.append("cout inaction APRES pricing (doit etre AVANT)")
+        r28a_ok = False
     detail = f" ({', '.join(detail_parts)})" if detail_parts else ""
-    results.append(("R28a", f"Investissement : .recommended + cout inaction{detail}", r28a_ok))
+    results.append(("R28a", f"Investissement : .recommended + cout inaction avant pricing{detail}", r28a_ok))
 
     # R30: Coherence Phase 1 ↔ Phase 2
     has_phase1 = "phase 1" in livr_lower or "mission structurante" in livr_lower
@@ -542,15 +585,15 @@ def check_layer4(parser, html_raw):
     else:
         results.append(("R41", "Specificite titres : aucun h2 dans l'onglet Diagnostic", False))
 
-    # R42: Triplet "Ce que cela implique" — 3 <li>, le 3e contient un chiffre (projection)
-    lis = parser.implique_lis
-    if lis:
-        count_ok = len(lis) == 3
-        third_has_number = len(lis) >= 3 and bool(re.search(r'\d', lis[2]))
+    # R42: Triplet "Ce que cela implique" — 3 items (highlight-boxes OR li), le 3e contient un chiffre
+    items = parser.implique_items
+    if items:
+        count_ok = len(items) == 3
+        third_has_number = len(items) >= 3 and bool(re.search(r'\d', items[2]))
         ok = count_ok and third_has_number
-        detail = f"{len(lis)} li"
-        if len(lis) >= 3:
-            detail += f", 3e li {'contient' if third_has_number else 'NE contient PAS'} un chiffre"
+        detail = f"{len(items)} items"
+        if len(items) >= 3:
+            detail += f", 3e item {'contient' if third_has_number else 'NE contient PAS'} un chiffre"
         results.append(("R42", f"Triplet 'Ce que cela implique' : {detail}", ok))
     else:
         results.append(("R42", "Section 'Ce que cela implique' non detectee", None))
@@ -581,6 +624,23 @@ def check_layer4(parser, html_raw):
     # R44: Au moins 1 .micro-benchmark dans #tab-diagnostic
     has_micro = tab_has_class(parser, "tab-diagnostic", "micro-benchmark")
     results.append(("R44", "Au moins 1 micro-benchmark dans onglet Diagnostic", has_micro))
+
+    # R45: Repetition density — same number appears > 6 times in visible text
+    visible = full_text(parser)
+    numbers = re.findall(r'\b\d[\d\s]*\d\b|\b\d{2,}\b', visible)
+    normalized = [n.replace(' ', '') for n in numbers]
+    if normalized:
+        from collections import Counter
+        counts = Counter(normalized)
+        repeated = {n: c for n, c in counts.items() if c > 6}
+        if repeated:
+            top = sorted(repeated.items(), key=lambda x: -x[1])[:3]
+            detail = ", ".join(f"{n} ({c}x)" for n, c in top)
+            results.append(("R45", f"Repetition excessive : {detail}", False))
+        else:
+            results.append(("R45", "Densite repetition OK", True))
+    else:
+        results.append(("R45", "Densite repetition OK (aucun nombre multi-digit)", True))
 
     return results
 
@@ -670,14 +730,131 @@ def print_results(layer1, layer2, layer3, layer4):
 
 
 # ---------------------------------------------------------------------------
+# NBP Pre-Validator (markdown structure checks)
+# ---------------------------------------------------------------------------
+
+def validate_nbp(filepath):
+    """Validate a Narrative Blueprint (NBP) markdown file for structural correctness."""
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    results = []
+    content_lower = content.lower()
+
+    # NBP-1: 3 onglets presents
+    tabs = ["onglet diagnostic", "onglet strategie", "onglet investissement"]
+    missing_tabs = [t for t in tabs if t not in content_lower]
+    if missing_tabs:
+        results.append(("NBP-1", f"Onglets manquants : {', '.join(missing_tabs)}", False))
+    else:
+        results.append(("NBP-1", "3 onglets presents", True))
+
+    # NBP-2: Chaque section Diagnostic a un champ "SO WHAT"
+    diag_start = content_lower.find("onglet diagnostic")
+    diag_end = content_lower.find("onglet strategie")
+    if diag_start >= 0 and diag_end >= 0:
+        diag_section = content[diag_start:diag_end]
+        # Count sections (numbered lines like "1. " or "2. ")
+        section_lines = re.findall(r'^\d+\.\s+', diag_section, re.MULTILINE)
+        so_what_count = len(re.findall(r'SO\s*WHAT', diag_section, re.IGNORECASE))
+        if len(section_lines) > 0 and so_what_count < len(section_lines):
+            results.append(("NBP-2", f"SO WHAT manquants : {so_what_count}/{len(section_lines)} sections", False))
+        elif len(section_lines) > 0:
+            results.append(("NBP-2", f"SO WHAT dans chaque section ({so_what_count}/{len(section_lines)})", True))
+        else:
+            results.append(("NBP-2", "Aucune section numerotee detectee dans Diagnostic", None))
+    else:
+        results.append(("NBP-2", "Section Diagnostic non trouvee", False))
+
+    # NBP-3: Pas de champ "Transition SLASHR"
+    has_transition = bool(re.search(r'transition\s+slashr', content_lower))
+    results.append(("NBP-3", "Pas de champ 'Transition SLASHR'", not has_transition))
+
+    # NBP-4: Resume decisionnel : 6 items, chacun < 120 chars
+    # Look for numbered list items (1. through 6.) after "resume" or "decisionnel"
+    resume_match = re.search(r'(?:resume|decisionnel).*?(?=(?:board|---|\n\n[A-Z]))', content, re.IGNORECASE | re.DOTALL)
+    if resume_match:
+        resume_text = resume_match.group(0)
+        bullets = re.findall(r'^\d+\.\s+(.+)$', resume_text, re.MULTILINE)
+        long_bullets = [b for b in bullets if len(b.strip()) > 120]
+        if len(bullets) != 6:
+            results.append(("NBP-4", f"Resume decisionnel : {len(bullets)} bullets (attendu: 6)", len(bullets) == 6))
+        elif long_bullets:
+            results.append(("NBP-4", f"Resume decisionnel : {len(long_bullets)} bullets > 120 chars", False))
+        else:
+            results.append(("NBP-4", "Resume decisionnel : 6 bullets, tous <= 120 chars", True))
+    else:
+        results.append(("NBP-4", "Resume decisionnel non detecte", None))
+
+    # NBP-5: HOOK_TYPE present
+    has_hook_type = bool(re.search(r'HOOK_TYPE', content))
+    results.append(("NBP-5", "HOOK_TYPE present", has_hook_type))
+
+    # NBP-6: LAYOUT_MODE present
+    has_layout_mode = bool(re.search(r'LAYOUT_MODE', content))
+    results.append(("NBP-6", "LAYOUT_MODE present", has_layout_mode))
+
+    # NBP-7: Deduplication — pas 2 sections avec le meme "Angle"
+    angles = re.findall(r'Angle\s*:\s*(.+)', content)
+    if angles:
+        angles_lower = [a.strip().lower() for a in angles]
+        seen = set()
+        dupes = []
+        for a in angles_lower:
+            if a in seen:
+                dupes.append(a)
+            seen.add(a)
+        if dupes:
+            results.append(("NBP-7", f"Deduplication : angles dupliques ({', '.join(dupes[:2])})", False))
+        else:
+            results.append(("NBP-7", f"Deduplication : {len(angles)} angles distincts", True))
+    else:
+        results.append(("NBP-7", "Aucun champ Angle detecte", None))
+
+    # Print results
+    print(f"\n=== SLASHR NBP Pre-Validator ===\n")
+    print(f"Fichier : {filepath}\n")
+    fails = 0
+    for rule_id, desc, passed in results:
+        if passed is None:
+            print(f"  [SKIP] {rule_id} — {desc}")
+        elif passed:
+            print(f"  [PASS] {rule_id} — {desc}")
+        else:
+            print(f"  [FAIL] {rule_id} — {desc}")
+            fails += 1
+
+    print(f"\n{'=' * 40}")
+    if fails > 0:
+        print(f"Resultat : {fails} FAIL — corriger avant de lancer la Pass 3.")
+        return 1
+    else:
+        print("Resultat : PASS — structure NBP OK.")
+        return 0
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: python3 tools/validate_proposal.py <path_to_html>")
+        print("       python3 tools/validate_proposal.py --nbp <path_to_nbp.md>")
         print("       python3 tools/validate_proposal.py .cache/deals/560/artifacts/PROPOSAL-*.html")
         sys.exit(1)
+
+    # NBP pre-validation mode
+    if sys.argv[1] == "--nbp":
+        if len(sys.argv) < 3:
+            print("Usage: python3 tools/validate_proposal.py --nbp <path_to_nbp.md>")
+            sys.exit(1)
+        nbp_path = sys.argv[2]
+        if not os.path.isfile(nbp_path):
+            print(f"Fichier introuvable : {nbp_path}")
+            sys.exit(1)
+        exit_code = validate_nbp(nbp_path)
+        sys.exit(exit_code)
 
     filepath = sys.argv[1]
 

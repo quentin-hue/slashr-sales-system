@@ -75,6 +75,10 @@ Outputs internes : `strategy_plan_internal.md` puis **Structured Data Brief (SDB
 Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 3 onglets MVP (Diagnostic, Strategie, Investissement).
 Output interne : **Narrative Blueprint (NBP)**.
 
+> **Pre-validation NBP :** Apres la Pass 2, executer
+> `python3 tools/validate_proposal.py --nbp .cache/deals/{deal_id}/artifacts/NBP.md`
+> pour verifier la structure avant de lancer la Pass 3.
+
 ### Pass 3 : DESIGN ORCHESTRATOR
 **Fichier :** `agents/prepare-pass3.md`
 

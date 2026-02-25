@@ -23,7 +23,12 @@ Si une estimation repose sur des hypotheses (CTR, conversion, panier moyen) :
 - proposer comment valider rapidement
 
 
-Bloc compact de 6 bullets maximum, issu du `strategy_plan_internal.md`. C'est ce que le decideur retient, ce qu'il presente a son board. Chaque bullet est une phrase complete, chiffree, specifique.
+Bloc compact de 6 bullets maximum, issu du `strategy_plan_internal.md`. C'est ce que le decideur retient, ce qu'il presente a son board.
+
+**Contrainte de longueur (STRICTE) :** chaque bullet = 1 phrase, max 120 caracteres.
+Le decideur a 30 secondes. Si un bullet depasse 1 ligne a l'ecran, il est trop long.
+Privilegier les chiffres aux mots : "319 kw vs 10 307 leader" plutot que
+"La Mere Poulard capte 319 mots-cles alors que le leader en a 10 307".
 
 1. Le probleme business (douleur chiffree)
 2. Le cout de l'inaction (visites/euros/mois perdus)
@@ -165,8 +170,9 @@ Le scenario recommande est la decision logique. Les deux autres ajustent l'inten
 
 > **Regle Pont S7 :** chaque pricing card a un sous-titre de 1 phrase qui relie l'investissement au diagnostic S7. Pas de jargon S7 ("PRIMARY S3") — traduit en impact client ("Ce qui construit votre visibilite produit"). Le sous-titre repond a la question implicite du prospect : "Qu'est-ce que je paie exactement et pourquoi ?"
 
-**Sous-bloc "Ce que coute l'inaction" (OBLIGATOIRE, unique endroit) :**
+**Sous-bloc "Ce que coute l'inaction" (OBLIGATOIRE, AVANT le pricing — ancrage psychologique) :**
 - C'est le **seul endroit** de toute la proposition ou le cout de l'inaction est detaille
+- **PLACEMENT :** le cout de l'inaction est positionne AVANT les pricing cards (Phase 1 + Phase 2). Le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
 - 3 impacts business max, lies aux donnees du diagnostic
 - Chaque impact = chiffre + source DataForSEO/S7
 - Composant : s7-insight (meme style visuel que la contrainte S7)
@@ -197,8 +203,8 @@ Les 3 actes refonte (Securiser/Transformer/Accelerer) sont dans l'onglet **Diagn
 Structure :
 - Resume decisionnel (6 bullets)
 - Board-ready A4
+- Cout de l'inaction (AVANT les prix)
 - Pricing (Phase 1 + Phase 2) avec pont S7
-- Cout de l'inaction
 - Methode S7
 - FAQ
 - Prochaine etape
@@ -209,8 +215,8 @@ Structure :
 Structure identique :
 - Resume decisionnel (6 bullets)
 - Board-ready A4
+- Cout de l'inaction (AVANT les prix)
 - Pricing (Phase 1 + Phase 2) avec pont S7
-- Cout de l'inaction
 - Methode S7
 - FAQ
 - Prochaine etape

@@ -29,7 +29,7 @@ Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc em
 - `REFONTE` : si refonte, les 3 actes (Securiser/Transformer/Accelerer) sont dans l'onglet Diagnostic
 - `MODULES_ACTIFS` : savoir quels blocs de donnees sont disponibles dans le SDB
 - `NARRATIVE_HINTS` : point de depart pour l'etape de deduplication (non-contraignant)
-- `TRANSITION_OPPORTUNITIES` : point de depart pour placer les 2 transitions SLASHR (non-contraignant)
+- `TRANSITION_OPPORTUNITIES` : obsolete (les transitions SLASHR sont supprimees, cf. Etape 2.4)
 - `ROI Confidence globale` : determine si le label "Recommandation conditionnelle" est necessaire
 - `CAS CLIENTS RETENUS` enrichis : `match_criteria`, `key_metric`, `sdb_juxtaposition`, `angle` par cas
 
@@ -44,6 +44,7 @@ Quelle est l'information la plus frappante pour ce prospect ? C'est ca qui ouvre
 - Chiffre d'inaction parlant → ouvrir par le cout de l'inaction (les donnees, pas le drame)
 - Paradoxe (forte notoriete, faible visibilite) → ouvrir par le constat
 - Opportunite claire et chiffree → ouvrir par le potentiel
+- Ancrage identitaire → le hero tisse l'histoire de la marque/du prospect dans le constat. Pas de nostalgie ni de flatterie : un fait de marque qui rend le gap Search d'autant plus frappant. Ex : "Depuis 1888, La Mere Poulard fait les meilleurs palets. En 2026, personne ne les trouve en ligne." Usage : quand le prospect a une marque forte + un gap Search mesurable.
 
 ### Cascade narrative ouverture (OBLIGATOIRE)
 
@@ -92,6 +93,18 @@ Avant de creer les sections, regrouper les blocs du SDB qui alimentent le **meme
 Note : les NARRATIVE_HINTS sont des suggestions, pas des contraintes. Pass 2 peut les ignorer ou les recomposer si l'arc narratif le justifie.
 
 **Exemple :** Si le SDB contient SEARCH STATE (200 kw, 75% marque), COMPETITIVE GAP (ratio 1:44, positions Alma vs Oney) et INTENT MARKET MAP (5 500 recherches commerciales non captees), ces 3 blocs racontent le meme argument ("Oney est invisible sur les requetes que les marchands tapent"). Ils deviennent 1 section avec un bar chart + table + KPI cards, pas 3 sections separees.
+
+### Regle de fusion Constat / Benchmark (OBLIGATOIRE)
+
+Si le constat et le benchmark utilisent les memes KPIs (volume de marque, mots-cles, visites, % marque), les fusionner en 1 seule section "Le constat". Le KPI large ouvre, le benchmark prouve. Structure d'une section constat fusionnee :
+- KPI large (le chiffre choc)
+- Contexte rapide (3 data items inline)
+- Bar chart benchmark
+- Table comparative (optionnelle si le bar chart suffit)
+- 1 seul SO WHAT
+- 1 micro-benchmark (si pertinent)
+
+Ne jamais avoir une section "Le constat" + une section "Benchmark concurrentiel" qui repete les memes metriques. Si les metriques different, les deux sections restent distinctes.
 
 ### Nombre de sections
 
@@ -224,6 +237,11 @@ Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'e
 
 Header compact (pas de hero full-screen). L'onglet ouvre directement sur la decision strategique.
 
+**Regle de deduplication tab-header vs highlight-gradient :**
+Le tab-header de l'onglet Strategie donne le TITRE de la recommandation (phrase courte, max 8 mots, ex: "Integrer le SEO dans la refonte").
+Le highlight-gradient "Nous recommandons" DEVELOPPE cette recommandation avec les donnees cles (chiffres du gap, contrainte S7, objectif).
+Les deux NE DOIVENT PAS etre la meme phrase.
+
 - **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet au lieu d'etre enterree en fin de scroll
 - **90 jours** (M1/M2/M3) : plan d'action immediat
 - **ROI Simulateur** : hypotheses sourcees + sliders + scenarios (absorbe l'ex-onglet ROI Interactif)
@@ -246,29 +264,20 @@ Header compact (pas de hero full-screen). Contient : resume decisionnel (6 bulle
 
 ---
 
-## Etape 2.4 : Integration des avantages competitifs
+## Etape 2.4 : Pas de transitions SLASHR
 
-**Maximum 2 transitions SLASHR dans l'onglet Diagnostic.** Choisir les 2 moments ou la transition entre le constat et l'expertise SLASHR est la plus naturelle. Les autres sections se passent de transition — les donnees parlent d'elles-memes.
-
-**Point de depart :** consulter `TRANSITION_OPPORTUNITIES` du SDB (si present). Ces 2 suggestions identifient les data blocks ou un differenciateur SLASHR s'insere naturellement. Pass 2 peut les adopter ou les remplacer si l'arc narratif le justifie.
+Pas de transitions SLASHR. Le SO WHAT de chaque section suffit comme conclusion.
+Si une section mene naturellement a la suivante, le lien est dans le titre H2
+de la section suivante (ex: "La refonte est un moment de bascule" enchaine
+logiquement apres le benchmark concurrentiel).
+La proposition ne doit jamais mentionner SLASHR ou ses services dans
+l'onglet Diagnostic, sauf dans la section S7 (methode d'analyse).
 
 **Regles :**
-- La transition vient **apres** le bloc de donnees, jamais avant
-- Elle est **specifique** au constat presente (pas une phrase generique)
-- Elle est **naturelle**, un enchainage logique, pas une publicite
-- Elle ne mentionne **jamais** "Pourquoi nous", "Nos avantages", "Notre methode", ou "C'est exactement ce que..."
-- Elle ne commence **jamais** par "Notre lecture :", "Notre conviction :", "Notre position :", "Notre approche :", ou tout pattern "Notre {X} :". C'est un marqueur d'auto-promotion, pas d'analyse. Remplacer par un enonce factuel ("Concretement :", "Pourquoi {X} :", ou directement le fait sans intro).
-- **Si la transition sonne comme une pub SLASHR, la supprimer.** Le decideur detecte l'auto-promotion.
-
-**Test :** relire la transition en imaginant qu'elle est signee par un concurrent. Si elle marche aussi bien, c'est qu'elle est generique. La reecrire.
-
-**Exemples :**
-
-| Constat presente | ❌ Transition auto-promotionnelle | ✅ Transition naturelle |
-|------------------|----------------------------------|------------------------|
-| Gap concurrentiel x4 | "C'est ce type de gap que notre methode identifie et priorise." | "Combler un gap de cette ampleur ne se fait pas en publiant du contenu au hasard. Ca demande une cartographie par intent d'achat et une priorisation par impact business." |
-| Score Lighthouse de 38 | "C'est le premier livrable de notre Phase 1 Audit." | "Ces fondations techniques conditionnent tout le reste. Le premier chantier est un cahier des charges technique priorise pour l'equipe dev." |
-| 0 resultat IA sur les requetes metier | "C'est ce que notre pilier Production couvre." | "La visibilite IA se construit sur des donnees structurees et du contenu expert. C'est un chantier complementaire au SEO, pas un remplacement." |
+- Pas de phrase de transition entre un bloc de donnees et l'expertise SLASHR
+- Pas de "Pourquoi nous", "Nos avantages", "Notre methode", "C'est exactement ce que..."
+- Pas de pattern "Notre {X} :" (lecture, conviction, position, approche). C'est un marqueur d'auto-promotion.
+- Les donnees parlent d'elles-memes. Le decideur detecte l'auto-promotion.
 
 ---
 
@@ -300,7 +309,7 @@ Header compact (pas de hero full-screen). Contient : resume decisionnel (6 bulle
 - [ ] Zero pression commerciale (inclut structures anaphoriques "chaque mois/jour sans")
 - [ ] Zero dramatisation
 - [ ] Zero auto-promotion deguisee (pas de "Notre {X} :", pas de "C'est exactement ce que")
-- [ ] Max 2 transitions SLASHR dans l'onglet Diagnostic
+- [ ] Zero transition SLASHR dans l'onglet Diagnostic (sauf section S7)
 - [ ] Chaque expertise traduite en impact business (pas de jargon brut)
 
 ---
@@ -314,6 +323,11 @@ L'agent DOIT ecrire explicitement ce document interne avant de passer a la Pass 
 
 ARC GLOBAL: {type d'arc choisi}, {justification en 1 ligne liee au decideur et au contexte}
 HOOK: {description du hook et pourquoi il est frappant pour ce prospect}
+HOOK_TYPE: {gap_concurrentiel | verbatim | inaction | paradoxe | opportunite | ancrage_identitaire}
+LAYOUT_MODE: {data-heavy | narrative-heavy | visual-heavy}
+  - data-heavy (defaut) : benchmark + tables + charts. Pour les deals avec beaucoup de donnees comparatives.
+  - narrative-heavy : plus de texte, moins de composants data. Pour les deals qualitatifs (marque forte, peu de concurrents mesurables).
+  - visual-heavy : plus de charts, donuts, before/after. Pour les deals ou la transformation visuelle est l'argument principal.
 PROFIL DECIDEUR: {type}, sensible a: {preoccupation principale}
 DECISION MODE: {Rapide | Comite | AO}, risque principal: {budget | timing | politique interne | multi-interlocuteurs}
 ADAPTATION AU PROFIL DECIDEUR :
@@ -338,7 +352,6 @@ Total sections Diagnostic: {N} (pas de plafond, deduplication seul garde-fou)
    Donnees utilisees: {quelles donnees du SDB alimentent cette section}
    SO WHAT: {highlight box : impact business chiffre pour ce prospect}
    Cas client inline: {si pertinent : Prospect: metrique → Cas (avant): metrique → Cas (apres): metrique}
-   Transition SLASHR: {phrase de transition apres le data block, si applicable}
    Pourquoi ici: {justification de sa position dans l'arc}
 
 2. {Titre section} · role: {...]

@@ -136,6 +136,40 @@ Classes : `.grid-2`, `.grid-3`, `.grid-4`
 
 Grilles CSS responsive. Passent en 1 colonne sous 900px.
 
+### Progress Dots — navigation intra-onglet
+
+Classes : `.progress-dots`, `.progress-dot`, `.progress-dot.active`
+
+```html
+<div class="progress-dots">
+  <span class="progress-dot active" data-slide="0"></span>
+  <span class="progress-dot" data-slide="1"></span>
+  <span class="progress-dot" data-slide="2"></span>
+</div>
+```
+
+```css
+.progress-dots {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%); z-index: 90;
+  display: flex; gap: 8px;
+  background: rgba(26,26,26,0.8);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px; border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+}
+.progress-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text-30); cursor: pointer;
+  transition: all 0.3s;
+}
+.progress-dot.active {
+  background: var(--orange); transform: scale(1.3);
+}
+```
+
+**JS :** IntersectionObserver sur chaque `.slide` dans l'onglet actif. Le dot correspondant passe en `.active`. Clic sur un dot = `scrollIntoView({ behavior: 'smooth' })`.
+
 ### Footer
 
 Classes : `.footer`
@@ -504,7 +538,9 @@ Classes : `.donut-grid`, `.donut-item`, `.donut-svg`, `.donut-track`, `.donut-fi
 </div>
 ```
 
-Circumference = 326.7. Dashoffset = 326.7 * (1 - pourcentage). Grille auto-fit (min 200px).
+Circumference = 326.7 (r=52). Dashoffset = 326.7 * (1 - pourcentage). Grille auto-fit (min 200px).
+
+**Animation :** les donuts demarrent avec `stroke-dashoffset` = circumference (cercle invisible). Quand le donut entre dans le viewport (IntersectionObserver, threshold 0.3), transiter vers la valeur cible en 1.5s `cubic-bezier(0.22, 1, 0.36, 1)`. Stocker la valeur cible dans `data-offset` sur le `circle.donut-fill`. Le CSS initial met `stroke-dashoffset: 326.7`. Le JS anime vers `data-offset`.
 
 ### Number Ticker — compteur anime au scroll
 
@@ -905,6 +941,24 @@ Classes : `.micro-benchmark`, `.mb-step`, `.mb-step.mb-prospect`, `.mb-step.mb-b
 - Mobile : passe en vertical
 
 **Usage :** bandeau en tete de chaque cas client dans l'onglet Cas Clients. Alimente par `sdb_juxtaposition` du SDB.
+
+---
+
+## Utility classes
+
+Classes utilitaires pour eviter les inline styles repetes. Les patterns courants (margin, font-size, text-align) doivent utiliser ces classes.
+
+```css
+.mb-0{margin-bottom:0}.mb-sm{margin-bottom:8px}
+.mb-md{margin-bottom:16px}.mb-lg{margin-bottom:24px}
+.mb-xl{margin-bottom:40px}
+.mt-md{margin-top:16px}.mt-lg{margin-top:24px}
+.text-sm{font-size:13px}.text-xs{font-size:11px}
+.text-center{text-align:center}
+.max-w-700{max-width:700px}
+```
+
+Si un style inline est necessaire pour un cas unique, il est tolere. Mais les patterns repetes doivent etre des classes.
 
 ---
 

@@ -134,6 +134,33 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 - **Les verbatims du prospect** sont des ancres narratives, les placer la ou ils creent un pont avec la recommandation.
 - **Densite max par section** : chaque `.slide` (section plein ecran) contient au maximum **3 composants visuels** (hors titre et source). Au-dela, decouper en 2 slides ou fusionner des composants. Un slide surcharge perd le decideur.
 
+### Progress dots (navigation intra-onglet)
+
+Chaque onglet affiche des dots de progression en bas de l'ecran. Le dot actif correspond a la slide visible (IntersectionObserver). Les dots sont interactifs (clic = scroll to slide).
+Classes CSS : `.progress-dots`, `.progress-dot`, `.progress-dot.active`
+
+### Animation des donuts SVG
+
+Les donuts SVG s'animent a l'entree dans le viewport (IntersectionObserver, threshold 0.3), meme pattern que les bar charts. Le stroke-dashoffset initial est egal a la circonference (251.33 pour r=40, 326.7 pour r=52 — pas de remplissage), et transite vers la valeur cible en 1.5s cubic-bezier(0.22, 1, 0.36, 1) quand le donut est visible. Stocker la valeur cible dans `data-offset` sur le `circle.donut-fill`.
+
+### Inline styles → classes CSS
+
+Eviter les inline styles. Utiliser les utility classes du design system :
+- `.mb-0`, `.mb-sm` (8px), `.mb-md` (16px), `.mb-lg` (24px), `.mb-xl` (40px)
+- `.text-sm` (13px), `.text-xs` (11px)
+- `.text-center`
+- `.max-w-700` (max-width: 700px)
+- `.mt-md` (margin-top: 16px), `.mt-lg` (margin-top: 24px)
+Si un style inline est necessaire pour un cas unique, il est tolere. Mais les patterns repetes (margin-bottom, font-size, color) doivent etre des classes.
+
+### LAYOUT_MODE et HOOK_TYPE (signaux Pass 2 → Pass 3)
+
+Si `HOOK_TYPE = "ancrage_identitaire"` dans le NBP : le hero-subtitle tisse l'histoire de la marque dans le constat. Le ton reste factuel (pas de flatterie), mais l'ouverture est emotionnelle.
+
+Si `LAYOUT_MODE = "narrative-heavy"` : privilegier les highlight-boxes, pull-quotes et verbatims aux charts et tables.
+Si `LAYOUT_MODE = "visual-heavy"` : privilegier les before/after, donuts, bar charts aux paragraphes de texte.
+Si `LAYOUT_MODE = "data-heavy"` (defaut) : benchmark + tables + charts, equilibre standard.
+
 ### Interpretation strategique
 
 - **Chaque data affichee a un "so what"**. Un bar chart sans interpretation est un dashboard, pas une proposition.
@@ -166,9 +193,12 @@ Les 3 onglets sont **toujours presents**. Aucun n'est optionnel.
 - **Section S7 obligatoire** : Radar S7 + S7 constraint highlight + S7 levers row + Pull quote (insight central)
 - **Cas clients inline** : composant micro-benchmark (.micro-benchmark) insere apres les sections pertinentes (max 2-3 dans l'onglet)
 - **SO WHAT obligatoire** : chaque section se termine par un highlight box qui traduit les donnees en impact business chiffre
+- **Pas de transitions SLASHR** : la proposition ne mentionne jamais SLASHR ou ses services dans l'onglet Diagnostic, sauf dans la section S7 (methode d'analyse). Le SO WHAT de chaque section suffit comme conclusion.
+- **Fusion constat/benchmark** : si le constat et le benchmark utilisent les memes KPIs, les fusionner en 1 seule slide (KPI large → contexte → bar chart → table optionnelle → SO WHAT)
 
 **Onglet Strategie** : header compact, pas de hero full-screen
 - Remplacer le hero full-screen par un **header compact** : `.tab-header` avec section-label + h2 + section-intro. Pas de blobs.
+- **Deduplication tab-header vs highlight-gradient** : le tab-header donne le TITRE de la recommandation (max 8 mots), le highlight-gradient "Nous recommandons" DEVELOPPE avec les donnees cles. Les deux NE DOIVENT PAS etre la meme phrase.
 - **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet
 - **Timeline 90 jours** : M1/M2/M3
 - **ROI Simulator** : hypotheses sourcees + sliders + calcul JS + 3 scenarios
@@ -177,9 +207,10 @@ Les 3 onglets sont **toujours presents**. Aucun n'est optionnel.
 
 **Onglet Investissement** : header compact, pas de hero full-screen
 - Meme format **header compact** (`.tab-header`)
-- **Resume decisionnel** : Highlight box (gradient) avec 6 bullets, en haut de l'onglet, c'est la premiere chose que le decideur voit
+- **Resume decisionnel** : Highlight box (gradient) avec 6 bullets (max 120 chars chacun), en haut de l'onglet, c'est la premiere chose que le decideur voit
 - **Board-ready A4** : bouton "Version imprimable" qui declenche `window.print()`, page `@media print` avec resume + radar S7 + ROI + pricing
-- **Investissement v12.0** : 2 blocs separes. (1) **Phase 1 "Mission structurante"** : card accent, scope qualitatif + livrables + budget global HT, SANS jours ni TJM. (2) **Phase 2 "Orchestration mensuelle"** : 3 niveaux d'intensite (Essentiel/Performance/Croissance), le recommande en `.recommended` avec border gradient, les autres compacts. Scope qualitatif + budget mensuel HT, SANS jours/mois ni TJM. Sous chaque scenario, ajouter une ligne : "Ce que ca debloque en priorite : {PRIMARY S7} (+ {SECONDARY si utile})". PRIMARY/SECONDARY issus du strategy_plan_internal.md. Ne jamais mentionner jours/TJM. + sous-bloc "Ce que coute l'inaction" (composant s7-insight avec 3 impacts business chiffres).
+- **Cout de l'inaction (AVANT le pricing)** : composant s7-insight avec 3 impacts business chiffres. Place AVANT les pricing cards pour l'ancrage psychologique : le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
+- **Investissement v12.0** : 2 blocs separes. (1) **Phase 1 "Mission structurante"** : card accent, scope qualitatif + livrables + budget global HT, SANS jours ni TJM. (2) **Phase 2 "Orchestration mensuelle"** : 3 niveaux d'intensite (Essentiel/Performance/Croissance), le recommande en `.recommended` avec border gradient, les autres compacts. Scope qualitatif + budget mensuel HT, SANS jours/mois ni TJM. Sous chaque scenario, ajouter une ligne : "Ce que ca debloque en priorite : {PRIMARY S7} (+ {SECONDARY si utile})". PRIMARY/SECONDARY issus du strategy_plan_internal.md. Ne jamais mentionner jours/TJM.
 - **Recommandation conditionnelle** : si Confidence = Low sur 2+ ROI drivers, la carte `.recommended` conserve son statut mais affiche un label supplementaire : "Recommandation conditionnelle — validation des hypotheses en Phase 1".
 - **Sous-section Methode S7** : Card (accent) avec definition 2-3 phrases + liste compacte 7 forces (1 ligne chacune) + 1 phrase d'arbitrage. Peut etre dans un Accordion "Notre methode d'analyse".
 - **Accordion "Questions frequentes"** : reprend les OBJECTIONS A PRE-EMPT du NBP. Chaque item : titre = objection formulee comme question, contenu = reponse data-first + source courte (DataForSEO / GSC / verbatim / benchmark). Si une objection n'a pas de source → ajouter "a confirmer en Phase 1".
@@ -270,6 +301,13 @@ Le simulateur ROI utilise des sliders que le prospect peut manipuler :
 Les 3 KPIs se recalculent en temps reel (JS vanilla) : visites a M12, CA organique annuel, ROI.
 
 **Regle UX :** le slider "Visites cibles M12" est l'element central. Son min = trafic actuel, son max = benchmark concurrent (le plafond credible). Le prospect comprend immediatement ce qu'il ajuste. Un "multiplicateur x2.5" est abstrait — "passer de 3 200 a 8 000 visites/mois" est concret.
+
+**Investissement dynamique selon scenario :** le simulateur ROI calcule le ROI dynamiquement selon le scenario choisi. L'investissement total est derive des pricing cards du meme HTML :
+- Essentiel : Phase1 + (Essentiel * 12)
+- Performance : Phase1 + (Performance * 12) [defaut]
+- Croissance : Phase1 + (Croissance * 12)
+
+Le JS extrait les montants des `.pricing-price` dans `#tab-investissement` OU les hardcode a partir du NBP si l'extraction est trop fragile. 3 boutons radio sous les sliders permettent de choisir le scenario. Le ROI recalcule en temps reel.
 
 ---
 

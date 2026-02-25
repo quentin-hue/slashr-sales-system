@@ -1,6 +1,6 @@
 # Validation Rules — Proposition HTML
 
-> Reference unique des 44 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
+> Reference unique des 45 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
 
 ---
 
@@ -17,7 +17,7 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-investissement` avec max 6 `<li>` |
 | 19 | Board-ready A4 / `window.print()` | `@media print` present dans le CSS ET bouton print dans le HTML ET section `.board-ready-a4` presente avec : resume decisionnel, pricing recommande, "decision attendue" |
 | 26 | CTA avec verbe strategique | CTA ne contient PAS "Planifier un echange", "Discuter", "Echanger", "En savoir plus" |
-| 29 | Zero jours/TJM/AMOA dans le texte visible | Regex `\b(jour[s]?[\s-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recette)\b` absent du body visible. NB : "monitoring" seul est autorise (cf. output_contract.md) |
+| 29 | Zero jours/TJM/AMOA dans le texte visible | Regex `\b(jour[s]?[\s-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recettage|recette fonctionnelle|phase de recette)\b` absent du body visible. NB : "monitoring" seul est autorise (cf. output_contract.md). "recette" culinaire est autorise (agroalimentaire). |
 | 31 | Accordion FAQ present dans onglet Investissement | `.accordion` present dans `#tab-investissement` |
 | 35 | "Prochaine etape" dans onglet Investissement | Texte "prochaine etape" (case-insensitive) dans `#tab-investissement` |
 | 36 | Pas de pattern "Notre {X} :" | Regex `Notre (lecture|conviction|position|approche|methode|vision)\s*:` absent |
@@ -25,7 +25,7 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | 38 | Pricing cards exclusives a l'onglet Investissement | `.pricing` ou `.pricing-grid` absent de `#tab-strategie` |
 | 39 | ETV vs trafic correctement etiquetes | "ETV" n'apparait pas la ou c'est du trafic (visites) et inversement |
 | 27a | Si refonte : 3 actes narratifs + "0 perte de trafic strategique" | Conditionnel : si le deal implique une refonte |
-| 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" | `.recommended` present + section cout inaction dans `#tab-investissement` |
+| 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" AVANT pricing | `.recommended` present + section cout inaction dans `#tab-investissement` + cout inaction (`.s7-insight`) positionne AVANT `.pricing`/`.pricing-grid` dans le DOM |
 | 30 | Coherence levier : setup Phase 1 ↔ run Phase 2 | Chaque levier avec Phase 1 a un Phase 2 et inversement |
 
 ---
@@ -70,7 +70,7 @@ Regles non-automatisables, revue par l'agent. Affichees comme checklist.
 
 ---
 
-## Layer 4 : Quality Metrics (3 regles, WARN)
+## Layer 4 : Quality Metrics (6 regles, WARN)
 
 Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING avec score.
 
@@ -78,9 +78,10 @@ Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING 
 |---|-------|------|-------|
 | 40 | Densite de donnees dans l'onglet Diagnostic | Ratio paragraphes contenant ≥ 1 chiffre / total paragraphes dans `#tab-diagnostic` | ≥ 50% des paragraphes |
 | 41 | Specificite des titres h2 | % de `h2` dans `#tab-diagnostic` contenant un nom propre OU un chiffre | ≥ 60% des h2 |
-| 42 | Triplet "Ce que cela implique" | Section "Ce que cela implique" contient exactement 3 `<li>`, le 3e contient un chiffre (projection) | 3 li, chiffre dans le 3e |
+| 42 | Triplet "Ce que cela implique" | Section "Ce que cela implique" contient exactement 3 items (`.highlight-box` OU `<li>`), le 3e contient un chiffre (projection). Scope au slide : le comptage s'arrete quand un nouveau `.slide` commence. | 3 items, chiffre dans le 3e |
 | 43 | SO WHAT : chaque section Diagnostic a un highlight-box | Chaque `.slide` dans `#tab-diagnostic` contient au moins 1 `.highlight-box` | Toutes les sections |
 | 44 | Au moins 1 micro-benchmark dans Diagnostic | `.micro-benchmark` present dans `#tab-diagnostic` | ≥ 1 |
+| 45 | Repetition density : aucun nombre n'apparait > 6 fois dans le texte visible | Counter sur les nombres multi-digits, seuil > 6 | Aucun nombre > 6x |
 
 ---
 
@@ -90,4 +91,4 @@ Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING 
 |-------|-----------|
 | **Pass 2** (Narrative Architect) | Appliquer Layer 3 en entier + Layer 2 regles 22-25 comme checklist pre-generation |
 | **Pass 3** (Design Orchestrator) | Appliquer les 3 layers comme gate de validation. Layer 1 FAIL = REJECT |
-| **`validate_proposal.py`** | Automatise Layer 1 (PASS/FAIL) + Layer 2 (WARN) + Layer 4 (Quality Metrics). Layer 3 affichee comme checklist manuelle |
+| **`validate_proposal.py`** | Automatise Layer 1 (PASS/FAIL) + Layer 2 (WARN) + Layer 4 (Quality Metrics). Layer 3 affichee comme checklist manuelle. Mode `--nbp` : pre-validation de la structure du NBP (7 checks) |
