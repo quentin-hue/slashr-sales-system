@@ -11,7 +11,7 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | # | Regle | Test |
 |---|-------|------|
 | 3 | Fond sombre `#1a1a1a` present | CSS `background` ou `--bg` contient `#1a1a1a` |
-| 5 | 3 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement` | 3 `div.tab-content` avec contenu non-placeholder |
+| 5 | 4 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement`, `tab-cas-clients` | 4 `div.tab-content` avec contenu non-placeholder |
 | 14 | Section S7 dans l'onglet Diagnostic | `s7-grid` ou `s7-card` present dans `#tab-diagnostic` |
 | 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` dans `#tab-diagnostic` |
 | 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-investissement` avec max 6 `<li>` |
@@ -48,6 +48,7 @@ Regles verifiables par heuristiques. Echec = WARNING, correction recommandee.
 | 8 | Pas 2 blocs data consecutifs sans interpretation | Alternance data/highlight-box verifiee |
 | 9 | Pas de section "Pourquoi SLASHR" standalone | Regex `pourquoi slashr` absent des titres h2/h3 |
 | 10 | Differenciateurs lies a un data block | Transitions SLASHR precedees par un bloc de donnees |
+| 28c | Brief paid non adresse | Si des keywords paid (google ads, sea, paid, campagne, roas) apparaissent dans le Diagnostic mais pas dans Strategie/Investissement → WARN "Brief paid mentionne dans Diagnostic mais non adresse dans Strategie/Investissement" |
 
 ---
 
@@ -67,6 +68,7 @@ Regles non-automatisables, revue par l'agent. Affichees comme checklist.
 | 13 | S7 : max 3 leviers | Le S7 recommande-t-il max 3 leviers (pas les 7) ? |
 | 15 | Insight S7 non-substituable | L'insight central echoue-t-il au test de substitution ? |
 | 17 | DEFERRED justifies | Chaque force DEFERRED a-t-elle un "pourquoi pas maintenant" ? |
+| 17b | Brief paid adresse | Si SEA_SIGNAL=EXPLICIT dans le SDB, le brief paid est-il adresse dans la proposition (section Diagnostic paid + sous-section Strategie paid + FAQ SEA) ? |
 
 ---
 
@@ -80,7 +82,7 @@ Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING 
 | 41 | Specificite des titres h2 | % de `h2` dans `#tab-diagnostic` contenant un nom propre OU un chiffre | ≥ 60% des h2 |
 | 42 | Triplet "Ce que cela implique" | Section "Ce que cela implique" contient exactement 3 items (`.highlight-box` OU `<li>`), le 3e contient un chiffre (projection). Scope au slide : le comptage s'arrete quand un nouveau `.slide` commence. | 3 items, chiffre dans le 3e |
 | 43 | SO WHAT : chaque section Diagnostic a un highlight-box | Chaque `.slide` dans `#tab-diagnostic` contient au moins 1 `.highlight-box` | Toutes les sections |
-| 44 | Au moins 1 micro-benchmark dans Diagnostic | `.micro-benchmark` present dans `#tab-diagnostic` | ≥ 1 |
+| 44 | Au moins 1 micro-benchmark dans la proposition | `.micro-benchmark` present dans `#tab-diagnostic` OU `#tab-cas-clients` | ≥ 1 |
 | 45 | Repetition density : aucun nombre n'apparait > 6 fois dans le texte visible | Counter sur les nombres multi-digits, seuil > 6 | Aucun nombre > 6x |
 
 ---
@@ -90,5 +92,5 @@ Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING 
 | Passe | Utilisation |
 |-------|-----------|
 | **Pass 2** (Narrative Architect) | Appliquer Layer 3 en entier + Layer 2 regles 22-25 comme checklist pre-generation |
-| **Pass 3** (Design Orchestrator) | Appliquer les 3 layers comme gate de validation. Layer 1 FAIL = REJECT |
+| **Pass 3** (Design Orchestrator) | Appliquer les 4 layers comme gate de validation. Layer 1 FAIL = REJECT |
 | **`validate_proposal.py`** | Automatise Layer 1 (PASS/FAIL) + Layer 2 (WARN) + Layer 4 (Quality Metrics). Layer 3 affichee comme checklist manuelle. Mode `--nbp` : pre-validation de la structure du NBP (7 checks) |

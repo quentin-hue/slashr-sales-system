@@ -2,7 +2,7 @@
 """
 SLASHR Proposal Validator — v2.0
 
-Valide un HTML de proposition contre les 44 regles de validation (3 onglets : Diagnostic, Strategie, Investissement).
+Valide un HTML de proposition contre les 45 regles de validation (4 onglets : Diagnostic, Strategie, Investissement, Cas clients).
 - Layer 1 (Structural) : PASS/FAIL — echec = REJECT
 - Layer 2 (Content) : WARN — correction recommandee
 - Layer 3 (Semantic) : checklist affichee pour revue manuelle
@@ -265,15 +265,15 @@ def check_layer1(parser, html_raw):
     has_bg = "#1a1a1a" in parser.css_content or "#1a1a1a" in html_raw
     results.append(("R3", "Fond sombre #1a1a1a", has_bg))
 
-    # R5: 3 onglets non-vides
-    required_tabs = ["tab-diagnostic", "tab-strategie", "tab-investissement"]
+    # R5: 4 onglets non-vides
+    required_tabs = ["tab-diagnostic", "tab-strategie", "tab-investissement", "tab-cas-clients"]
     tabs_ok = all(
         tab_id in parser.tabs and len(parser.tabs[tab_id]) > 2
         for tab_id in required_tabs
     )
     missing = [t for t in required_tabs if t not in parser.tabs or len(parser.tabs.get(t, [])) <= 2]
     detail = f" (manquants/vides: {', '.join(missing)})" if missing else ""
-    results.append(("R5", f"3 onglets non-vides{detail}", tabs_ok))
+    results.append(("R5", f"4 onglets non-vides{detail}", tabs_ok))
 
     # R14: Section S7 dans onglet Diagnostic
     diag_text = tab_text(parser, "tab-diagnostic").lower()
@@ -423,8 +423,10 @@ def check_layer1(parser, html_raw):
                 p2_text = livr_lower[p2_idx:]
                 mismatched = []
                 for key, label in levers.items():
-                    in_p1 = key in p1_text
-                    in_p2 = key in p2_text
+                    # Use word boundary to avoid false positives (e.g. "sea" in "search")
+                    pat = re.compile(r'\b' + re.escape(key) + r'\b')
+                    in_p1 = bool(pat.search(p1_text))
+                    in_p2 = bool(pat.search(p2_text))
                     if in_p1 and not in_p2:
                         mismatched.append(f"{label} Phase 1 only")
                     elif in_p2 and not in_p1:
@@ -502,6 +504,16 @@ def check_layer2(parser, html_raw):
     # R10: Differenciateurs lies a un data block
     results.append(("R10", "Differenciateurs lies a un data block (verification manuelle)", None))
 
+    # R28c: Brief paid mentionne dans Diagnostic mais non adresse dans Strategie/Investissement
+    sea_keywords = ["google ads", "sea ", "paid", "campagne", "roas"]
+    sea_kw_in_diag = any(kw in diag for kw in sea_keywords)
+    sea_in_strat = any(kw in strat for kw in sea_keywords)
+    sea_in_livr = any(kw in livr for kw in sea_keywords)
+    if sea_kw_in_diag and not (sea_in_strat or sea_in_livr):
+        results.append(("R28c", "Brief paid mentionne dans Diagnostic mais non adresse dans Strategie/Investissement", False))
+    elif sea_kw_in_diag:
+        results.append(("R28c", "Brief paid adresse dans Diagnostic + Strategie/Investissement", True))
+
     # R28b: Cout inaction avec impacts chiffres (dans onglet Investissement)
     has_cout = "inaction" in livr
     # Verify that "inaction" section contains actual numbers (not just the word)
@@ -539,6 +551,7 @@ LAYER3_CHECKLIST = [
     ("R13", "S7 : max 3 leviers actifs (pas les 7) ?"),
     ("R15", "Insight S7 non-substituable ?"),
     ("R17", "Chaque DEFERRED a un \"pourquoi pas maintenant\" ?"),
+    ("R17b", "Si SEA_SIGNAL=EXPLICIT dans le SDB, le brief paid est-il adresse (Diagnostic + Strategie + FAQ) ?"),
 ]
 
 
@@ -621,9 +634,10 @@ def check_layer4(parser, html_raw):
     else:
         results.append(("R43", "SO WHAT : aucune section detectee dans l'onglet Diagnostic", None))
 
-    # R44: Au moins 1 .micro-benchmark dans #tab-diagnostic
-    has_micro = tab_has_class(parser, "tab-diagnostic", "micro-benchmark")
-    results.append(("R44", "Au moins 1 micro-benchmark dans onglet Diagnostic", has_micro))
+    # R44: Au moins 1 .micro-benchmark dans la proposition (Diagnostic ou Cas clients)
+    has_micro = tab_has_class(parser, "tab-diagnostic", "micro-benchmark") or \
+                tab_has_class(parser, "tab-cas-clients", "micro-benchmark")
+    results.append(("R44", "Au moins 1 micro-benchmark dans la proposition", has_micro))
 
     # R45: Repetition density — same number appears > 6 times in visible text
     visible = full_text(parser)
@@ -741,26 +755,32 @@ def validate_nbp(filepath):
     results = []
     content_lower = content.lower()
 
-    # NBP-1: 3 onglets presents
-    tabs = ["onglet diagnostic", "onglet strategie", "onglet investissement"]
+    # NBP-1: 4 onglets presents
+    tabs = ["onglet diagnostic", "onglet strategie", "onglet investissement", "onglet cas clients"]
     missing_tabs = [t for t in tabs if t not in content_lower]
     if missing_tabs:
         results.append(("NBP-1", f"Onglets manquants : {', '.join(missing_tabs)}", False))
     else:
-        results.append(("NBP-1", "3 onglets presents", True))
+        results.append(("NBP-1", "4 onglets presents", True))
 
     # NBP-2: Chaque section Diagnostic a un champ "SO WHAT"
+    # Sections S7 (has "Insight") and "Ce que cela implique" (has "Triplet") are exempt
     diag_start = content_lower.find("onglet diagnostic")
     diag_end = content_lower.find("onglet strategie")
     if diag_start >= 0 and diag_end >= 0:
         diag_section = content[diag_start:diag_end]
         # Count sections (numbered lines like "1. " or "2. ")
-        section_lines = re.findall(r'^\d+\.\s+', diag_section, re.MULTILINE)
+        section_headers = re.findall(r'^(\d+)\.\s+(.+)', diag_section, re.MULTILINE)
+        # Exclude S7 and "implique/priorisons" sections (they use Insight/Triplet instead of SO WHAT)
+        exempt_keywords = ['s7', 'lecture strat', 'implique', 'priorisons', 'verrou narratif']
+        regular_sections = [h for h in section_headers if not any(k in h[1].lower() for k in exempt_keywords)]
         so_what_count = len(re.findall(r'SO\s*WHAT', diag_section, re.IGNORECASE))
-        if len(section_lines) > 0 and so_what_count < len(section_lines):
-            results.append(("NBP-2", f"SO WHAT manquants : {so_what_count}/{len(section_lines)} sections", False))
-        elif len(section_lines) > 0:
-            results.append(("NBP-2", f"SO WHAT dans chaque section ({so_what_count}/{len(section_lines)})", True))
+        if len(regular_sections) > 0 and so_what_count < len(regular_sections):
+            results.append(("NBP-2", f"SO WHAT manquants : {so_what_count}/{len(regular_sections)} sections regulieres", False))
+        elif len(regular_sections) > 0:
+            results.append(("NBP-2", f"SO WHAT dans chaque section ({so_what_count}/{len(regular_sections)})", True))
+        elif len(section_headers) > 0:
+            results.append(("NBP-2", f"SO WHAT OK ({so_what_count} SO WHAT, sections speciales exemptes)", True))
         else:
             results.append(("NBP-2", "Aucune section numerotee detectee dans Diagnostic", None))
     else:
@@ -771,8 +791,8 @@ def validate_nbp(filepath):
     results.append(("NBP-3", "Pas de champ 'Transition SLASHR'", not has_transition))
 
     # NBP-4: Resume decisionnel : 6 items, chacun < 120 chars
-    # Look for numbered list items (1. through 6.) after "resume" or "decisionnel"
-    resume_match = re.search(r'(?:resume|decisionnel).*?(?=(?:board|---|\n\n[A-Z]))', content, re.IGNORECASE | re.DOTALL)
+    # Look for the actual bullet list section (must have "1." following the header)
+    resume_match = re.search(r'RESUME DECISIONNEL[^\n]*\n((?:\d+\.\s+.+\n?)+)', content, re.IGNORECASE)
     if resume_match:
         resume_text = resume_match.group(0)
         bullets = re.findall(r'^\d+\.\s+(.+)$', resume_text, re.MULTILINE)

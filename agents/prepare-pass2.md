@@ -20,7 +20,7 @@ Dans la recommendation (NBP), garder 3 sections courtes :
 - Chaque axe de reco doit etre relie a 1 fait OU explicite comme hypothese.
 
 
-Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **3 onglets MVP** (Diagnostic, Strategie, Investissement). Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
+Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **4 onglets** (Diagnostic, Strategie, Investissement, Cas clients). Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
 
 ### Champs SDB enrichis (consommes par Pass 2)
 
@@ -28,6 +28,9 @@ Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc em
 - `PERIMETRE_SLASHR` : cadrer la recommandation (ne pas recommander hors perimetre)
 - `REFONTE` : si refonte, les 3 actes (Securiser/Transformer/Accelerer) sont dans l'onglet Diagnostic
 - `MODULES_ACTIFS` : savoir quels blocs de donnees sont disponibles dans le SDB
+- `SEA_SIGNAL` : routage paid (EXPLICIT / DETECTED / ABSENT) — determine les sections conditionnelles SEA
+- `SEA_POSTURE` : posture SLASHR vis-a-vis du paid (PILOTE / CONSEIL / HORS_PERIMETRE)
+- `SEA_BRIEF_REQUESTS` : liste des demandes paid du prospect (verbatim brief)
 - `NARRATIVE_HINTS` : point de depart pour l'etape de deduplication (non-contraignant)
 - `TRANSITION_OPPORTUNITIES` : obsolete (les transitions SLASHR sont supprimees, cf. Etape 2.4)
 - `ROI Confidence globale` : determine si le label "Recommandation conditionnelle" est necessaire
@@ -106,6 +109,29 @@ Si le constat et le benchmark utilisent les memes KPIs (volume de marque, mots-c
 
 Ne jamais avoir une section "Le constat" + une section "Benchmark concurrentiel" qui repete les memes metriques. Si les metriques different, les deux sections restent distinctes.
 
+### Regle de densite : 1 visuel par slide (OBLIGATOIRE)
+
+Chaque `.slide` contient au maximum **1 composant visuel** (bar chart, donut grid, cards grid, table) + **1 highlight-box** (SO WHAT). Au-dela, decouper en slides supplementaires. Un slide surcharge perd le decideur.
+
+### Regle du constat : CONSTAT_MODE (signal NBP)
+
+Le constat peut prendre 2 formes selon les donnees :
+
+- **`statement`** (defaut) : KPI large + data row + source. Pour les cas ou un seul chiffre suffit a poser le probleme.
+- **`tension`** : deux KPIs opposes avec un connecteur ("pourtant", "mais", "et pourtant"). Pour les cas ou le paradoxe EST l'argument (marque forte + invisibilite Search). Structure : KPI positif → connecteur → KPI negatif + preuves (requetes en pills).
+
+Le NBP doit specifier `CONSTAT_MODE` pour que la Pass 3 choisisse le bon composant.
+
+### Regle de l'opportunite : 3 slides (OBLIGATOIRE si Intent Market Map disponible)
+
+La section Opportunite se decoupe en 3 slides distincts :
+
+1. **Cartographie du marche** (section-label: "Opportunite — cartographie du marche") : donuts (commercial / informationnel / navigationnel) + SO WHAT global. Le decideur voit la taille du marche.
+2. **Opportunite commerciale** (section-label: "Opportunite commerciale") : bar chart horizontal, 1 barre par territoire, trie par volume decroissant. Sous chaque barre : 1 ligne de contexte (concurrent leader + position LMP). Highlight-box saisonnalite si pertinent.
+3. **Opportunite informationnelle** (section-label: "Opportunite informationnelle") : bar chart horizontal, 1 barre par territoire, trie par volume decroissant. SO WHAT qui lie l'informationnel au commercial.
+
+**Regle data :** chaque territoire doit afficher son volume mensuel (source: DataForSEO). Les volumes sont collectes en Pass 1 via l'endpoint `keywords_data/google_ads/search_volume`. Ne jamais presenter un territoire sans volume.
+
 ### Nombre de sections
 
 Pas de plafond de sections. La deduplication (1 argument = 1 section) est le seul garde-fou.
@@ -157,7 +183,8 @@ Un titre doit etre compris en 1 lecture. Regles :
 3. **Pas de structure passive** — "Les territoires que la refonte peut ouvrir" → "4 territoires a capter des la refonte"
 4. **Privilegier le chiffre ou le nom propre** — un titre avec "75 000" ou "La Trinitaine" est plus concret qu'un titre generique
 5. **Privilegier la consequence** — "Sans action, la refonte ne changera rien" plutot que "Ce que cela implique"
-6. **Maximum 12 mots** — au-dela, c'est une phrase, pas un titre
+6. **Maximum 8 mots** — au-dela, c'est une phrase, pas un titre. Le titre est un argument, pas une description.
+7. **Section-intro obligatoire sous les charts** — quand un slide contient un graphique (bar chart, donut, stacked bars), ajouter un `<p class="section-intro">` sous le H2 qui explique ce qui est mesure. Le decideur ne doit jamais se demander "c'est du trafic ? des keywords ?"
 
 ### En scrollant les titres seuls, l'arc narratif est lisible
 
@@ -165,14 +192,15 @@ Test : extraire uniquement les h2 de l'onglet Diagnostic et les lire dans l'ordr
 
 ---
 
-## Etape 2.3 : Planifier les 3 onglets MVP
+## Etape 2.3 : Planifier les 4 onglets
 
-La proposition HTML a toujours **3 onglets**. Aucun n'est optionnel.
+La proposition HTML a toujours **4 onglets**. Aucun n'est optionnel.
 
 ```
 Onglet 1 : Diagnostic — "Voici votre situation"
 Onglet 2 : Strategie — "Voici ce qu'on recommande"
 Onglet 3 : Investissement — "Voici ce que ca coute"
+Onglet 4 : Cas clients — "Resultats observes sur des profils comparables"
 ```
 
 ### Onglet 1 : Diagnostic ("Voici votre situation")
@@ -180,12 +208,23 @@ Onglet 3 : Investissement — "Voici ce que ca coute"
 C'est l'onglet principal. Il contient :
 - Le **hero** (full screen, contexte client tisse : pas juste le nom, mais le contexte business : AO, refonte, objectif CA, etc.)
 - Les **sections libres** du diagnostic : constat, benchmark, territoires, S7, deferred, implications
-- Les **cas clients inline** (micro-benchmarks integres dans les sections pertinentes)
-- Un **SO WHAT obligatoire** sur chaque section (highlight box avec impact business chiffre)
+- Un **SO WHAT obligatoire** sur chaque section (highlight box avec impact business chiffre, 3 lignes max)
 
 **Contexte client tisse :** le hero et la premiere section prouvent que le diagnostic est personnalise. Le hero-subtitle tisse le contexte business (AO, refonte, objectif, etc.). La premiere section ouvre sur une donnee que le prospect ne connaissait pas SUR LUI.
 
 **Les anciens onglets conditionnels (SEO, GEO/IA, SEA, Social, Tech/UX) deviennent des SECTIONS dans l'onglet Diagnostic** quand les donnees le justifient. Un deal avec des donnees GEO aura une section "Visibilite IA" dans l'onglet Diagnostic, pas un onglet separe.
+
+#### Section conditionnelle "Visibilite paid" (si SEA_SIGNAL = EXPLICIT)
+
+**Si SEA_SIGNAL = EXPLICIT :** section obligatoire dans l'onglet Diagnostic : "Visibilite paid : etat des lieux"
+
+- **Si le prospect a du paid actif (DETECTED + EXPLICIT) :** audit CPC, keywords payes, deperdition budget vs organique
+- **Si zero paid (EXPLICIT sans DETECTED) :** CPC de reference secteur (source DataForSEO), cout acquisition paid vs organique, gap entre intent commercial et absence de couverture paid
+- **SO WHAT :** positionnement cabinet conseil vs agence media. Framing obligatoire : "Nous structurons la strategie paid. L'execution quotidienne releve d'une agence media ou de votre equipe, sous notre pilotage strategique."
+
+**Si SEA_SIGNAL = DETECTED :** pas de section dediee. Mention de la synergie SEO/SEA dans la section benchmark ou opportunites (1-2 phrases).
+
+**Si SEA_SIGNAL = ABSENT :** rien.
 
 **Pas de section "Pourquoi SLASHR" standalone.** Les differenciateurs sont tisses apres chaque bloc de donnees, en enchainage naturel (cf. Etape 2.4).
 
@@ -194,12 +233,9 @@ C'est l'onglet principal. Il contient :
 - **Section ROI (onglet Strategie)** : utiliser l'ETV (Estimated Traffic Value) comme "equivalent budget Google Ads". Ca valorise le SEO vs le paid et pose l'argument SEA. Formuler : "La Trinitaine genere l'equivalent de X EUR/mois en achat publicitaire grace a son SEO."
 - **Ne jamais afficher l'ETV dans le benchmark** — c'est une metrique d'analyste, pas de decideur. Le prospect comprend "8 000 visites/mois", pas "27 658 EUR d'ETV".
 
-**SO WHAT obligatoire :** chaque section de l'onglet Diagnostic se termine par un highlight box qui traduit les donnees en impact business chiffre, specifique au prospect. Un bar chart sans interpretation est un dashboard, pas une proposition.
+**SO WHAT obligatoire :** chaque section de l'onglet Diagnostic se termine par un highlight box qui traduit les donnees en impact business chiffre, specifique au prospect. Un bar chart sans interpretation est un dashboard, pas une proposition. **Contrainte : 3 lignes maximum.** Si le SO WHAT depasse 3 lignes, il est trop long — couper le superflu.
 
-**Micro-benchmark inline :** apres chaque section diagnostic ou un cas client est pertinent, inserer un composant micro-benchmark :
-- Format : {Prospect} : {metrique} → {Cas} (avant) : {metrique} → {Cas} (apres) : {metrique}
-- Source : SDB > CAS CLIENTS RETENUS > sdb_juxtaposition
-- Maximum 2-3 micro-benchmarks dans l'onglet, places la ou ils renforcent le plus l'argument
+**Cas clients : onglet dedie (pas inline).** Les cas clients ne sont plus integres dans le diagnostic. Ils ont leur propre onglet (onglet 4 "Cas clients"). Voir section Onglet 4 ci-dessous.
 
 #### Section S7 "Lecture strategique" (obligatoire dans l'onglet Diagnostic)
 
@@ -261,6 +297,23 @@ Les deux NE DOIVENT PAS etre la meme phrase.
 **Spec complete : `agents/prepare-pass2-onglet4.md`.**
 
 Header compact (pas de hero full-screen). Contient : resume decisionnel (6 bullets), board-ready A4, pricing cards Phase 1/Phase 2 avec pont S7, sous-bloc unique "cout de l'inaction", methode S7, FAQ accordion, prochaine etape, CTA final.
+
+### Onglet 4 : Cas clients ("Resultats observes sur des profils comparables")
+
+Pas de hero, pas de header compact. Ouvre directement sur une slide intro + les cas selectionnes.
+
+**Structure :**
+1. **Slide intro** : H2 "Resultats observes sur des profils comparables" + section-intro qui cadre la pertinence par rapport au prospect.
+2. **1 slide par cas client** (2-4 cas), chaque slide contient :
+   - Highlight-box header : nom du cas + secteur + CA + profil
+   - KPI row : 2-3 resultats chiffres (les metriques les plus parlantes pour ce prospect)
+   - Grille 2 colonnes : situation initiale + ce qu'on a fait
+   - Verbatim client (highlight-box magenta, italique)
+   - SO WHAT timeline (quick wins → acceleration → resultats)
+
+**Selection des cas :** voir `context/case_studies.md`. L'agent choisit 2-4 cas selon : secteur similaire (priorite 1), problematique similaire (priorite 2), taille comparable (priorite 3). Jamais inventer un cas.
+
+**Regle de cadrage :** chaque cas est presente sous l'angle qui resonne avec le prospect. Le meme cas peut etre presente differemment selon le deal.
 
 ---
 
@@ -324,6 +377,9 @@ L'agent DOIT ecrire explicitement ce document interne avant de passer a la Pass 
 ARC GLOBAL: {type d'arc choisi}, {justification en 1 ligne liee au decideur et au contexte}
 HOOK: {description du hook et pourquoi il est frappant pour ce prospect}
 HOOK_TYPE: {gap_concurrentiel | verbatim | inaction | paradoxe | opportunite | ancrage_identitaire}
+CONSTAT_MODE: {tension | statement}
+  - tension : deux KPIs opposes (marque forte + invisible en Search). Utiliser quand le paradoxe EST l'argument.
+  - statement (defaut) : KPI large unique. Utiliser quand un seul chiffre suffit.
 LAYOUT_MODE: {data-heavy | narrative-heavy | visual-heavy}
   - data-heavy (defaut) : benchmark + tables + charts. Pour les deals avec beaucoup de donnees comparatives.
   - narrative-heavy : plus de texte, moins de composants data. Pour les deals qualitatifs (marque forte, peu de concurrents mesurables).
@@ -374,6 +430,7 @@ X+0.5. Section "Ce que nous ne priorisons pas (maintenant)" · role: transparenc
    - Ton strategique, pas defensif. C'est un choix d'expert, pas une excuse.
    - Pas de justification budget ("c'est trop cher" interdit). Justification logique uniquement ("tant que S3 n'est pas traite, S6 n'a pas de contenu a diffuser").
    - Le prospect doit comprendre que ne PAS faire quelque chose est une decision autant que faire quelque chose.
+   - **Override SEA (si SEA_SIGNAL = EXPLICIT) :** le SEA ne doit PAS apparaitre dans cette section "Ce que nous ne priorisons pas". A la place, referencer le pont : "Le cadrage SEA strategique est integre dans la Phase 1. L'activation campagnes intervient en M3-M4, une fois les fondations Search posees." Ce bullet remplace le DEFERRED-SCOPE SEA standard.
    Pourquoi ici: {juste apres le S7, avant les implications — le decideur voit qu'on a arbitre, pas ignore}
 
 X+1. Section "Ce que cela implique" · role: verrou narratif decisionnel (OBLIGATOIRE)
@@ -448,10 +505,46 @@ Regles :
    Obligatoire : CTA oriente decision, lie a la trajectoire 90 jours
    Exemples : "Demarrer la Phase 1", "Valider le lancement Phase 1"
 
+5. Sous-section "Strategie Paid" (CONDITIONNEL : si SEA_POSTURE = PILOTE ou CONSEIL)
+   Place apres le bloc 90 jours, avant le ROI Simulateur.
+   Contenu :
+   a. Rappel de la demande prospect (verbatim brief, issu de SEA_BRIEF_REQUESTS)
+   b. Positionnement : "Cabinet conseil Search, pas agence media. Nous structurons la strategie, l'execution quotidienne releve de votre equipe ou d'une agence specialisee sous notre pilotage."
+   c. Si PILOTE : trajectoire paid integree au plan 90j (M1 audit campagnes, M2 structure compte + strategie encheres, M3 activation)
+   d. Si CONSEIL : bloc "Pont organique → paid" montrant la cascade :
+      - Intent mapping (SEO) → Targeting (SEA)
+      - Contenu optimise → Quality Score
+      - Architecture site → Structure de compte Ads
+   e. **INTERDIT : projection ROAS sans donnees historiques.** Reponse type : "L'estimation ROAS fiable necessite 3 mois de donnees campagne. La Phase 1 pose le cadre de mesure."
+   f. **INTERDIT : "on gere vos campagnes"** (faux — cabinet conseil, pas agence execution)
+
 --- ONGLET INVESTISSEMENT ---
 
 Structure complete : voir `agents/prepare-pass2-onglet4.md`
 Scenario recommande: {lequel et pourquoi}
+
+--- ONGLET CAS CLIENTS ---
+
+Cas selectionnes: {N} cas, criteres de selection: {secteur / problematique / taille}
+
+1. {Nom du cas} · angle: {angle specifique au prospect}
+   Metriques cles: {2-3 resultats}
+   Verbatim: {citation}
+   Pertinence: {pourquoi ce cas resonne avec ce prospect}
+
+2. {Nom du cas} · angle: {...]
+   ...
+
+--- SI SEA_SIGNAL = EXPLICIT ---
+
+SEA_POSTURE: {PILOTE | CONSEIL}
+SEA_FRAMING: {1 phrase positionnement cabinet conseil, ex: "Nous structurons la strategie paid. L'execution quotidienne releve d'une agence media ou de votre equipe."}
+SEA_DIAGNOSTIC: {angle section paid dans Diagnostic, ex: "CPC secteur a X EUR, aucune couverture paid — cadrage strategique necessaire"}
+SEA_STRATEGIE: {description sous-bloc paid dans Strategie, ex: "Pont organique→paid : intent mapping, quality score, structure compte"}
+SEA_INVESTISSEMENT: {blocs actives — SEA setup / SEA run / les deux}
+PONT_ORGANIQUE_PAID: {1-2 phrases : comment le SEO prepare le SEA, ex: "La cartographie d'intentions et l'architecture du site posent les fondations d'un compte Ads structure et performant."}
+
+--- FIN SI SEA ---
 
 === FIN NBP ===
 ```

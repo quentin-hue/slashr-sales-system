@@ -216,6 +216,30 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 | `ranked_keywords` avec `item_types: ["paid"]` | Keywords payes actifs du prospect | Ce qu'il achete deja |
 | `keyword_overview` sur 10-15 keywords strategiques | CPC, competition level, search volume | Valeur du paid vs organique |
 
+#### Etape post-Module 6 : SEA Signal Classification (OBLIGATOIRE)
+
+Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agent classe le **signal SEA** du deal. Ce signal est independant du score S7 Amplification : le S7 mesure l'etat actuel (0/5 si pas de paid), le signal mesure la **demande du prospect**.
+
+| Signal | Definition | Sources de detection | Posture SLASHR |
+|--------|-----------|---------------------|----------------|
+| **EXPLICIT** | Le brief demande du paid | Brief/transcript/emails mentionne : Google Ads, Meta Ads, campagnes paid, budget pub, ROAS, Shopping, Performance Max, retargeting, display | **CONSEIL** (defaut) ou **PILOTE** (si perimetre Croissance) |
+| **DETECTED** | Le prospect a du paid actif mais n'en parle pas | Module 6 `ranked_keywords(paid)` retourne des resultats MAIS aucune mention paid dans brief/transcript/emails | Mentionner la synergie SEO/SEA dans la strategie |
+| **ABSENT** | Ni demande, ni activite paid | Module 6 non active ET aucune mention paid dans les sources | DEFERRED-SCOPE standard |
+
+**Regles de classification :**
+1. Scanner brief, transcript, emails et notes Pipedrive pour les keywords paid (Google Ads, Meta Ads, Facebook Ads, campagnes, budget pub, ROAS, CPA, Shopping, Performance Max, retargeting, display, paid search, SEA)
+2. Si au moins 1 mention → `SEA_SIGNAL = EXPLICIT`
+3. Sinon, si Module 6 active ET `ranked_keywords(paid)` retourne des resultats → `SEA_SIGNAL = DETECTED`
+4. Sinon → `SEA_SIGNAL = ABSENT`
+
+**Posture SLASHR (mapping) :**
+- `EXPLICIT` + perimetre Croissance → `SEA_POSTURE = PILOTE` (SLASHR gere la strategie + pilotage campagnes)
+- `EXPLICIT` + autre perimetre → `SEA_POSTURE = CONSEIL` (defaut — cabinet conseil, pas agence media)
+- `DETECTED` → `SEA_POSTURE = CONSEIL` (mentionner synergie)
+- `ABSENT` → `SEA_POSTURE = HORS_PERIMETRE`
+
+**IMPORTANT :** le signal SEA est un routage de la demande prospect, pas un diagnostic. Le diagnostic (S7 Amplification) reste inchange.
+
 #### Module 7 : Social Search
 
 **Activer si :**
@@ -502,6 +526,12 @@ CLASSIFICATION (max 3 leviers actifs) :
 - DEFERRED-SEQUENTIAL : {forces} → {1 phrase chacun : "sera active quand {condition}"}
 - DEFERRED-SCOPE : {forces} → {1 phrase chacun : "hors perimetre car {raison}"}
 
+EXCEPTION SEA_SIGNAL (obligatoire si SEA_SIGNAL = EXPLICIT) :
+Si `SEA_SIGNAL = EXPLICIT`, S7 Amplification ne peut PAS etre DEFERRED-SCOPE. Reclassifier :
+- S7 Amplification >= 2 + perimetre Croissance → SECONDARY
+- S7 Amplification < 2 + brief EXPLICIT → DEFERRED-SEQUENTIAL ("cadrage SEA strategique M1, activation M3-M4 une fois les fondations Search posees")
+- Justification obligatoire : "Le prospect demande un accompagnement paid. Le score {X}/5 confirme l'absence de structure — renforce le besoin de cadrage strategique."
+
 ARC_CHOICE_RATIONALE :
 - Arc retenu : {Classique | Urgence | Opportunite | Technique | Custom}
 - Raison liee au decideur : {1 phrase — profil decideur + contexte}
@@ -590,6 +620,10 @@ PERIMETRE_SLASHR: {SEO seul / SEO + GEO / Search global / etc.} [src: pipedrive,
 REFONTE: {OUI | NON} | {si OUI: timeline, ex: "go mars, MEL juin 2026"} | {CMS prevu si connu}
 MODULES_ACTIFS: [{liste des modules 1-10 actives, ex: 1-Pipedrive, 2-Drive, 3-SEO, 4-Benchmark, 4b-Intent, 4c-Niche, 5-GEO, 8-Technique, 9-Saisonnalite}]
 
+SEA_SIGNAL: {EXPLICIT | DETECTED | ABSENT} [src: etape post-Module 6]
+SEA_POSTURE: {PILOTE | CONSEIL | HORS_PERIMETRE}
+SEA_BRIEF_REQUESTS: [{liste des demandes paid identifiees dans le brief, ex: "Google Ads Search", "Shopping", "3 scenarios budget", "estimation ROAS"}] (vide si ABSENT)
+
 SEARCH STATE:
 - Trafic organique: {X} visites/mois (source: DataForSEO)
 - Keywords: {Y} total ({Z} marque / {W} hors-marque)
@@ -618,7 +652,9 @@ OPPORTUNITIES:
 - Territoires commerciaux: {clusters intent commercial non couverts}
 - Territoires informationnels: {clusters info captable non couverts, avec strategie de monetisation}
 - {GEO/IA si module 5 active}: {resultats}
-- {SEA si module 6 active}: {resultats}
+- {SEA si module 6 active OU SEA_SIGNAL != ABSENT}:
+  Si EXPLICIT: demandes brief (verbatim) + gap paid vs organic + CPC reference secteur + posture SLASHR (PILOTE/CONSEIL)
+  Si DETECTED: activite paid actuelle (keywords payes, depense estimee) + synergie SEO/SEA potentielle
 - {Social si module 7 active}: {resultats}
 - {Technique si module 8 active}: {resultats}
 - {Tendances si module 9 active}: {resultats}

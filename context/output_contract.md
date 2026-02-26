@@ -57,6 +57,22 @@ Performance : {budget}/mois — + production deleguee
 Croissance : {budget}/mois — + multi-leviers
 ```
 
+### Section SEA Advisory (conditionnel, si SEA_SIGNAL = EXPLICIT)
+
+| Visible | Invisible |
+|---------|-----------|
+| Positionnement cabinet conseil ("Nous structurons la strategie") | Detail jours SEA setup/run |
+| Scope qualitatif (audit strategique, architecture, KPIs) | TJM |
+| CPC reference secteur (source DataForSEO) | Estimation budget media (role agence media, pas SLASHR) |
+| FAQ "Qui gere les campagnes ?" / "Pourquoi commencer par le SEO ?" | Marge pilotage |
+| Pont organique → paid (cascade intent/quality score/structure) | — |
+
+**INTERDIT dans les outputs clients :**
+- Projection ROAS sans historique de campagne (3 mois minimum requis)
+- Estimation de budget media (c'est le role de l'agence media, pas de SLASHR)
+- "On gere vos campagnes" ou toute formulation suggerant une execution quotidienne
+- Promesse de performance paid sans donnees
+
 ### Section ROI (onglet ROI Interactif)
 
 | Visible | Invisible |

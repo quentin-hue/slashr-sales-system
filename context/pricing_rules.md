@@ -26,7 +26,7 @@ Phase 1 = mission calibree selon les blocs actives. Ce n'est PAS un pack.
 | **Audit SEO** | 5 (fixe) | Toujours actif | Etude lexicale + diagnostic technique + benchmark concurrentiel |
 | **Refonte SEO** | 3 a 6 (selon volumetrie) | Si refonte prevue | AMOA SEO + plan redirections + recette & monitoring post-bascule |
 | **Activation contenu** | 1 (minimum) | Toujours actif | Specification pages piliers prioritaires |
-| **SEA setup** | 2 (incompressible) | Si SEA dans le perimetre | Audit campagnes existantes + structure compte + strategie encheres |
+| **SEA setup** | 2 (incompressible) | Si SEA_POSTURE = PILOTE ou CONSEIL | Cabinet conseil — strategie et architecture, pas execution quotidienne. PILOTE : audit campagnes + structure compte + strategie encheres + plan activation 90j. CONSEIL : audit strategique + recommandations structure + cahier des charges pour equipe execution. |
 | **GEO setup** | 2 (incompressible) | Si GEO/IA dans le perimetre | Audit visibilite IA + donnees structurees + strategie GEO |
 | **Social setup** | 2 (incompressible) | Si Social Search dans le perimetre | Audit presence sociale + strategie Social Search |
 
@@ -64,7 +64,7 @@ Chaque levier active en Phase 1 implique un run mensuel incompressible.
 | Levier | Jours/mois (minimum incompressible) |
 |--------|--------------------------------------|
 | **SEO run** | 1 |
-| **SEA run** | 1 |
+| **SEA run** | 1 | Pilotage strategique : revue performance mensuelle, ajustements strategie, recommandations. Pas de bid management quotidien. |
 | **GEO run** | 1 |
 | **Social run** | 1 |
 

@@ -91,7 +91,9 @@ Blocs :
 - **Audit SEO** (5j, toujours actif)
 - **Refonte SEO** (3-6j, si refonte prevue)
 - **Activation contenu** (1j minimum, toujours actif)
-- **SEA setup** (2j, si SEA dans perimetre)
+- **SEA setup** (2j, si SEA_POSTURE = PILOTE ou CONSEIL)
+  - PILOTE : audit campagnes existantes + structure compte + strategie encheres + plan activation 90j
+  - CONSEIL : audit strategique + recommandations structure + cahier des charges pour equipe execution / agence media
 - **GEO setup** (2j, si GEO/IA dans perimetre)
 - **Social setup** (2j, si Social dans perimetre)
 
@@ -179,11 +181,24 @@ Le scenario recommande est la decision logique. Les deux autres ajustent l'inten
 - Pas de dramatisation, les chiffres suffisent
 - INTERDIT : structure anaphorique ("Chaque mois sans X..." repete N fois). Varier les formulations.
 
+**Pont "Du diagnostic aux campagnes" (CONDITIONNEL : si SEA_SIGNAL = EXPLICIT et SEA_POSTURE = CONSEIL) :**
+- Place APRES le cout de l'inaction, AVANT les pricing cards
+- Composant : highlight-box ou s7-insight
+- 3 bullets montrant la cascade organique → paid :
+  1. **Phase 1** : cartographie d'intentions + audit technique = fondations partagees SEO & SEA
+  2. **M3-M4** : activation campagnes sur les intentions commerciales identifiees en Phase 1
+  3. **M6-M12** : synergie mesuree — baisse progressive du CPA paid grace au renfort organique (quality score, landing pages optimisees)
+- Ton : factuel, pas de promesse. Le pont montre la logique, pas un resultat garanti.
+
 ---
 
 ## FAQ
 
 3-5 questions pertinentes pour ce deal. Reponses specifiques, pas generiques.
+
+**FAQ conditionnelles SEA (ajouter si SEA_SIGNAL = EXPLICIT) :**
+- **"SLASHR gere-t-il les campagnes Google Ads au quotidien ?"** → "Non. SLASHR est un cabinet conseil Search. Nous definissons la strategie, l'architecture de compte et les KPIs. L'execution quotidienne (bid management, creation d'annonces, ajustements encheres) releve de votre equipe ou d'une agence media specialisee, sous notre pilotage strategique."
+- **"Pourquoi commencer par le SEO si le besoin est en paid ?"** → "SEO et SEA partagent les memes fondations : mapping d'intentions de recherche, landing pages optimisees, architecture de site. Un compte Ads sans ces fondations gaspille du budget — quality score bas, pages non pertinentes, ciblage approximatif. La Phase 1 pose le socle commun."
 
 ---
 
