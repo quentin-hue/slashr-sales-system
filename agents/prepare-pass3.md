@@ -51,6 +51,7 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 | VS block | Face-a-face 2 entites | 1 prospect vs 1 concurrent, metriques en miroir. Eviter si les memes donnees sont deja dans un bar chart |
 | Bar chart (anime) | Benchmark horizontal | 3-6 acteurs a comparer sur 1 metrique |
 | Stacked bar chart | Benchmark avec decomposition | Comparer 3+ acteurs avec split interne (ex: marque/hors-marque). Privilegier quand le split est l'argument principal. Legende obligatoire |
+| Constat-tension | Deux KPIs opposes + connecteur | Quand le paradoxe EST l'argument (marque forte + invisible Search). Structure : KPI positif → connecteur ("pourtant") → KPI negatif + preuves en pills. Composant CSS : `.constat-tension` |
 | Comparison matrix | Tableau multi-criteres | Comparer 3+ options sur plusieurs dimensions |
 | Before/After | Transformation en 2 panneaux | Montrer l'etat actuel vs l'objectif post-intervention |
 
@@ -81,7 +82,7 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 |-----------|-------|------------------|
 | Verbatim box | Citation prospect (bordure magenta) | Reprendre une phrase exacte du R1 ou des emails |
 | Pull quote | Grande citation centree | Phrase strategique forte, rupture de rythme |
-| Testimonial card | Avatar + citation + nom/role | Social proof, resultat client (onglet Diagnostic (cas clients inline)) |
+| Testimonial card | Avatar + citation + nom/role | Social proof, resultat client (onglet Cas clients) |
 
 #### STRUCTURER : organiser, sequencer, hierarchiser
 
@@ -132,7 +133,7 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 - **Creer des respirations** avec les Pull quotes, Callout banners, et KPI large, ils rompent le flux dense.
 - **Apres chaque bloc de data** (table, bar chart, grid de KPIs), placer une interpretation (highlight box) qui repond a "et alors ?".
 - **Les verbatims du prospect** sont des ancres narratives, les placer la ou ils creent un pont avec la recommandation.
-- **Densite max par section** : chaque `.slide` (section plein ecran) contient au maximum **3 composants visuels** (hors titre et source). Au-dela, decouper en 2 slides ou fusionner des composants. Un slide surcharge perd le decideur.
+- **Densite max par section** : chaque `.slide` (section plein ecran) contient au maximum **1 composant visuel** (bar chart, donut, table, cards grid) + **1 highlight-box** (SO WHAT). Au-dela, decouper en slides supplementaires. Un slide surcharge perd le decideur.
 
 ### Progress dots (navigation intra-onglet)
 
@@ -175,15 +176,15 @@ Si `LAYOUT_MODE = "data-heavy"` (defaut) : benchmark + tables + charts, equilibr
 
 ---
 
-## Etape 3.3 : Structure des 3 onglets
+## Etape 3.3 : Structure des 4 onglets
 
-### Nav fixe avec 3 tabs
+### Nav fixe avec 4 tabs
 
 ```
-Diagnostic | Strategie | Investissement
+Diagnostic | Strategie | Investissement | Cas clients
 ```
 
-Les 3 onglets sont **toujours presents**. Aucun n'est optionnel.
+Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
 
 ### Composants specifiques par onglet
 
@@ -191,8 +192,8 @@ Les 3 onglets sont **toujours presents**. Aucun n'est optionnel.
 - Hero complet (blobs, contexte client tisse) → sections libres → **section S7** → deferred → implications
 - Tout composant du catalogue est utilisable
 - **Section S7 obligatoire** : Radar S7 + S7 constraint highlight + S7 levers row + Pull quote (insight central)
-- **Cas clients inline** : composant micro-benchmark (.micro-benchmark) insere apres les sections pertinentes (max 2-3 dans l'onglet)
-- **SO WHAT obligatoire** : chaque section se termine par un highlight box qui traduit les donnees en impact business chiffre
+- **SO WHAT obligatoire** : chaque section se termine par un highlight box qui traduit les donnees en impact business chiffre, **3 lignes max**
+- **Cas clients : onglet dedie** (onglet 4), pas inline dans le Diagnostic
 - **Pas de transitions SLASHR** : la proposition ne mentionne jamais SLASHR ou ses services dans l'onglet Diagnostic, sauf dans la section S7 (methode d'analyse). Le SO WHAT de chaque section suffit comme conclusion.
 - **Fusion constat/benchmark** : si le constat et le benchmark utilisent les memes KPIs, les fusionner en 1 seule slide (KPI large → contexte → bar chart → table optionnelle → SO WHAT)
 
@@ -217,6 +218,17 @@ Les 3 onglets sont **toujours presents**. Aucun n'est optionnel.
 - **Prochaine etape** : bloc 3 lignes (decision, date, action)
 - **CTA full-width** (unique CTA principal de la proposition)
 
+**Onglet Cas clients** : pas de hero, pas de header compact. Ouvre directement sur le contenu.
+- **Slide intro** : H2 "Resultats observes sur des profils comparables" + section-intro qui cadre la pertinence par rapport au prospect
+- **1 slide par cas client** (2-4 cas), chaque slide contient :
+  - Micro-benchmark en tete (`.micro-benchmark`) : prospect → cas (avant) → cas (apres)
+  - Highlight-box header : nom du cas + secteur + CA + profil
+  - KPI row : 2-3 resultats chiffres
+  - Grille 2 colonnes : situation initiale + ce qu'on a fait
+  - Verbatim client (highlight-box magenta, italique)
+  - SO WHAT timeline (quick wins → acceleration → resultats)
+- **Regle** : les cas sont selectionnes par la Pass 2 (NBP section ONGLET CAS CLIENTS). La Pass 3 ne choisit pas les cas, elle les met en forme.
+
 ---
 
 ## Etape 3.4 : Design system
@@ -233,13 +245,14 @@ Voir `context/design_system.md` pour les couleurs, typographies, gradients, espa
 
 ## Etape 3.5 : Validation
 
-> **Regles de validation completes : `context/validation_rules.md`** (44 regles, 4 layers).
+> **Regles de validation completes : `context/validation_rules.md`** (45 regles, 4 layers).
 
-Appliquer les 3 layers dans l'ordre :
+Appliquer les 4 layers dans l'ordre :
 
 1. **Layer 1 Structural** (17 regles, PASS/FAIL) : DOM, CSS, regex. Un seul FAIL = REJECT du HTML.
 2. **Layer 2 Content** (12 regles, WARN) : heuristiques de contenu. Correction recommandee.
 3. **Layer 3 Semantic** (10 regles, checklist) : revue agent. Verifier chaque item manuellement.
+4. **Layer 4 Quality Metrics** (6 regles, WARN) : metriques de qualite redactionnelle (densite donnees, specificite titres, triplet implications, SO WHAT, micro-benchmarks, repetitions).
 
 ---
 
@@ -331,7 +344,7 @@ Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
 S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-3 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement
+4 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement | Cas clients ({N} cas)
 
 DRAFT, a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.

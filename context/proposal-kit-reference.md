@@ -18,6 +18,7 @@ Classes : `.nav`, `.nav-inner`, `.nav-logo`, `.nav-tab`, `.nav-tab.active`
     <button class="nav-tab active" data-tab="diagnostic">Diagnostic</button>
     <button class="nav-tab" data-tab="strategie">Strategie</button>
     <button class="nav-tab" data-tab="investissement">Investissement</button>
+    <button class="nav-tab" data-tab="cas-clients">Cas clients</button>
   </div>
 </nav>
 ```
@@ -33,6 +34,7 @@ Classes : `.main`, `.tab-content`, `.tab-content.active`
   <div class="tab-content active" id="tab-diagnostic">...</div>
   <div class="tab-content" id="tab-strategie">...</div>
   <div class="tab-content" id="tab-investissement">...</div>
+  <div class="tab-content" id="tab-cas-clients">...</div>
 </div>
 ```
 
@@ -212,7 +214,7 @@ Grille 3 colonnes (card | VS | card). Modifier `.good` / `.bad` pour colorer les
 
 ### Bar Chart — benchmark horizontal anime
 
-Classes : `.chart-container`, `.chart-title`, `.bar-row`, `.bar-label`, `.bar-label.is-prospect`, `.bar-track`, `.bar-fill`, `.bar-fill.orange`, `.bar-fill.muted`, `.bar-value`, `.bar-value.is-prospect`
+Classes : `.chart-container`, `.chart-title`, `.bar-row`, `.bar-label`, `.bar-label.is-prospect`, `.bar-track`, `.bar-fill`, `.bar-fill.orange`, `.bar-fill.violet`, `.bar-fill.muted`, `.bar-value`, `.bar-value.is-prospect`
 
 ```html
 <div class="chart-container">
@@ -230,7 +232,7 @@ Classes : `.chart-container`, `.chart-title`, `.bar-row`, `.bar-label`, `.bar-la
 </div>
 ```
 
-Barres animees au scroll via `data-width` (%). `.orange` = gradient prospect, `.muted` = gris concurrents.
+Barres animees au scroll via `data-width` (%). `.orange` = solid `var(--orange)` (prospect), `.violet` = solid `var(--violet)` (territoires informationnels), `.muted` = gris concurrents. Ne pas utiliser `var(--gradient)` sur les barres fines : le gradient ne rend pas sur des elements etroits.
 
 ### Comparison Matrix — tableau multi-criteres
 
@@ -738,6 +740,63 @@ Classes : `.callout-banner`
 ```
 
 Deborde du conteneur (margin negatif 50vw). Fond gradient a 8% d'opacite. Rupture visuelle.
+
+---
+
+## COMPARER (suite)
+
+### Constat-tension — deux KPIs opposes avec connecteur
+
+Classes : `.constat-tension`, `.constat-tension-kpi`, `.constat-tension-connector`, `.constat-tension-proofs`, `.proof-pill`
+
+```html
+<div class="constat-tension">
+  <div class="constat-tension-kpi positive">
+    <div class="kpi-value">14 800</div>
+    <div class="kpi-label">recherches/mois sur votre marque</div>
+  </div>
+  <div class="constat-tension-connector">pourtant</div>
+  <div class="constat-tension-kpi negative">
+    <div class="kpi-value">&lt; 1%</div>
+    <div class="kpi-label">de visibilite hors-marque</div>
+  </div>
+  <div class="constat-tension-proofs">
+    <span class="proof-pill">coffret biscuit : pos. 0</span>
+    <span class="proof-pill">biscuit artisanal : pos. 0</span>
+    <span class="proof-pill">cadeau gourmand : pos. 0</span>
+  </div>
+</div>
+```
+
+```css
+.constat-tension {
+  text-align: center;
+  padding: 40px 0;
+}
+.constat-tension-kpi .kpi-value {
+  font-size: 3rem; font-weight: 700;
+  background: linear-gradient(90deg, var(--orange), var(--magenta));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.constat-tension-kpi .kpi-label {
+  color: var(--text-70); font-size: 1rem; margin-top: 4px;
+}
+.constat-tension-connector {
+  font-family: var(--font-display); font-size: 1.3rem;
+  color: var(--text-50); margin: 16px 0; font-style: italic;
+}
+.constat-tension-proofs {
+  display: flex; gap: 8px; justify-content: center;
+  flex-wrap: wrap; margin-top: 20px;
+}
+.proof-pill {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-full); padding: 6px 14px;
+  font-size: 0.85rem; color: var(--text-70);
+}
+```
+
+Usage : quand `CONSTAT_MODE = tension` dans le NBP. Le paradoxe est l'argument principal (marque forte + invisible en Search). Ne pas utiliser si un seul KPI suffit (utiliser `.slide-constat` a la place).
 
 ---
 

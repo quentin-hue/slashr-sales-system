@@ -72,7 +72,7 @@ Outputs internes : `strategy_plan_internal.md` puis **Structured Data Brief (SDB
 ### Pass 2 : NARRATIVE ARCHITECT
 **Fichier :** `agents/prepare-pass2.md`
 
-Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 3 onglets MVP (Diagnostic, Strategie, Investissement).
+Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 4 onglets (Diagnostic, Strategie, Investissement, Cas clients).
 Output interne : **Narrative Blueprint (NBP)**.
 
 > **Pre-validation NBP :** Apres la Pass 2, executer
@@ -89,7 +89,7 @@ Output : **HTML final** (le seul livrable visible) + **INTERNAL-S7** (diagnostic
 
 ## References
 
-- Kit composants (27 composants, catalogue par role narratif) : `templates/proposal-kit.html`
+- Kit composants (30 composants, catalogue par role narratif) : `templates/proposal-kit.html`
 - Design system : `context/design_system.md`
 - Positionnement + structure offre : `context/positioning.md`
 - Modele S7 : `context/s7_search_operating_model.md`

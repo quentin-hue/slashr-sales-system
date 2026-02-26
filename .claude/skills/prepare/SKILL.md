@@ -1,6 +1,6 @@
 ---
 name: prepare
-description: Genere la proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 3 onglets MVP (Diagnostic, Strategie, Investissement), uploadee dans Drive.
+description: Genere la proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 4 onglets (Diagnostic, Strategie, Investissement, Cas clients), uploadee dans Drive.
 disable-model-invocation: true
 ---
 
@@ -41,7 +41,7 @@ L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1
 | 4 | `context/s7_search_operating_model.md` | Modele S7 : scoring, classification, anti-patterns | Avant tout |
 | 5 | `context/pricing_rules.md` | Calcul budgets Phase 1 & Phase 2 (interne) | Avant tout |
 | 6 | `context/output_contract.md` | Frontiere client/interne (visible vs masque) | Avant tout |
-| 6b | `context/validation_rules.md` | 44 regles de validation (4 layers) | Avant tout |
+| 6b | `context/validation_rules.md` | 45 regles de validation (4 layers) | Avant tout |
 | 6c | `context/s7_quick_reference.md` | Digest compact S7 (7 forces, echelle, classification) | Avant tout |
 | 6d | `context/performance_budget.md` | Budget tokens, cache, fraicheur | Avant tout |
 | 7 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
@@ -90,7 +90,7 @@ Le champ `dossier_r1_link` du deal contient l'URL du dossier. Extraire le folder
 ## Reference
 
 - Field keys Pipedrive : `context/pipedrive_reference.md`
-- Kit composants (27 composants, catalogue par role narratif) : `templates/proposal-kit.html`
+- Kit composants (30 composants, catalogue par role narratif) : `templates/proposal-kit.html`
 - Design system : `context/design_system.md`
 - Positionnement + structure offre : `context/positioning.md`
 - Modele S7 (diagnostic vs activation) : `context/s7_search_operating_model.md`
@@ -102,7 +102,7 @@ Le champ `dossier_r1_link` du deal contient l'URL du dossier. Extraire le folder
 
 | Fichier | Audience | Contenu |
 |---------|----------|---------|
-| `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | **Prospect** (via closer) | Proposition HTML interactive — 3 onglets (Diagnostic + S7, Strategie, Investissement) |
+| `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | **Prospect** (via closer) | Proposition HTML interactive — 4 onglets (Diagnostic + S7, Strategie, Investissement, Cas clients) |
 | `INTERNAL-S7-{YYYYMMDD}-{entreprise-slug}.md` | **Interne seulement** | Diagnostic S7 complet (scores, classification PRIMARY/SECONDARY/DEFERRED, synthese, trajectoires, ROI, resume decisionnel, evidence log) |
 
 > Le prefixe `INTERNAL-` garantit que le fichier est exclu des outputs prospect (cf. Module 2 : exclure `DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`).
@@ -115,7 +115,7 @@ Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
 S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-3 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement
+4 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement | Cas clients ({N} cas)
 
 DRAFT — a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.
