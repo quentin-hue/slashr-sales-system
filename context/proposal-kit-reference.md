@@ -568,7 +568,7 @@ Classes : `.verbatim-box`, `.verbatim-box .source`
 ```html
 <div class="verbatim-box">
   &laquo; Citation exacte du prospect. &raquo;
-  <span class="source">&mdash; Prenom, R1</span>
+  <span class="source">Prenom, R1</span>
 </div>
 ```
 
@@ -599,7 +599,7 @@ Classes : `.testimonial-grid`, `.testimonial`, `.testimonial-text`, `.testimonia
       <div class="testimonial-avatar">emoji</div>
       <div>
         <div class="testimonial-name">Prenom Nom</div>
-        <div class="testimonial-role">Poste &mdash; Entreprise</div>
+        <div class="testimonial-role">Poste · Entreprise</div>
       </div>
     </div>
   </div>
@@ -619,19 +619,19 @@ Classes : `.timeline`, `.phase`, `.phase-1`, `.phase-2`, `.phase-3`, `.phase-tag
 ```html
 <div class="timeline">
   <div class="phase phase-1">
-    <span class="phase-tag">M1 &mdash; M3</span>
+    <span class="phase-tag">M1 · M3</span>
     <h3>Titre</h3>
     <p>Description.</p>
     <ul><li>Action</li></ul>
   </div>
   <div class="phase phase-2">
-    <span class="phase-tag">M3 &mdash; M6</span>
+    <span class="phase-tag">M3 · M6</span>
     <h3>Titre</h3>
     <p>Description.</p>
     <ul><li>Action</li></ul>
   </div>
   <div class="phase phase-3">
-    <span class="phase-tag">M6 &mdash; M12</span>
+    <span class="phase-tag">M6 · M12</span>
     <h3>Titre</h3>
     <p>Description.</p>
     <ul><li>Action</li></ul>

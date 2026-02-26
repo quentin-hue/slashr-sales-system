@@ -35,6 +35,15 @@ Ce doc est la source de verite des limites d'execution.
 - domain_intersection : 1 (vs top concurrent)
 - search_intent : 1 (max **1000 keywords**)
 
+### DataForSEO — Module 4c (conditionnel, niches sans concurrent business)
+Declenche uniquement si `competitors_domain` ne remonte aucun concurrent business.
+- serp_organic_live_regular : 5-8 (requetes commerciales cles)
+- domain_rank_overview (concurrents niche) : 5 max
+- ranked_keywords (concurrents niche) : 5 max
+- domain_intersection : 1
+
+**Comptage typique Module 4c : 16-19 appels.**
+
 **Hard stop** : si DataForSEO renvoie timeouts / erreurs 500 sur 2 tentatives, continuer avec domain_rank_overview uniquement.
 
 ---
