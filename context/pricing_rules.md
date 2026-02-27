@@ -96,7 +96,7 @@ budget_mensuel = jours_mensuels x TJM
 **Exemple 2 — SEO + SEA, Performance :**
 - SEO run : 1j + 1j production = 2j
 - SEA run : 1j + 0,5j optimisation = 1,5j
-- Total : 3,5j/mois → arrondi 3 500 EUR/mois
+- Total : 3,5j/mois → 2 450 EUR/mois
 
 **Exemple 3 — SEO + GEO + Social, Croissance :**
 - SEO run : 1j + 2j production = 3j

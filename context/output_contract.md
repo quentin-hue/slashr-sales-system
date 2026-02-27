@@ -73,7 +73,7 @@ Croissance : {budget}/mois — + multi-leviers
 - "On gere vos campagnes" ou toute formulation suggerant une execution quotidienne
 - Promesse de performance paid sans donnees
 
-### Section ROI (onglet ROI Interactif)
+### Section ROI (onglet Strategie)
 
 | Visible | Invisible |
 |---------|-----------|
@@ -138,7 +138,7 @@ Avant de sortir le livrable final, appliquer ce rubric (0/1 par item) et corrige
 3) Faits vs hypotheses clairement distingues
 4) Points manquants explicites + plan B (proxy / assumptions / next access)
 5) Concurrence / marche : au moins 3 insights actionnables
-6) Plan 30/60/90 realiste (priorites + dependances)
+6) Plan M1/M2/M3 (90 jours) realiste (priorites + dependances)
 7) KPIs & mesure : comment on prouve le progres (et avec quelles sources)
 8) Budget/charge/coherence : la recommandation colle au budget annonce
 

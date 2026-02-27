@@ -46,6 +46,11 @@ Declenche uniquement si `competitors_domain` ne remonte aucun concurrent busines
 
 **Hard stop** : si DataForSEO renvoie timeouts / erreurs 500 sur 2 tentatives, continuer avec domain_rank_overview uniquement.
 
+### Budget /debrief
+- Pipedrive : 1 appel GET deal (status, montant, lost_reason)
+- Fichiers locaux : lecture `.cache/deals/{deal_id}/artifacts/` (pas d'API)
+- DataForSEO : 0 appels
+
 ---
 
 ## 3) Timeouts / Retries

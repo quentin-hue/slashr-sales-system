@@ -1,6 +1,7 @@
 ---
 name: validate
 description: Valide un HTML de proposition existant contre les 45 regles (4 layers). Standalone, sans relancer /prepare.
+disable-model-invocation: true
 ---
 
 # VALIDATE — Validation HTML standalone

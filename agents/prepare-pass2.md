@@ -32,7 +32,7 @@ Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc em
 - `SEA_POSTURE` : posture SLASHR vis-a-vis du paid (PILOTE / CONSEIL / HORS_PERIMETRE)
 - `SEA_BRIEF_REQUESTS` : liste des demandes paid du prospect (verbatim brief)
 - `NARRATIVE_HINTS` : point de depart pour l'etape de deduplication (non-contraignant)
-- `TRANSITION_OPPORTUNITIES` : obsolete (les transitions SLASHR sont supprimees, cf. Etape 2.4)
+- (champ `TRANSITION_OPPORTUNITIES` supprime du SDB, cf. Etape 2.4)
 - `ROI Confidence globale` : determine si le label "Recommandation conditionnelle" est necessaire
 - `CAS CLIENTS RETENUS` enrichis : `match_criteria`, `key_metric`, `sdb_juxtaposition`, `angle` par cas
 
@@ -350,7 +350,7 @@ l'onglet Diagnostic, sauf dans la section S7 (methode d'analyse).
 - [ ] Cascade narrative : subtitle (QUOI) → h2 section 1 (POURQUOI) → KPIs (PREUVE), 3 couches = 3 choses differentes
 
 **Structure narrative :**
-- [ ] Sequence S7 → Implications → Decision → 90 jours complete et dans cet ordre
+- [ ] Sequence S7 → Implications (onglet Diagnostic) → Decision → 90 jours (onglet Strategie) complete et dans cet ordre dans le DOM
 - [ ] "Ce que cela implique" : 3 bullets max, consequences strategiques, pas de chiffrage cout inaction
 - [ ] "Decision strategique recommandee" : phrase affirmative avec "Nous recommandons"
 - [ ] "90 jours" : 3 etapes max alignees sur PRIMARY
@@ -407,7 +407,6 @@ Total sections Diagnostic: {N} (pas de plafond, deduplication seul garde-fou)
    Angle: {description en 1-2 phrases de ce que cette section dit}
    Donnees utilisees: {quelles donnees du SDB alimentent cette section}
    SO WHAT: {highlight box : impact business chiffre pour ce prospect}
-   Cas client inline: {si pertinent : Prospect: metrique → Cas (avant): metrique → Cas (apres): metrique}
    Pourquoi ici: {justification de sa position dans l'arc}
 
 2. {Titre section} · role: {...]
@@ -506,7 +505,7 @@ Regles :
    Exemples : "Demarrer la Phase 1", "Valider le lancement Phase 1"
 
 5. Sous-section "Strategie Paid" (CONDITIONNEL : si SEA_POSTURE = PILOTE ou CONSEIL)
-   Place apres le bloc 90 jours, avant le ROI Simulateur.
+   Place apres le ROI Simulateur, avant le CTA.
    Contenu :
    a. Rappel de la demande prospect (verbatim brief, issu de SEA_BRIEF_REQUESTS)
    b. Positionnement : "Cabinet conseil Search, pas agence media. Nous structurons la strategie, l'execution quotidienne releve de votre equipe ou d'une agence specialisee sous notre pilotage."

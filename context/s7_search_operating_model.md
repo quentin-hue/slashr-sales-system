@@ -185,18 +185,18 @@ S7 Amplification        →  P7 Amplification (paid)
 
 ## 5. Articulation dans la proposition HTML
 
-### Onglet Strategie (prospect-facing)
+### Onglet Diagnostic (prospect-facing)
 
-Section "Lecture strategique" :
+Section "Lecture strategique" (placee apres le diagnostic, avant les implications) :
 - Visualisation radar 7 forces (scores)
-- 1 contrainte principale mise en evidence (PRIMARY) — badge rouge
-- 1-2 leviers secondaires (SECONDARY) — badge bleu
+- 1 contrainte principale mise en evidence (PRIMARY), badge rouge
+- 1-2 leviers secondaires (SECONDARY), badge bleu
 - Forces DEFERRED visibles sur le radar mais sans detail (grisees)
 - Insight central (1 phrase)
 
-### Onglet Livrables & Methode (prospect-facing)
+### Onglet Investissement (prospect-facing)
 
-Sous-section "Notre approche — S7" :
+Sous-section "Notre methode d'analyse" (peut etre dans un Accordion) :
 - Definition en 2-3 phrases (diagnostic + arbitrage)
 - Liste des 7 forces (1 ligne chacune)
 - Regle d'arbitrage ("on ne travaille pas les 7, on priorise")

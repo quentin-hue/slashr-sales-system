@@ -153,7 +153,11 @@
       --font-display: "Funnel Display", "Sora", "DM Sans", sans-serif;
       --font-body: "Inter", -apple-system, sans-serif;
       --radius: 14px;
+      --radius-md: 14px;
       --radius-full: 9999px;
+      --text-90: rgba(255,255,255,0.9);
+      --magenta-alt: #CE16B5;
+      --border-active: rgba(255,255,255,0.3);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -491,7 +495,8 @@
       width: 0;
     }
 
-    .bar-fill.orange { background: var(--gradient); }
+    .bar-fill.orange { background: var(--orange); }
+    .bar-fill.violet { background: var(--violet); }
     .bar-fill.muted { background: var(--text-30); }
 
     .bar-value { font-size: 14px; font-weight: 700; color: var(--text-70); text-align: right; }
@@ -1010,6 +1015,7 @@
 
     .donut-fill {
       fill: none;
+      stroke: var(--orange);
       stroke-width: 10;
       stroke-linecap: round;
       transition: stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2158,23 +2164,23 @@
 <!-- ============================================================
      MARKUP — exemples de chaque composant (4 onglets MVP)
      L'agent s'en inspire pour generer le HTML sur-mesure.
-     Onglet 1: Strategie | Onglet 2: Cas Clients
-     Onglet 3: ROI Interactif | Onglet 4: Livrables & Methode
+     Onglet 1: Diagnostic | Onglet 2: Strategie
+     Onglet 3: Investissement | Onglet 4: Cas Clients
      ============================================================ -->
 
 <!-- NAV — 4 onglets MVP (toujours presents) -->
 <nav class="nav">
   <div class="nav-inner">
     <div class="nav-logo"><span>SLASHR</span></div>
-    <button class="nav-tab active" data-tab="strategie">Stratégie</button>
+    <button class="nav-tab active" data-tab="diagnostic">Diagnostic</button>
+    <button class="nav-tab" data-tab="strategie">Strategie</button>
+    <button class="nav-tab" data-tab="investissement">Investissement</button>
     <button class="nav-tab" data-tab="cas-clients">Cas Clients</button>
-    <button class="nav-tab" data-tab="roi">ROI Interactif</button>
-    <button class="nav-tab" data-tab="livrables">Livrables & Méthode</button>
   </div>
 </nav>
 
 <div class="main">
-<div class="tab-content active" id="tab-strategie">
+<div class="tab-content active" id="tab-diagnostic">
 
   <!-- ═══ HERO ═══ -->
   <section class="hero">
@@ -3024,11 +3030,11 @@
 
 
 <!-- ════════════════════════════════════════════════════════════
-     ONGLET 2 : CAS CLIENTS
-     Social proof — 2-4 cas comparables au prospect
-     Composants : Testimonial cards, Before/After, KPI cards, Highlight box
+     ONGLET 2 : STRATEGIE
+     Decision + 90 jours + ROI simulateur
+     Composants : Highlight box, Timeline, ROI Simulator, KPI cards
      ════════════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-cas-clients">
+<div class="tab-content" id="tab-strategie">
 
   <section class="section">
     <div class="section-label">Résultats clients</div>
@@ -3124,11 +3130,11 @@
 
 
 <!-- ════════════════════════════════════════════════════════════
-     ONGLET 3 : ROI INTERACTIF
-     Simulateur avec hypothèses sourcées
-     Composants : KPI cards, Table, ROI Simulator, Highlight box
+     ONGLET 3 : INVESTISSEMENT
+     Resume + cout inaction + pricing + FAQ + CTA
+     Composants : KPI cards, Pricing cards, Accordion, Highlight box, CTA
      ════════════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-roi">
+<div class="tab-content" id="tab-investissement">
 
   <section class="section">
     <div class="section-label">Retour sur investissement</div>
@@ -3235,11 +3241,11 @@
 
 
 <!-- ════════════════════════════════════════════════════════════
-     ONGLET 4 : LIVRABLES & METHODE
-     Transparence — ce que SLASHR livre concrètement
-     Composants : Timeline, Routine grid, Cards, Accordion, Pricing, CTA
+     ONGLET 4 : CAS CLIENTS
+     Resultats observes sur des profils comparables
+     Composants : Testimonial cards, Before/After, KPI cards, Micro-benchmark
      ════════════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-livrables">
+<div class="tab-content" id="tab-cas-clients">
 
   <!-- ═══ RESUME DECISIONNEL (6 bullets max) ═══ -->
   <!-- C'est la premiere chose que le decideur voit dans cet onglet.
@@ -3342,7 +3348,7 @@
     <h2>Montee en puissance</h2>
     <p class="section-intro">{Intro specifique : ex. "Apres les fondations, on active les leviers secondaires et on mesure l'impact."}</p>
 
-    <div class="highlight-box highlight-orange">
+    <div class="highlight-box">
       <p><strong>M4-M6 :</strong> {description concrete de la montee en puissance — quels piliers S7 passent de DEFERRED a actif, quels KPIs sont attendus}</p>
     </div>
 
@@ -3470,7 +3476,8 @@
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       tab.classList.add('active');
       document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const activeTab = document.querySelector('.tab-content.active');
+      if (activeTab) activeTab.scrollTop = 0;
     });
   });
 

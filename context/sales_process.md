@@ -4,7 +4,7 @@
 
 ---
 
-## Pipeline — 2 commandes
+## Pipeline — 5 commandes
 
 | # | Stage | Commande | Action closer |
 |---|-------|----------|---------------|
@@ -38,7 +38,14 @@ Reference IDs Pipedrive : `context/pipedrive_reference.md`
    -> /qualify {deal_id} pour re-scorer si nouvel element
 
 4. DEAL SIGNE
-   -> Marquer won dans Pipedrive
+   -> /pipedrive {deal_id} won
+   -> /debrief {deal_id}
+   -> Repondre aux 5 questions de feedback
+
+5. DEAL PERDU
+   -> /pipedrive {deal_id} lost "motif"
+   -> /debrief {deal_id}
+   -> Repondre aux 5 questions de feedback
 ```
 
 ---
@@ -98,7 +105,7 @@ Le closer parcourt la proposition HTML en partage d'ecran (ou l'envoie en amont)
 
 ### Pitch S7 — quand on arrive sur la section "Lecture strategique"
 
-Le closer arrive sur le radar S7 dans l'onglet Strategie. **30 secondes max.** Pas de cours sur le framework — juste assez pour que le decideur comprenne la logique.
+Le closer arrive sur le radar S7 dans l'onglet Diagnostic. **30 secondes max.** Pas de cours sur le framework — juste assez pour que le decideur comprenne la logique.
 
 **Mini-script (a adapter au ton de la conversation) :**
 
@@ -125,7 +132,7 @@ Le closer arrive sur le radar S7 dans l'onglet Strategie. **30 secondes max.** P
 
 **Etape 1 — Recap avec resume decisionnel (30 sec)**
 
-Utiliser les 6 bullets du resume decisionnel de la proposition (onglet Livrables). Le decideur les a sous les yeux — le closer les verbalise.
+Utiliser les 6 bullets du resume decisionnel de la proposition (onglet Investissement). Le decideur les a sous les yeux — le closer les verbalise.
 
 > "Pour resumer : vous avez un probleme de {douleur_principale} qui vous coute {impact_chiffre}. Notre diagnostic montre que {contrainte S7} est le verrou principal. On vous propose un plan en {timeline} avec des premiers resultats a 90 jours. L'investissement est de {prix}."
 

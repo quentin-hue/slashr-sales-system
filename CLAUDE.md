@@ -91,4 +91,4 @@ slashr-sales-system/
 4. **Ne jamais inventer de data** absente des sources
 5. **Pipedrive = source de verite** — tout passe par le deal ID
 
-> **Regles completes (17 regles) : `agents/shared.md`** — c'est la reference unique. Les regles ci-dessus sont un rappel des plus critiques, pas une liste exhaustive.
+> **Regles completes (18 regles) : `agents/shared.md`** — c'est la reference unique. Les regles ci-dessus sont un rappel des plus critiques, pas une liste exhaustive.

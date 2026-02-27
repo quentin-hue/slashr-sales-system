@@ -46,7 +46,7 @@ L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1
 | 6d | `context/performance_budget.md` | Budget tokens, cache, fraicheur | Avant tout |
 | 7 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
 | 8 | `context/case_studies.md` | Bibliotheque cas clients | Avant Pass 2 |
-| 9 | `templates/proposal-kit.html` | Kit CSS + 27 composants par role narratif | Avant Pass 3 |
+| 9 | `templates/proposal-kit.html` | Kit CSS + 30 composants par role narratif | Avant Pass 3 |
 | 10 | `context/proposal-kit-reference.md` | Aide-memoire classes CSS condensees | Avant Pass 3 |
 
 ## Etapes

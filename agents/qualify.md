@@ -1,4 +1,4 @@
-# Mode QUALIFY : Scoring terminal (v9.0)
+# Mode QUALIFY : Scoring terminal (v11.0)
 
 > **Prerequis :** `agents/shared.md` lu.
 

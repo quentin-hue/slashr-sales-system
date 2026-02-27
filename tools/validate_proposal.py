@@ -19,6 +19,7 @@ Python 3.9, stdlib uniquement (html.parser, re, os, sys).
 import sys
 import os
 import re
+from collections import Counter
 from html.parser import HTMLParser
 
 
@@ -48,13 +49,17 @@ class ProposalParser(HTMLParser):
         self.in_board_ready = False
         self.board_ready_depth = 0
         self.board_ready_text = []
+        self.tab_content_depth = 0
         self.css_content = ""
         self.in_style = False
         self.in_script = False
-        self.current_tag_stack = []
         self.h2_order = []  # h2 texts in order within tab-diagnostic
         self.in_h2 = False
         self.h2_buffer = ""
+        self.h3_texts = []  # h3 texts for R9 scope
+        self.in_h3 = False
+        self.h3_buffer = ""
+        self.data_confidence = None  # data-confidence from .recommended card
 
         # R18: track <li> inside highlight-gradient in tab-investissement
         self.in_highlight_gradient_investissement = False
@@ -90,12 +95,15 @@ class ProposalParser(HTMLParser):
         if elem_id:
             self.all_ids.append(elem_id)
 
-        # Track tab content containers
-        if "tab-content" in classes:
+        # Track tab content containers (depth-tracked to reset current_tab on close)
+        if "tab-content" in classes.split():
             self.current_tab = elem_id
+            self.tab_content_depth = 1
             if elem_id not in self.tabs:
                 self.tabs[elem_id] = []
                 self.tab_elements[elem_id] = []
+        elif self.current_tab and tag not in self.VOID_ELEMENTS:
+            self.tab_content_depth += 1
 
         # Track data-state for S7
         ds = attr_dict.get("data-state", "")
@@ -114,6 +122,10 @@ class ProposalParser(HTMLParser):
         if tag == "h2" and self.current_tab == "tab-diagnostic":
             self.in_h2 = True
             self.h2_buffer = ""
+        # Track h3 for R9 heading scope
+        if tag == "h3":
+            self.in_h3 = True
+            self.h3_buffer = ""
 
         # R18: Track highlight-gradient in tab-investissement for bullet counting
         if "highlight-gradient" in classes.split() and self.current_tab == "tab-investissement":
@@ -127,6 +139,12 @@ class ProposalParser(HTMLParser):
         # Track print button
         if "window.print" in str(attrs):
             self.has_print_button = True
+
+        # R33: Track data-confidence on .recommended cards
+        if "recommended" in classes.split():
+            conf = attr_dict.get("data-confidence", "")
+            if conf:
+                self.data_confidence = conf.lower()
 
         # R19: Track .board-ready-a4 section and its text content
         if "board-ready-a4" in classes.split():
@@ -165,8 +183,6 @@ class ProposalParser(HTMLParser):
         if self.current_tab and self.current_tab in self.tab_elements:
             self.tab_elements[self.current_tab].append((tag, classes, ""))
 
-        self.current_tag_stack.append(tag)
-
     def handle_endtag(self, tag):
         if tag == "style":
             self.in_style = False
@@ -175,6 +191,10 @@ class ProposalParser(HTMLParser):
         if tag == "h2" and self.in_h2:
             self.in_h2 = False
             self.h2_order.append(self.h2_buffer.strip())
+        if tag == "h3" and self.in_h3:
+            self.in_h3 = False
+            if self.h3_buffer.strip():
+                self.h3_texts.append(self.h3_buffer.strip())
         # R19: track board-ready-a4 container depth
         if self.in_board_ready:
             self.board_ready_depth -= 1
@@ -208,8 +228,11 @@ class ProposalParser(HTMLParser):
         if tag in ("ul", "ol") and self.in_implique_list:
             self.in_implique_list = False
 
-        if self.current_tag_stack and self.current_tag_stack[-1] == tag:
-            self.current_tag_stack.pop()
+        # Track tab-content container depth (reset current_tab when leaving)
+        if self.current_tab:
+            self.tab_content_depth -= 1
+            if self.tab_content_depth <= 0:
+                self.current_tab = None
 
     def handle_data(self, data):
         if self.in_style:
@@ -232,6 +255,8 @@ class ProposalParser(HTMLParser):
 
         if self.in_h2:
             self.h2_buffer += data
+        if self.in_h3:
+            self.h3_buffer += data
 
         # R19: accumulate board-ready-a4 text
         if self.in_board_ready:
@@ -285,8 +310,9 @@ def full_text(parser):
 # Layer 1 — Structural (PASS/FAIL)
 # ---------------------------------------------------------------------------
 
-def check_layer1(parser, html_raw):
+def check_layer1(parser, html_raw, visible_text):
     results = []
+    ft = visible_text.lower()
 
     # R3: Fond sombre #1a1a1a
     has_bg = "#1a1a1a" in parser.css_content or "#1a1a1a" in html_raw
@@ -305,8 +331,7 @@ def check_layer1(parser, html_raw):
     # R14: Section S7 dans onglet Diagnostic
     diag_text = tab_text(parser, "tab-diagnostic").lower()
     has_s7 = tab_has_class(parser, "tab-diagnostic", "s7-grid") or \
-             tab_has_class(parser, "tab-diagnostic", "s7-card") or \
-             "s7-grid" in diag_text or "s7-card" in diag_text
+             tab_has_class(parser, "tab-diagnostic", "s7-card")
     results.append(("R14", "Section S7 dans onglet Diagnostic", has_s7))
 
     # R16: Exactement 1 PRIMARY dans #tab-diagnostic
@@ -344,21 +369,18 @@ def check_layer1(parser, html_raw):
     results.append(("R19", f"Board-ready A4{detail}", r19_ok))
 
     # R26: CTA avec verbe strategique
-    ft = full_text(parser).lower()
     bad_ctas = ["planifier un echange", "discuter", "echanger", "en savoir plus"]
     has_bad_cta = any(bc in ft for bc in bad_ctas)
     results.append(("R26", "CTA sans verbe passif/generique", not has_bad_cta))
 
     # R29: Zero jours/TJM/AMOA/termes internes
     internal_pattern = re.compile(
-        r'\b(jour[s]?[\s\-]homme|TJM|AMOA|etude lexicale|plan de? redirections|recettage|recette fonctionnelle|phase de recette)\b',
+        r'\b(jours?[\s\-]homme|TJM|AMOA|etude lexicale|diagnostic technique|plan de? redirections|recettage|recette fonctionnelle|phase de recette|incompressible|decomposition interne)\b',
         re.IGNORECASE
     )
-    # Check only visible text (not CSS/JS)
-    visible = full_text(parser)
-    has_internal = bool(internal_pattern.search(visible))
+    has_internal = bool(internal_pattern.search(visible_text))
     if has_internal:
-        matches = internal_pattern.findall(visible)
+        matches = internal_pattern.findall(visible_text)
         results.append(("R29", f"Zero jours/TJM/AMOA (trouve: {', '.join(matches[:3])})", False))
     else:
         results.append(("R29", "Zero jours/TJM/AMOA dans le texte visible", True))
@@ -378,12 +400,12 @@ def check_layer1(parser, html_raw):
         r'Notre\s+(lecture|conviction|position|approche|methode|vision)\s*:',
         re.IGNORECASE
     )
-    has_notre = bool(notre_pattern.search(visible))
+    has_notre = bool(notre_pattern.search(visible_text))
     results.append(("R36", "Pas de pattern \"Notre {X} :\"", not has_notre))
 
     # R37: Pas de "Chaque mois/jour sans"
     anaphore_pattern = re.compile(r'Chaque\s+(mois|jour|semaine)\s+sans', re.IGNORECASE)
-    has_anaphore = bool(anaphore_pattern.search(visible))
+    has_anaphore = bool(anaphore_pattern.search(visible_text))
     results.append(("R37", "Pas de structure anaphorique \"Chaque mois/jour sans\"", not has_anaphore))
 
     # R38: Pricing cards exclusives a Investissement (pas dans Strategie)
@@ -487,6 +509,31 @@ def check_layer1(parser, html_raw):
     else:
         results.append(("R30", "Coherence Phase 1 ↔ Phase 2 (pas de pricing detecte)", True))
 
+    # R18_check: Tiret cadratin interdit (shared.md regle 18)
+    has_emdash_text = "\u2014" in visible_text
+    has_emdash_entity = "&mdash;" in html_raw or "&#8212;" in html_raw
+    emdash_found = has_emdash_text or has_emdash_entity
+    results.append(("R18b", "Zero tiret cadratin dans le texte visible", not emdash_found))
+
+    # R27a: Si refonte, 3 actes narratifs + "0 perte de trafic strategique"
+    refonte_keywords = ["refonte", "migration", "redesign", "replatforming"]
+    is_refonte = any(kw in ft for kw in refonte_keywords)
+    if is_refonte:
+        # Check for 3-act structure markers
+        act_markers = ["acte 1", "acte 2", "acte 3", "phase 1", "phase 2", "phase 3",
+                       "etape 1", "etape 2", "etape 3", "avant", "pendant", "apres"]
+        act_count = sum(1 for m in act_markers if m in ft)
+        has_3_acts = act_count >= 3
+        has_zero_perte = "0 perte" in ft or "zero perte" in ft or "aucune perte" in ft
+        r27a_ok = has_3_acts and has_zero_perte
+        details = []
+        if not has_3_acts:
+            details.append("structure 3 actes non detectee")
+        if not has_zero_perte:
+            details.append("'0 perte de trafic' absent")
+        detail = f" ({', '.join(details)})" if details else ""
+        results.append(("R27a", f"Refonte : 3 actes narratifs + garantie trafic{detail}", r27a_ok))
+
     return results
 
 
@@ -494,11 +541,12 @@ def check_layer1(parser, html_raw):
 # Layer 2 — Content (WARN)
 # ---------------------------------------------------------------------------
 
-def check_layer2(parser, html_raw):
+def check_layer2(parser, html_raw, visible_text):
     results = []
     diag = tab_text(parser, "tab-diagnostic").lower()
     strat = tab_text(parser, "tab-strategie").lower()
     livr = tab_text(parser, "tab-investissement").lower()
+    ft = visible_text.lower()
 
     # R20: Trajectoire 90j M1/M2/M3 (word boundary pour eviter faux positifs)
     has_m1m2m3 = all(
@@ -520,17 +568,42 @@ def check_layer2(parser, html_raw):
     results.append(("R24", "Section \"Decision strategique\" presente", has_decision))
 
     # R25: Sequence Diagnostic → S7 → Implications (tab-diagnostic) puis Decision → 90j (tab-strategie)
-    sequence_markers = [
-        ("diagnostic", "diagnostic" in diag or "lecture strategique" in diag or "lecture stratégique" in diag or "maturité search" in diag or "maturite search" in diag),
-        ("s7", "s7" in diag or tab_has_class(parser, "tab-diagnostic", "s7-grid")),
-        ("implications", "ce que cela implique" in diag or "réalités à intégrer" in diag or "realites a integrer" in diag),
-        ("decision", "decision strategique" in strat or "décision stratégique" in strat or "nous recommandons" in strat or "notre recommandation" in strat),
-        ("90j", "90 jours" in strat or "90j" in strat),
-    ]
-    all_present = all(present for _, present in sequence_markers)
-    missing_seq = [name for name, present in sequence_markers if not present]
-    detail = f" (manquants: {', '.join(missing_seq)})" if missing_seq else ""
-    results.append(("R25", f"Sequence narrative complete{detail}", all_present))
+    def find_first(text, *patterns):
+        positions = [text.find(p) for p in patterns]
+        valid = [p for p in positions if p >= 0]
+        return min(valid) if valid else -1
+
+    pos_diag_marker = find_first(diag, "diagnostic", "lecture strategique", "lecture stratégique", "maturité search", "maturite search")
+    pos_s7 = find_first(diag, "s7")
+    if pos_s7 < 0 and tab_has_class(parser, "tab-diagnostic", "s7-grid"):
+        pos_s7 = pos_diag_marker + 1 if pos_diag_marker >= 0 else 0
+    pos_impl = find_first(diag, "ce que cela implique", "réalités à intégrer", "realites a integrer")
+    pos_decision = find_first(strat, "decision strategique", "décision stratégique", "nous recommandons", "notre recommandation")
+    pos_90j = find_first(strat, "90 jours", "90j")
+
+    markers = {"diagnostic": pos_diag_marker, "s7": pos_s7, "implications": pos_impl,
+               "decision": pos_decision, "90j": pos_90j}
+    missing_seq = [name for name, pos in markers.items() if pos < 0]
+    all_present = len(missing_seq) == 0
+
+    order_ok = True
+    order_issues = []
+    if all_present:
+        if not (pos_diag_marker <= pos_s7 <= pos_impl):
+            order_ok = False
+            order_issues.append("Diagnostic: ordre incorrect")
+        if not (pos_decision <= pos_90j):
+            order_ok = False
+            order_issues.append("Strategie: decision apres 90j")
+
+    if not all_present:
+        detail = f" (manquants: {', '.join(missing_seq)})"
+        results.append(("R25", f"Sequence narrative complete{detail}", False))
+    elif not order_ok:
+        detail = f" ({'; '.join(order_issues)})"
+        results.append(("R25", f"Sequence narrative : ordre incorrect{detail}", False))
+    else:
+        results.append(("R25", "Sequence narrative complete et ordonnee", True))
 
     # R32: Pricing cards avec "Ce que ca debloque"
     has_debloque = "ce que ca debloque" in livr or "ce que ça débloque" in livr
@@ -540,15 +613,14 @@ def check_layer2(parser, html_raw):
     # Heuristic: check that highlight-box appears between data components
     results.append(("R8", "Alternance data/interpretation (verification manuelle)", None))
 
-    # R9: Pas de "Pourquoi SLASHR" standalone
+    # R9: Pas de "Pourquoi SLASHR" dans les titres h2/h3
     pourquoi_pattern = re.compile(r'pourquoi\s+slashr', re.IGNORECASE)
-    visible = full_text(parser)
-    has_pourquoi = bool(pourquoi_pattern.search(visible))
-    results.append(("R9", "Pas de section \"Pourquoi SLASHR\" standalone", not has_pourquoi))
+    heading_texts = " ".join(parser.h2_order + parser.h3_texts)
+    has_pourquoi = bool(pourquoi_pattern.search(heading_texts))
+    results.append(("R9", "Pas de \"Pourquoi SLASHR\" dans titres h2/h3", not has_pourquoi))
 
     # R34: Board-ready avec "Decision attendue"
-    has_decision_attendue = "decision attendue" in full_text(parser).lower() or \
-                            "décision attendue" in full_text(parser).lower()
+    has_decision_attendue = "decision attendue" in ft or "décision attendue" in ft
     results.append(("R34", "Board-ready avec \"Decision attendue\"", has_decision_attendue))
 
     # R10: Differenciateurs lies a un data block
@@ -573,7 +645,7 @@ def check_layer2(parser, html_raw):
         has_numbers_near_inaction = False
         for pos in inaction_positions:
             context_window = livr[pos:min(pos + 500, len(livr))]
-            if re.search(r'\d[\d\s,.]*\d', context_window):
+            if re.search(r'\d', context_window):
                 has_numbers_near_inaction = True
                 break
         if not has_numbers_near_inaction:
@@ -582,6 +654,11 @@ def check_layer2(parser, html_raw):
             results.append(("R28b", "Sous-bloc \"cout de l'inaction\" avec impacts chiffres", True))
     else:
         results.append(("R28b", "Sous-bloc \"cout de l'inaction\" absent", False))
+
+    # R33: Si Confidence Low, label "Recommandation conditionnelle"
+    if parser.data_confidence == "low":
+        has_cond_label = "recommandation conditionnelle" in livr or "recommandation conditionnelle" in strat
+        results.append(("R33", "Confidence Low : label 'Recommandation conditionnelle'", has_cond_label))
 
     return results
 
@@ -609,7 +686,7 @@ LAYER3_CHECKLIST = [
 # Layer 4 — Quality Metrics (WARN)
 # ---------------------------------------------------------------------------
 
-def check_layer4(parser, html_raw):
+def check_layer4(parser, html_raw, visible_text):
     results = []
 
     # R40: Densite de donnees dans l'onglet Diagnostic
@@ -690,11 +767,10 @@ def check_layer4(parser, html_raw):
     results.append(("R44", "Au moins 1 micro-benchmark dans la proposition", has_micro))
 
     # R45: Repetition density — same number appears > 6 times in visible text
-    visible = full_text(parser)
+    visible = visible_text
     numbers = re.findall(r'\b\d[\d\s]*\d\b|\b\d{2,}\b', visible)
     normalized = [n.replace(' ', '') for n in numbers]
     if normalized:
-        from collections import Counter
         counts = Counter(normalized)
         repeated = {n: c for n, c in counts.items() if c > 6}
         if repeated:
@@ -958,10 +1034,11 @@ def main():
         sys.exit(1)
 
     # Validate
-    layer1 = check_layer1(parser, html_raw)
-    layer2 = check_layer2(parser, html_raw)
+    visible_text = full_text(parser)
+    layer1 = check_layer1(parser, html_raw, visible_text)
+    layer2 = check_layer2(parser, html_raw, visible_text)
     layer3 = LAYER3_CHECKLIST
-    layer4 = check_layer4(parser, html_raw)
+    layer4 = check_layer4(parser, html_raw, visible_text)
 
     exit_code = print_results(layer1, layer2, layer3, layer4)
     sys.exit(exit_code)

@@ -2,6 +2,8 @@
 
 > Condense des classes CSS et structures HTML minimales du kit `templates/proposal-kit.html`.
 > Utiliser ce fichier comme aide-memoire rapide. Pour le CSS complet, voir le kit source.
+>
+> **Composants avec CSS inline** : certains composants documentes ci-dessous (`.tab-header`, `.progress-dots`, `.s7-radar-*`, `.constat-tension`, `.micro-benchmark`, utilitaires `.mb-*`/`.mt-*`/`.text-*`/`.max-w-*`) n'ont PAS leur CSS dans le kit source. Leur CSS est fourni dans cette reference et doit etre inclus directement dans le `<style>` du HTML genere.
 
 ---
 

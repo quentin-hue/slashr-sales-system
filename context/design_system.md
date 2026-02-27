@@ -122,7 +122,7 @@ Bordure animee avec un segment de gradient qui tourne. Utilise sur les CTA princ
 |-----|--------|-------|-------------|----------------|--------|-------|
 | **Display XL** | `clamp(40px, 8vw, 90px)` | 600 | 95% | -0.03em | Funnel Display | Hero h1 |
 | **Display L** | `clamp(36px, 7vw, 72px)` | 600 | 95% | -0.03em | Funnel Display | Service hero h1 |
-| **Heading** | `clamp(28px, 5vw, 45px)` | 700 | 110% | -0.04em | Inter | Titres de section h2 |
+| **Heading** | `clamp(28px, 5vw, 45px)` | 700 | 110% | -0.04em | Funnel Display (proposals) / Inter (UI) | Titres de section h2 |
 | **Title** | 20px | 700 | 130% | -0.01em | Inter | Titres de cartes h3 |
 | **Subtitle** | `clamp(14px, 2.5vw, 18.75px)` | 600 | 130% | -0.01em | Inter | Sous-titres hero |
 | **Body** | 15px | 400 | 145% | 0 | Inter | Texte courant |
@@ -350,7 +350,7 @@ La profondeur est obtenue **exclusivement** par :
 
 ## 11. Board-ready A4 — Spec print layout
 
-Le board-ready A4 est une version imprimable de la proposition, destinee aux comites de direction. Accessible via un bouton "Version imprimable" dans l'onglet Livrables.
+Le board-ready A4 est une version imprimable de la proposition, destinee aux comites de direction. Accessible via un bouton "Version imprimable" dans l'onglet Investissement.
 
 ### 11.1 Contenu obligatoire (1 page A4)
 

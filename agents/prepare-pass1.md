@@ -304,7 +304,7 @@ Organiser les donnees brutes en categories exploitables :
 |-----------|---------|
 | `PROSPECT_PROFILE` | Secteur, taille, maturite digitale, contexte business |
 | `PAIN_POINTS` | Douleurs identifiees, verbatims exacts, trigger ("pourquoi maintenant") |
-| `SEARCH_STATE` | Metriques actuelles : trafic organique estime (visites/mois), keywords, ETV (valeur EUR/mois), repartition marque/hors-marque. **IMPORTANT : ne pas confondre trafic (visites) et ETV (equivalent budget ads en EUR). Toujours etiqueter clairement : "trafic organique estime" (source: domain_rank_overview, champ etv = visites) vs "valeur trafic" (source: domain_rank_overview, champ estimated_paid_traffic_cost = EUR).** |
+| `SEARCH_STATE` | Metriques actuelles : trafic organique estime (visites/mois), keywords, ETV (valeur EUR/mois), repartition marque/hors-marque. **IMPORTANT : ne pas confondre trafic (visites) et ETV (equivalent budget ads en EUR). Toujours etiqueter clairement : "trafic organique estime" (source: domain_rank_overview, champ organic_count = visites) vs "valeur trafic ETV" (source: domain_rank_overview, champ etv = EUR).** |
 | `COMPETITIVE_GAP` | **Concurrents business** (meme secteur, meme offre) en priorite, concurrents semantiques en contexte. Metriques comparatives, keywords exclusifs, ratio de gap. Si Module 4c active : preciser la source (SERP analysis) et la methode. |
 | `INTENT_MARKET_MAP` | Segmentation intent du marche : buckets Commercial / Info captable / Info non-captable, volumes par bucket, top keywords, strategie par bucket |
 | `OPPORTUNITIES` | Quick wins (pages en top 10-20, donnees structurees manquantes), territoires non couverts par bucket intent, clusters a creer |
@@ -404,7 +404,7 @@ L'agent repond a ces questions :
   - Phase 2 Accompagnement structure : quels piliers activer ? A quelle intensite ?
   - Quel scenario recommander ? (Essentiel / Performance / Croissance)
 - **Quelles phases de recommandation ?** Actions concretes par phase, adaptees au contexte
-- **Quel ROI ?** Calcul conservateur avec les donnees reelles du prospect (voir methode ROI dans prepare.md)
+- **Quel ROI ?** Calcul conservateur avec les donnees reelles du prospect (voir methode ROI dans prepare-pass3.md)
 
 ### Selectionner les cas clients
 
@@ -428,7 +428,7 @@ L'agent produit les `NARRATIVE_HINTS` dans le SDB : une liste de 3-5 suggestions
 - S7 PRIMARY + `RISKS` → "Le verrou et ses consequences"
 - `ROI` + `STRATEGIE_RECOMMANDEE` → "Le plan et son rendement"
 
-L'agent identifie egalement 2 `TRANSITION_OPPORTUNITIES` : les data blocks apres lesquels un differenciateur SLASHR s'insere naturellement (ex: apres le benchmark concurrentiel → cartographie intent-based).
+Les differenciateurs SLASHR emergent des donnees elles-memes dans la proposition (cf. `agents/prepare-pass2.md`, Etape 2.4). Pass 1 ne produit pas de "transition opportunities" explicites.
 
 ---
 
@@ -488,6 +488,8 @@ Produire systematiquement le bloc CONTRAINTE PRINCIPALE + LEVIERS PRIORITAIRES +
 ### Output interne : `strategy_plan_internal.md`
 
 L'agent DOIT produire ce document interne (jamais expose au prospect) avant de rediger le SDB. Il alimente directement les sections "Strategie recommandee" et "ROI" du SDB.
+
+**Ecriture obligatoire :** `.cache/deals/{deal_id}/artifacts/strategy_plan_internal.md` (utilise par Pass 2 et par `/debrief`).
 
 ```
 === STRATEGY PLAN INTERNAL (S7) ===
@@ -721,10 +723,6 @@ NARRATIVE_HINTS (suggestions pour Pass 2, non-contraignant):
 - Hint 2: {bloc SDB C} + {bloc SDB D} → argument "{nom}"
 - Hint 3: {bloc SDB E} → argument "{nom}" (standalone)
 - ... (3-5 hints max)
-
-TRANSITION_OPPORTUNITIES (2 suggestions pour Pass 2, non-contraignant):
-- After {data block}: "{quel differenciateur SLASHR s'insere naturellement}"
-- After {data block}: "{quel differenciateur}"
 
 === FIN SDB ===
 ```

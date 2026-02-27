@@ -1,11 +1,16 @@
 ---
 name: debrief
 description: Collecte le resultat d'un deal (won/lost), le feedback closer, et alimente la boucle de retroaction.
+disable-model-invocation: true
 ---
 
 # DEBRIEF — Boucle de retroaction deal-to-deal
 
 **Deal ID :** $ARGUMENTS
+
+## Prerequis
+
+1. Lis `agents/shared.md` (preambule partage, 18 regles)
 
 ## Usage
 
@@ -65,7 +70,7 @@ CONTEXTE:
 - Arc narratif utilise: {arc du NBP}
 - S7 PRIMARY: {force} ({score}/5)
 - Scenario recommande: {Essentiel | Performance | Croissance}
-- Nombre de sections Strategie: {N}
+- Nombre de sections Diagnostic: {N}
 
 FEEDBACK CLOSER:
 - Facteur decisif: {reponse}
