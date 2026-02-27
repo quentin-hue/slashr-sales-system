@@ -31,6 +31,8 @@ Tous les appels decrits dans `shared.md` :
 
 #### Module 3 : SEO
 
+> **Execution :** via batch (voir "Strategie d'execution DataForSEO : batch parallele" ci-dessous). Ne pas appeler endpoint par endpoint.
+
 Pour chaque domaine detecte :
 
 | Appel DataForSEO | Donnees | Pourquoi |
@@ -40,6 +42,8 @@ Pour chaque domaine detecte :
 | `keywords_for_site` (top 20) | Keywords pertinents que le domaine pourrait cibler | Opportunites manquees |
 
 #### Module 4 : Benchmark (concurrents semantiques)
+
+> **Execution :** via batch (voir "Strategie d'execution DataForSEO : batch parallele" ci-dessous). Ne pas appeler endpoint par endpoint.
 
 | Appel DataForSEO | Donnees | Pourquoi |
 |-------------------|---------|----------|
@@ -323,6 +327,46 @@ Crawle le site reel du prospect pour alimenter les scores S2/S3/S4 avec des donn
 | CTA, formulaires, nav items | Homepage | S4 score |
 | Images sans alt | Homepage | OPPORTUNITIES (quick wins) |
 | Meta desc manquantes | Samples | OPPORTUNITIES (quick wins) |
+
+---
+
+### Strategie d'execution DataForSEO : batch parallele
+
+Les appels DataForSEO (Modules 3, 4, 4b, 4c, 5-10) sont executes par lots via l'outil batch parallele, pas endpoint par endpoint.
+
+**Outil :** `python3 tools/batch_dataforseo.py --deal-id {deal_id} --requests-file /tmp/batch_lot{N}.json`
+
+**Procedure par lot :**
+1. Ecrire le fichier `/tmp/batch_lot{N}.json` (tableau JSON de requetes)
+2. Executer `batch_dataforseo.py`
+3. Lire le JSON stdout (summary avec statuts et cache_paths)
+4. Lire les fichiers cache pour exploiter les resultats
+
+**Les 5 lots :**
+
+| Lot | Contenu | Requetes typiques | Dependance |
+|-----|---------|-------------------|------------|
+| **1** | Modules 3 + 4 debut | 4 (`domain_rank_overview` + `ranked_keywords` + `keywords_for_site` + `competitors_domain`) | Domaine prospect connu |
+| **2** | Module 4 benchmark | 4 (3x `domain_rank_overview` concurrents + 1x `domain_intersection`) | Lot 1 → concurrents identifies |
+| **3** | Module 4c SERPs (conditionnel) | 5-8 (`serp_organic_live_regular` par keyword) | Lot 1 → aucun concurrent business |
+| **4** | Module 4c deep-dive (conditionnel) | 11 (5x `domain_rank_overview` + 5x `ranked_keywords` + 1x `domain_intersection`) | Lot 3 → concurrents niche identifies |
+| **5** | Module 4b + conditionnels 5-10 | 1-10 (`search_intent` + modules actives) | Lots precedents termines |
+
+**Format de chaque requete dans le tableau :**
+```json
+{
+  "id": "overview_prospect",
+  "endpoint": "dataforseo_labs/google/domain_rank_overview/live",
+  "body": [{"target": "example.com", "language_code": "fr", "location_code": 2250}],
+  "cache_path": "domain_example.com/domain_rank_overview.json"
+}
+```
+
+**Regles :**
+- Le lot 2 depend des resultats du lot 1 (concurrents identifies) → sequentiel
+- Les lots 3 et 4 sont conditionnels (Module 4c) → seulement si aucun concurrent business
+- Le lot 5 attend les resultats precedents (intent market map, modules conditionnels)
+- Si un lot echoue partiellement (exit code 2), lire les resultats OK et noter les echecs dans l'evidence log
 
 ---
 

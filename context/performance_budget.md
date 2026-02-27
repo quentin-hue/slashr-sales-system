@@ -27,6 +27,9 @@ Ce doc est la source de verite des limites d'execution.
 - Nombre max de fichiers telecharges : **25** (au-dela : prendre les 25 plus recents + log warning)
 
 ### DataForSEO (par domaine prospect)
+
+> **Execution recommandee :** via `tools/batch_dataforseo.py` par lots paralleles. Voir section **3b) Batch DataForSEO Tool** pour les parametres et le decoupage en lots.
+
 - domain_rank_overview : 1
 - ranked_keywords : 1 (top 30)
 - keywords_for_site : 1 (top 20)
@@ -68,6 +71,53 @@ Declenche uniquement si `competitors_domain` ne remonte aucun concurrent busines
 - Retries : 2 max
 - Backoff : 1s puis 3s
 - Jitter : oui (si possible)
+
+---
+
+## 3b) Batch DataForSEO Tool
+
+**Outil :** `tools/batch_dataforseo.py` — execute N appels DataForSEO en parallele avec cache integre.
+
+### Parametres
+
+| Parametre | Valeur |
+|-----------|--------|
+| Workers paralleles | 5 (ThreadPoolExecutor) |
+| Timeout par requete | 20s |
+| Retries | 2 max |
+| Backoff | 1s puis 3s |
+| Cache < 24h | Reutiliser (fresh) |
+| Cache 24h-7j | Reutiliser + WARNING (stale) |
+| Cache > 7j | Re-fetch obligatoire (expired) |
+| Validation cache | Non-vide + JSON parseable + status_code 20000 |
+
+### Invocation
+
+```bash
+# Via fichier (recommande pour les gros lots)
+python3 tools/batch_dataforseo.py --deal-id 560 --requests-file /tmp/batch_lot1.json
+
+# Via argument inline (petits lots)
+python3 tools/batch_dataforseo.py --deal-id 560 --requests '[...]'
+```
+
+### Output
+
+- **stdout** : JSON summary uniquement (parseable par l'agent)
+- **stderr** : logs `[INFO]`/`[WARN]`/`[ERROR]`
+- **Exit codes** : 0=OK, 1=usage, 2=partiel, 3=fatal
+
+### Decoupage en 5 lots (alignes sur prepare-pass1.md)
+
+| Lot | Contenu | Requetes typiques | Dependance |
+|-----|---------|-------------------|------------|
+| 1 | Modules 3 + 4 debut | 4 | Domaine connu |
+| 2 | Module 4 benchmark | 4 | Lot 1 (concurrents) |
+| 3 | Module 4c SERPs (conditionnel) | 5-8 | Lot 1 (pas de concurrent business) |
+| 4 | Module 4c deep-dive (conditionnel) | 11 | Lot 3 (niche identifies) |
+| 5 | Module 4b + conditionnels 5-10 | 1-10 | Lots precedents |
+
+**Comptage typique :** 8-37 requetes selon activation Module 4c et modules conditionnels.
 
 ---
 
