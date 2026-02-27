@@ -235,7 +235,7 @@ Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agen
 **Posture SLASHR (mapping) :**
 - `EXPLICIT` + perimetre Croissance → `SEA_POSTURE = PILOTE` (SLASHR gere la strategie + pilotage campagnes)
 - `EXPLICIT` + autre perimetre → `SEA_POSTURE = CONSEIL` (defaut — cabinet conseil, pas agence media)
-- `DETECTED` → `SEA_POSTURE = CONSEIL` (mentionner synergie)
+- `DETECTED` → `SEA_POSTURE = CONSEIL` (pas de section dediee, mention synergie SEO/SEA dans la section benchmark ou opportunites, 1-2 phrases)
 - `ABSENT` → `SEA_POSTURE = HORS_PERIMETRE`
 
 **IMPORTANT :** le signal SEA est un routage de la demande prospect, pas un diagnostic. Le diagnostic (S7 Amplification) reste inchange.
@@ -574,7 +574,7 @@ ROI CONSERVATEUR (intervalle obligatoire) :
 - ROI intervalle : x{N_bas} - x{N_haut} sur {periode}
 - ROI affiche (conservateur) : x{N_bas} (borne basse de l'intervalle)
 - Confidence globale ROI: {High/Medium/Low} (= min des confidences individuelles)
-- Si Confidence globale = Low → ajouter dans le SDB: "Recommandation conditionnelle, validation en Phase 1"
+- Si Low sur 2+ hypotheses → ajouter dans le SDB: "Recommandation conditionnelle, validation en Phase 1"
 
 > **Regle intervalle** : chaque hypothese a une borne basse (conservatrice) et une borne haute (optimiste realiste). Le ROI affiche au prospect = borne basse. L'intervalle complet est dans le simulateur ROI (onglet 3) pour que le prospect explore lui-meme.
 

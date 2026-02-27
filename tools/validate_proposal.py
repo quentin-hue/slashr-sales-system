@@ -27,6 +27,11 @@ from html.parser import HTMLParser
 # ---------------------------------------------------------------------------
 
 class ProposalParser(HTMLParser):
+    VOID_ELEMENTS = frozenset({
+        'br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base',
+        'col', 'embed', 'param', 'source', 'track', 'wbr',
+    })
+
     def __init__(self):
         super().__init__()
         self.current_tab = None
@@ -36,8 +41,13 @@ class ProposalParser(HTMLParser):
         self.all_classes = []
         self.all_ids = []
         self.data_states = []
+        self.tab_data_states = {}  # tab_id -> list of data-state values
         self.has_print_media = False
         self.has_print_button = False
+        self.has_board_ready = False
+        self.in_board_ready = False
+        self.board_ready_depth = 0
+        self.board_ready_text = []
         self.css_content = ""
         self.in_style = False
         self.in_script = False
@@ -91,6 +101,8 @@ class ProposalParser(HTMLParser):
         ds = attr_dict.get("data-state", "")
         if ds:
             self.data_states.append(ds)
+            if self.current_tab:
+                self.tab_data_states.setdefault(self.current_tab, []).append(ds)
 
         # Track style/script
         if tag == "style":
@@ -104,13 +116,10 @@ class ProposalParser(HTMLParser):
             self.h2_buffer = ""
 
         # R18: Track highlight-gradient in tab-investissement for bullet counting
-        # Void elements (br, hr, img, etc.) don't have closing tags, so skip depth tracking
-        void_elements = {'br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base',
-                         'col', 'embed', 'param', 'source', 'track', 'wbr'}
         if "highlight-gradient" in classes.split() and self.current_tab == "tab-investissement":
             self.in_highlight_gradient_investissement = True
             self.highlight_gradient_depth = 1
-        elif self.in_highlight_gradient_investissement and tag not in void_elements:
+        elif self.in_highlight_gradient_investissement and tag not in self.VOID_ELEMENTS:
             self.highlight_gradient_depth += 1
             if tag == "li":
                 self.highlight_gradient_li_count += 1
@@ -118,6 +127,14 @@ class ProposalParser(HTMLParser):
         # Track print button
         if "window.print" in str(attrs):
             self.has_print_button = True
+
+        # R19: Track .board-ready-a4 section and its text content
+        if "board-ready-a4" in classes.split():
+            self.has_board_ready = True
+            self.in_board_ready = True
+            self.board_ready_depth = 1
+        elif self.in_board_ready and tag not in self.VOID_ELEMENTS:
+            self.board_ready_depth += 1
 
         # Layer 4: Track <p> in tab-diagnostic for density metric
         if tag == "p" and self.current_tab == "tab-diagnostic" and "section-label" not in classes:
@@ -134,7 +151,7 @@ class ProposalParser(HTMLParser):
                 self.in_implique_highlight = True
                 self.implique_highlight_depth = 1
                 self.implique_highlight_buffer = ""
-            elif self.in_implique_highlight and tag not in void_elements:
+            elif self.in_implique_highlight and tag not in self.VOID_ELEMENTS:
                 self.implique_highlight_depth += 1
             # Track li inside ul/ol as items
             if not self.implique_done and not self.in_implique_highlight:
@@ -158,6 +175,12 @@ class ProposalParser(HTMLParser):
         if tag == "h2" and self.in_h2:
             self.in_h2 = False
             self.h2_order.append(self.h2_buffer.strip())
+        # R19: track board-ready-a4 container depth
+        if self.in_board_ready:
+            self.board_ready_depth -= 1
+            if self.board_ready_depth <= 0:
+                self.in_board_ready = False
+
         # R18: track highlight-gradient container depth
         if self.in_highlight_gradient_investissement:
             self.highlight_gradient_depth -= 1
@@ -210,12 +233,16 @@ class ProposalParser(HTMLParser):
         if self.in_h2:
             self.h2_buffer += data
 
+        # R19: accumulate board-ready-a4 text
+        if self.in_board_ready:
+            self.board_ready_text.append(text)
+
         # Layer 4: accumulate paragraph text
         if self.in_p_diag:
             self.p_diag_buffer += data
 
         # R42: detect "Ce que cela implique" section and accumulate item text
-        if self.current_tab == "tab-diagnostic" and "ce que cela implique" in data.lower():
+        if self.current_tab == "tab-diagnostic" and ("ce que cela implique" in data.lower() or "réalités à intégrer" in data.lower() or "realites a integrer" in data.lower()):
             self.implique_detected = True
         if self.in_implique_li:
             self.implique_li_buffer += data
@@ -282,9 +309,10 @@ def check_layer1(parser, html_raw):
              "s7-grid" in diag_text or "s7-card" in diag_text
     results.append(("R14", "Section S7 dans onglet Diagnostic", has_s7))
 
-    # R16: Exactement 1 PRIMARY
-    primary_count = parser.data_states.count("primary")
-    results.append(("R16", f"Exactement 1 PRIMARY (trouve: {primary_count})", primary_count == 1))
+    # R16: Exactement 1 PRIMARY dans #tab-diagnostic
+    diag_states = parser.tab_data_states.get("tab-diagnostic", [])
+    primary_count = diag_states.count("primary")
+    results.append(("R16", f"Exactement 1 PRIMARY dans Diagnostic (trouve: {primary_count})", primary_count == 1))
 
     # R18: Resume decisionnel <= 6 bullets
     has_gradient = tab_has_class(parser, "tab-investissement", "highlight-gradient")
@@ -296,9 +324,24 @@ def check_layer1(parser, html_raw):
     else:
         results.append(("R18", "Resume decisionnel absent (highlight-gradient manquant)", False))
 
-    # R19: Board-ready A4 / print
+    # R19: Board-ready A4 / print + .board-ready-a4 section with required content
     has_print = parser.has_print_media and parser.has_print_button
-    results.append(("R19", "Board-ready A4 (@media print + bouton print)", has_print))
+    has_board_section = parser.has_board_ready
+    r19_ok = has_print and has_board_section
+    r19_details = []
+    if not parser.has_print_media:
+        r19_details.append("@media print absent")
+    if not parser.has_print_button:
+        r19_details.append("bouton print absent")
+    if not has_board_section:
+        r19_details.append(".board-ready-a4 absente")
+    else:
+        board_text = " ".join(parser.board_ready_text).lower()
+        if "decision attendue" not in board_text and "décision attendue" not in board_text:
+            r19_details.append("'Decision attendue' absente du board-ready")
+            r19_ok = False
+    detail = f" ({', '.join(r19_details)})" if r19_details else ""
+    results.append(("R19", f"Board-ready A4{detail}", r19_ok))
 
     # R26: CTA avec verbe strategique
     ft = full_text(parser).lower()
@@ -324,9 +367,10 @@ def check_layer1(parser, html_raw):
     has_accordion = tab_has_class(parser, "tab-investissement", "accordion")
     results.append(("R31", "Accordion FAQ dans onglet Investissement", has_accordion))
 
-    # R35: "Prochaine etape" dans Investissement
-    has_next = "prochaine" in tab_text(parser, "tab-investissement").lower() and \
-               "tape" in tab_text(parser, "tab-investissement").lower()
+    # R35: "Prochaine etape" ou "Et maintenant" dans Investissement
+    livr_text = tab_text(parser, "tab-investissement").lower()
+    has_next = ("prochaine" in livr_text and "tape" in livr_text) or \
+               "et maintenant" in livr_text
     results.append(("R35", "\"Prochaine etape\" dans Investissement", has_next))
 
     # R36: Pas de "Notre {X} :"
@@ -347,26 +391,28 @@ def check_layer1(parser, html_raw):
                            tab_has_class(parser, "tab-strategie", "pricing-grid")
     results.append(("R38", "Pricing cards absentes de l'onglet Strategie", not has_pricing_in_strat))
 
-    # R39: ETV vs trafic — only flag if ETV is directly mislabeled as visits
+    # R39: ETV vs trafic — check all tabs for mislabeling
     etv_mislabeled = False
-    strat_lower = tab_text(parser, "tab-diagnostic").lower()
-    if "etv" in strat_lower:
-        # Flag only direct mislabeling patterns: "ETV de X visites", "ETV : X visites"
-        mislabel_patterns = [
-            r'\betv\b\s*(?:de\s+)?\d[\d\s,.]*\s*visites?',
-            r'visites?\s*(?:=|:)\s*\d[\d\s,.]*\s*\betv\b',
-            r'\betv\b\s*(?:=|:)\s*\d[\d\s,.]*\s*visites?',
-        ]
-        for pat in mislabel_patterns:
-            if re.search(pat, strat_lower):
-                etv_mislabeled = True
-                break
+    mislabel_patterns = [
+        r'\betv\b\s*(?:de\s+)?\d[\d\s,.]*\s*visites?',
+        r'visites?\s*(?:=|:)\s*\d[\d\s,.]*\s*\betv\b',
+        r'\betv\b\s*(?:=|:)\s*\d[\d\s,.]*\s*visites?',
+    ]
+    for check_tab in ["tab-diagnostic", "tab-strategie", "tab-investissement", "tab-cas-clients"]:
+        check_text = tab_text(parser, check_tab).lower()
+        if "etv" in check_text:
+            for pat in mislabel_patterns:
+                if re.search(pat, check_text):
+                    etv_mislabeled = True
+                    break
+        if etv_mislabeled:
+            break
     results.append(("R39", "ETV/trafic correctement etiquetes", not etv_mislabeled))
 
     # R28a: Investissement avec .recommended + cout inaction (AVANT pricing)
     has_recommended = "recommended" in " ".join(parser.all_classes)
     livr_lower = tab_text(parser, "tab-investissement").lower()
-    cout_inaction = "inaction" in livr_lower and ("cout" in livr_lower or "coute" in livr_lower)
+    cout_inaction = "inaction" in livr_lower and ("cout" in livr_lower or "coute" in livr_lower or "coût" in livr_lower or "coûte" in livr_lower)
     # Check order: cout inaction should appear BEFORE first pricing element
     inaction_before_pricing = True
     if cout_inaction:
@@ -407,17 +453,18 @@ def check_layer1(parser, html_raw):
         else:
             # Check lever coherence: same levers in both phases
             levers = {"seo": "SEO", "sea": "SEA", "geo": "GEO", "social": "Social"}
-            # Split on Phase 2 section heading (not first mention in resume)
-            # Look for "accompagnement mensuel" first (heading-only), then
-            # fall back to "mission structurante" boundary (end of Phase 1 card)
-            p2_idx = livr_lower.find("accompagnement mensuel")
+            # Split on Phase 2 section heading with cascading search:
+            # 1. "orchestration mensuelle" (most specific Phase 2 heading)
+            # 2. "accompagnement mensuel" (alternative heading)
+            # 3. "phase 2" anchored AFTER "mission structurante" (avoids resume mentions)
+            # 4. Skip lever check if no reliable split found
+            p2_idx = livr_lower.find("orchestration mensuelle")
             if p2_idx < 0:
-                # Find the Phase 2 section: look for "phase 2" after "mission structurante"
+                p2_idx = livr_lower.find("accompagnement mensuel")
+            if p2_idx < 0:
                 p1_section = livr_lower.find("mission structurante")
-                if p1_section > 0:
-                    p2_idx = livr_lower.find("phase 2", p1_section)
-                else:
-                    p2_idx = livr_lower.rfind("phase 2")
+                if p1_section >= 0:
+                    p2_idx = livr_lower.find("phase 2", p1_section + len("mission structurante"))
             if p2_idx > 0:
                 p1_text = livr_lower[:p2_idx]
                 p2_text = livr_lower[p2_idx:]
@@ -453,12 +500,15 @@ def check_layer2(parser, html_raw):
     strat = tab_text(parser, "tab-strategie").lower()
     livr = tab_text(parser, "tab-investissement").lower()
 
-    # R20: Trajectoire 90j M1/M2/M3
-    has_m1m2m3 = all(f"m{i}" in livr or f"m{i}" in strat for i in [1, 2, 3])
+    # R20: Trajectoire 90j M1/M2/M3 (word boundary pour eviter faux positifs)
+    has_m1m2m3 = all(
+        re.search(r'\bm' + str(i) + r'\b', livr) or re.search(r'\bm' + str(i) + r'\b', strat)
+        for i in [1, 2, 3]
+    )
     results.append(("R20", "Trajectoire 90j avec M1/M2/M3", has_m1m2m3))
 
     # R22: "Ce que cela implique" (dans onglet Diagnostic)
-    has_implies = "ce que cela implique" in diag
+    has_implies = "ce que cela implique" in diag or "réalités à intégrer" in diag or "realites a integrer" in diag
     results.append(("R22", "Section \"Ce que cela implique\" presente", has_implies))
 
     # R23: "Nous recommandons"
@@ -466,15 +516,15 @@ def check_layer2(parser, html_raw):
     results.append(("R23", "\"Nous recommandons\" dans la decision", has_reco))
 
     # R24: "Decision strategique"
-    has_decision = "decision strategique" in strat or "décision stratégique" in strat
+    has_decision = "decision strategique" in strat or "décision stratégique" in strat or "notre recommandation" in strat
     results.append(("R24", "Section \"Decision strategique\" presente", has_decision))
 
     # R25: Sequence Diagnostic → S7 → Implications (tab-diagnostic) puis Decision → 90j (tab-strategie)
     sequence_markers = [
-        ("diagnostic", "diagnostic" in diag or "lecture strategique" in diag),
+        ("diagnostic", "diagnostic" in diag or "lecture strategique" in diag or "lecture stratégique" in diag or "maturité search" in diag or "maturite search" in diag),
         ("s7", "s7" in diag or tab_has_class(parser, "tab-diagnostic", "s7-grid")),
-        ("implications", "ce que cela implique" in diag),
-        ("decision", "decision strategique" in strat or "nous recommandons" in strat),
+        ("implications", "ce que cela implique" in diag or "réalités à intégrer" in diag or "realites a integrer" in diag),
+        ("decision", "decision strategique" in strat or "décision stratégique" in strat or "nous recommandons" in strat or "notre recommandation" in strat),
         ("90j", "90 jours" in strat or "90j" in strat),
     ]
     all_present = all(present for _, present in sequence_markers)

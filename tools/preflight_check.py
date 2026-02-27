@@ -24,7 +24,7 @@ from pathlib import Path
 
 PIPEDRIVE_TOKEN_PATH = os.path.expanduser("~/.pipedrive_token")
 GOOGLE_CREDS_PATH = os.path.expanduser("~/.google_service_account.json")
-CACHE_DIR = Path(".cache")
+CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache"
 STALE_THRESHOLD_DAYS = 7
 
 REQUIRED_FIELD_KEYS = {
@@ -210,19 +210,18 @@ def check_cache():
         if not CACHE_DIR.exists():
             try:
                 CACHE_DIR.mkdir(parents=True, exist_ok=True)
-                log_pass("Cache: repertoire .cache/ cree et accessible en ecriture")
             except OSError as e:
                 log_warn("Cache: impossible de creer .cache/ ({})".format(e))
                 return
-        else:
-            # Test write
-            test_file = CACHE_DIR / ".preflight_test"
-            try:
-                test_file.write_text("ok")
-                test_file.unlink()
-            except OSError as e:
-                log_warn("Cache: .cache/ existe mais non accessible en ecriture ({})".format(e))
-                return
+
+        # Test write (always, even after mkdir)
+        test_file = CACHE_DIR / ".preflight_test"
+        try:
+            test_file.write_text("ok")
+            test_file.unlink()
+        except OSError as e:
+            log_warn("Cache: .cache/ existe mais non accessible en ecriture ({})".format(e))
+            return
 
         # Count deal folders
         deals_dir = CACHE_DIR / "deals"
@@ -279,16 +278,22 @@ def main():
     if criticals == 0 and warnings == 0:
         print("Result: READY (0 critical, 0 warning)")
     elif criticals == 0:
-        print("Result: READY ({} critical, {} warning{})".format(
-            criticals, warnings, "s" if warnings > 1 else ""
+        print("Result: DEGRADED (0 critical, {} warning{})".format(
+            warnings, "s" if warnings != 1 else ""
         ))
     else:
         print("Result: NOT READY ({} critical{}, {} warning{})".format(
-            criticals, "s" if criticals > 1 else "",
-            warnings, "s" if warnings > 1 else ""
+            criticals, "s" if criticals != 1 else "",
+            warnings, "s" if warnings != 1 else ""
         ))
 
-    sys.exit(1 if criticals > 0 else 0)
+    # Exit: 0 = ready, 1 = criticals, 2 = warnings only
+    if criticals > 0:
+        sys.exit(1)
+    elif warnings > 0:
+        sys.exit(2)
+    else:
+        sys.exit(0)
 
 
 if __name__ == "__main__":

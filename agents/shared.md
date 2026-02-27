@@ -177,5 +177,5 @@ Avant de traiter une reponse API, verifier :
 14. **Zero pression commerciale** : pas de "ne manquez pas", "il est urgent de", "derniere chance", "vous ne pouvez pas vous permettre". On recommande, on ne pousse pas.
 15. **Zero dramatisation** : pas de "catastrophe", "crise", "vous perdez tout". Les donnees suffisent a creer l'urgence quand elle existe. Pas besoin de forcer le trait.
 16. **Intelligence strategique** : chaque phrase traduit l'expertise en impact business mesurable. Pas de jargon technique sans traduction business. "Votre score Lighthouse de 38 signifie que Google penalise votre site dans les classements" > "Votre score Lighthouse est de 38".
-17. **Avantages competitifs tisses** : jamais de section "Pourquoi SLASHR" standalone. Les differenciateurs sont integres apres chaque bloc de donnees, en enchainage naturel : "C'est exactement ce que notre methode X adresse".
+17. **Avantages competitifs tisses** : jamais de section "Pourquoi SLASHR" standalone. Les differenciateurs emergent des donnees elles-memes, sans transition explicite vers SLASHR (cf. `agents/prepare-pass2.md`, Etape 2.4).
 18. **Jamais de tiret cadratin** (`—`, `&mdash;`) dans aucun output (HTML, terminal, markdown). C'est un pattern IA identifiable. Remplacer par `:`, `,`, `.`, `·` ou reformuler.
