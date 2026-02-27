@@ -256,15 +256,19 @@ class LightweightPageAnalyzer(HTMLParser):
         self.cta_count = 0
         self.nav_items = 0
         self.word_count = 0
+        self.content_word_count = 0  # excluding nav/header/footer boilerplate
         self.has_meta_desc = False
 
         # Parser state
         self._in_title = False
         self._in_nav = False
+        self._in_header = False
+        self._in_footer = False
         self._in_heading = False
         self._current_heading_level = 0
         self._current_heading_text = ""
         self._current_text = []
+        self._boilerplate_text = []  # text inside nav/header/footer
         self._in_script = False
         self._in_style = False
         self._scripts_text = []
@@ -320,6 +324,10 @@ class LightweightPageAnalyzer(HTMLParser):
             self.has_form = True
         elif tag_lower == "nav":
             self._in_nav = True
+        elif tag_lower == "header":
+            self._in_header = True
+        elif tag_lower == "footer":
+            self._in_footer = True
         elif tag_lower == "li" and self._in_nav:
             self.nav_items += 1
         elif tag_lower == "script":
@@ -342,6 +350,10 @@ class LightweightPageAnalyzer(HTMLParser):
                 self._in_heading = False
         elif tag_lower == "nav":
             self._in_nav = False
+        elif tag_lower == "header":
+            self._in_header = False
+        elif tag_lower == "footer":
+            self._in_footer = False
         elif tag_lower == "script":
             self._in_script = False
         elif tag_lower == "style":
@@ -356,14 +368,17 @@ class LightweightPageAnalyzer(HTMLParser):
             self._scripts_text.append(data)
         if not self._in_script and not self._in_style:
             self._current_text.append(data)
+            if self._in_nav or self._in_header or self._in_footer:
+                self._boilerplate_text.append(data)
 
     def finalize(self):
         """Call after feeding all data."""
         text = " ".join(self._current_text)
         self.word_count = len(text.split())
 
-        # CTA detection from link text
-        # (already partially done in handle_starttag)
+        boilerplate = " ".join(self._boilerplate_text)
+        boilerplate_wc = len(boilerplate.split())
+        self.content_word_count = max(0, self.word_count - boilerplate_wc)
 
         # Extract Schema.org from JSON-LD
         for script_text in self._scripts_text:
@@ -408,7 +423,8 @@ class LightweightPageAnalyzer(HTMLParser):
             "cta_count": self.cta_count,
             "nav_items": self.nav_items,
             "word_count": self.word_count,
-            "is_spa_suspect": self.word_count < 50,
+            "content_word_count": self.content_word_count,
+            "is_spa_suspect": self.content_word_count < 50,
         }
 
 
@@ -435,6 +451,7 @@ class SitemapParser:
         self.domain = domain
         self.robots = robots
         self.urls = []
+        self.url_sources = {}  # url -> sub-sitemap filename that contained it
         self.is_index = False
         self.sub_sitemaps = []
 
@@ -503,16 +520,40 @@ class SitemapParser:
                 self.sub_sitemaps.append(loc.text.strip())
                 self.is_index = True
 
-        # URL set
+        # URL set — track source sub-sitemap for classification
+        source_filename = urlparse(source_url).path.split("/")[-1].lower()
         for url_elem in root.findall("{}url".format(ns)):
             loc = url_elem.find("{}loc".format(ns))
             if loc is not None and loc.text:
-                self.urls.append(loc.text.strip())
+                url = loc.text.strip()
+                self.urls.append(url)
+                self.url_sources[url] = source_filename
                 if len(self.urls) >= SITEMAP_URL_CAP:
                     break
 
+    # Sub-sitemap filename → category mapping (WordPress, Shopify, PrestaShop, etc.)
+    _SITEMAP_NAME_HINTS = {
+        "product": ("product", "produit", "produkt", "productos"),
+        "category": ("category", "categorie", "collection", "taxon"),
+        "blog": ("post", "blog", "article", "actualite", "news", "recette"),
+        "page": ("page",),
+    }
+
+    def _classify_by_sitemap_name(self, filename):
+        """Classify a URL based on its source sub-sitemap filename."""
+        for category, keywords in self._SITEMAP_NAME_HINTS.items():
+            if any(kw in filename for kw in keywords):
+                return category
+        return None
+
     def classify_urls(self):
-        """Classify URLs into categories by path patterns."""
+        """Classify URLs into categories.
+
+        Priority:
+          1. Sub-sitemap filename (most reliable — CMS-generated)
+          2. URL path pattern (regex on known segments)
+          3. Structural analysis (sibling count per parent path)
+        """
         categories = {
             "product": 0,
             "category": 0,
@@ -528,7 +569,15 @@ class SitemapParser:
         blog_patterns = re.compile(
             r"/(blog|actualite|actus?|news|magazine|journal|recette|conseil)[/s]?", re.I)
 
+        # Pass 1: classify by sub-sitemap name, then URL pattern
+        unclassified = []
         for url in self.urls:
+            source = self.url_sources.get(url, "")
+            cat = self._classify_by_sitemap_name(source)
+            if cat:
+                categories[cat] += 1
+                continue
+
             path = urlparse(url).path.lower()
             if product_patterns.search(path):
                 categories["product"] += 1
@@ -539,7 +588,23 @@ class SitemapParser:
             elif path in ("/", "") or path.count("/") <= 2:
                 categories["page"] += 1
             else:
-                categories["other"] += 1
+                unclassified.append(url)
+
+        # Pass 2: structural analysis on remaining unclassified URLs.
+        # If many URLs share the same parent path (>5 siblings), it's a catalog section.
+        if unclassified:
+            parent_counts = {}
+            for url in unclassified:
+                path = urlparse(url).path.rstrip("/")
+                parent = path.rsplit("/", 1)[0] if "/" in path else ""
+                parent_counts.setdefault(parent, []).append(url)
+
+            for parent, urls in parent_counts.items():
+                if len(urls) >= 5:
+                    # Catalog section (many siblings = product listing)
+                    categories["product"] += len(urls)
+                else:
+                    categories["page"] += len(urls)
 
         total = len(self.urls) or 1
         editorial = categories["blog"] + categories["page"]
@@ -562,6 +627,16 @@ class SitemapParser:
 # ---------------------------------------------------------------------------
 
 class PageSampler:
+    # Language path prefixes to exclude (avoids sampling translated duplicates)
+    _LANG_PREFIXES = re.compile(
+        r"^/(en|de|es|it|pt|nl|ja|zh|ko|ru|ar|pl|sv|da|no|fi|cs|tr|ro|hu|el|he|th|vi|uk|id|ms)"
+        r"(/|$)", re.I)
+
+    @classmethod
+    def _is_lang_variant(cls, url):
+        path = urlparse(url).path
+        return bool(cls._LANG_PREFIXES.match(path))
+
     @staticmethod
     def select(sitemap_urls, homepage_internal_links, domain, max_pages=MAX_SAMPLE_PAGES):
         """Select a diverse set of pages to sample."""
@@ -569,11 +644,13 @@ class PageSampler:
 
         # From sitemap: pick varied paths
         if sitemap_urls:
-            # Group by first path segment
+            # Group by first path segment, excluding language variants
             by_segment = {}
             for url in sitemap_urls:
                 parsed = urlparse(url)
                 if parsed.netloc and domain not in parsed.netloc:
+                    continue
+                if PageSampler._is_lang_variant(url):
                     continue
                 parts = parsed.path.strip("/").split("/")
                 segment = parts[0] if parts and parts[0] else "_root"
@@ -588,10 +665,10 @@ class PageSampler:
                 best = min(urls, key=lambda u: len(urlparse(u).path))
                 candidates.add(best)
 
-        # Fill from homepage internal links if needed
+        # Fill from homepage internal links if needed (also excluding lang variants)
         if len(candidates) < max_pages and homepage_internal_links:
             for link in homepage_internal_links:
-                if link not in candidates:
+                if link not in candidates and not PageSampler._is_lang_variant(link):
                     candidates.add(link)
                 if len(candidates) >= max_pages:
                     break
@@ -712,13 +789,14 @@ def compute_scoring_hints(homepage_data, sitemap_data, sampled_data):
             hints["s3"].append("Moins de 20 pages — site tres leger")
 
     if sampled_data:
-        word_counts = [p.get("word_count", 0) for p in sampled_data]
+        word_counts = [p.get("content_word_count", p.get("word_count", 0))
+                       for p in sampled_data]
         if word_counts:
             avg_wc = sum(word_counts) // len(word_counts)
-            hints["s3"].append("Word count moyen pages echantillonnees: {} mots".format(avg_wc))
+            hints["s3"].append("Word count moyen contenu (hors nav/header/footer): {} mots".format(avg_wc))
             thin = sum(1 for wc in word_counts if wc < 300)
             if thin > 0:
-                hints["s3"].append("Thin content: {}/{} pages < 300 mots".format(
+                hints["s3"].append("Thin content: {}/{} pages < 300 mots (contenu seul)".format(
                     thin, len(word_counts)))
 
         no_meta = sum(1 for p in sampled_data if not p.get("has_meta_description"))
@@ -849,8 +927,8 @@ class CrawlOrchestrator:
                     body, final_url, _ = PageFetcher.fetch(url, retries=0)
                     page_data, _ = analyze_page(body, final_url)
                     self.sampled_pages_data.append(page_data)
-                    log_info("  Echantillon: {} ({} mots)".format(
-                        final_url, page_data.get("word_count", 0)))
+                    log_info("  Echantillon: {} ({} mots contenu)".format(
+                        final_url, page_data.get("content_word_count", 0)))
                 except Exception as e:
                     log_warn("  Echantillon KO {}: {}".format(url, e))
                     self.errors.append("Page {} inaccessible: {}".format(url, e))
