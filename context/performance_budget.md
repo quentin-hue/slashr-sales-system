@@ -46,6 +46,15 @@ Declenche uniquement si `competitors_domain` ne remonte aucun concurrent busines
 
 **Hard stop** : si DataForSEO renvoie timeouts / erreurs 500 sur 2 tentatives, continuer avec domain_rank_overview uniquement.
 
+### Module 11 — Website Crawl (toujours actif)
+- Requetes HTTP : **max 10** (robots.txt + homepage + sitemap + 3-5 pages samples)
+- Timeout global : **60s**
+- Timeout par requete : **20s**
+- Retry : **1** sur timeout uniquement (homepage), 0 pour les pages samples
+- Hard stop : si homepage KO apres 1 retry → SKIP Module 11, le deal continue sans
+- DataForSEO : **0 appels**
+- Body cap : **500 KB** par page
+
 ### Budget /debrief
 - Pipedrive : 1 appel GET deal (status, montant, lost_reason)
 - Fichiers locaux : lecture `.cache/deals/{deal_id}/artifacts/` (pas d'API)
@@ -90,6 +99,11 @@ Arborescence :
       domain_{domain}/competitor_{domain}/domain_rank_overview.json
       domain_{domain}/domain_intersection_{competitor}.json
       domain_{domain}/search_intent.json
+    website/
+      homepage.json
+      sitemap.json
+      sampled_pages.json
+      crawl_summary.json
 
 Regle : si un fichier cache existe et a moins de 24h, le reutiliser.
 
@@ -133,6 +147,7 @@ Cacher **toutes** les reponses API, pas seulement DataForSEO :
 | Pipedrive | `deal.json`, `org.json`, `person.json`, `notes.json`, `activities.json`, `emails_*.json` |
 | Google Drive | `manifest.json`, `files/{id}.txt` |
 | DataForSEO | Tous les endpoints par domaine |
+| Website Crawl (Module 11) | `website/homepage.json`, `website/sitemap.json`, `website/sampled_pages.json`, `website/crawl_summary.json` |
 
 ### Invalidation
 

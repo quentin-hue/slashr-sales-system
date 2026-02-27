@@ -294,6 +294,36 @@ Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agen
 | `search_intent` (20 keywords prioritaires) | Intent : info, nav, commercial, transactionnel | Prioriser par intent d'achat |
 | `bulk_keyword_difficulty` (opportunites identifiees) | Difficulte de positionnement | Realisme des recos |
 
+#### Module 11 : Website Crawl (toujours actif)
+
+Crawle le site reel du prospect pour alimenter les scores S2/S3/S4 avec des donnees concretes (contenu, structure, donnees structurees).
+
+**Execution :** `python3 tools/crawl_site.py {domain} {deal_id}`
+
+**Budget :** 0 appel DataForSEO, max 10 requetes HTTP, 60s total.
+
+**Non-bloquant :** si le crawl echoue (homepage inaccessible, timeout global), le deal continue sans. L'agent note "Module 11 non disponible (site injoignable)" dans l'evidence log et continue avec les donnees DataForSEO seules.
+
+**Output :** 4 fichiers JSON dans `.cache/deals/{deal_id}/website/` :
+- `homepage.json` : titre, meta desc, OG, headings, Schema.org, liens, images, CTAs, formulaires
+- `sitemap.json` : nombre total URLs, distribution (product/blog/pages/category), ratio editorial vs catalogue
+- `sampled_pages.json` : analyse de 3-5 pages echantillonnees (word count, headings, meta, schema)
+- `crawl_summary.json` : synthese + `scoring_hints` (S2, S3, S4) — **fichier principal consomme par l'agent**
+
+**Donnees extraites et destination :**
+
+| Donnee | Source | Alimente |
+|--------|--------|----------|
+| Title, meta desc, OG tags | Homepage | SDB SEARCH_STATE |
+| H1-H6 hierarchy | Homepage + samples | S2 score |
+| Schema.org types (trouves/manquants) | Homepage + samples | S2 score, OPPORTUNITIES |
+| Sitemap total URLs + distribution | /sitemap.xml | S3 score (page count reel) |
+| Ratio editorial vs catalog | Sitemap patterns | S3 score |
+| Word count moyen | Samples | S3 score (thin content) |
+| CTA, formulaires, nav items | Homepage | S4 score |
+| Images sans alt | Homepage | OPPORTUNITIES (quick wins) |
+| Meta desc manquantes | Samples | OPPORTUNITIES (quick wins) |
+
 ---
 
 ## Etape 1.2 : Structuration
@@ -304,7 +334,7 @@ Organiser les donnees brutes en categories exploitables :
 |-----------|---------|
 | `PROSPECT_PROFILE` | Secteur, taille, maturite digitale, contexte business |
 | `PAIN_POINTS` | Douleurs identifiees, verbatims exacts, trigger ("pourquoi maintenant") |
-| `SEARCH_STATE` | Metriques actuelles : trafic organique estime (visites/mois), keywords, ETV (valeur EUR/mois), repartition marque/hors-marque. **IMPORTANT : ne pas confondre trafic (visites) et ETV (equivalent budget ads en EUR). Toujours etiqueter clairement : "trafic organique estime" (source: domain_rank_overview, champ organic_count = visites) vs "valeur trafic ETV" (source: domain_rank_overview, champ etv = EUR).** |
+| `SEARCH_STATE` | Metriques actuelles : trafic organique estime (visites/mois), keywords, ETV (valeur EUR/mois), repartition marque/hors-marque. **IMPORTANT : ne pas confondre trafic (visites) et ETV (equivalent budget ads en EUR). Toujours etiqueter clairement : "trafic organique estime" (source: domain_rank_overview, champ organic_count = visites) vs "valeur trafic ETV" (source: domain_rank_overview, champ etv = EUR).** Enrichir avec les donnees Module 11 (si disponibles) : pages sitemap (total + distribution product/blog/pages), ratio editorial vs catalogue, Schema.org types trouves + manquants recommandes, profondeur heading, images sans alt. |
 | `COMPETITIVE_GAP` | **Concurrents business** (meme secteur, meme offre) en priorite, concurrents semantiques en contexte. Metriques comparatives, keywords exclusifs, ratio de gap. Si Module 4c active : preciser la source (SERP analysis) et la methode. |
 | `INTENT_MARKET_MAP` | Segmentation intent du marche : buckets Commercial / Info captable / Info non-captable, volumes par bucket, top keywords, strategie par bucket |
 | `OPPORTUNITIES` | Quick wins (pages en top 10-20, donnees structurees manquantes), territoires non couverts par bucket intent, clusters a creer |
@@ -443,7 +473,7 @@ Voir `context/s7_search_operating_model.md` pour le detail du modele S7.
 ```
 1. LECTURE MARCHE/DEMANDE
    → Synthetiser la dynamique du marche et la demande Search
-     a partir des donnees collectees (modules 1-10)
+     a partir des donnees collectees (modules 1-11)
 
 2. DIAGNOSTIC S7 (7 forces)
    → Evaluer chaque force (0-5), avec SO WHAT apres chaque force
@@ -469,6 +499,16 @@ Voir `context/s7_search_operating_model.md` pour le detail du modele S7.
 
 > Detail des 7 forces, echelle 0-5, classification : voir `context/s7_quick_reference.md`.
 > Modele complet (diagnostic vs activation, piliers, anti-patterns) : voir `context/s7_search_operating_model.md`.
+
+#### Sources Module 11 pour le scoring S7
+
+Si le Module 11 a produit des donnees (`crawl_summary.json` disponible), l'agent DOIT les integrer dans l'evaluation des forces suivantes :
+
+| Force | Source Module 11 | Impact sur le score |
+|-------|-------------------|---------------------|
+| **S2 · Architecture & technique** | Schema.org coverage (types trouves/manquants), qualite sitemap (presence, nombre URLs), structure heading (H1 unique, profondeur), detection SPA | Un site sans Schema.org, sans sitemap, ou avec des headings defaillants tire S2 vers le bas |
+| **S3 · Contenu** | Ratio editorial vs catalogue, page count reel (sitemap), word count moyen (thin content), meta descriptions manquantes | Un site avec peu de contenu editorial, du thin content, ou des meta manquantes tire S3 vers le bas |
+| **S4 · UX / Conversion** | CTAs detectes, presence formulaire, profondeur navigation, images sans alt (accessibilite) | Un site sans CTA, sans formulaire, ou avec une navigation pauvre tire S4 vers le bas |
 
 ### Regle : SO WHAT obligatoire
 
