@@ -14,20 +14,35 @@ Collecter, structurer, analyser. Produire un document intermediaire factuellemen
 
 #### Module 1 : Pipedrive
 
-Tous les appels decrits dans `shared.md` :
+> **Execution :** via `python3 tools/batch_pipedrive.py --deal-id {deal_id}`. Ne pas appeler endpoint par endpoint.
+
+L'outil batch collecte en parallele (5 workers) :
 - Deal (titre, stage, montant, custom fields dont r1_score et decideur_level)
 - Contact (prenom, nom, email, telephone)
 - Organisation (nom, adresse, website)
 - Notes chronologiques
 - Activites (calls, meetings, taches)
-- **Emails** : threads inbox + sent filtres par deal_id → messages de chaque thread
+- **Emails** : 12 pages en parallele (6 inbox + 6 sent) → filtre par deal_id → messages des threads matches
+
+**Procedure :**
+1. Executer `python3 tools/batch_pipedrive.py --deal-id {deal_id}`
+2. Lire le JSON stdout (summary avec cache_paths)
+3. Lire les fichiers cache dans `.cache/deals/{deal_id}/pipedrive/` pour exploiter les donnees
 
 #### Module 2 : Drive
 
-- Lister les fichiers du dossier R1 (via `dossier_r1_link`)
+> **Execution :** via `python3 tools/batch_drive.py --deal-id {deal_id} --folder-url {dossier_r1_link}`. Ne pas telecharger fichier par fichier.
+
+L'outil batch liste recursivement (3 niveaux) et telecharge en parallele (3 workers) :
 - Exclure les outputs systeme (`DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`)
+- Limite : 25 fichiers max (plus recents si depassement)
 - Telecharger et typer chaque fichier (transcript, notes_closer, document_prospect, document)
 - Concatener avec marqueurs `=== SOURCE: {nom} (type: {type}) ===`
+
+**Procedure :**
+1. Extraire le folder ID depuis `dossier_r1_link`
+2. Executer `python3 tools/batch_drive.py --deal-id {deal_id} --folder-id {folder_id}`
+3. Lire le JSON stdout, puis les fichiers `.cache/deals/{deal_id}/drive/files/*.txt`
 
 #### Module 3 : SEO
 
@@ -40,6 +55,8 @@ Pour chaque domaine detecte :
 | `domain_rank_overview` | Trafic organique, nb mots-cles, ETV | Vue d'ensemble perf actuelle |
 | `ranked_keywords` (top 30) | Keywords, positions, volumes, type marque/generique | Ce sur quoi le prospect se positionne et ce qu'il rate |
 | `keywords_for_site` (top 20) | Keywords pertinents que le domaine pourrait cibler | Opportunites manquees |
+
+**Regle SDB thin (ranked_keywords) :** le SDB ne contient que le **top 10 keywords** + statistiques agregees (total keywords, split marque/hors-marque, volume total). Le dump complet reste dans le cache (`.cache/deals/{deal_id}/dataforseo/`) et dans l'evidence log. Ne jamais injecter les 30+ keywords dans le SDB.
 
 #### Module 4 : Benchmark (concurrents semantiques)
 
@@ -330,9 +347,9 @@ Crawle le site reel du prospect pour alimenter les scores S2/S3/S4 avec des donn
 
 ---
 
-### Strategie d'execution DataForSEO : batch parallele
+### Strategie d'execution DataForSEO : batch parallele (OBLIGATOIRE)
 
-Les appels DataForSEO (Modules 3, 4, 4b, 4c, 5-10) sont executes par lots via l'outil batch parallele, pas endpoint par endpoint.
+**INTERDIT d'appeler les endpoints DataForSEO un par un.** Tous les appels DataForSEO (Modules 3, 4, 4b, 4c, 5-10) DOIVENT etre executes par lots via l'outil batch parallele. L'outil gere le cache, les retries et la parallelisation (5 workers).
 
 **Outil :** `python3 tools/batch_dataforseo.py --deal-id {deal_id} --requests-file /tmp/batch_lot{N}.json`
 

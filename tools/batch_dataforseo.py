@@ -41,6 +41,7 @@ Dependencies: stdlib only (Python 3.9+)
 """
 
 import base64
+import gzip
 import json
 import os
 import sys
@@ -65,6 +66,9 @@ CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache"
 # Cache freshness thresholds (hours)
 CACHE_FRESH = 24
 CACHE_STALE = 24 * 7  # 7 days
+
+# Gzip compression threshold (bytes of JSON)
+GZIP_THRESHOLD = 100_000  # 100 KB
 
 # ---------------------------------------------------------------------------
 # Logging (stderr only — stdout reserved for JSON output)
@@ -143,18 +147,35 @@ class CacheManager:
     def __init__(self, deal_id):
         self.base_dir = CACHE_DIR / "deals" / str(deal_id) / "dataforseo"
 
+    def _resolve_path(self, cache_path):
+        """Resolve cache path, checking .json.gz variant first."""
+        full_path = self.base_dir / cache_path
+        gz_path = Path(str(full_path) + ".gz")
+        if gz_path.exists():
+            return gz_path
+        return full_path
+
+    def _read_cache_content(self, full_path):
+        """Read cache file, handling gzip transparently."""
+        if str(full_path).endswith(".gz"):
+            with gzip.open(full_path, "rt", encoding="utf-8") as f:
+                return f.read()
+        else:
+            return full_path.read_text(encoding="utf-8")
+
     def check(self, cache_path):
         """Check cache status for a given path.
 
         Returns: ("fresh"|"stale"|"expired"|"miss", full_path)
+        Handles both .json and .json.gz transparently.
         """
-        full_path = self.base_dir / cache_path
+        full_path = self._resolve_path(cache_path)
         if not full_path.exists():
-            return "miss", full_path
+            return "miss", self.base_dir / cache_path
 
         # Validate: non-empty, parseable JSON, status_code 20000
         try:
-            content = full_path.read_text(encoding="utf-8")
+            content = self._read_cache_content(full_path)
             if not content.strip():
                 log_warn("Cache vide: {}".format(cache_path))
                 return "miss", full_path
@@ -200,12 +221,26 @@ class CacheManager:
             return "expired", full_path
 
     def write(self, cache_path, data):
-        """Write API response to cache."""
+        """Write API response to cache. Gzip if > GZIP_THRESHOLD."""
         full_path = self.base_dir / cache_path
         full_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(full_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        return str(full_path)
+
+        json_str = json.dumps(data, ensure_ascii=False, indent=2)
+
+        if len(json_str.encode("utf-8")) > GZIP_THRESHOLD:
+            gz_path = Path(str(full_path) + ".gz")
+            with gzip.open(gz_path, "wt", encoding="utf-8") as f:
+                f.write(json_str)
+            # Remove uncompressed version if it exists
+            if full_path.exists():
+                full_path.unlink()
+            log_info("Cache gzip: {} ({:.0f} KB)".format(
+                cache_path, len(json_str) / 1024))
+            return str(gz_path)
+        else:
+            with open(full_path, "w", encoding="utf-8") as f:
+                f.write(json_str)
+            return str(full_path)
 
 
 # ---------------------------------------------------------------------------

@@ -17,11 +17,17 @@ Ce doc est la source de verite des limites d'execution.
 ## 2) Budgets d'appels (par execution /prepare)
 
 ### Pipedrive
+
+> **Execution recommandee :** via `tools/batch_pipedrive.py` en parallele. Voir section **3c) Batch Pipedrive Tool**.
+
 - Pagination threads : **max 6 pages** (6 * 50 = 300 threads inbox + 300 sent)
 - Messages : **max 10 derniers** par thread retenu
 - Body complet : seulement si snippet insuffisant (**max 3 bodies**)
 
 ### Google Drive
+
+> **Execution recommandee :** via `tools/batch_drive.py` en parallele. Voir section **3d) Batch Drive Tool**.
+
 - Recursion dossiers : **max 3 niveaux** (deja en place)
 - Taille par fichier export : **max 100 000 caracteres** (deja en place)
 - Nombre max de fichiers telecharges : **25** (au-dela : prendre les 25 plus recents + log warning)
@@ -121,6 +127,64 @@ python3 tools/batch_dataforseo.py --deal-id 560 --requests '[...]'
 
 ---
 
+## 3c) Batch Pipedrive Tool
+
+**Outil :** `tools/batch_pipedrive.py` — collecte toutes les donnees Pipedrive d'un deal en parallele.
+
+### Parametres
+
+| Parametre | Valeur |
+|-----------|--------|
+| Workers paralleles | 5 (ThreadPoolExecutor) |
+| Timeout par requete | 20s |
+| Pagination emails | 6 pages inbox + 6 pages sent (12 requetes paralleles) |
+| Messages par thread | 10 max |
+| Cache | < 24h reuse, 24h-7j warn+reuse, > 7j refetch |
+
+### Pipeline
+
+```
+Phase 1: GET deal (bloquant, besoin de person_id + org_id)
+Phase 2: parallele (person + org + notes + activities + 12 pages emails)
+Phase 3: filtre threads par deal_id
+Phase 4: parallele (messages des threads matches)
+```
+
+### Invocation
+
+```bash
+python3 tools/batch_pipedrive.py --deal-id 560
+```
+
+**Gain :** 12 pages emails en parallele au lieu de sequentiel → **120s → 30-40s**.
+
+---
+
+## 3d) Batch Drive Tool
+
+**Outil :** `tools/batch_drive.py` — listing recursif + telechargements paralleles des fichiers Drive.
+
+### Parametres
+
+| Parametre | Valeur |
+|-----------|--------|
+| Workers paralleles | 3 (ThreadPoolExecutor) |
+| Recursion dossiers | 3 niveaux max |
+| Fichiers max | 25 (plus recents) |
+| Taille max par fichier | 100 000 caracteres |
+| Cache | < 24h reuse, 24h-7j warn+reuse, > 7j refetch |
+
+### Invocation
+
+```bash
+python3 tools/batch_drive.py --deal-id 560 --folder-id XXXXX
+python3 tools/batch_drive.py --deal-id 560 --folder-url "https://drive.google.com/..."
+```
+
+**Gain :** 12 fichiers en parallele (3 workers) → **100s → 30s** sur collections fraiches.
+
+---
+
 ## 4) Cache (obligatoire)
 
 Stocker toutes les reponses API sous `.cache/` pour replay et debug.
@@ -156,6 +220,10 @@ Arborescence :
       crawl_summary.json
 
 Regle : si un fichier cache existe et a moins de 24h, le reutiliser.
+
+### Compression gzip (DataForSEO)
+
+Les reponses DataForSEO > 100 KB sont automatiquement compressees en `.json.gz` par `batch_dataforseo.py`. La decompression est transparente a la lecture (le tool gere les deux formats). Gain typique : `ranked_keywords` 241 KB → ~35 KB (7x).
 
 ---
 
