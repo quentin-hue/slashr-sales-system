@@ -6,7 +6,26 @@ disable-model-invocation: true
 
 # PREPARE — Proposition HTML interactive
 
-**Deal ID :** $ARGUMENTS
+**Arguments :** $ARGUMENTS
+
+## Parsing des arguments
+
+Extraire du `$ARGUMENTS` :
+- `deal_id` : le premier token numerique
+- `--fast` : flag optionnel (re-run rapide, skip Pass 1 si SDB frais)
+- `--fresh` : flag optionnel (force re-collecte, ignore le cache)
+
+Exemples : `/prepare 560`, `/prepare 560 --fast`, `/prepare 560 --fresh`
+
+## Mode --fast (re-run rapide)
+
+Si `--fast` est present :
+1. Verifier l'existence de `.cache/deals/{deal_id}/artifacts/SDB.md`
+2. Lire la premiere ligne du SDB — chercher `GENERATED_AT: {ISO timestamp}`
+3. Si SDB existe ET age < 2h → **SKIP Pass 1 entiere**, passer directement a Pass 2
+4. Si SDB absent OU age >= 2h → ignorer `--fast`, executer normalement (afficher : "SDB absent ou trop ancien ({age}), execution normale.")
+
+Le mode `--fast` est concu pour les re-runs : "refais la presentation avec un angle different", "change le scenario recommande", etc. Les donnees sont encore fraiches, seul l'angle narratif change.
 
 ## Prerequis
 
@@ -31,31 +50,25 @@ Si les checks passent → continuer avec les etapes suivantes.
 
 ## Checklist de lecture (OBLIGATOIRE — tout lire AVANT de commencer)
 
-L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1. Ne pas lire un fichier = ne pas connaitre la regle = generer un output non conforme.
+L'agent DOIT lire ces fichiers avant de commencer. Ne pas lire un fichier = ne pas connaitre la regle = generer un output non conforme.
 
 | # | Fichier | Contenu | Quand |
 |---|---------|---------|-------|
-| 1 | `agents/shared.md` | Preambule partage : role, sources, 19 regles | Avant tout |
+| 1 | `agents/prepare-context.md` | **Bundle compact** : role, regles, positionnement, S7, pricing, output contract, validation, performance budget | Avant tout |
 | 2 | `agents/prepare.md` | Routeur — architecture 3 passes | Avant tout |
-| 3 | `context/positioning.md` | Positionnement, tonalite, structure offre | Avant tout |
-| 4 | `context/s7_search_operating_model.md` | Modele S7 : scoring, classification, anti-patterns | Avant tout |
-| 5 | `context/pricing_rules.md` | Calcul budgets Phase 1 & Phase 2 (interne) | Avant tout |
-| 6 | `context/output_contract.md` | Frontiere client/interne (visible vs masque) | Avant tout |
-| 6b | `context/validation_rules.md` | 45 regles de validation (4 layers) | Avant tout |
-| 6c | `context/s7_quick_reference.md` | Digest compact S7 (7 forces, echelle, classification) | Avant tout |
-| 6d | `context/performance_budget.md` | Budget tokens, cache, fraicheur | Avant tout |
-| 7 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
-| 8 | `context/case_studies.md` | Bibliotheque cas clients | Avant Pass 2 |
-| 9 | `templates/proposal-kit.html` | Kit CSS + 30 composants par role narratif | Avant Pass 3 |
-| 10 | `context/proposal-kit-reference.md` | Aide-memoire classes CSS condensees | Avant Pass 3 |
+| 3 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
+| 4 | `context/case_studies.md` | Bibliotheque cas clients | Avant Pass 2 |
+| 5 | `context/proposal-kit-reference.md` | Aide-memoire classes CSS condensees | Avant Pass 3 |
+
+> Les fichiers originaux (shared.md, positioning.md, s7_search_operating_model.md, pricing_rules.md, output_contract.md, validation_rules.md, s7_quick_reference.md, performance_budget.md) restent la reference complete si un detail manque dans le bundle.
 
 ## Etapes
 
-1. Lis les fichiers 1-6d de la checklist ci-dessus
+1. Lis les fichiers 1-2 de la checklist ci-dessus
 2. Execute les 3 passes dans l'ordre :
-   - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + S7 + SDB)
-   - **Pass 2** : lis fichiers 7-8, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet 3 (Investissement).
-   - **Pass 3** : lis fichiers 9-10, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`)
+   - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + analyse strategique + S7 + SDB). En mode `--fast`, skip cette passe si SDB frais (< 2h).
+   - **Pass 2** : lis fichiers 3-4, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet 3 (Investissement).
+   - **Pass 3** : lis fichier 5, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`)
 
 ## Collecte Pipedrive
 
@@ -91,6 +104,8 @@ Le champ `dossier_r1_link` du deal contient l'URL du dossier. Extraire le folder
 
 - Field keys Pipedrive : `context/pipedrive_reference.md`
 - Kit composants (30 composants, catalogue par role narratif) : `templates/proposal-kit.html`
+- Squelette HTML (CSS + JS + nav, boilerplate) : `templates/proposal-skeleton.html`
+- Assembleur HTML : `tools/build_proposal.py`
 - Design system : `context/design_system.md`
 - Positionnement + structure offre : `context/positioning.md`
 - Modele S7 (diagnostic vs activation) : `context/s7_search_operating_model.md`

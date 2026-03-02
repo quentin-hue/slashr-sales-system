@@ -32,7 +32,48 @@ Inclure un encart final (court) :
 - 3 manquants + acces minimal
 
 
-Prendre le NBP et generer le HTML final. Choisir les composants visuels du kit pour chaque section. Assurer le rythme visuel. **Ne PAS modifier le contenu strategique du NBP**, seulement le mettre en forme.
+Prendre le NBP et generer le **contenu HTML des 4 onglets**. Choisir les composants visuels du kit pour chaque section. Assurer le rythme visuel. **Ne PAS modifier le contenu strategique du NBP**, seulement le mettre en forme.
+
+### Architecture skeleton + tabs
+
+Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skeleton.html`. L'agent ne le reproduit PAS. Il genere uniquement le **contenu de chaque onglet** (le HTML entre les balises `<div class="tab-content">` et `</div>`).
+
+**Workflow :**
+1. Generer 4 fichiers HTML fragments (un par onglet) :
+   - `/tmp/tab_diagnostic.html`
+   - `/tmp/tab_strategie.html`
+   - `/tmp/tab_investissement.html`
+   - `/tmp/tab_cas_clients.html`
+2. Si le simulateur ROI a du JS custom, ecrire `/tmp/extra_roi_sim.js`
+3. Assembler avec `tools/build_proposal.py` :
+   ```bash
+   python3 tools/build_proposal.py \
+     --deal-id {deal_id} \
+     --title "Analyse strategique · {entreprise}" \
+     --diagnostic /tmp/tab_diagnostic.html \
+     --strategie /tmp/tab_strategie.html \
+     --investissement /tmp/tab_investissement.html \
+     --cas-clients /tmp/tab_cas_clients.html \
+     --extra-js /tmp/extra_roi_sim.js \
+     --output .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html
+   ```
+
+**Ce que l'agent genere (le vrai travail creatif) :**
+- Le hero (dans tab_diagnostic, sera deplace par le JS)
+- Toutes les sections/slides de chaque onglet
+- Les composants visuels (bar charts, KPIs, tables, highlight boxes, etc.)
+- Le contenu textuel sur-mesure
+- Le simulateur ROI custom (JS dans extra_roi_sim.js)
+
+**Ce que le skeleton fournit (boilerplate identique a chaque proposition) :**
+- Le `<head>` (charset, viewport, fonts)
+- Tout le CSS (~2000 lignes, variables, composants, responsive, print)
+- La nav fixe (4 onglets)
+- La structure `<div class="main">` + `<div class="tab-content">`
+- Le footer
+- Le JS core (tab switching, bar chart animation, accordion, ticker, donut animation)
+
+> **Fallback :** si le skeleton n'est pas disponible, l'agent genere le HTML complet comme avant (lire `templates/proposal-kit.html`).
 
 ---
 
@@ -259,9 +300,9 @@ Appliquer les 4 layers dans l'ordre :
 
 ## Etape 3.6 : Validation automatisee (post-generation)
 
-Apres la generation du HTML et avant l'upload Drive :
+Apres l'assemblage du HTML (via `build_proposal.py`) et avant l'upload Drive :
 
-1. Ecrire le HTML dans `.cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html`
+1. Verifier que le fichier `.cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html` existe (produit par `build_proposal.py`)
 2. Executer le script de validation :
    ```bash
    python3 tools/validate_proposal.py .cache/deals/{deal_id}/artifacts/PROPOSAL-*.html

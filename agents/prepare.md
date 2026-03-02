@@ -24,7 +24,7 @@ Pass 3 : DESIGN ORCHESTRATOR        → HTML final (le seul output)
 
 **Pourquoi 3 passes ?** Separer les preoccupations. La Pass 1 ne pense pas a la narration. La Pass 2 ne pense pas aux composants visuels. La Pass 3 ne reinvente pas la strategie. Chaque passe fait une chose et la fait bien.
 
-> **Note :** La Pass 1 inclut le pipeline S7 (Etape 1.4) qui produit un `strategy_plan_internal.md` avant le SDB. Le S7 est l'etape de priorisation strategique, il alimente directement le SDB.
+> **Note :** La Pass 1 inclut l'analyse strategique + S7 (Etape 1.3, bloc unifie) qui produit un `strategy_plan_internal.md` avant le SDB. Le S7 est l'etape de priorisation strategique, il alimente directement le SDB.
 
 ---
 
@@ -66,8 +66,10 @@ Lire et executer chaque passe dans l'ordre :
 ### Pass 1 : DATA & STRATEGY ENGINE
 **Fichier :** `agents/prepare-pass1.md`
 
-Collecte (10 modules) + structuration + analyse strategique + diagnostic S7.
+Collecte (10 modules) + structuration + analyse strategique + S7 (bloc unifie, Etape 1.3).
 Outputs internes : `strategy_plan_internal.md` puis **Structured Data Brief (SDB)**.
+
+> **Mode `--fast`** : si le flag `--fast` est present et qu'un SDB frais (< 2h) existe, cette passe est entierement skippee. L'agent passe directement a la Pass 2 avec le SDB existant.
 
 ### Pass 2 : NARRATIVE ARCHITECT
 **Fichier :** `agents/prepare-pass2.md`
@@ -85,7 +87,7 @@ python3 tools/validate_proposal.py --nbp .cache/deals/{deal_id}/artifacts/NBP.md
 ### Pass 3 : DESIGN ORCHESTRATOR
 **Fichier :** `agents/prepare-pass3.md`
 
-Generation HTML a partir du NBP. Mapping composants par role narratif, regles de composition, validation.
+Generation du contenu HTML des 4 onglets a partir du NBP. Mapping composants par role narratif, regles de composition. Assemblage final via `tools/build_proposal.py` (squelette + contenu). Validation.
 Output : **HTML final** (le seul livrable visible) + **INTERNAL-S7** (diagnostic interne).
 
 ---

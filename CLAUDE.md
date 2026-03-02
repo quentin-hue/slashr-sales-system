@@ -52,17 +52,20 @@ slashr-sales-system/
 │   └── debrief/SKILL.md             ← Skill /debrief (retroaction won/lost)
 ├── agents/
 │   ├── shared.md                      ← Preambule partage (role, sources, regles)
+│   ├── prepare-context.md             ← Bundle compact specs /prepare (remplace 8 lectures)
 │   ├── qualify.md                     ← Processus scoring
 │   ├── prepare.md                     ← Routeur proposition (3 passes sequentielles)
-│   ├── prepare-pass1.md               ← Pass 1 : Data & Strategy Engine (collecte + S7 + SDB)
+│   ├── prepare-pass1.md               ← Pass 1 : Data & Strategy Engine (collecte + analyse+S7 unifie + SDB)
 │   ├── prepare-pass2.md               ← Pass 2 : Narrative Architect (arc + NBP)
 │   ├── prepare-pass2-onglet4.md       ← Pass 2 : Spec detaillee onglet Investissement
-│   └── prepare-pass3.md               ← Pass 3 : Design Orchestrator (HTML + validation)
+│   └── prepare-pass3.md               ← Pass 3 : Design Orchestrator (tabs HTML + assemblage + validation)
 ├── tools/
 │   ├── validate_proposal.py          ← Validation HTML automatisee (45 regles, 4 layers)
+│   ├── build_proposal.py             ← Assembleur HTML (squelette + 4 onglets → PROPOSAL final)
 │   └── preflight_check.py            ← Verification dependances API pre-run
 ├── templates/
-│   └── proposal-kit.html             ← Kit CSS + 30 composants par role narratif (reference, pas template)
+│   ├── proposal-kit.html             ← Kit CSS + 30 composants par role narratif (reference, pas template)
+│   └── proposal-skeleton.html        ← Squelette HTML (CSS + JS + nav + structure, boilerplate fixe)
 ├── context/
 │   ├── pipedrive_reference.md         ← IDs Pipedrive
 │   ├── sales_process.md               ← Closer handbook

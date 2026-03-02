@@ -547,11 +547,13 @@ Ecrire :
 - `.cache/deals/{deal_id}/evidence/evidence_log.md`
 
 
-## Etape 1.3 : Analyse strategique
+## Etape 1.3 : Analyse strategique + S7 Engine (bloc unifie)
 
-L'agent repond a ces questions :
+> **Bloc unifie.** L'analyse strategique et le diagnostic S7 sont executes en une seule passe de raisonnement sur les memes donnees. L'agent produit une analyse plus coherente (pas de risque de contradiction entre diagnostic et S7) et plus rapide (une seule passe).
 
-### Comprendre le prospect
+L'agent repond a ces questions, puis enchaine directement sur le scoring S7 et la strategie, sans relire les donnees.
+
+### A. Comprendre le prospect
 
 - **Qui est-ce ?** Secteur, taille, maturite digitale, contexte business
 - **Quelle est la douleur specifique ?** Pas "ameliorer le SEO" → la vraie douleur business (CA, parts de marche, dependance au paid, retard sur un concurrent)
@@ -560,24 +562,67 @@ L'agent repond a ces questions :
 - **Quel est le ton des echanges ?** Formel/informel, reactif/lent, technique/business
 - **Qui est le decideur ?** Profil (DG, CMO, responsable digital, fondateur), ses preoccupations (ROI ? image ? rapidite ?)
 
-### Diagnostiquer la situation
+### B. Diagnostiquer la situation + S7 (en un seul raisonnement)
 
-- **Quel est l'etat Search actuel ?** Forces (marque ? positions existantes ?) et faiblesses (gap hors-marque ? zero contenu ?)
-- **Quel est le gap concurrentiel ?** Qui capte le trafic, combien, sur quels termes
+Pendant le diagnostic, l'agent evalue simultanement les 7 forces S7. Le S7 est un outil interne de priorisation strategique, jamais expose au prospect.
+
+> Echelle 0-5, classification, anchors quantitatifs : voir `agents/prepare-context.md` section 3.
+> Modele complet (diagnostic vs activation, piliers, anti-patterns) : voir `context/s7_search_operating_model.md`.
+
+**Questions diagnostic :**
+- **Quel est l'etat Search actuel ?** Forces et faiblesses → alimente S1-S5
+- **Quel est le gap concurrentiel ?** Qui capte le trafic, combien, sur quels termes → alimente S1, S3, S5
 - **Quel est le cout de l'inaction ?** Chiffre en visites, en euros, en mois de retard. **Sans dramatiser, juste les donnees**
-- **Y a-t-il des quick wins ?** Pages deja en top 10-20 a optimiser, donnees structurees manquantes, contenus faciles a creer
+- **Y a-t-il des quick wins ?** Pages en top 10-20, donnees structurees manquantes, contenus faciles → alimente S2, S3
 
-### Construire la strategie
+**Scoring S7 (7 forces, chacune 0-5 avec SO WHAT) :**
+
+Pour chaque force, l'agent produit :
+1. Score (0-5 avec anchor quantitatif)
+2. Evidence (1 data point minimum)
+3. Confidence (High/Med/Low)
+4. SO WHAT (1-2 phrases, implication business, pas description)
+5. Projection 6-12M (si donnees disponibles)
+6. Interdependance (quelle force conditionne/est conditionnee)
+
+**Sources Module 11 pour le scoring S7 :**
+Si le Module 11 a produit des donnees (`crawl_summary.json` disponible), les integrer :
+
+| Force | Source Module 11 | Impact sur le score |
+|-------|-------------------|---------------------|
+| **S2 · Architecture & technique** | Schema.org coverage, qualite sitemap, structure heading, detection SPA | Sans Schema.org/sitemap/headings → S2 vers le bas |
+| **S3 · Contenu** | Ratio editorial vs catalogue, page count, word count moyen, meta manquantes | Peu de contenu editorial, thin content, meta manquantes → S3 vers le bas |
+| **S4 · UX / Conversion** | CTAs, formulaires, profondeur navigation, images sans alt | Sans CTA/formulaire, navigation pauvre → S4 vers le bas |
+
+> Rappel : 5 formulations interdites, test de substitution (cf. `agents/prepare-context.md` section 3).
+
+**Synthese S7 (post-grille, obligatoire) :**
+Produire : CONTRAINTE PRINCIPALE + LEVIERS PRIORITAIRES + INSIGHT CENTRAL + PROJECTIONS.
+
+### C. Construire la strategie + ROI + trajectoires
+
+Enchaine directement depuis le S7, sans relire les donnees.
 
 - **Quel perimetre ?** SEO seul ? Search global ? Quels modules ont produit des donnees exploitables ?
-- **Quelle structure d'offre ?** (cf. `context/positioning.md` > Structure de l'offre)
+- **Quelle structure d'offre ?** (cf. `agents/prepare-context.md` section 2, Structure de l'offre)
   - Phase 1 Audit strategique : quels livrables specifiques pour ce deal ?
   - Phase 2 Accompagnement structure : quels piliers activer ? A quelle intensite ?
   - Quel scenario recommander ? (Essentiel / Performance / Croissance)
 - **Quelles phases de recommandation ?** Actions concretes par phase, adaptees au contexte
 - **Quel ROI ?** Calcul conservateur avec les donnees reelles du prospect (voir methode ROI dans prepare-pass3.md)
 
-### Selectionner les cas clients
+**Classification S7 (max 3 leviers actifs) :**
+- PRIMARY : S{X} → justification 2-3 phrases data-first
+- SECONDARY : S{Y} + S{Z} → 1 phrase chacun
+- DEFERRED-SEQUENTIAL : forces a activer quand condition remplie
+- DEFERRED-SCOPE : forces hors perimetre
+
+**Trajectoire 90 jours :** M1 cadrage, M2 quick wins, M3 activation (alignee PRIMARY uniquement, 3 etapes max).
+**Trajectoire 6 mois :** M4-M6 montee en puissance, piliers actives, objectifs intermediaires.
+
+**ROI conservateur :** chaque hypothese avec intervalle (borne basse conservatrice / borne haute optimiste realiste). ROI affiche = borne basse.
+
+### D. Selectionner les cas clients
 
 - Consulter `context/case_studies.md`
 - Matcher 2-4 cas selon secteur (priorite 1), problematique (priorite 2), taille (priorite 3)
@@ -587,11 +632,9 @@ L'agent repond a ces questions :
   - `sdb_juxtaposition` : quel bloc du SDB mettre en regard (pour que Pass 2 construise le parallele)
   - `angle` : l'angle de presentation adapte a CE prospect (1-2 phrases)
 
-### Pre-grouper les blocs SDB par argument narratif
+### E. Pre-grouper les blocs SDB par argument narratif
 
-Avant de rediger le SDB, l'agent identifie 3-5 "arguments decideurs" : les constats que le prospect doit comprendre pour prendre sa decision. Chaque argument est alimente par 1+ blocs de donnees.
-
-L'agent produit les `NARRATIVE_HINTS` dans le SDB : une liste de 3-5 suggestions de regroupement. Ces hints sont des suggestions pour Pass 2, pas des contraintes.
+L'agent identifie 3-5 "arguments decideurs" et produit les `NARRATIVE_HINTS` dans le SDB.
 
 **Exemples de regroupements typiques :**
 - `SEARCH_STATE` + `COMPETITIVE_GAP` → "Le prospect est en retard mesurable"
@@ -600,71 +643,6 @@ L'agent produit les `NARRATIVE_HINTS` dans le SDB : une liste de 3-5 suggestions
 - `ROI` + `STRATEGIE_RECOMMANDEE` → "Le plan et son rendement"
 
 Les differenciateurs SLASHR emergent des donnees elles-memes dans la proposition (cf. `agents/prepare-pass2.md`, Etape 2.4). Pass 1 ne produit pas de "transition opportunities" explicites.
-
----
-
-## Etape 1.4 : S7 Strategy Engine (Internal Only)
-
-Pipeline obligatoire. L'agent execute cette sequence **avant** de produire le SDB. Le S7 est un outil interne de priorisation strategique, jamais expose au prospect.
-
-Voir `context/s7_search_operating_model.md` pour le detail du modele S7.
-
-### Sequence obligatoire
-
-```
-1. LECTURE MARCHE/DEMANDE
-   → Synthetiser la dynamique du marche et la demande Search
-     a partir des donnees collectees (modules 1-11)
-
-2. DIAGNOSTIC S7 (7 forces)
-   → Evaluer chaque force (0-5), avec SO WHAT apres chaque force
-
-3. INSIGHT CENTRAL
-   → Produire 1 phrase unique qui capture la contrainte/opportunite
-     principale du deal
-
-4. ARBITRAGE : PRIORISER / DIFFERER / IGNORER
-   → Classer chaque levier strategique dans une de ces 3 categories
-
-5. TRAJECTOIRE 90 JOURS (Phase 1 Audit)
-   → Actions concretes priorisees pour les 3 premiers mois
-
-6. TRAJECTOIRE 6 MOIS (Phase 2 Accompagnement)
-   → Montee en puissance, piliers actives, objectifs intermediaires
-
-7. ROI CONSERVATEUR
-   → Calcul avec hypotheses explicites et sources identifiees
-```
-
-### Les 7 forces S7
-
-> Detail des 7 forces, echelle 0-5, classification : voir `context/s7_quick_reference.md`.
-> Modele complet (diagnostic vs activation, piliers, anti-patterns) : voir `context/s7_search_operating_model.md`.
-
-#### Sources Module 11 pour le scoring S7
-
-Si le Module 11 a produit des donnees (`crawl_summary.json` disponible), l'agent DOIT les integrer dans l'evaluation des forces suivantes :
-
-| Force | Source Module 11 | Impact sur le score |
-|-------|-------------------|---------------------|
-| **S2 · Architecture & technique** | Schema.org coverage (types trouves/manquants), qualite sitemap (presence, nombre URLs), structure heading (H1 unique, profondeur), detection SPA | Un site sans Schema.org, sans sitemap, ou avec des headings defaillants tire S2 vers le bas |
-| **S3 · Contenu** | Ratio editorial vs catalogue, page count reel (sitemap), word count moyen (thin content), meta descriptions manquantes | Un site avec peu de contenu editorial, du thin content, ou des meta manquantes tire S3 vers le bas |
-| **S4 · UX / Conversion** | CTAs detectes, presence formulaire, profondeur navigation, images sans alt (accessibilite) | Un site sans CTA, sans formulaire, ou avec une navigation pauvre tire S4 vers le bas |
-
-### Regle : SO WHAT obligatoire
-
-Apres l'evaluation de **chaque** force S7, l'agent produit un "SO WHAT" de 1-2 phrases maximum, oriente business :
-- Pas de description, une **implication** pour le deal
-- Pas de jargon technique brut, traduit en impact concret
-- Relie a une decision (prioriser, differer, ignorer)
-
-> Rappel : 5 formulations interdites, regles de classification, test de substitution (cf. `context/s7_quick_reference.md`).
-
-### Synthese obligatoire (post-grille)
-
-> Format de synthese : voir `context/s7_quick_reference.md` > "Synthese obligatoire".
-
-Produire systematiquement le bloc CONTRAINTE PRINCIPALE + LEVIERS PRIORITAIRES + INSIGHT CENTRAL. C'est le pivot du diagnostic, il alimente directement le SDB et l'onglet Strategie.
 
 ### Output interne : `strategy_plan_internal.md`
 
@@ -791,6 +769,7 @@ EVIDENCE LOG:
 L'agent DOIT ecrire explicitement ce document interne avant de passer a la Pass 2 (`agents/prepare-pass2.md`).
 
 ```
+GENERATED_AT: {ISO 8601 timestamp, ex: 2026-03-02T14:30:00}
 === STRUCTURED DATA BRIEF ===
 
 PROSPECT: {nom} | {secteur} | {taille} | {maturite digitale}
