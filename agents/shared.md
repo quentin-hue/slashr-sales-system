@@ -82,6 +82,8 @@ Le champ `dossier_r1_link` contient l'URL du dossier Drive. Extraire le folder I
 
 > **Note Google Sheets** : l'export CSV ne retourne que le premier onglet. Si le fichier a plusieurs onglets, les onglets supplementaires sont ignores. C'est suffisant pour la collecte, le contenu cle est generalement dans le premier onglet.
 
+> **Note Google Docs** : les Google Docs multi-onglets sont supportes. Le batch Drive utilise l'API Docs pour extraire tous les onglets, concatenes avec des marqueurs `=== ONGLET: {titre} ===`. Si l'API Docs echoue, fallback sur l'export text/plain (premier onglet seulement).
+
 #### Typage par prefixe
 
 - `transcript*` → transcript

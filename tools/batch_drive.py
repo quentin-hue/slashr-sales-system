@@ -50,6 +50,7 @@ MAX_FILES = 25
 MAX_RECURSION = 3
 MAX_FILE_SIZE = 100_000  # characters
 DRIVE_API_BASE = "https://www.googleapis.com/drive/v3"
+DOCS_API_BASE = "https://docs.googleapis.com/v1"
 
 CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache"
 CACHE_FRESHNESS_HOURS = 24
@@ -250,6 +251,50 @@ class DriveClient:
             "{}/files/{}".format(DRIVE_API_BASE, file_id), params)
         return raw
 
+    def get_document(self, document_id):
+        """Get a Google Doc with all tabs via Docs API."""
+        params = {"includeTabsContent": "true"}
+        raw = self._request(
+            "{}/documents/{}".format(DOCS_API_BASE, document_id), params
+        )
+        return json.loads(raw.decode("utf-8"))
+
+
+# ---------------------------------------------------------------------------
+# Docs API text extraction
+# ---------------------------------------------------------------------------
+
+
+def extract_text_from_content(content_elements):
+    """Extract plain text from Docs API content elements (recursive for tables)."""
+    text = ""
+    for element in content_elements:
+        if "paragraph" in element:
+            for pe in element["paragraph"].get("elements", []):
+                text += pe.get("textRun", {}).get("content", "")
+        elif "table" in element:
+            for row in element["table"].get("tableRows", []):
+                for cell in row.get("tableCells", []):
+                    text += extract_text_from_content(cell.get("content", []))
+    return text
+
+
+def extract_text_from_doc(doc_data):
+    """Extract text from all tabs of a Google Doc."""
+    tabs = doc_data.get("tabs", [])
+    if not tabs:
+        return ""
+    if len(tabs) == 1:
+        body = tabs[0].get("documentTab", {}).get("body", {})
+        return extract_text_from_content(body.get("content", []))
+    parts = []
+    for tab in tabs:
+        title = tab.get("tabProperties", {}).get("title", "Sans titre")
+        body = tab.get("documentTab", {}).get("body", {})
+        text = extract_text_from_content(body.get("content", []))
+        parts.append("=== ONGLET: {} ===\n{}".format(title, text))
+    return "\n\n".join(parts)
+
 
 # ---------------------------------------------------------------------------
 # BatchOrchestrator
@@ -415,8 +460,21 @@ class BatchOrchestrator:
         # Download/export
         try:
             if method == "export":
-                raw = self.client.export_file(file_id, export_mime)
-                content = raw.decode("utf-8", errors="replace")
+                if mime == "application/vnd.google-apps.document":
+                    # Google Docs : Docs API pour multi-onglets, fallback Drive export
+                    try:
+                        doc_data = self.client.get_document(file_id)
+                        content = extract_text_from_doc(doc_data)
+                        tab_count = len(doc_data.get("tabs", []))
+                        if tab_count > 1:
+                            log_info("Multi-onglet ({} tabs): {}".format(tab_count, name))
+                    except DriveError:
+                        log_warn("Docs API fallback export: {}".format(name))
+                        raw = self.client.export_file(file_id, export_mime)
+                        content = raw.decode("utf-8", errors="replace")
+                else:
+                    raw = self.client.export_file(file_id, export_mime)
+                    content = raw.decode("utf-8", errors="replace")
 
                 # Size check
                 if len(content) > MAX_FILE_SIZE:
