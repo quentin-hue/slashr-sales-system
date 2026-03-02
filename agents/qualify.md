@@ -31,10 +31,18 @@ Pas de ranked_keywords, pas de competitors. C'est juste pour alimenter le score 
 
 ## Detection des domaines
 
-1. Website de l'organisation Pipedrive
-2. Domaine(s) mentionnes dans les fichiers sources (transcript, notes, brief)
-3. Domaine(s) mentionnes dans les emails Pipedrive
+**Ordre de priorite :**
+1. Website de l'organisation Pipedrive (si renseigne)
+2. URL(s) du site prospect dans les fichiers sources (transcript, notes, brief)
+3. Domaine(s) dans les emails Pipedrive
 4. Si aucun domaine trouve → demander au closer
+
+**Disambiguation (si plusieurs domaines) :**
+- Le domaine principal = le site actif du prospect (celui ou il opere/vend aujourd'hui)
+- Ne pas confondre avec un ancien domaine, un domaine de migration cible, ou un domaine d'entite soeur
+- Si ambiguite → demander au closer avant de lancer les appels DataForSEO
+
+**Affichage terminal :** `Domaine principal : {domaine}` + `Domaines secondaires : {liste}` (si existent)
 
 ---
 

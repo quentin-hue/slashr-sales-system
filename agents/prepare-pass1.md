@@ -44,6 +44,38 @@ L'outil batch liste recursivement (3 niveaux) et telecharge en parallele (3 work
 2. Executer `python3 tools/batch_drive.py --deal-id {deal_id} --folder-id {folder_id}`
 3. Lire le JSON stdout, puis les fichiers `.cache/deals/{deal_id}/drive/files/*.txt`
 
+#### Etape 1.1b : Cartographie des domaines (OBLIGATOIRE avant Module 3)
+
+Apres collecte Pipedrive (Module 1) et Drive (Module 2), l'agent identifie et classe TOUS les domaines mentionnes dans les sources. Cette etape est un prerequis au Module 3 : aucun appel DataForSEO ne peut etre lance sans domaine principal confirme.
+
+**Etape 1 : Extraire tous les domaines**
+Scanner toutes les sources collectees :
+- Champ `website` de l'organisation Pipedrive
+- URLs mentionnees dans les notes R1, complement-info-client, brief, transcript
+- Domaines mentionnes dans les emails Pipedrive
+- Domaines dans le titre du deal ou les custom fields
+
+**Etape 2 : Classifier chaque domaine**
+
+| Role | Definition | Exemple |
+|------|-----------|---------|
+| **PRINCIPAL** | Le site actif ou le prospect opere et vend aujourd'hui. C'est le domaine a analyser. | biscuiterie-mere-poulard.com |
+| **SECONDAIRE** | Ancien domaine, domaine cible de migration, ou domaine d'une entite liee | biscuiterie-de-kerlann.com |
+| **TIERS** | Domaine d'une autre entite du groupe, sans rapport direct avec le perimetre | lamerepoulard.com (hotel) |
+
+**Regles de classification :**
+1. Le domaine PRINCIPAL est celui mentionne comme **le site du prospect** dans les notes R1 ou le brief, pas un ancien domaine ni un domaine cible de migration future
+2. Si une URL complete (`https://www.example.com/`) est donnee dans les notes R1 ou le brief comme reference du site actuel, c'est le PRINCIPAL
+3. En cas de migration, le domaine SOURCE actuel (celui qui a le trafic aujourd'hui) est PRINCIPAL, le domaine CIBLE est SECONDAIRE, sauf si les notes indiquent que le domaine CIBLE est deja le site actif
+4. Le champ `website` de l'org Pipedrive prime sur les autres sources SAUF si les notes R1 contredisent explicitement
+
+**Etape 3 : Confirmer**
+- Si 1 seul domaine detecte → PRINCIPAL par defaut
+- Si 2+ domaines detectes ET le PRINCIPAL est clair (regle 1-4) → continuer
+- Si 2+ domaines detectes ET ambiguite → **STOP : demander au closer** "Quel est le site actif du prospect ? Domaines detectes : {liste avec contexte de chaque mention}"
+
+**Output :** Ajouter les champs `DOMAINE_PRINCIPAL` et `DOMAINES_SECONDAIRES` au debut du SDB (voir template SDB ci-dessous).
+
 #### Module 3 : SEO
 
 > **Execution :** via batch (voir "Strategie d'execution DataForSEO : batch parallele" ci-dessous). Ne pas appeler endpoint par endpoint.
@@ -363,7 +395,7 @@ Crawle le site reel du prospect pour alimenter les scores S2/S3/S4 avec des donn
 
 | Lot | Contenu | Requetes typiques | Dependance |
 |-----|---------|-------------------|------------|
-| **1** | Modules 3 + 4 debut | 4 (`domain_rank_overview` + `ranked_keywords` + `keywords_for_site` + `competitors_domain`) | Domaine prospect connu |
+| **1** | Modules 3 + 4 debut | 4 (`domain_rank_overview` + `ranked_keywords` + `keywords_for_site` + `competitors_domain`) | Domaine PRINCIPAL confirme (Etape 1.1b) |
 | **2** | Module 4 benchmark | 4 (3x `domain_rank_overview` concurrents + 1x `domain_intersection`) | Lot 1 → concurrents identifies |
 | **3** | Module 4c SERPs (conditionnel) | 5-8 (`serp_organic_live_regular` par keyword) | Lot 1 → aucun concurrent business |
 | **4** | Module 4c deep-dive (conditionnel) | 11 (5x `domain_rank_overview` + 5x `ranked_keywords` + 1x `domain_intersection`) | Lot 3 → concurrents niche identifies |
@@ -714,6 +746,8 @@ L'agent DOIT ecrire explicitement ce document interne avant de passer a la Pass 
 === STRUCTURED DATA BRIEF ===
 
 PROSPECT: {nom} | {secteur} | {taille} | {maturite digitale}
+DOMAINE_PRINCIPAL: {domaine} [src: {source de detection, ex: "drive, Prise de note R1 ligne 9"}]
+DOMAINES_SECONDAIRES: {domaine1} ({role: migration cible / ancien / entite liee}), {domaine2} ({role}) | ou AUCUN
 DECIDEUR: {prenom} {nom} | {role} | {preoccupation principale}
 DECIDEUR_LEVEL: {DECIDEUR | INFLUENCEUR | OPERATIONNEL} [src: pipedrive, decideur_level]
 DOULEUR: {1 phrase} | Verbatim: "{citation exacte}"
