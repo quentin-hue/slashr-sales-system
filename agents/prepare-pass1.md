@@ -90,6 +90,54 @@ Pour chaque domaine detecte :
 
 **Regle SDB thin (ranked_keywords) :** le SDB ne contient que le **top 10 keywords** + statistiques agregees (total keywords, split marque/hors-marque, volume total). Le dump complet reste dans le cache (`.cache/deals/{deal_id}/dataforseo/`) et dans l'evidence log. Ne jamais injecter les 30+ keywords dans le SDB.
 
+#### Module 3b : GSC (Google Search Console) — conditionnel
+
+**Activer si :** le prospect a accorde l'acces Google Search Console au service account SLASHR.
+
+**Detection automatique (apres Etape 1.1b) :** appeler le MCP tool `search_analytics` avec :
+- `siteUrl` : `sc-domain:{DOMAINE_PRINCIPAL}` (si echec, essayer `https://www.{DOMAINE_PRINCIPAL}/`)
+- `startDate` / `endDate` : 7 derniers jours
+- `rowLimit` : 1
+
+Si donnees retournees → acces confirme, continuer la collecte.
+Si erreur (403, 404, vide) → pas d'acces GSC. Ecrire `GSC_ACCESS: NO` dans le SDB et continuer sans ce module.
+
+**Collecte (3 appels MCP, sequentiels) :**
+
+| Requete | Parametres | Objectif |
+|---------|-----------|----------|
+| Performance globale | dimensions: aucune, 90 derniers jours | Clics, impressions, CTR, position moyenne reels |
+| Top queries | dimensions: `query`, rowLimit: 500, detectQuickWins: true | Split marque/hors-marque exact, quick wins |
+| Top pages | dimensions: `page`, rowLimit: 100 | Pages performantes, contenu a optimiser |
+
+**Periode :** 90 derniers jours (endDate = hier, startDate = J-90).
+
+**Quick wins GSC :** requetes en position 5-20, impressions > 100/mois, CTR < 5%. Ce sont des gains rapides : le site est deja visible, il suffit d'optimiser le titre/meta pour augmenter le CTR.
+
+**Cache :** ecrire les reponses brutes dans `.cache/deals/{deal_id}/gsc/` :
+- `performance.json` (requete 1)
+- `queries.json` (requete 2)
+- `pages.json` (requete 3)
+
+**Regle SDB thin :** le SDB contient les metriques agregees + top 10 queries + top 10 pages. Le dump complet reste dans le cache.
+
+**Regle de priorite (GSC > DataForSEO) :** quand les deux sources sont disponibles :
+
+| Metrique | Source prioritaire | Raison |
+|----------|-------------------|--------|
+| Trafic organique (visites/mois) | **GSC** (clics reels) | Mesure directe vs estimation |
+| Split marque / hors-marque | **GSC** (par requete) | Exact vs heuristique |
+| Positions moyennes | **GSC** (ponderee) | Moyenne reelle vs snapshot |
+| CTR | **GSC** (exclusif) | DataForSEO ne fournit pas de CTR |
+| Volumes de recherche (marche) | **DataForSEO** (exclusif) | GSC ne montre que les impressions du site |
+| Concurrents | **DataForSEO** (exclusif) | GSC ne couvre pas la concurrence |
+| Keyword difficulty | **DataForSEO** (exclusif) | Absent de GSC |
+| ETV | **DataForSEO** (exclusif) | Proxy budget Ads, absent de GSC |
+
+**Impact sourcing :** donnees GSC → `[src: gsc]`. Source affichee dans le HTML : "Source: Google Search Console" (au lieu de "Source: DataForSEO").
+
+**Impact ROI :** si GSC disponible, l'hypothese H1 (trafic actuel) passe de `Confidence: Medium` a `Confidence: High` (donnee mesuree directement).
+
 #### Module 4 : Benchmark (concurrents semantiques)
 
 > **Execution :** via batch (voir "Strategie d'execution DataForSEO : batch parallele" ci-dessous). Ne pas appeler endpoint par endpoint.
@@ -755,18 +803,28 @@ TRIGGER: {pourquoi maintenant}
 TON: {formel/informel} | {reactif/lent} | {technique/business}
 PERIMETRE_SLASHR: {SEO seul / SEO + GEO / Search global / etc.} [src: pipedrive, notes R1]
 REFONTE: {OUI | NON} | {si OUI: timeline, ex: "go mars, MEL juin 2026"} | {CMS prevu si connu}
-MODULES_ACTIFS: [{liste des modules 1-10 actives, ex: 1-Pipedrive, 2-Drive, 3-SEO, 4-Benchmark, 4b-Intent, 4c-Niche, 5-GEO, 8-Technique, 9-Saisonnalite}]
+MODULES_ACTIFS: [{liste des modules actives, ex: 1-Pipedrive, 2-Drive, 3-SEO, 3b-GSC, 4-Benchmark, 4b-Intent, 4c-Niche, 5-GEO, 8-Technique, 9-Saisonnalite}]
 
 SEA_SIGNAL: {EXPLICIT | DETECTED | ABSENT} [src: etape post-Module 6]
 SEA_POSTURE: {PILOTE | CONSEIL | HORS_PERIMETRE}
 SEA_BRIEF_REQUESTS: [{liste des demandes paid identifiees dans le brief, ex: "Google Ads Search", "Shopping", "3 scenarios budget", "estimation ROAS"}] (vide si ABSENT)
 
+GSC_ACCESS: {YES | NO}
+
 SEARCH STATE:
-- Trafic organique: {X} visites/mois (source: DataForSEO)
+- Trafic organique: {X} visites/mois [src: dataforseo, domain_rank_overview]
 - Keywords: {Y} total ({Z} marque / {W} hors-marque)
 - ETV: {V} EUR
 - Forces: {liste}
 - Faiblesses: {liste}
+- GSC (si Module 3b actif):
+  - Clics: {X} /mois (90j) [src: gsc]
+  - Impressions: {Y} /mois (90j) [src: gsc]
+  - CTR moyen: {Z}% [src: gsc]
+  - Position moyenne: {P} [src: gsc]
+  - Split: {M}% marque / {HM}% hors-marque [src: gsc] (PRIORITAIRE sur DataForSEO)
+  - Quick wins: {N} requetes (pos 5-20, impressions > 100, CTR < 5%) [src: gsc]
+  - Top 10 queries hors-marque: [{requete, clics, impressions, CTR, position}] [src: gsc]
 
 COMPETITIVE GAP:
 - Concurrent #1: {nom} → {trafic} visites/mois (x{ratio} vs prospect)

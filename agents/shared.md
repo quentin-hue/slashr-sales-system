@@ -103,6 +103,16 @@ Credentials : `~/.google_service_account.json` (voir `setup/google_drive_setup.m
 
 38 endpoints MCP disponibles. Chaque mode specifie quels endpoints utiliser.
 
+### Google Search Console (performance search reelle) — conditionnel
+
+Donnees first-party verifiees par Google. Disponible uniquement si le prospect a accorde l'acces GSC au service account SLASHR (`slashr-drive-access@slashr-sales-syteme.iam.gserviceaccount.com`).
+
+MCP tool : `search_analytics` (serveur `gsc`). Fournit clics, impressions, CTR, positions reels.
+
+**Quand GSC est disponible, ses donnees priment sur DataForSEO** pour le trafic, le split marque/hors-marque et les positions. DataForSEO reste la source exclusive pour les volumes de marche, les concurrents et la difficulte des mots-cles.
+
+Credentials : meme service account que Drive (`~/.google_service_account.json`).
+
 ### Priorite des sources pour l'extraction
 
 ```

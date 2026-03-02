@@ -64,6 +64,13 @@ Declenche uniquement si `competitors_domain` ne remonte aucun concurrent busines
 - DataForSEO : **0 appels**
 - Body cap : **500 KB** par page
 
+### Google Search Console (Module 3b, conditionnel)
+- Appel probe (detection acces) : 1 appel MCP (rowLimit 1, 7 jours)
+- Si acces confirme : 3 appels MCP (performance, queries, pages)
+- Total : 1-4 appels MCP, 0 appels DataForSEO
+- Timeout : 15s par appel
+- Cache : meme politique que DataForSEO (< 24h reuse, 24h-7j warn+reuse, > 7j refetch)
+
 ### Budget /debrief
 - Pipedrive : 1 appel GET deal (status, montant, lost_reason)
 - Fichiers locaux : lecture `.cache/deals/{deal_id}/artifacts/` (pas d'API)
@@ -266,6 +273,7 @@ Cacher **toutes** les reponses API, pas seulement DataForSEO :
 | Google Drive | `manifest.json`, `files/{id}.txt` |
 | DataForSEO | Tous les endpoints par domaine |
 | Website Crawl (Module 11) | `website/homepage.json`, `website/sitemap.json`, `website/sampled_pages.json`, `website/crawl_summary.json` |
+| Google Search Console (Module 3b) | `gsc/performance.json`, `gsc/queries.json`, `gsc/pages.json` |
 
 ### Invalidation
 
