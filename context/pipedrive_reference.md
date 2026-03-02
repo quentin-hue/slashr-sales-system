@@ -1,4 +1,4 @@
-# Pipedrive Reference — SLASHR v9.0
+# Pipedrive Reference — SLASHR v11.0
 
 > **Source unique** pour tous les IDs Pipedrive. Les autres fichiers y font reference.
 
@@ -29,6 +29,8 @@ Pipeline SLASHR (id: `1`)
 | decideur_level | `56` | `0b4c7e8cc10ced7badf65b34dac6254bd10a0179` | enum | DECIDEUR (95), INFLUENCEUR (96), OPERATIONNEL (97) |
 | r2_pack_link | `55` | `4b84e7bfe1a6b330318fc7a0d208e2faedf2530a` | varchar | URL Google Doc |
 | dossier_r1_link | `58` | `1fd2ec1073fa60e11fb59bddfec7a2f6656c4b0c` | varchar | URL Google Drive |
+| domaine_principal | `59` | `d76190f6be0ca288aeac6107f2fb5d784d0f5e28` | varchar | Domaine principal du prospect (ex: biscuiterie-mere-poulard.com) |
+| qualification_status | `60` | `52fe480f70327c9f1a06bb113cfeabe398ae8f9c` | enum | GO (103), CONDITIONNEL (104), NURTURE (105) |
 
 > **Champs supprimes en v9 :** `r1_verdict` (53), `r1_fiabilite` (54), `relance_status` (57) — le verdict se deduit du score (>=60 GO, 40-59 CONDITIONNEL, <40 NURTURE).
 
@@ -39,16 +41,6 @@ Pipeline SLASHR (id: `1`)
 | Champ | Key hash |
 |-------|----------|
 | URL du site internet | `9d5262c3746211eb06e2b06ab13d5162c22e5734` |
-| URL LinkedIn | `aab8c270ae5c2b3a342c7f6241f546ef2dc09e79` |
-
----
-
-## Activity Types
-
-| Activite | ID | Key |
-|----------|----|-----|
-| Valider R1 Done | `9` | `valider_r1_done` |
-| Pre-R2 Checklist | `10` | `pre_r2_checklist` |
 
 ---
 

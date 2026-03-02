@@ -3,7 +3,7 @@
 SLASHR Preflight Check — Validation des dependances API avant execution.
 
 Verifie :
-1. Pipedrive field keys (5 champs custom obligatoires)
+1. Pipedrive field keys (champs custom obligatoires)
 2. Pipedrive enum IDs (decideur_level mapping)
 3. Google Drive access (credentials + listing)
 4. Cache (.cache/) : ecriture + fraicheur
@@ -33,6 +33,8 @@ REQUIRED_FIELD_KEYS = {
     "4b84e7bfe1a6b330318fc7a0d208e2faedf2530a": "r2_pack_link",
     "1fd2ec1073fa60e11fb59bddfec7a2f6656c4b0c": "dossier_r1_link",
     "f8c51fb60ea43a34c56998b6ad9bf946234149a1": "leviers_pressentis",
+    "d76190f6be0ca288aeac6107f2fb5d784d0f5e28": "domaine_principal",
+    "52fe480f70327c9f1a06bb113cfeabe398ae8f9c": "qualification_status",
 }
 
 REQUIRED_ENUM_IDS = {

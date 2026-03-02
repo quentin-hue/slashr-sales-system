@@ -16,7 +16,7 @@ disable-model-invocation: true
    - **Collecte** : Pipedrive (deal, contact, org, notes, activites, emails) + Drive (fichiers du dossier R1) + SEO light (`domain_rank_overview` par domaine)
    - **Scoring** : 5 criteres (Douleur x6, Urgence x5, Budget x4, Decideur x3, Fit x2), max 100
    - **Affichage** : format terminal structure (voir qualify.md)
-   - **Update Pipedrive** : r1_score + decideur_level
+   - **Update Pipedrive** : r1_score + decideur_level + qualification_status + leviers_pressentis + domaine_principal
 
 ## Collecte Pipedrive
 

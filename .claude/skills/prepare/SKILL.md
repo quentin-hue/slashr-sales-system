@@ -35,7 +35,7 @@ L'agent DOIT lire ces fichiers dans l'ordre ci-dessous avant de lancer la Pass 1
 
 | # | Fichier | Contenu | Quand |
 |---|---------|---------|-------|
-| 1 | `agents/shared.md` | Preambule partage : role, sources, 18 regles | Avant tout |
+| 1 | `agents/shared.md` | Preambule partage : role, sources, 19 regles | Avant tout |
 | 2 | `agents/prepare.md` | Routeur — architecture 3 passes | Avant tout |
 | 3 | `context/positioning.md` | Positionnement, tonalite, structure offre | Avant tout |
 | 4 | `context/s7_search_operating_model.md` | Modele S7 : scoring, classification, anti-patterns | Avant tout |
@@ -106,6 +106,8 @@ Le champ `dossier_r1_link` du deal contient l'URL du dossier. Extraire le folder
 | `INTERNAL-S7-{YYYYMMDD}-{entreprise-slug}.md` | **Interne seulement** | Diagnostic S7 complet (scores, classification PRIMARY/SECONDARY/DEFERRED, synthese, trajectoires, ROI, resume decisionnel, evidence log) |
 
 > Le prefixe `INTERNAL-` garantit que le fichier est exclu des outputs prospect (cf. Module 2 : exclure `DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`).
+
+Apres upload, mettre a jour `r2_pack_link` dans Pipedrive avec l'URL Drive du fichier PROPOSAL (cf. `context/pipedrive_reference.md`).
 
 Message de fin :
 ```

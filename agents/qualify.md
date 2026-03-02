@@ -94,7 +94,8 @@ Appliquer ces règles **avant** le total :
 ═══════════════════════════════════════════════
 
   Contact     {Prenom Nom} · {Role}
-  Domaine(s)  {domaine1}, {domaine2}
+  Domaine principal  {domaine}
+  Domaines secondaires  {liste} (si existent)
   Stage       {stage Pipedrive}
 
 ───────────────────────────────────────────────
@@ -141,6 +142,9 @@ Appliquer ces règles **avant** le total :
 Apres le scoring, mettre a jour automatiquement :
 - `r1_score` → valeur 0-100
 - `decideur_level` → DECIDEUR (95) | INFLUENCEUR (96) | OPERATIONNEL (97)
+- `qualification_status` → GO (103) | CONDITIONNEL (104) | NURTURE (105) (deduit du score : >=60 GO, 40-59 CONDITIONNEL, <40 NURTURE)
+- `leviers_pressentis` → set multi-valeurs (SEO, GEO, SEA/SMA, DATA, UX, DEV, Autres) identifies dans l'analyse
+- `domaine_principal` → domaine principal identifie (cf. section "Detection des domaines")
 
 Reference field keys : `context/pipedrive_reference.md`
 

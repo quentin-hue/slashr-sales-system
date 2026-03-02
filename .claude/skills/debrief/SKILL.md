@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 ## Prerequis
 
-1. Lis `agents/shared.md` (preambule partage, 18 regles)
+1. Lis `agents/shared.md` (preambule partage, 19 regles)
 
 ## Usage
 
@@ -33,6 +33,9 @@ Extraire :
 - **r1_score** (field `e529595ef908cdf5851df4355bbce866f322fcae`)
 - **Montant** : `value`
 - **Lost reason** : `lost_reason` (si lost)
+- **r2_pack_link** (field `4b84e7bfe1a6b330318fc7a0d208e2faedf2530a`) : lien vers la proposition (si existe)
+- **qualification_status** : GO / CONDITIONNEL / NURTURE (si renseigne)
+- **domaine_principal** : domaine analyse (si renseigne)
 
 ### 2. Collecter les artefacts existants
 
