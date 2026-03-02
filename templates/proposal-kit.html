@@ -351,6 +351,10 @@
       margin-bottom: 10px;
     }
 
+    /* Hero compact : masquer subtitle + scroll sur onglets 2-4 */
+    .hero--compact .hero-subtitle,
+    .hero--compact .hero-scroll { display: none; }
+
     .hero-date {
       font-size: 14px;
       color: var(--text-30);
@@ -3475,9 +3479,15 @@
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       tab.classList.add('active');
-      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-      const activeTab = document.querySelector('.tab-content.active');
-      if (activeTab) activeTab.scrollTop = 0;
+      const target = document.getElementById('tab-' + tab.dataset.tab);
+      target.classList.add('active');
+      // Hero persistant : deplacer dans l'onglet actif
+      const hero = document.querySelector('.hero');
+      if (hero) {
+        target.prepend(hero);
+        hero.classList.toggle('hero--compact', tab.dataset.tab !== 'diagnostic');
+      }
+      target.scrollTop = 0;
     });
   });
 

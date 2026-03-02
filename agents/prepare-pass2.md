@@ -271,7 +271,7 @@ Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'e
 
 ### Onglet 2 : Strategie ("Voici ce qu'on recommande")
 
-Header compact (pas de hero full-screen). L'onglet ouvre directement sur la decision strategique.
+Le hero est partage entre les 4 onglets (deplacement JS automatique). Sur cet onglet le hero est compact (tag + h1 + date, sans subtitle ni scroll indicator). L'onglet ouvre sur le hero compact, puis la decision strategique.
 
 **Regle de deduplication tab-header vs highlight-gradient :**
 Le tab-header de l'onglet Strategie donne le TITRE de la recommandation (phrase courte, max 8 mots, ex: "Integrer le SEO dans la refonte").
@@ -296,11 +296,11 @@ Les deux NE DOIVENT PAS etre la meme phrase.
 
 **Spec complete : `agents/prepare-pass2-onglet4.md`.**
 
-Header compact (pas de hero full-screen). Contient : resume decisionnel (6 bullets), board-ready A4, pricing cards Phase 1/Phase 2 avec pont S7, sous-bloc unique "cout de l'inaction", methode S7, FAQ accordion, prochaine etape, CTA final.
+Contient : resume decisionnel (6 bullets), board-ready A4, pricing cards Phase 1/Phase 2 avec pont S7, sous-bloc unique "cout de l'inaction", methode S7, FAQ accordion, prochaine etape, CTA final.
 
 ### Onglet 4 : Cas clients ("Resultats observes sur des profils comparables")
 
-Pas de hero, pas de header compact. Ouvre directement sur une slide intro + les cas selectionnes.
+Le hero est partage entre les 4 onglets (compact : tag + h1 + date, sans subtitle). Apres le hero, ouvre sur une slide intro + les cas selectionnes.
 
 **Structure :**
 1. **Slide intro** : H2 "Resultats observes sur des profils comparables" + section-intro qui cadre la pertinence par rapport au prospect.

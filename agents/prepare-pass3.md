@@ -188,6 +188,8 @@ Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
 
 ### Composants specifiques par onglet
 
+**Hero partage (4 onglets)** : le hero full-screen est defini une seule fois dans l'onglet Diagnostic. Le JS de navigation le deplace automatiquement dans l'onglet actif. Sur l'onglet Diagnostic le hero est complet (subtitle + scroll indicator). Sur les onglets 2-4 le hero passe en mode compact (`.hero--compact` : tag + h1 + date visibles, subtitle et scroll indicator masques). Ne PAS dupliquer le hero dans chaque `tab-content`. Ne PAS utiliser de `.tab-header` compact pour les onglets 2-4.
+
 **Onglet Diagnostic** : composition libre, hero full screen (catalogue complet)
 - Hero complet (blobs, contexte client tisse) → sections libres → **section S7** → deferred → implications
 - Tout composant du catalogue est utilisable
@@ -197,17 +199,16 @@ Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
 - **Pas de transitions SLASHR** : la proposition ne mentionne jamais SLASHR ou ses services dans l'onglet Diagnostic, sauf dans la section S7 (methode d'analyse). Le SO WHAT de chaque section suffit comme conclusion.
 - **Fusion constat/benchmark** : si le constat et le benchmark utilisent les memes KPIs, les fusionner en 1 seule slide (KPI large → contexte → bar chart → table optionnelle → SO WHAT)
 
-**Onglet Strategie** : header compact, pas de hero full-screen
-- Remplacer le hero full-screen par un **header compact** : `.tab-header` avec section-label + h2 + section-intro. Pas de blobs.
-- **Deduplication tab-header vs highlight-gradient** : le tab-header donne le TITRE de la recommandation (max 8 mots), le highlight-gradient "Nous recommandons" DEVELOPPE avec les donnees cles. Les deux NE DOIVENT PAS etre la meme phrase.
+**Onglet Strategie** : hero partage + decision strategique
+- Le hero se deplace automatiquement en tete d'onglet (JS). Premiere section apres le hero : decision strategique.
 - **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet
 - **Timeline 90 jours** : M1/M2/M3
 - **ROI Simulator** : hypotheses sourcees + sliders + calcul JS + 3 scenarios
 - Highlight box violet pour la conviction ROI
 - **CTA intermediaire leger** (lien texte, pas full-width)
 
-**Onglet Investissement** : header compact, pas de hero full-screen
-- Meme format **header compact** (`.tab-header`)
+**Onglet Investissement** : hero partage + resume decisionnel
+- Le hero se deplace automatiquement en tete d'onglet (JS). Premiere section apres le hero : resume decisionnel.
 - **Resume decisionnel** : Highlight box (gradient) avec 6 bullets (max 120 chars chacun), en haut de l'onglet, c'est la premiere chose que le decideur voit
 - **Board-ready A4** : bouton "Version imprimable" qui declenche `window.print()`, page `@media print` avec resume + radar S7 + ROI + pricing
 - **Cout de l'inaction (AVANT le pricing)** : composant s7-insight avec 3 impacts business chiffres. Place AVANT les pricing cards pour l'ancrage psychologique : le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
@@ -218,7 +219,7 @@ Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
 - **Prochaine etape** : bloc 3 lignes (decision, date, action)
 - **CTA full-width** (unique CTA principal de la proposition)
 
-**Onglet Cas clients** : pas de hero, pas de header compact. Ouvre directement sur le contenu.
+**Onglet Cas clients** : hero partage + slide intro
 - **Slide intro** : H2 "Resultats observes sur des profils comparables" + section-intro qui cadre la pertinence par rapport au prospect
 - **1 slide par cas client** (2-4 cas), chaque slide contient :
   - Micro-benchmark en tete (`.micro-benchmark`) : prospect → cas (avant) → cas (apres)
@@ -269,6 +270,7 @@ Apres la generation du HTML et avant l'upload Drive :
 4. **Si WARN** (Layer 2) : corriger si possible, sinon documenter dans le terminal pourquoi le WARN est acceptable.
 5. **Layer 3** (checklist) : parcourir mentalement chaque item. Corriger si un item echoue.
 6. Une fois valide : uploader dans Drive.
+7. **Mettre a jour `r2_pack_link` dans Pipedrive** avec l'URL du fichier PROPOSAL uploade (cf. `context/pipedrive_reference.md` pour le field key).
 
 > Le script `tools/validate_proposal.py` automatise les Layers 1 et 2. Il ne remplace pas la revue semantique (Layer 3).
 
