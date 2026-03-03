@@ -100,9 +100,36 @@ Pour chaque domaine detecte :
 - `rowLimit` : 1
 
 Si donnees retournees → acces confirme, continuer la collecte.
-Si erreur (403, 404, vide) → pas d'acces GSC. Ecrire `GSC_ACCESS: NO` dans le SDB et continuer sans ce module.
+Si erreur (403, 404, vide) → pas d'acces API GSC. Tenter le **fallback fichier Drive** ci-dessous avant d'abandonner.
 
-**Collecte (3 appels MCP, sequentiels) :**
+**Fallback fichier Drive (si pas d'acces API GSC) :**
+
+Chercher dans les fichiers Drive deja collectes (Module 2) un export GSC :
+- Nom de fichier contenant "GSC" ou "Search Console" (insensible a la casse)
+- OU fichier Google Sheets avec onglets nommes "query" ou "page"
+
+Si un fichier correspond → parser les onglets CSV (separes par marqueurs `=== ONGLET: ... ===`) :
+- **Onglet "query"** (ou nom similaire : "Queries", "Requetes") : colonnes `query`, `clicks`, `impressions`, `ctr`, `position`
+- **Onglet "page"** (ou nom similaire : "Pages", "URL") : colonnes `page`, `clicks`, `impressions`, `ctr`, `position`
+- **Onglet "query/page"** (optionnel, ou "Query+Page") : combinaisons query+page
+
+Calculer les memes metriques que l'API :
+- Clics / impressions / CTR / position agreges (somme pour clics/impressions, moyenne ponderee par impressions pour CTR et position)
+- Split marque / hors-marque (requetes contenant le nom de marque du prospect → marque, le reste → hors-marque)
+- Quick wins : position 5-20, impressions > 100/mois (ajuster au prorata si export ≠ 12 mois), CTR < 5%
+- Top 10 queries hors-marque (par clics decroissants)
+- Top 10 pages (par clics decroissants)
+
+**Si trouve :**
+- Ecrire `GSC_ACCESS: YES (EXPORT)` dans le SDB
+- Taguer les donnees `[src: gsc-export]` (au lieu de `[src: gsc]`)
+- Les regles de priorite GSC > DataForSEO s'appliquent identiquement
+- Impact ROI : `Confidence: Medium-High` (donnees reelles mais potentiellement moins fraiches que l'API)
+- Source affichee dans le HTML : "Source: Google Search Console (export)"
+
+**Si aucun fichier trouve :** Ecrire `GSC_ACCESS: NO` dans le SDB et continuer sans ce module.
+
+**Collecte API (3 appels MCP, sequentiels) — si acces API confirme :**
 
 | Requete | Parametres | Objectif |
 |---------|-----------|----------|
@@ -287,6 +314,35 @@ INTENT MARKET MAP:
 - La section "Territoires de contenu" dans l'onglet Strategie (Pass 2)
 - Le chiffrage du marche dans les titres et le benchmark (seul le "marche captable" est cite, jamais le brut non-captable)
 
+#### Module 4d : SERP Features Analysis (toujours actif)
+
+Apres les Modules 4/4b/4c, analyser les SERP features presentes sur les keywords commerciaux du prospect. Ces donnees sont deja collectees par les SERPs du Module 4c (`serp_organic_live_regular`) ou du Module 5 (`serp_organic_live_advanced`). Ce module ne fait pas de nouveaux appels API, il exploite les donnees existantes.
+
+**Etape 1 :** Pour chaque resultat SERP deja en cache, extraire les features presentes :
+- `popular_products` / `shopping` : Google Shopping
+- `local_pack` : resultats locaux
+- `featured_snippet` : position 0
+- `ai_overview` : AI Overview
+- `video` : resultats video
+- `images` : bloc images
+- `people_also_ask` : PAA
+
+**Etape 2 :** Agreger par feature :
+```
+SERP_FEATURES_MAP:
+- {feature}: {N}/{total} queries, volume total {X}/mois, {%} intent commercial
+  Prospect present: OUI/NON
+  Concurrents presents: {qui}
+```
+
+**Etape 3 :** Signaler les opportunites Shopping :
+- Si `popular_products` OU `shopping` sur 3+ queries commerciales ET prospect absent → `SHOPPING_SIGNAL = YES`
+- Sinon → `SHOPPING_SIGNAL = NO`
+
+**Etape 4 :** Integrer dans le SDB (bloc `SERP_FEATURES_MAP` + `SHOPPING_SIGNAL`).
+
+**Budget API :** 0 appel supplementaire (reutilise les SERPs des modules precedents).
+
 ---
 
 ### Modules conditionnels
@@ -325,18 +381,24 @@ Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agen
 |--------|-----------|---------------------|----------------|
 | **EXPLICIT** | Le brief demande du paid | Brief/transcript/emails mentionne : Google Ads, Meta Ads, campagnes paid, budget pub, ROAS, Shopping, Performance Max, retargeting, display | **CONSEIL** (defaut) ou **PILOTE** (si perimetre Croissance) |
 | **DETECTED** | Le prospect a du paid actif mais n'en parle pas | Module 6 `ranked_keywords(paid)` retourne des resultats MAIS aucune mention paid dans brief/transcript/emails | Mentionner la synergie SEO/SEA dans la strategie |
-| **ABSENT** | Ni demande, ni activite paid | Module 6 non active ET aucune mention paid dans les sources | DEFERRED-SCOPE standard |
+| **OPPORTUNITY** | Pas de demande prospect, pas de paid actif, MAIS les donnees montrent une opportunite paid | CPCs bas (< 1.50 EUR) sur keywords commerciaux ET/OU 0 concurrent en paid sur 3+ keywords commerciaux ET/OU SHOPPING_SIGNAL = YES | Mentionner l'opportunite dans le diagnostic + integrer en Phase 2 |
+| **ABSENT** | Ni demande, ni activite paid, ni opportunite detectee | Module 6 non active ET aucune mention paid ET aucun signal d'opportunite | DEFERRED-SCOPE standard |
 
 **Regles de classification :**
 1. Scanner brief, transcript, emails et notes Pipedrive pour les keywords paid (Google Ads, Meta Ads, Facebook Ads, campagnes, budget pub, ROAS, CPA, Shopping, Performance Max, retargeting, display, paid search, SEA)
 2. Si au moins 1 mention → `SEA_SIGNAL = EXPLICIT`
 3. Sinon, si Module 6 active ET `ranked_keywords(paid)` retourne des resultats → `SEA_SIGNAL = DETECTED`
-4. Sinon → `SEA_SIGNAL = ABSENT`
+4. Sinon, detecter l'opportunite paid :
+   - Verifier les CPCs sur les keywords commerciaux (issus de `keyword_overview` si Module 6 active, ou de `ranked_keywords` du Module 3)
+   - Si CPCs moyens < 1.50 EUR sur les keywords commerciaux OU 0 concurrent en paid sur 3+ keywords commerciaux OU SHOPPING_SIGNAL = YES → `SEA_SIGNAL = OPPORTUNITY`
+   - Documenter dans le SDB : `SEA_OPPORTUNITY: "{raison}" (ex: "0 concurrent Search Ads, CPCs 0.30 EUR, terrain vierge")`
+5. Sinon → `SEA_SIGNAL = ABSENT`
 
 **Posture SLASHR (mapping) :**
 - `EXPLICIT` + perimetre Croissance → `SEA_POSTURE = PILOTE` (SLASHR gere la strategie + pilotage campagnes)
 - `EXPLICIT` + autre perimetre → `SEA_POSTURE = CONSEIL` (defaut — cabinet conseil, pas agence media)
 - `DETECTED` → `SEA_POSTURE = CONSEIL` (pas de section dediee, mention synergie SEO/SEA dans la section benchmark ou opportunites, 1-2 phrases)
+- `OPPORTUNITY` → `SEA_POSTURE = HORS_PERIMETRE` (pas de section dediee paid, mais les donnees sont exposees dans le diagnostic et le paid est integre dans la trajectoire Phase 2)
 - `ABSENT` → `SEA_POSTURE = HORS_PERIMETRE`
 
 **IMPORTANT :** le signal SEA est un routage de la demande prospect, pas un diagnostic. Le diagnostic (S7 Amplification) reste inchange.
@@ -482,6 +544,55 @@ Organiser les donnees brutes en categories exploitables :
 | `RISKS` | Red flags, contraintes (budget, timeline, decideur absent, multi-presta) |
 | `CONDITIONAL_DATA` | Resultats des modules 5-10 (si actives), organises par module |
 | `TONE_CONTEXT` | Ton des echanges email (formel/informel), reactivite, niveau technique du decideur |
+| `BRAND_SEARCH_ANALYSIS` | (conditionnel) Analyse des recherches de marque si volume significatif. Voir section ci-dessous. |
+| `SERP_FEATURES_MAP` | (conditionnel) SERP features detectees sur les keywords commerciaux. Voir Module 4d. |
+| `SECONDARY_MARKETS` | (conditionnel) Marches B2B, CE/CSE, export detectes dans les sources. Voir section ci-dessous. |
+
+### BRAND_SEARCH_ANALYSIS (conditionnel)
+
+**Activer si :** volume marque > 5 000 recherches/mois OU part marque > 60% du trafic organique.
+
+L'objectif n'est pas de diagnostiquer un probleme (conversion, technique) mais de montrer que la marque est un **actif strategique** : un tremplin de confiance aupres de Google.
+
+**Contenu SDB :**
+```
+BRAND_SEARCH_ANALYSIS:
+  BRAND_SLIDE: YES | NO
+  Volume marque: {X} recherches/mois [src: dataforseo, ranked_keywords]
+  Part marque: {X}% du trafic organique
+  Top 5 requetes marque:
+    - {kw1} ({vol}/mois)
+    - {kw2} ({vol}/mois)
+    - ...
+  Signal Google: La marque genere un volume de recherche eleve, ce qui
+    signale a Google une autorite thematique. C'est un tremplin pour
+    se positionner sur les requetes hors-marque adjacentes.
+  INTERDIT: ne pas diagnostiquer la conversion marque ici (c'est plus loin)
+```
+
+### SECONDARY_MARKETS (conditionnel)
+
+**Activer si :** les sources Drive/Pipedrive mentionnent des marches secondaires (B2B, CE/CSE, export, grossiste, professionnel, etc.).
+
+**Detection :** scanner toutes les sources collectees (Module 1 + 2) pour les termes : B2B, CE, CSE, comite d'entreprise, professionnel, grossiste, revendeur, distributeur, GMS, CHR, wholesale, corporate, export, pro.
+
+**Contenu SDB :**
+```
+SECONDARY_MARKETS:
+  B2B_SLIDE: YES | NO
+  Marches detectes:
+    - {nom}: {source fichier/note}
+      Workflow actuel: {comment les commandes arrivent (email, telephone, formulaire)}
+      Lien Search: {requetes identifiees + volume OU "pas de signal Search"}
+      Lien refonte: {OUI/NON + pourquoi}
+    - {nom}: ...
+  Si aucun marche detecte: SECONDARY_MARKETS = NONE
+```
+
+**Regles :**
+- Distinguer les marches transactionnels (CE/CSE = commandes reelles, Search-relevant) des marches vitrine (B2B Pro = showcase only, peu de signal Search)
+- Pour chaque marche, evaluer si le Search peut capter de la demande ou si c'est un canal hors-Search (email, reseau, appel)
+- Le signal `B2B_SLIDE = YES` est emis si au moins 1 marche a un lien Search identifie
 
 ---
 
@@ -617,8 +728,24 @@ Enchaine directement depuis le S7, sans relire les donnees.
 - DEFERRED-SEQUENTIAL : forces a activer quand condition remplie
 - DEFERRED-SCOPE : forces hors perimetre
 
-**Trajectoire 90 jours :** M1 cadrage, M2 quick wins, M3 activation (alignee PRIMARY uniquement, 3 etapes max).
-**Trajectoire 6 mois :** M4-M6 montee en puissance, piliers actives, objectifs intermediaires.
+**Trajectoire 90 jours (contextuelle, JAMAIS generique) :**
+
+Le plan 90 jours est cale sur l'evenement structurant du deal, pas sur un template fixe. L'agent choisit le contexte applicable et adapte M1/M2/M3 :
+
+| Contexte | M1 | M2 | M3 |
+|----------|----|----|-----|
+| **Refonte** (REFONTE = OUI) | Audit + cadrage refonte (specs SEO, architecture cible, plan de migration) | Accompagnement refonte (suivi dev, redirections, recette SEO) | Activation sur le nouveau site (contenu, Merchant Center, tracking) |
+| **AO** (contexte AO) | Cadrage perimetre SEO + livrables pour reponse AO | Quick wins pre-AO (gains rapides demonstrables) | Plan strategique post-decision AO |
+| **Saisonnalite** (pic saisonnier < 4 mois) | Audit + quick wins cibles sur le pic | Activation contenu saisonnier + optimisations | Mesure impact pic + plan long terme |
+| **Standard** (aucun evenement structurant) | Cadrage + audit | Quick wins + structure | Activation + mesure |
+
+**Regles :**
+- Le plan 90 jours est CONSTRUIT AUTOUR de l'evenement structurant, pas a cote
+- Si plusieurs contextes se combinent (refonte + saisonnalite), prioriser celui qui conditionne le reste (generalement la refonte)
+- Chaque mois = 1 objectif + 1 livrable + 1 signal de succes (pas de liste generique)
+- Le plan 90 jours reste aligne sur le PRIMARY S7 : chaque mois doit adresser la contrainte principale
+
+**Trajectoire 6 mois :** M4-M6 montee en puissance, piliers actives, objectifs intermediaires. Si SEA_SIGNAL = OPPORTUNITY, integrer l'activation paid en M4+ (pas avant).
 
 **ROI conservateur :** chaque hypothese avec intervalle (borne basse conservatrice / borne haute optimiste realiste). ROI affiche = borne basse.
 
@@ -704,10 +831,11 @@ ROI DRIVERS (pont vers l'onglet ROI) :
 - Driver 2 (Conversion) : {source} → {variable ROI impactée : CVR / panier}
 - Driver 3 (Mix marque/hors-marque) : {source} → {variable ROI impactée : part scalable}
 
-PLAN 90 JOURS (aligné PRIMARY uniquement, 3 étapes max) :
-1) {objectif} → {livrable} → {signal attendu}
-2) {objectif} → {livrable} → {signal attendu}
-3) {objectif} → {livrable} → {signal attendu}
+PLAN 90 JOURS (contextuel, aligne PRIMARY, 3 etapes max) :
+CONTEXTE STRUCTURANT : {Refonte | AO | Saisonnalite | Standard}
+1) M1 · {objectif adapte au contexte} → {livrable} → {signal attendu}
+2) M2 · {objectif adapte au contexte} → {livrable} → {signal attendu}
+3) M3 · {objectif adapte au contexte} → {livrable} → {signal attendu}
 
 INSIGHT CENTRAL : {1 phrase non substituable}
 
@@ -718,13 +846,15 @@ CONTRAINTE PRINCIPALE : S{X} · {nom} (score {X}/5)
 LEVIERS PRIORITAIRES : S{Y} · {nom} + S{Z} · {nom}
 → {impact attendu si actives, chiffre}
 
-TRAJECTOIRE 90 JOURS · Phase 1 "Diagnostic & activation prioritaire":
-- M1 · Cadrage & audit: {actions concretes}
-- M2 · Quick wins & fondations: {actions concretes}
-- M3 · Activation & premiers resultats: {actions + KPIs intermediaires}
+TRAJECTOIRE 90 JOURS · Phase 1 (contextuelle) :
+Contexte : {decrire l'evenement structurant et comment il conditionne le plan}
+- M1 · {titre adapte}: {actions concretes liees au contexte}
+- M2 · {titre adapte}: {actions concretes liees au contexte}
+- M3 · {titre adapte}: {actions concretes liees au contexte}
 
 TRAJECTOIRE 6 MOIS · Phase 2 "Run":
 - M4-M6: {piliers actives, montee en puissance, intensite}
+- Si SEA_SIGNAL = OPPORTUNITY : integrer activation paid en M4+
 - Objectifs M6: {KPIs cibles sources}
 
 ROI CONSERVATEUR (intervalle obligatoire) :

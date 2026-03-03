@@ -1,6 +1,6 @@
 # Validation Rules — Proposition HTML
 
-> Reference unique des 45 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
+> Reference unique des 50 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
 
 ---
 
@@ -49,6 +49,10 @@ Regles verifiables par heuristiques. Echec = WARNING, correction recommandee.
 | 9 | Pas de section "Pourquoi SLASHR" standalone | Regex `pourquoi slashr` absent des titres h2/h3 |
 | 10 | Differenciateurs lies a un data block | Transitions SLASHR precedees par un bloc de donnees |
 | 28c | Brief paid non adresse | Si des keywords paid (google ads, sea, paid, campagne, roas) apparaissent dans le Diagnostic mais pas dans Strategie/Investissement → WARN "Brief paid mentionne dans Diagnostic mais non adresse dans Strategie/Investissement" |
+| 46 | Section contexte presente | Texte "ce que nous avons compris" OU "votre situation" (case-insensitive) dans `#tab-diagnostic`, positionne avant le premier bar chart / constat | WARN si absente |
+| 47 | Deduplication onglet Strategie | Nombre de `.slide` dans `#tab-strategie` <= 5 (hors hero et CTA). Au-dela → WARN "Onglet Strategie sur-dense, verifier la deduplication" | <= 5 slides |
+| 48 | Densite slide (ecran unique) | Aucun `.slide` ne contient plus de 2 composants visuels (`.bar-chart` + `.donut-chart` + `table` + `.grid-2`/`.grid-3` avec > 4 enfants). Au-dela → WARN "Slide sur-dense, decouper" | Max 2 composants visuels par slide |
+| 49 | Plan 90j contextuel | Si REFONTE mentionnee dans `#tab-diagnostic`, la timeline M1/M2/M3 dans `#tab-strategie` doit contenir "refonte" OU "migration" OU "accompagnement". WARN si plan generique malgre refonte | Coherence contexte/plan |
 
 ---
 
@@ -69,6 +73,7 @@ Regles non-automatisables, revue par l'agent. Affichees comme checklist.
 | 15 | Insight S7 non-substituable | L'insight central echoue-t-il au test de substitution ? |
 | 17 | DEFERRED justifies | Chaque force DEFERRED a-t-elle un "pourquoi pas maintenant" ? |
 | 17b | Brief paid adresse | Si SEA_SIGNAL=EXPLICIT dans le SDB, le brief paid est-il adresse dans la proposition (section Diagnostic paid + sous-section Strategie paid + FAQ SEA) ? |
+| 17c | Opportunite paid exposee | Si SEA_SIGNAL=OPPORTUNITY dans le SDB, l'opportunite paid est-elle visible dans le diagnostic (CPCs, couverture concurrents) et integree dans la trajectoire Phase 2 ? |
 
 ---
 

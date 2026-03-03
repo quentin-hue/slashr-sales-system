@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-SLASHR Proposal Validator — v2.0
+SLASHR Proposal Validator — v2.1
 
-Valide un HTML de proposition contre les 45 regles de validation (4 onglets : Diagnostic, Strategie, Investissement, Cas clients).
+Valide un HTML de proposition contre les 50 regles de validation (4 onglets : Diagnostic, Strategie, Investissement, Cas clients).
 - Layer 1 (Structural) : PASS/FAIL — echec = REJECT
 - Layer 2 (Content) : WARN — correction recommandee
 - Layer 3 (Semantic) : checklist affichee pour revue manuelle
@@ -660,6 +660,50 @@ def check_layer2(parser, html_raw, visible_text):
         has_cond_label = "recommandation conditionnelle" in livr or "recommandation conditionnelle" in strat
         results.append(("R33", "Confidence Low : label 'Recommandation conditionnelle'", has_cond_label))
 
+    # R46: Section contexte presente dans le diagnostic
+    has_contexte = "ce que nous avons compris" in diag or "votre situation" in diag
+    results.append(("R46", "Section contexte presente dans l'onglet Diagnostic", has_contexte))
+
+    # R47: Deduplication onglet Strategie (max 5 slides)
+    strat_slides = sum(1 for cls_list in parser.tab_elements.get("tab-strategie", [])
+                       if isinstance(cls_list, tuple) and len(cls_list) >= 2
+                       and "slide" in str(cls_list[1]))
+    # Alternative: count "slide" class occurrences in tab-strategie
+    strat_raw = tab_text(parser, "tab-strategie")
+    # Count slides by looking at class occurrences in elements
+    slide_count_strat = 0
+    for elem in parser.tab_elements.get("tab-strategie", []):
+        if isinstance(elem, tuple) and len(elem) >= 2:
+            tag_name, attrs_dict, _ = elem if len(elem) >= 3 else (*elem, "")
+            cls = attrs_dict if isinstance(attrs_dict, str) else ""
+            if "slide" in cls.split() if isinstance(cls, str) else False:
+                slide_count_strat += 1
+    # Fallback: count via class tracking
+    if slide_count_strat == 0:
+        # Use a simpler heuristic: count occurrences of class="slide" in raw HTML of tab-strategie
+        strat_section = extract_tab_html(parser, "tab-strategie", html_raw) if hasattr(parser, '_raw') else ""
+        if not strat_section:
+            # Simple regex on full html for tab-strategie content
+            m = re.search(r'id="tab-strategie"[^>]*>(.*?)</div>\s*(?:<div[^>]*class="[^"]*tab-content|$)', html_raw, re.DOTALL)
+            strat_section = m.group(1) if m else ""
+        slide_count_strat = len(re.findall(r'class="[^"]*\bslide\b[^"]*"', strat_section))
+    if slide_count_strat > 5:
+        results.append(("R47", f"Onglet Strategie sur-dense : {slide_count_strat} slides (max 5)", False))
+    else:
+        results.append(("R47", f"Onglet Strategie : {slide_count_strat} slides (max 5)", True))
+
+    # R48: Densite slide (max 2 composants visuels par slide) — manual check
+    results.append(("R48", "Densite slide (max 2 composants visuels par slide, verification manuelle)", None))
+
+    # R49: Plan 90j contextuel (coherence refonte/plan)
+    has_refonte_diag = "refonte" in diag or "migration" in diag
+    if has_refonte_diag:
+        has_refonte_strat = "refonte" in strat or "migration" in strat or "accompagnement" in strat
+        if not has_refonte_strat:
+            results.append(("R49", "Refonte mentionnee dans Diagnostic mais absente du plan 90j (Strategie)", False))
+        else:
+            results.append(("R49", "Coherence refonte : mentionnee dans Diagnostic et dans le plan 90j", True))
+
     return results
 
 
@@ -679,6 +723,7 @@ LAYER3_CHECKLIST = [
     ("R15", "Insight S7 non-substituable ?"),
     ("R17", "Chaque DEFERRED a un \"pourquoi pas maintenant\" ?"),
     ("R17b", "Si SEA_SIGNAL=EXPLICIT dans le SDB, le brief paid est-il adresse (Diagnostic + Strategie + FAQ) ?"),
+    ("R17c", "Si SEA_SIGNAL=OPPORTUNITY dans le SDB, l'opportunite paid est-elle visible dans le diagnostic et integree en Phase 2 ?"),
 ]
 
 

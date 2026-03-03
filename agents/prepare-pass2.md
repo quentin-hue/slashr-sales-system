@@ -68,6 +68,31 @@ L'ouverture de la proposition suit une cascade en 3 couches. Chaque couche avanc
 
 ---
 
+## Etape 2.1b : Section contexte (OBLIGATOIRE, avant toute section data)
+
+Apres le hero et avant la premiere section data du diagnostic, la proposition DOIT inclure une section de reformulation du besoin client. Cette section prouve au decideur qu'on a compris sa situation AVANT de diagnostiquer.
+
+**Section : "Votre situation en un coup d'oeil"**
+- Section-label : "Ce que nous avons compris"
+- Layout : grid-2 (4 blocs compacts)
+
+| Bloc | Contenu | Source SDB |
+|------|---------|-----------|
+| **L'objectif** | Chiffre cible ou ambition du prospect (verbatim si possible) | PAIN_POINTS, verbatims |
+| **Le contexte** | Evenement declencheur (AO, refonte, recrutement, saison, budget) | PROSPECT_PROFILE, trigger |
+| **La question** | Verbatim prospect : la vraie question posee en R1 | TONE_CONTEXT, verbatims |
+| **L'approche** | 1 phrase methode adaptee au deal (test & learn, data-first, cadrage refonte, etc.) | S7 PRIMARY |
+
+**Regles :**
+- Chaque bloc = 2-3 lignes max. C'est un rappel, pas une analyse.
+- Le verbatim "La question" doit etre une citation EXACTE (entre guillemets) ou une reformulation proche si aucun verbatim exact n'est disponible.
+- Cette section n'a PAS de SO WHAT (c'est un cadrage, pas un argument).
+- Si le SDB ne contient pas assez de verbatims pour les 4 blocs, adapter : 3 blocs minimum, 2 blocs si vraiment pauvre en contexte qualitatif.
+
+**NBP :** ajouter cette section comme Section 0 dans la structure de l'onglet Diagnostic, avant les sections data.
+
+---
+
 ## Etape 2.2 : Definir l'arc narratif de l'onglet Diagnostic
 
 L'onglet Diagnostic est une **sequence de sections libres**. L'agent cree les sections qu'il veut, dans l'ordre qu'il veut. Il n'y a pas de liste fixe, il y a un objectif : **emmener ce decideur du constat a la conviction, avec ces donnees, dans ce contexte.**
@@ -122,13 +147,59 @@ Le constat peut prendre 2 formes selon les donnees :
 
 Le NBP doit specifier `CONSTAT_MODE` pour que la Pass 3 choisisse le bon composant.
 
-### Regle de l'opportunite : 3 slides (OBLIGATOIRE si Intent Market Map disponible)
+### Section conditionnelle "Recherches de marque" (si BRAND_SLIDE = YES)
 
-La section Opportunite se decoupe en 3 slides distincts :
+**Placement :** apres la section contexte (Section 0), avant le constat. La marque est un actif qui cadre la lecture du diagnostic.
+
+**Angle :** la marque est un **actif** et un **tremplin**, pas un probleme. Le volume de recherche de marque signale une autorite aupres de Google qui facilite le positionnement sur les requetes hors-marque adjacentes.
+
+**Structure :**
+- Gauche : volume marque + tableau top 5 requetes marque
+- Droite : "Ce que ca signifie pour Google" (explication du tremplin : autorite thematique, confiance, facilite de positionnement hors-marque)
+
+**INTERDIT :**
+- Ne pas parler de conversion ou de technique (pages, Schema, alt, formulaires) : c'est traite plus loin dans la proposition
+- Ne pas repeter le TASM (la section TASM suit plus bas avec ses propres chiffres)
+- Ne pas faire un diagnostic du trafic de marque : c'est une mise en contexte positive
+
+**SO WHAT :** pas de SO WHAT classique. La section se conclut par 1 phrase qui fait le pont vers le constat ("Ce tremplin existe. Reste a construire les pages qui captent le trafic hors-marque.")
+
+### Section conditionnelle "Opportunite Google Shopping" (si SHOPPING_SIGNAL = YES)
+
+**Placement :** apres l'opportunite commerciale.
+
+**Angle :** "vos produits sont deja sur Google Shopping, pas vous" (revendeurs vs marque directe).
+
+**Structure :**
+- Constat : les produits apparaissent via des revendeurs (nommer les revendeurs)
+- Data : {N} requetes declenchant Google Shopping, % intent commercial, volume
+- Levier : Merchant Center + feed produit = presence directe
+- Prerequis technique : rattacher a la refonte si applicable (WooCommerce, Shopify, etc.)
+
+**SO WHAT :** highlight-box qui lie Shopping au vehicule technique (refonte) et au CA direct.
+
+### Section conditionnelle "Marches B2B" (si B2B_SLIDE = YES)
+
+**Placement :** apres Google Shopping (si present), sinon apres opportunite commerciale.
+
+**Angle :** structurer ce qui existe deja (pas creer de toutes pieces). Le Search peut capter une demande B2B qui arrive aujourd'hui par des canaux informels (email, telephone).
+
+**Structure :** 1 slide si 1 marche, 1 slide avec 2 colonnes si 2 marches.
+- Pour chaque marche : nom + workflow actuel + requetes Search identifiees + lien refonte
+- Distinguer les marches transactionnels (CE/CSE) des marches vitrine (B2B Pro)
+- Mini-stats si disponibles (ex: "90% des commandes par email", "X recherches/mois")
+
+**SO WHAT :** convergence vers le vehicule technique commun (refonte, architecture de site).
+
+### Regle de l'opportunite : 3+ slides (OBLIGATOIRE si Intent Market Map disponible)
+
+La section Opportunite se decoupe en 3 slides minimum, plus les sections conditionnelles ci-dessus si activees :
 
 1. **Cartographie du marche** (section-label: "Opportunite — cartographie du marche") : donuts (commercial / informationnel / navigationnel) + SO WHAT global. Le decideur voit la taille du marche.
 2. **Opportunite commerciale** (section-label: "Opportunite commerciale") : bar chart horizontal, 1 barre par territoire, trie par volume decroissant. Sous chaque barre : 1 ligne de contexte (concurrent leader + position LMP). Highlight-box saisonnalite si pertinent.
 3. **Opportunite informationnelle** (section-label: "Opportunite informationnelle") : bar chart horizontal, 1 barre par territoire, trie par volume decroissant. SO WHAT qui lie l'informationnel au commercial.
+4. **(conditionnel) Opportunite Google Shopping** : si SHOPPING_SIGNAL = YES (voir ci-dessus)
+5. **(conditionnel) Marches B2B** : si B2B_SLIDE = YES (voir ci-dessus)
 
 **Regle data :** chaque territoire doit afficher son volume mensuel (source: DataForSEO). Les volumes sont collectes en Pass 1 via l'endpoint `keywords_data/google_ads/search_volume`. Ne jamais presenter un territoire sans volume.
 
@@ -224,6 +295,12 @@ C'est l'onglet principal. Il contient :
 
 **Si SEA_SIGNAL = DETECTED :** pas de section dediee. Mention de la synergie SEO/SEA dans la section benchmark ou opportunites (1-2 phrases).
 
+**Si SEA_SIGNAL = OPPORTUNITY :** section legere dans l'onglet Diagnostic montrant l'opportunite paid (terrain vierge, CPCs bas, 0 concurrent en Ads). Pas de section strategie paid dediee, mais :
+- Integrer le paid comme axe dans la recommandation (ex: "Axe Amplification S7 : activer le paid sur un terrain vierge")
+- Integrer le paid dans la trajectoire globale en Phase 2 (pas Phase 1)
+- Mentionner les donnees cles (CPCs, couverture concurrents) dans la section S7 ou opportunites
+- Le ton est "opportunite future" (pas urgence, pas demande client) : "Le terrain paid est vierge. C'est un levier a activer une fois les fondations Search posees."
+
 **Si SEA_SIGNAL = ABSENT :** rien.
 
 **Pas de section "Pourquoi SLASHR" standalone.** Les differenciateurs sont tisses apres chaque bloc de donnees, en enchainage naturel (cf. Etape 2.4).
@@ -278,17 +355,37 @@ Le tab-header de l'onglet Strategie donne le TITRE de la recommandation (phrase 
 Le highlight-gradient "Nous recommandons" DEVELOPPE cette recommandation avec les donnees cles (chiffres du gap, contrainte S7, objectif).
 Les deux NE DOIVENT PAS etre la meme phrase.
 
-- **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet au lieu d'etre enterree en fin de scroll
-- **90 jours** (M1/M2/M3) : plan d'action immediat
-- **ROI Simulateur** : hypotheses sourcees + sliders + scenarios (absorbe l'ex-onglet ROI Interactif)
-  - **Hypotheses pre-remplies** avec les donnees reelles du SDB (trafic actuel, multiplicateur source du gap, CVR, panier moyen)
-  - **Source de chaque hypothese** visible (pas de chiffres sans provenance)
-  - **Chaine de calcul visible** : H1 x H2 x H3 = resultat. Chaque hypothese affiche son niveau de confiance.
-  - **Intervalle ROI** : borne basse (conservatrice) par defaut, borne haute via simulateur. Le chiffre unique est interdit.
-  - **Simulateur interactif** (sliders) : recalcul en temps reel
-  - **3 scenarios calcules** alignes sur Essentiel / Performance / Croissance
-  - **Methodologie** : explication en 1-2 phrases de la logique de calcul
-- **CTA intermediaire leger** (lien texte, pas full-width)
+#### Slides de l'onglet Strategie (4-5 max)
+
+Chaque slide a un **role unique**. Deux slides ne peuvent pas couvrir le meme sujet sous un angle different.
+
+| # | Slide | Role unique | Contenu |
+|---|-------|-------------|---------|
+| 1 | **Le plan** | Timeline / projection immediate | Decision strategique ("Nous recommandons...") + timeline contextuelle (Phase 1 M1-M3 + Phase 2 M4+). Le plan est cale sur l'evenement structurant du deal. |
+| 2 | **ROI Simulateur** | Quantification de l'impact | Hypotheses sourcees + sliders + calcul JS + 3 scenarios. Chaine de calcul visible. |
+| 3 | **Trajectoire globale** | Vision chiffree | Synthese des leviers (SEO, SEA si applicable, UX) avec contribution chiffree de chacun. Les donnees paid sont integrees ICI (pas dans une slide separee). |
+| 4 | **Comment nous travaillons** | Methode / processus | Phase 1 (livrables) + Phase 2 (cadence). Pas de reprise du contenu timeline. |
+| 5 | **(conditionnel) Strategie Paid** | Positionnement paid | Uniquement si SEA_POSTURE = PILOTE ou CONSEIL. Sinon les donnees paid sont integrees dans les slides 1 et 3. |
+
+**ROI Simulateur (details) :**
+- **Hypotheses pre-remplies** avec les donnees reelles du SDB (trafic actuel, multiplicateur source du gap, CVR, panier moyen)
+- **Source de chaque hypothese** visible (pas de chiffres sans provenance)
+- **Chaine de calcul visible** : H1 x H2 x H3 = resultat. Chaque hypothese affiche son niveau de confiance.
+- **Intervalle ROI** : borne basse (conservatrice) par defaut, borne haute via simulateur. Le chiffre unique est interdit.
+- **Simulateur interactif** (sliders) : recalcul en temps reel
+- **3 scenarios calcules** alignes sur Essentiel / Performance / Croissance
+- **Methodologie** : explication en 1-2 phrases de la logique de calcul
+
+**CTA intermediaire leger** (lien texte en fin d'onglet, pas full-width).
+
+#### Deduplication onglet Strategie (OBLIGATOIRE)
+
+Avant de creer les slides, verifier :
+1. Chaque slide a un ROLE UNIQUE (timeline / quantification / vision / methode)
+2. Deux slides ne peuvent pas couvrir le meme sujet sous un angle different (ex: "Recommandation 3 axes" + "Plan d'action 3 mois" = doublon si les axes = les mois)
+3. Les donnees paid (si SEA_SIGNAL != EXPLICIT) sont integrees DANS les slides existantes (dans la trajectoire, pas dans une slide separee)
+4. Maximum 5 slides par onglet (hors hero et CTA)
+5. Test : pour chaque paire de slides, se demander "est-ce qu'un decideur dirait que ces 2 slides disent la meme chose ?" Si oui → fusionner.
 
 **Regle Confidence ROI :** si le SDB indique `Confidence globale: Low` ou si 2+ hypotheses ROI sont tagees `Low`, la section ROI DOIT afficher "Hypotheses a confirmer en Phase 1" sous le simulateur, et la carte `.recommended` de l'onglet Investissement recoit le label "Recommandation conditionnelle".
 

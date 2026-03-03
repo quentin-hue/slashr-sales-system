@@ -176,6 +176,25 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 - **Les verbatims du prospect** sont des ancres narratives, les placer la ou ils creent un pont avec la recommandation.
 - **Densite max par section** : chaque `.slide` (section plein ecran) contient au maximum **1 composant visuel** (bar chart, donut, table, cards grid) + **1 highlight-box** (SO WHAT). Au-dela, decouper en slides supplementaires. Un slide surcharge perd le decideur.
 
+### Densite slide : regle de l'ecran unique (OBLIGATOIRE)
+
+Chaque slide doit tenir sur un ecran standard (1440x900) sans scroll vertical interne. Si un slide necessite du scroll → le decouper ou reduire le contenu.
+
+**Indicateurs de sur-densite (trigger le decoupage) :**
+- Plus de 2 grids empiles verticalement
+- Plus de 6 cards dans un grid
+- Plus de 1 bar chart + 1 table dans le meme slide
+- Plus de 3 highlight-boxes dans le meme slide
+- Un grid-2 ou grid-3 ou les cards depassent 150px de hauteur chacune
+
+**Action si sur-dense :** decouper en 2 slides. Le premier slide porte le composant visuel principal + le contexte. Le second porte le SO WHAT + les donnees secondaires.
+
+**Nombre max de slides par onglet :**
+- Diagnostic : pas de plafond (la deduplication est le garde-fou)
+- Strategie : 5 slides max (hors hero et CTA)
+- Investissement : pas de plafond (structure fixe)
+- Cas clients : 1 intro + 2-4 cas = 3-5 slides
+
 ### Progress dots (navigation intra-onglet)
 
 Chaque onglet affiche des dots de progression en bas de l'ecran. Le dot actif correspond a la slide visible (IntersectionObserver). Les dots sont interactifs (clic = scroll to slide).
