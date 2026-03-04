@@ -74,7 +74,7 @@ Outputs internes : `strategy_plan_internal.md` puis **Structured Data Brief (SDB
 ### Pass 2 : NARRATIVE ARCHITECT
 **Fichier :** `agents/prepare-pass2.md`
 
-Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 4 onglets (Diagnostic, Strategie, Investissement, Cas clients).
+Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 4-5 onglets (Contexte conditionnel, Diagnostic, Strategie, Investissement, Cas clients).
 Output interne : **Narrative Blueprint (NBP)**.
 
 **Pre-validation NBP (OBLIGATOIRE, gate bloquante) :** Apres la Pass 2, executer :
@@ -87,7 +87,7 @@ python3 tools/validate_proposal.py --nbp .cache/deals/{deal_id}/artifacts/NBP.md
 ### Pass 3 : DESIGN ORCHESTRATOR
 **Fichier :** `agents/prepare-pass3.md`
 
-Generation du contenu HTML des 4 onglets a partir du NBP. Mapping composants par role narratif, regles de composition. Assemblage final via `tools/build_proposal.py` (squelette + contenu). Validation.
+Generation du contenu HTML des 4-5 onglets a partir du NBP. Mapping composants par role narratif, regles de composition. Assemblage final via `tools/build_proposal.py` (squelette + contenu). Validation.
 Output : **HTML final** (le seul livrable visible) + **INTERNAL-S7** (diagnostic interne).
 
 ---

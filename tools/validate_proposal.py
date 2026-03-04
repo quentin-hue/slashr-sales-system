@@ -2,7 +2,7 @@
 """
 SLASHR Proposal Validator — v2.1
 
-Valide un HTML de proposition contre les 50 regles de validation (4 onglets : Diagnostic, Strategie, Investissement, Cas clients).
+Valide un HTML de proposition contre les regles de validation (4-5 onglets : Contexte conditionnel, Diagnostic, Strategie, Investissement, Cas clients).
 - Layer 1 (Structural) : PASS/FAIL — echec = REJECT
 - Layer 2 (Content) : WARN — correction recommandee
 - Layer 3 (Semantic) : checklist affichee pour revue manuelle
@@ -105,8 +105,8 @@ class ProposalParser(HTMLParser):
         elif self.current_tab and tag not in self.VOID_ELEMENTS:
             self.tab_content_depth += 1
 
-        # Track data-state for S7
-        ds = attr_dict.get("data-state", "")
+        # Track data-state and data-priority for S7
+        ds = attr_dict.get("data-state", "") or attr_dict.get("data-priority", "")
         if ds:
             self.data_states.append(ds)
             if self.current_tab:
@@ -318,20 +318,25 @@ def check_layer1(parser, html_raw, visible_text):
     has_bg = "#1a1a1a" in parser.css_content or "#1a1a1a" in html_raw
     results.append(("R3", "Fond sombre #1a1a1a", has_bg))
 
-    # R5: 4 onglets non-vides
+    # R5: 4-5 onglets non-vides (contexte optionnel)
     required_tabs = ["tab-diagnostic", "tab-strategie", "tab-investissement", "tab-cas-clients"]
+    optional_tabs = ["tab-contexte"]
     tabs_ok = all(
         tab_id in parser.tabs and len(parser.tabs[tab_id]) > 2
         for tab_id in required_tabs
     )
     missing = [t for t in required_tabs if t not in parser.tabs or len(parser.tabs.get(t, [])) <= 2]
+    has_contexte = "tab-contexte" in parser.tabs and len(parser.tabs.get("tab-contexte", [])) > 2
+    n_tabs = 4 + (1 if has_contexte else 0)
     detail = f" (manquants/vides: {', '.join(missing)})" if missing else ""
-    results.append(("R5", f"4 onglets non-vides{detail}", tabs_ok))
+    results.append(("R5", f"{n_tabs} onglets non-vides{detail}", tabs_ok))
 
     # R14: Section S7 dans onglet Diagnostic
     diag_text = tab_text(parser, "tab-diagnostic").lower()
     has_s7 = tab_has_class(parser, "tab-diagnostic", "s7-grid") or \
-             tab_has_class(parser, "tab-diagnostic", "s7-card")
+             tab_has_class(parser, "tab-diagnostic", "s7-card") or \
+             tab_has_class(parser, "tab-diagnostic", "s7-radar-wrap") or \
+             tab_has_class(parser, "tab-diagnostic", "s7-radar-svg")
     results.append(("R14", "Section S7 dans onglet Diagnostic", has_s7))
 
     # R16: Exactement 1 PRIMARY dans #tab-diagnostic
@@ -514,6 +519,13 @@ def check_layer1(parser, html_raw, visible_text):
     has_emdash_entity = "&mdash;" in html_raw or "&#8212;" in html_raw
     emdash_found = has_emdash_text or has_emdash_entity
     results.append(("R18b", "Zero tiret cadratin dans le texte visible", not emdash_found))
+
+    # R18c: Semi-cadratin separateur interdit (shared.md regle 18 etendue)
+    # Detecte les en dashes utilises comme separateurs (espace-tiret-espace ou debut de phrase)
+    endash_separator = re.search(r'[\s]\u2013[\s]', visible_text) or \
+                       re.search(r'&ndash;', html_raw) or \
+                       re.search(r'&#8211;', html_raw)
+    results.append(("R18c", "Zero semi-cadratin separateur dans le texte visible", not bool(endash_separator)))
 
     # R27a: Si refonte, 3 actes narratifs + "0 perte de trafic strategique"
     refonte_keywords = ["refonte", "migration", "redesign", "replatforming"]
@@ -926,13 +938,15 @@ def validate_nbp(filepath):
     results = []
     content_lower = content.lower()
 
-    # NBP-1: 4 onglets presents
-    tabs = ["onglet diagnostic", "onglet strategie", "onglet investissement", "onglet cas clients"]
-    missing_tabs = [t for t in tabs if t not in content_lower]
+    # NBP-1: 4 onglets obligatoires presents (+ contexte conditionnel)
+    required_tabs = ["onglet diagnostic", "onglet strategie", "onglet investissement", "onglet cas clients"]
+    missing_tabs = [t for t in required_tabs if t not in content_lower]
+    has_contexte = "onglet contexte" in content_lower
+    n_tabs = 4 + (1 if has_contexte else 0)
     if missing_tabs:
         results.append(("NBP-1", f"Onglets manquants : {', '.join(missing_tabs)}", False))
     else:
-        results.append(("NBP-1", "4 onglets presents", True))
+        results.append(("NBP-1", f"{n_tabs} onglets presents", True))
 
     # NBP-2: Chaque section Diagnostic a un champ "SO WHAT"
     # Sections S7 (has "Insight") and "Ce que cela implique" (has "Triplet") are exempt

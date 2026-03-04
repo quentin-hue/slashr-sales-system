@@ -11,9 +11,9 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | # | Regle | Test |
 |---|-------|------|
 | 3 | Fond sombre `#1a1a1a` present | CSS `background` ou `--bg` contient `#1a1a1a` |
-| 5 | 4 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement`, `tab-cas-clients` | 4 `div.tab-content` avec contenu non-placeholder |
-| 14 | Section S7 dans l'onglet Diagnostic | `s7-grid` ou `s7-card` present dans `#tab-diagnostic` |
-| 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` dans `#tab-diagnostic` |
+| 5 | 4-5 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement`, `tab-cas-clients` + optionnel `tab-contexte` | 4 ou 5 `div.tab-content` avec contenu non-placeholder. Si `tab-contexte` present, il doit etre positionne AVANT `tab-diagnostic` dans le DOM |
+| 14 | Section S7 dans l'onglet Diagnostic | `s7-grid`, `s7-card`, `s7-radar-wrap` ou `s7-radar-svg` present dans `#tab-diagnostic` |
+| 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` ou `data-priority="primary"` dans `#tab-diagnostic` |
 | 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-investissement` avec max 6 `<li>` |
 | 19 | Board-ready A4 / `window.print()` | `@media print` present dans le CSS ET bouton print dans le HTML ET section `.board-ready-a4` presente avec : resume decisionnel, pricing recommande, "decision attendue" |
 | 26 | CTA avec verbe strategique | CTA ne contient PAS "Planifier un echange", "Discuter", "Echanger", "En savoir plus" |
@@ -27,6 +27,7 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | 27a | Si refonte : 3 actes narratifs + "0 perte de trafic strategique" | Conditionnel : si le deal implique une refonte |
 | 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" AVANT pricing | `.recommended` present + section cout inaction dans `#tab-investissement` + cout inaction (`.s7-insight`) positionne AVANT `.pricing`/`.pricing-grid` dans le DOM |
 | 30 | Coherence levier : setup Phase 1 ↔ run Phase 2 | Chaque levier avec Phase 1 a un Phase 2 et inversement |
+| 18b | Zero tiret cadratin et semi-cadratin separateur | Regex `\u2014` (em dash) et `\u2013` (en dash hors plages numeriques) absents du texte visible. Inclut `&mdash;` et `&ndash;` dans le HTML source |
 
 ---
 

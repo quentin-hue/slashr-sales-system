@@ -40,7 +40,7 @@ Seul l'echec du deal Pipedrive est bloquant. Le reste degrade gracieusement, doc
 15. Zero dramatisation : pas de "catastrophe", "crise", "vous perdez tout"
 16. Intelligence strategique : chaque phrase traduit l'expertise en impact business mesurable
 17. Avantages competitifs tisses : jamais de section "Pourquoi SLASHR" standalone
-18. Jamais de tiret cadratin dans aucun output. Remplacer par `:`, `,`, `.`, `·`
+18. Jamais de tiret cadratin ni semi-cadratin separateur (`—`, `–`) dans aucun output. Remplacer par `:`, `,`, `.`, des parentheses. Le `–` est tolere uniquement dans les plages numeriques
 19. Domaine principal = site actif du prospect. En cas de doute, demander au closer
 
 ---
@@ -271,7 +271,7 @@ DataForSEO > 100 KB = gzip automatique. Decompression transparente.
 **Layer 4 Quality Metrics** (6 regles, WARN) : densite donnees, specificite titres, SO WHAT.
 
 Regles critiques a garder en tete :
-- 4 onglets non-vides obligatoires (diagnostic, strategie, investissement, cas-clients)
+- 4 onglets obligatoires (diagnostic, strategie, investissement, cas-clients) + 1 conditionnel (contexte, si BRAND_CONTEXT.CONTEXTE_TAB = YES)
 - Section S7 dans Diagnostic, exactement 1 PRIMARY
 - Resume decisionnel <= 6 bullets
 - Board-ready A4 avec window.print()

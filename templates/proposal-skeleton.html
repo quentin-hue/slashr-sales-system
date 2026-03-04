@@ -230,9 +230,8 @@
       margin-bottom: 10px;
     }
 
-    /* Hero compact : masquer subtitle + scroll sur onglets 2-4 */
-    .hero--compact .hero-subtitle,
-    .hero--compact .hero-scroll { display: none; }
+    /* S7 radar : labels visibles hors viewBox */
+    .s7-radar-svg { overflow: visible; }
 
     .hero-date {
       font-size: 14px;
@@ -1758,6 +1757,16 @@
       padding: 2px 8px; border-radius: var(--radius-full);
     }
 
+    .query-pill {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--text-50);
+    }
+
 
     /* ============================================================
        DIAGNOSTIQUER — S7 Search System, scoring, priorisation
@@ -2092,13 +2101,7 @@
       tab.classList.add('active');
       const target = document.getElementById('tab-' + tab.dataset.tab);
       target.classList.add('active');
-      // Hero persistant : deplacer dans l'onglet actif
-      const hero = document.querySelector('.hero');
-      if (hero) {
-        target.prepend(hero);
-        hero.classList.toggle('hero--compact', tab.dataset.tab !== 'diagnostic');
-      }
-      target.scrollTop = 0;
+      window.scrollTo(0, 0);
     });
   });
 

@@ -40,6 +40,7 @@ def main():
     parser = argparse.ArgumentParser(description="Assemble PROPOSAL HTML from skeleton + tabs")
     parser.add_argument("--deal-id", required=True, help="Deal ID")
     parser.add_argument("--title", required=True, help="Page title (visible in browser tab)")
+    parser.add_argument("--contexte", default=None, help="Path to contexte tab HTML fragment (optional, adds 5th tab)")
     parser.add_argument("--diagnostic", required=True, help="Path to diagnostic tab HTML fragment")
     parser.add_argument("--strategie", required=True, help="Path to strategie tab HTML fragment")
     parser.add_argument("--investissement", required=True, help="Path to investissement tab HTML fragment")
@@ -58,6 +59,7 @@ def main():
     skeleton = skeleton_path.read_text(encoding="utf-8")
 
     # Read tab contents
+    tab_contexte = read_file(args.contexte) if args.contexte else None
     tab_diagnostic = read_file(args.diagnostic)
     tab_strategie = read_file(args.strategie)
     tab_investissement = read_file(args.investissement)
@@ -71,6 +73,30 @@ def main():
     # Assemble
     html = skeleton
     html = html.replace("{{TITLE}}", args.title)
+
+    # Inject Contexte tab if provided (before Diagnostic in nav + content)
+    if tab_contexte:
+        # Add Contexte nav button before Diagnostic, make it active
+        html = html.replace(
+            '<button class="nav-tab active" data-tab="diagnostic">Diagnostic</button>',
+            '<button class="nav-tab active" data-tab="contexte">Contexte</button>'
+            '<button class="nav-tab" data-tab="diagnostic">Diagnostic</button>'
+        )
+        # Add Contexte tab content before Diagnostic, make it active
+        contexte_block = (
+            '<!-- ONGLET 0 : CONTEXTE -->\n'
+            '<div id="tab-contexte" class="tab-content active">\n'
+            f'{tab_contexte}\n'
+            '</div>\n\n'
+        )
+        html = html.replace(
+            '<!-- ONGLET 1 : DIAGNOSTIC -->\n'
+            '<div id="tab-diagnostic" class="tab-content active">',
+            contexte_block +
+            '<!-- ONGLET 1 : DIAGNOSTIC -->\n'
+            '<div id="tab-diagnostic" class="tab-content">'
+        )
+
     html = html.replace("{{TAB_DIAGNOSTIC}}", tab_diagnostic)
     html = html.replace("{{TAB_STRATEGIE}}", tab_strategie)
     html = html.replace("{{TAB_INVESTISSEMENT}}", tab_investissement)
@@ -106,6 +132,7 @@ def main():
         "output_path": str(output_path),
         "size_bytes": len(html.encode("utf-8")),
         "tabs": {
+            **({"contexte": len(tab_contexte)} if tab_contexte else {}),
             "diagnostic": len(tab_diagnostic),
             "strategie": len(tab_strategie),
             "investissement": len(tab_investissement),

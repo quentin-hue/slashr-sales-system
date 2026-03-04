@@ -10,7 +10,7 @@
 > **Zero dramatisation** : pas de "catastrophe", "crise", "vous perdez tout". Les donnees suffisent. (cf. regle 15)
 > **Francais** : tous les outputs en francais. (cf. regle 3)
 > **Verbatims = citations exactes** entre guillemets. (cf. regle 12)
-> **Pas de tiret cadratin** (`—`, `&mdash;`) dans aucun output. Remplacer par `:`, `,`, `.`, `·`. (cf. regle 18)
+> **Pas de tiret cadratin ni semi-cadratin separateur** (`—`, `–`, `&mdash;`, `&ndash;`) dans aucun output. Remplacer par `:`, `,`, `.`, des parentheses. Le `–` est tolere uniquement dans les plages numeriques ("6-12 mois"). (cf. regle 18)
 > **Pas de sur-engineering** : le closer copie-colle, on ne complique pas. (cf. regle 7)
 
 ---
@@ -32,14 +32,15 @@ Inclure un encart final (court) :
 - 3 manquants + acces minimal
 
 
-Prendre le NBP et generer le **contenu HTML des 4 onglets**. Choisir les composants visuels du kit pour chaque section. Assurer le rythme visuel. **Ne PAS modifier le contenu strategique du NBP**, seulement le mettre en forme.
+Prendre le NBP et generer le **contenu HTML des 4-5 onglets** (Contexte conditionnel + 4 obligatoires). Choisir les composants visuels du kit pour chaque section. Assurer le rythme visuel. **Ne PAS modifier le contenu strategique du NBP**, seulement le mettre en forme.
 
 ### Architecture skeleton + tabs
 
 Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skeleton.html`. L'agent ne le reproduit PAS. Il genere uniquement le **contenu de chaque onglet** (le HTML entre les balises `<div class="tab-content">` et `</div>`).
 
 **Workflow :**
-1. Generer 4 fichiers HTML fragments (un par onglet) :
+1. Generer 4 ou 5 fichiers HTML fragments (un par onglet) :
+   - (conditionnel) `/tmp/tab_contexte.html` — si CONTEXTE_TAB = YES dans le NBP
    - `/tmp/tab_diagnostic.html`
    - `/tmp/tab_strategie.html`
    - `/tmp/tab_investissement.html`
@@ -50,6 +51,7 @@ Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skele
    python3 tools/build_proposal.py \
      --deal-id {deal_id} \
      --title "Analyse strategique · {entreprise}" \
+     --contexte /tmp/tab_contexte.html \
      --diagnostic /tmp/tab_diagnostic.html \
      --strategie /tmp/tab_strategie.html \
      --investissement /tmp/tab_investissement.html \
@@ -57,9 +59,10 @@ Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skele
      --extra-js /tmp/extra_roi_sim.js \
      --output .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html
    ```
+   Note : `--contexte` est optionnel. Sans lui, la proposition a 4 onglets (comportement par defaut).
 
 **Ce que l'agent genere (le vrai travail creatif) :**
-- Le hero (dans tab_diagnostic, sera deplace par le JS)
+- Le hero de chaque onglet (4 ou 5 heroes fullscreen, un par tab)
 - Toutes les sections/slides de chaque onglet
 - Les composants visuels (bar charts, KPIs, tables, highlight boxes, etc.)
 - Le contenu textuel sur-mesure
@@ -68,7 +71,7 @@ Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skele
 **Ce que le skeleton fournit (boilerplate identique a chaque proposition) :**
 - Le `<head>` (charset, viewport, fonts)
 - Tout le CSS (~2000 lignes, variables, composants, responsive, print)
-- La nav fixe (4 onglets)
+- La nav fixe (4 onglets par defaut, 5 si Contexte injecte par build_proposal.py)
 - La structure `<div class="main">` + `<div class="tab-content">`
 - Le footer
 - Le JS core (tab switching, bar chart animation, accordion, ticker, donut animation)
@@ -170,10 +173,11 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 
 ### Rythme visuel
 
-- **Alterner** les types de composants. Pas 3 highlight boxes d'affilee. Pas 4 grilles de cards consecutives.
+- **Alterner** les types de composants. Pas 2 highlight boxes empilees (utiliser verbatim-box ou grid-2 pour casser la monotonie). Pas 4 grilles de cards consecutives.
 - **Creer des respirations** avec les Pull quotes, Callout banners, et KPI large, ils rompent le flux dense.
 - **Apres chaque bloc de data** (table, bar chart, grid de KPIs), placer une interpretation (highlight box) qui repond a "et alors ?".
 - **Les verbatims du prospect** sont des ancres narratives, les placer la ou ils creent un pont avec la recommandation.
+- **Coherence des elements repetes** : quand plusieurs elements du meme type sont generes (personas, cas clients, comparaisons), utiliser le MEME design pattern pour tous. Ne jamais mixer card-accent et surface-div pour des elements equivalents. Choisir un pattern et le repliquer.
 - **Densite max par section** : chaque `.slide` (section plein ecran) contient au maximum **1 composant visuel** (bar chart, donut, table, cards grid) + **1 highlight-box** (SO WHAT). Au-dela, decouper en slides supplementaires. Un slide surcharge perd le decideur.
 
 ### Densite slide : regle de l'ecran unique (OBLIGATOIRE)
@@ -236,22 +240,39 @@ Si `LAYOUT_MODE = "data-heavy"` (defaut) : benchmark + tables + charts, equilibr
 
 ---
 
-## Etape 3.3 : Structure des 4 onglets
+## Etape 3.3 : Structure des onglets
 
-### Nav fixe avec 4 tabs
+### Nav fixe avec 4-5 tabs
 
 ```
-Diagnostic | Strategie | Investissement | Cas clients
+(Contexte) | Diagnostic | Strategie | Investissement | Cas clients
 ```
 
-Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
+Les 4 onglets obligatoires sont **toujours presents**. L'onglet Contexte est conditionnel (si CONTEXTE_TAB = YES dans le NBP, generer `/tmp/tab_contexte.html` et passer `--contexte` a build_proposal.py).
 
 ### Composants specifiques par onglet
 
-**Hero partage (4 onglets)** : le hero full-screen est defini une seule fois dans l'onglet Diagnostic. Le JS de navigation le deplace automatiquement dans l'onglet actif. Sur l'onglet Diagnostic le hero est complet (subtitle + scroll indicator). Sur les onglets 2-4 le hero passe en mode compact (`.hero--compact` : tag + h1 + date visibles, subtitle et scroll indicator masques). Ne PAS dupliquer le hero dans chaque `tab-content`. Ne PAS utiliser de `.tab-header` compact pour les onglets 2-4.
+**Hero par onglet (obligatoire)** : chaque onglet a son propre hero fullscreen. Il n'y a plus de hero partage ni de `hero--compact`. Chaque hero contient : `.hero-blobs`, `.hero-tag` (nom de l'onglet), `h1` (nom du prospect), `.hero-subtitle` (baseline unique adaptee a l'onglet), `.hero-context` (contexte client), `.hero-date`, `.hero-scroll`.
+
+Le `hero-tag` et le `hero-subtitle` varient selon l'onglet :
+- **Contexte** (conditionnel) : tag = "Contexte", subtitle = baseline identitaire adaptee au Search
+- **Diagnostic** : tag = "Diagnostic Search", subtitle = baseline du hook (constat principal)
+- **Strategie** : tag = "Strategie Search", subtitle = direction strategique (ex: "De l'audit a l'amplification")
+- **Investissement** : tag = "Investissement", subtitle = angle decision (ex: "Ce que cela represente, ce que cela debloque")
+- **Cas clients** : tag = "Cas clients", subtitle = angle preuves (ex: "Des resultats mesures sur des profils comparables")
+
+Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
+
+**Onglet Contexte (conditionnel)** : si CONTEXTE_TAB = YES dans le NBP
+- Hero fullscreen (tag "Contexte", subtitle qui tisse identite + Search)
+- **Slides ADN** (1 slide par pilier) : chaque pilier de marque est traduit en territoire de recherche. Composants : `section-label`, texte contextuel, `highlight-box` (variante au choix) avec l'opportunite Search, `query-pill` pour les requetes typiques
+- **Slides Personas** (1 slide par persona, B2C puis B2B) : design STANDARDISE obligatoire. Format : `grid-2` avec deux divs surface (`background:var(--surface)`, `border-radius:var(--radius-md)`, `padding:28px`). Colonne gauche : titre "Profil & comportement" (couleur orange, uppercase 12px), liste `<ul>`. Colonne droite : titre "Parcours Search" (couleur magenta, uppercase 12px), paragraphe + `query-pill`. Sous le grid : `highlight-box` avec "Enjeu Search". **Meme design pour TOUS les personas (B2C et B2B), sans exception.**
+- **Slide synthese** : titre centre, grid de piliers ADN (couleurs differenciees par pilier), `highlight-box highlight-gradient` qui nomme toutes les cibles et leur constat Search commun
+- **CTA leger** : `cta-section` avec bouton vers onglet Diagnostic
+- **Pas de data DataForSEO** dans cet onglet. Pas de bar charts, pas de tables comparatives. C'est du contexte qualitatif.
 
 **Onglet Diagnostic** : composition libre, hero full screen (catalogue complet)
-- Hero complet (blobs, contexte client tisse) → sections libres → **section S7** → deferred → implications
+- Hero (blobs, contexte client tisse) → sections libres → **section S7** → deferred → implications
 - Tout composant du catalogue est utilisable
 - **Section S7 obligatoire** : Radar S7 + S7 constraint highlight + S7 levers row + Pull quote (insight central)
 - **SO WHAT obligatoire** : chaque section se termine par un highlight box qui traduit les donnees en impact business chiffre, **3 lignes max**
@@ -259,16 +280,16 @@ Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
 - **Pas de transitions SLASHR** : la proposition ne mentionne jamais SLASHR ou ses services dans l'onglet Diagnostic, sauf dans la section S7 (methode d'analyse). Le SO WHAT de chaque section suffit comme conclusion.
 - **Fusion constat/benchmark** : si le constat et le benchmark utilisent les memes KPIs, les fusionner en 1 seule slide (KPI large → contexte → bar chart → table optionnelle → SO WHAT)
 
-**Onglet Strategie** : hero partage + decision strategique
-- Le hero se deplace automatiquement en tete d'onglet (JS). Premiere section apres le hero : decision strategique.
+**Onglet Strategie** : hero propre + decision strategique
+- Hero fullscreen (tag "Strategie Search"). Premiere section apres le hero : decision strategique.
 - **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet
 - **Timeline 90 jours** : M1/M2/M3
 - **ROI Simulator** : hypotheses sourcees + sliders + calcul JS + 3 scenarios
 - Highlight box violet pour la conviction ROI
 - **CTA intermediaire leger** (lien texte, pas full-width)
 
-**Onglet Investissement** : hero partage + resume decisionnel
-- Le hero se deplace automatiquement en tete d'onglet (JS). Premiere section apres le hero : resume decisionnel.
+**Onglet Investissement** : hero propre + resume decisionnel
+- Hero fullscreen (tag "Investissement"). Premiere section apres le hero : resume decisionnel.
 - **Resume decisionnel** : Highlight box (gradient) avec 6 bullets (max 120 chars chacun), en haut de l'onglet, c'est la premiere chose que le decideur voit
 - **Board-ready A4** : bouton "Version imprimable" qui declenche `window.print()`, page `@media print` avec resume + radar S7 + ROI + pricing
 - **Cout de l'inaction (AVANT le pricing)** : composant s7-insight avec 3 impacts business chiffres. Place AVANT les pricing cards pour l'ancrage psychologique : le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
@@ -279,7 +300,7 @@ Les 4 onglets sont **toujours presents**. Aucun n'est optionnel.
 - **Prochaine etape** : bloc 3 lignes (decision, date, action)
 - **CTA full-width** (unique CTA principal de la proposition)
 
-**Onglet Cas clients** : hero partage + slide intro
+**Onglet Cas clients** : hero propre + slide intro
 - **Slide intro** : H2 "Resultats observes sur des profils comparables" + section-intro qui cadre la pertinence par rapport au prospect
 - **1 slide par cas client** (2-4 cas), chaque slide contient :
   - Micro-benchmark en tete (`.micro-benchmark`) : prospect → cas (avant) → cas (apres)
@@ -406,7 +427,7 @@ Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
 S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-4 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement | Cas clients ({N} cas)
+Onglets : {Contexte (si active) |} Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement | Cas clients ({N} cas)
 
 DRAFT, a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.

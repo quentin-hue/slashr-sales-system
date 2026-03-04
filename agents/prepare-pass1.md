@@ -548,6 +548,34 @@ Organiser les donnees brutes en categories exploitables :
 | `SERP_FEATURES_MAP` | (conditionnel) SERP features detectees sur les keywords commerciaux. Voir Module 4d. |
 | `SECONDARY_MARKETS` | (conditionnel) Marches B2B, CE/CSE, export detectes dans les sources. Voir section ci-dessous. |
 
+### BRAND_CONTEXT (conditionnel — onglet Contexte)
+
+**Activer si** au moins 2 des conditions suivantes sont remplies :
+1. Le prospect a une marque patrimoniale ou identitaire forte (heritage, territoire, histoire)
+2. Les sources Drive contiennent des documents de contexte marque (PPT partenaire, charte, brand book, personas, plateforme de marque, brief)
+3. HOOK_TYPE = "ancrage_identitaire" (identifie en Etape 1.3)
+4. BRAND_SEARCH_ANALYSIS.BRAND_SLIDE = YES (volume marque significatif)
+5. SECONDARY_MARKETS.B2B_SLIDE = YES (cibles multiples justifiant un mapping personas)
+
+**Detection :** scanner les fichiers Drive (Module 2) pour les termes : marque, ADN, heritage, territoire, persona, cible, charte, positionnement, brand, identite, plateforme de marque, brief creatif. Scanner aussi les notes Pipedrive pour des mentions de contexte identitaire.
+
+**Contenu SDB :**
+```
+BRAND_CONTEXT:
+  CONTEXTE_TAB: YES | NO
+  Conditions remplies: {liste des conditions cochees parmi 1-5}
+  Sources contexte: {fichiers Drive identifies, avec chemins cache}
+  Piliers de marque: {liste si identifies dans les sources}
+  Personas detectes:
+    B2C: {liste si identifies}
+    B2B: {liste si identifies}
+  Si CONTEXTE_TAB = NO: justification en 1 ligne
+```
+
+**Regle :** si CONTEXTE_TAB = YES, Pass 2 doit planifier un onglet Contexte dans le NBP. Les donnees brutes des sources Drive sont transmises telles quelles (pas d'interpretation en Pass 1).
+
+---
+
 ### BRAND_SEARCH_ANALYSIS (conditionnel)
 
 **Activer si :** volume marque > 5 000 recherches/mois OU part marque > 60% du trafic organique.
@@ -1016,6 +1044,13 @@ CAS CLIENTS RETENUS:
   key_metric: {idem}
   sdb_juxtaposition: {idem}
   angle: {idem}
+
+BRAND_CONTEXT:
+  CONTEXTE_TAB: {YES | NO}
+  Conditions remplies: {liste}
+  Sources contexte: {fichiers Drive ou NONE}
+  Piliers de marque: {liste ou NON IDENTIFIES}
+  Personas: {B2C: liste, B2B: liste, ou NONE}
 
 RED FLAGS: {liste}
 GREEN FLAGS: {liste}

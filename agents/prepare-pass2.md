@@ -20,7 +20,7 @@ Dans la recommendation (NBP), garder 3 sections courtes :
 - Chaque axe de reco doit etre relie a 1 fait OU explicite comme hypothese.
 
 
-Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **4 onglets** (Diagnostic, Strategie, Investissement, Cas clients). Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
+Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **4-5 onglets** (Contexte conditionnel, Diagnostic, Strategie, Investissement, Cas clients). Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
 
 ### Champs SDB enrichis (consommes par Pass 2)
 
@@ -174,7 +174,7 @@ Le NBP doit specifier `CONSTAT_MODE` pour que la Pass 3 choisisse le bon composa
 - Constat : les produits apparaissent via des revendeurs (nommer les revendeurs)
 - Data : {N} requetes declenchant Google Shopping, % intent commercial, volume
 - Levier : Merchant Center + feed produit = presence directe
-- Prerequis technique : rattacher a la refonte si applicable (WooCommerce, Shopify, etc.)
+- Prerequis technique : rattacher a la refonte si applicable. Utiliser "nouveau CMS" ou "refonte e-commerce" tant que le CMS n'est pas confirme (AO = CMS non decide). Ne citer un CMS specifique que s'il est explicitement confirme dans les notes Pipedrive ou par le closer.
 
 **SO WHAT :** highlight-box qui lie Shopping au vehicule technique (refonte) et au CA direct.
 
@@ -263,16 +263,37 @@ Test : extraire uniquement les h2 de l'onglet Diagnostic et les lire dans l'ordr
 
 ---
 
-## Etape 2.3 : Planifier les 4 onglets
+## Etape 2.3 : Planifier les onglets
 
-La proposition HTML a toujours **4 onglets**. Aucun n'est optionnel.
+La proposition HTML a **4 onglets obligatoires** (Diagnostic, Strategie, Investissement, Cas clients) + **1 onglet conditionnel** (Contexte, si BRAND_CONTEXT.CONTEXTE_TAB = YES).
 
 ```
+(conditionnel) Onglet 0 : Contexte — "Votre marque, vos cibles, votre terrain Search"
 Onglet 1 : Diagnostic — "Voici votre situation"
 Onglet 2 : Strategie — "Voici ce qu'on recommande"
 Onglet 3 : Investissement — "Voici ce que ca coute"
 Onglet 4 : Cas clients — "Resultats observes sur des profils comparables"
 ```
+
+### Onglet 0 (conditionnel) : Contexte ("Votre marque, vos cibles, votre terrain Search")
+
+**Activer si :** `BRAND_CONTEXT.CONTEXTE_TAB = YES` dans le SDB.
+
+Cet onglet cree un ancrage emotionnel et strategique AVANT le diagnostic chiffre. Il traduit l'ADN de marque et les cibles en opportunites Search. Il ne contient PAS de data DataForSEO : c'est du contexte qualitatif, pas du diagnostic.
+
+**Structure :**
+1. **Hero** (tag "Contexte", subtitle qui tisse l'identite de marque dans le constat Search)
+2. **Slides ADN de marque** (1 slide par pilier identifie dans BRAND_CONTEXT.Piliers) : chaque pilier est traduit en un territoire de recherche. Format : titre pilier + contexte marque + "en Search, cela signifie..." + requetes typiques (query-pills) + highlight-box opportunite
+3. **Slides Personas** (1 slide par persona, B2C puis B2B) : chaque persona est traduit en comportement Search. Format standardise : grid-2 ("Profil & comportement" | "Parcours Search") + highlight-box "Enjeu Search" + query-pills. **Tous les personas utilisent le meme design pattern.**
+4. **Slide synthese** : "Avant d'acheter, il faut vous trouver". Resume les cibles (B2C + B2B) et leur constat commun Search. Grid de piliers ADN avec couleurs differenciees + highlight-box gradient qui nomme chaque cible et son comportement Search.
+5. **CTA Diagnostic** : bouton qui bascule vers l'onglet Diagnostic ("Voir les donnees")
+
+**Regles :**
+- Les piliers de marque proviennent des sources Drive (PPT, charte, brief). L'agent les reformule pour la vision Search, il ne les invente pas.
+- Les personas proviennent des sources Drive ou des notes Pipedrive. Si aucun persona n'est documente, l'agent peut proposer des personas types bases sur le secteur + les donnees Search, mais il le signale comme hypothese.
+- L'onglet Contexte est positionne A GAUCHE de Diagnostic dans la nav (premier onglet, actif par defaut).
+- Le ton est factuel et strategique (pas de flatterie, pas de nostalgie). L'heritage de marque est un fait, pas une emotion.
+- **CMS-agnostique :** si REFONTE = OUI et CMS non confirme, utiliser "nouveau site e-commerce" ou "refonte e-commerce".
 
 ### Onglet 1 : Diagnostic ("Voici votre situation")
 
@@ -348,7 +369,7 @@ Bloc de presentation des donnees issues du Module 4b (Intent Market Map). Ce n'e
 
 ### Onglet 2 : Strategie ("Voici ce qu'on recommande")
 
-Le hero est partage entre les 4 onglets (deplacement JS automatique). Sur cet onglet le hero est compact (tag + h1 + date, sans subtitle ni scroll indicator). L'onglet ouvre sur le hero compact, puis la decision strategique.
+Hero fullscreen propre a cet onglet (tag "Strategie Search", subtitle = direction strategique). L'onglet ouvre sur le hero, puis la decision strategique.
 
 **Regle de deduplication tab-header vs highlight-gradient :**
 Le tab-header de l'onglet Strategie donne le TITRE de la recommandation (phrase courte, max 8 mots, ex: "Integrer le SEO dans la refonte").
@@ -397,7 +418,7 @@ Contient : resume decisionnel (6 bullets), board-ready A4, pricing cards Phase 1
 
 ### Onglet 4 : Cas clients ("Resultats observes sur des profils comparables")
 
-Le hero est partage entre les 4 onglets (compact : tag + h1 + date, sans subtitle). Apres le hero, ouvre sur une slide intro + les cas selectionnes.
+Hero fullscreen propre a cet onglet (tag "Cas clients", subtitle = angle preuves). Apres le hero, ouvre sur une slide intro + les cas selectionnes.
 
 **Structure :**
 1. **Slide intro** : H2 "Resultats observes sur des profils comparables" + section-intro qui cadre la pertinence par rapport au prospect.
@@ -498,6 +519,22 @@ Regroupement par argument:
 - ...
 Total sections Diagnostic: {N} (pas de plafond, deduplication seul garde-fou)
 
+--- ONGLET CONTEXTE (conditionnel, si BRAND_CONTEXT.CONTEXTE_TAB = YES) ---
+
+CONTEXTE_TAB: YES | NO
+Hero subtitle: {baseline qui tisse identite + Search, ex: "Une marque qui se transmet depuis 1888. Demain, une marque qui se trouve."}
+
+Piliers ADN (1 slide par pilier):
+- Pilier 1 "{nom}": angle Search = {territoire de recherche}, requetes typiques: {exemples}
+- Pilier 2 "{nom}": angle Search = {territoire}, requetes: {exemples}
+- ...
+
+Personas (1 slide par persona, design standardise):
+- B2C: {liste personas avec profil et comportement Search}
+- B2B: {liste personas avec profil et comportement Search} (si applicable)
+
+Synthese: {baseline, ex: "X cibles, un constat commun"} + {resume constat Search par cible}
+
 --- ONGLET DIAGNOSTIC ---
 
 1. {Titre section} · role: {accroche / diagnostic / enjeu / opportunite / ...}
@@ -515,6 +552,11 @@ X. Section S7 "Lecture strategique" · role: priorisation / conviction
    Leviers: {2-3 forces priorisees + impact chiffre}
    Insight: {1 phrase non generique}
    Pourquoi ici: {apres le diagnostic, avant les implications, c'est le pont}
+
+X+0.3. (conditionnel) Section technique/operationnelle (refonte, migration, etc.) · role: vehicule concret
+   Si le deal implique une refonte (REFONTE=true), placer la slide technique ICI (apres le S7, pas avant). Le S7 identifie S2 Architecture comme levier → la refonte devient le vehicule concret de S2. Placer cette slide avant le S7 interrompt le crescendo d'opportunite.
+   **Regle CMS :** si le deal est un AO ou que le CMS n'est pas confirme dans les notes, utiliser "refonte e-commerce" ou "nouveau CMS". Ne jamais ecrire "refonte WooCommerce" (ou Shopify, PrestaShop) sauf si le CMS est explicitement confirme par le closer.
+   Pourquoi ici: {le S7 vient de diagnostiquer S2, la refonte repond a S2 — causalite directe}
 
 X+0.5. Section "Ce que nous ne priorisons pas (maintenant)" · role: transparence strategique (OBLIGATOIRE)
    3 bullets maximum, issus des DEFERRED du strategy_plan_internal.md.
