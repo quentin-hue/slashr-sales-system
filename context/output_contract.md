@@ -47,6 +47,7 @@ Les termes "5 jours", "4 jours", "TJM", "jour-homme" sont INTERDITS dans le HTML
 | Ce que ca inclut (scope qualitatif) | TJM |
 | Budget mensuel EUR HT | Calcul jours x TJM |
 | Engagement (duree) | Incompressibles par levier |
+| 1 recommandation mise en avant (`.recommended`) | Les autres niveaux en compact |
 
 **Formulation type Phase 2 :**
 ```
@@ -56,6 +57,46 @@ Essentiel : {budget}/mois — pilotage + monitoring
 Performance : {budget}/mois — + production deleguee
 Croissance : {budget}/mois — + multi-leviers
 ```
+
+### Section Investissement — Onglet Projet (conditionnel)
+
+L'onglet Projet est optionnel, insere entre Strategie et Investissement. Il humanise la collaboration et rassure le decideur sur le "comment".
+
+| Visible | Invisible |
+|---------|-----------|
+| Point de contact unique (prenom, photo, role) | Organigramme interne |
+| Methode de travail (systeme S7, approche data) | Process internes detailles |
+| Mode de production contenu (comment SLASHR produit) | TJM, jours |
+| Mode de collaboration (outils, rituels, rythme) | Detail des outils internes |
+| Timeline onboarding Phase 1 (semaines) | Planification interne |
+
+**Formulation type Projet :**
+```
+"Un interlocuteur unique. Une methode structuree. Un rythme clair."
+
+→ Votre contact dedie : {prenom} ({role})
+→ Notre approche : S7, data-first, iteration mensuelle
+→ Production : contenu cree par SLASHR, valide par vous
+→ Collaboration : {outil} + {rituel} + reporting mensuel
+→ Onboarding : S1 brief → S2 audit → S3-4 livrables → S5+ accompagnement
+```
+
+### Section Investissement — Recap budget (slide dedie)
+
+Le recap budget est un slide **dedie** (pas inline dans le pricing). Il presente une vue consolidee.
+
+| Visible | Invisible |
+|---------|-----------|
+| Budget accompagnement SLASHR par phase | Decomposition jours |
+| Budget media minimum pressenti par phase | Calcul media detaille |
+| Total global HT sur la duree | Marges |
+| Objectif associe a chaque phase | KPIs internes |
+
+**Regles d'affichage :**
+- 2 colonnes (ex: 2026 / 2027) avec le total en hero gradient
+- Chaque phase porte un objectif qualitatif colore (ex: "Poser les fondations" en orange, "Accelerer vers 200K" en magenta)
+- Budget media : ligne separee sous l'accompagnement, avec mention "minimum pressenti, ajustable selon strategie et saisonnalite"
+- Footnote : "Sans engagement sur la Phase 2"
 
 ### Section SEA Advisory (conditionnel, si SEA_SIGNAL = EXPLICIT)
 

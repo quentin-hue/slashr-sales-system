@@ -1,17 +1,17 @@
 # Validation Rules — Proposition HTML
 
-> Reference unique des 50 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
+> Reference unique des 54 regles de validation. Utilisee par Pass 2 (tests pre-generation), Pass 3 (validation post-generation) et `tools/validate_proposal.py` (validation automatisee).
 
 ---
 
-## Layer 1 : Structural (17 regles, PASS/FAIL)
+## Layer 1 : Structural (19 regles, PASS/FAIL)
 
 Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 
 | # | Regle | Test |
 |---|-------|------|
 | 3 | Fond sombre `#1a1a1a` present | CSS `background` ou `--bg` contient `#1a1a1a` |
-| 5 | 4-5 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement`, `tab-cas-clients` + optionnel `tab-contexte` | 4 ou 5 `div.tab-content` avec contenu non-placeholder. Si `tab-contexte` present, il doit etre positionne AVANT `tab-diagnostic` dans le DOM |
+| 5 | 4-6 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement`, `tab-cas-clients` + optionnels `tab-contexte`, `tab-projet` | 4 a 6 `div.tab-content` avec contenu non-placeholder. Si `tab-contexte` present, positionne AVANT `tab-diagnostic`. Si `tab-projet` present, positionne entre `tab-strategie` et `tab-investissement` |
 | 14 | Section S7 dans l'onglet Diagnostic | `s7-grid`, `s7-card`, `s7-radar-wrap` ou `s7-radar-svg` present dans `#tab-diagnostic` |
 | 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` ou `data-priority="primary"` dans `#tab-diagnostic` |
 | 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-investissement` avec max 6 `<li>` |
@@ -28,10 +28,12 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" AVANT pricing | `.recommended` present + section cout inaction dans `#tab-investissement` + cout inaction (`.s7-insight`) positionne AVANT `.pricing`/`.pricing-grid` dans le DOM |
 | 30 | Coherence levier : setup Phase 1 ↔ run Phase 2 | Chaque levier avec Phase 1 a un Phase 2 et inversement |
 | 18b | Zero tiret cadratin et semi-cadratin separateur | Regex `\u2014` (em dash) et `\u2013` (en dash hors plages numeriques) absents du texte visible. Inclut `&mdash;` et `&ndash;` dans le HTML source |
+| 50 | CTA H2 coherent avec la destination | Chaque lien `data-tab` dans un CTA a un H2 dont le texte mentionne l'onglet cible (ex: "Voir le projet" → `data-tab="projet"`, pas `data-tab="investissement"`) |
+| 51 | Budget media mentionne dans le recap | Si `.pricing` ou `.pricing-grid` present, le texte "budget media" ou "budget média" (case-insensitive) apparait dans `#tab-investissement` |
 
 ---
 
-## Layer 2 : Content (12 regles, WARN)
+## Layer 2 : Content (14 regles, WARN)
 
 Regles verifiables par heuristiques. Echec = WARNING, correction recommandee.
 
@@ -54,6 +56,8 @@ Regles verifiables par heuristiques. Echec = WARNING, correction recommandee.
 | 47 | Deduplication onglet Strategie | Nombre de `.slide` dans `#tab-strategie` <= 5 (hors hero et CTA). Au-dela → WARN "Onglet Strategie sur-dense, verifier la deduplication" | <= 5 slides |
 | 48 | Densite slide (ecran unique) | Aucun `.slide` ne contient plus de 2 composants visuels (`.bar-chart` + `.donut-chart` + `table` + `.grid-2`/`.grid-3` avec > 4 enfants). Au-dela → WARN "Slide sur-dense, decouper" | Max 2 composants visuels par slide |
 | 49 | Plan 90j contextuel | Si REFONTE mentionnee dans `#tab-diagnostic`, la timeline M1/M2/M3 dans `#tab-strategie` doit contenir "refonte" OU "migration" OU "accompagnement". WARN si plan generique malgre refonte | Coherence contexte/plan |
+| 52 | Budget recap en slide dedie | Le recap budget global (total 2 ans ou annuel) doit etre dans son propre `.slide`, pas inline dans un slide pricing. WARN si le recap est dans le meme slide qu'un `.pricing-grid` | Slide dedie |
+| 53 | Objectif phase associe au budget | Chaque phase dans le recap budget doit mentionner un objectif qualitatif (ex: "fondations", "accelerer", "CA"). WARN si budget sans objectif | Objectif visible |
 
 ---
 

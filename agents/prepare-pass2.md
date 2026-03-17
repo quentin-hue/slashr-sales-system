@@ -20,7 +20,7 @@ Dans la recommendation (NBP), garder 3 sections courtes :
 - Chaque axe de reco doit etre relie a 1 fait OU explicite comme hypothese.
 
 
-Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **4-5 onglets** (Contexte conditionnel, Diagnostic, Strategie, Investissement, Cas clients). Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
+Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc emotionnel, la sequence des sections pour chacun des **5-6 onglets** (Diagnostic, Strategie, Projet, Investissement, Cas clients + Contexte conditionnel). Decider du contenu textuel de chaque section (titres, angles, arguments). **NE PAS choisir de composants visuels, c'est le role de la Pass 3.**
 
 ### Champs SDB enrichis (consommes par Pass 2)
 
@@ -265,14 +265,15 @@ Test : extraire uniquement les h2 de l'onglet Diagnostic et les lire dans l'ordr
 
 ## Etape 2.3 : Planifier les onglets
 
-La proposition HTML a **4 onglets obligatoires** (Diagnostic, Strategie, Investissement, Cas clients) + **1 onglet conditionnel** (Contexte, si BRAND_CONTEXT.CONTEXTE_TAB = YES).
+La proposition HTML a **5 onglets obligatoires** (Diagnostic, Strategie, Projet, Investissement, Cas clients) + **1 onglet conditionnel** (Contexte, si BRAND_CONTEXT.CONTEXTE_TAB = YES).
 
 ```
 (conditionnel) Onglet 0 : Contexte — "Votre marque, vos cibles, votre terrain Search"
 Onglet 1 : Diagnostic — "Voici votre situation"
 Onglet 2 : Strategie — "Voici ce qu'on recommande"
-Onglet 3 : Investissement — "Voici ce que ca coute"
-Onglet 4 : Cas clients — "Resultats observes sur des profils comparables"
+Onglet 3 : Projet — "Comment on travaille ensemble"
+Onglet 4 : Investissement — "Voici ce que ca coute"
+Onglet 5 : Cas clients — "Resultats observes sur des profils comparables"
 ```
 
 ### Onglet 0 (conditionnel) : Contexte ("Votre marque, vos cibles, votre terrain Search")
@@ -410,13 +411,76 @@ Avant de creer les slides, verifier :
 
 **Regle Confidence ROI :** si le SDB indique `Confidence globale: Low` ou si 2+ hypotheses ROI sont tagees `Low`, la section ROI DOIT afficher "Hypotheses a confirmer en Phase 1" sous le simulateur, et la carte `.recommended` de l'onglet Investissement recoit le label "Recommandation conditionnelle".
 
-### Onglet 3 : Investissement ("Voici ce que ca coute")
+### Onglet 3 : Projet ("Comment on travaille ensemble")
+
+Hero fullscreen propre a cet onglet (tag "Projet", subtitle "Comment on travaille ensemble.").
+
+**Structure : 5 slides obligatoires**
+
+#### Slide 1 : Votre equipe
+- **Titre court** : ex "Une seule personne a appeler"
+- **Bloc chef de projet** (highlight-box avec logo SLASHR `<img>`, pas un cercle texte) :
+  - Label : "Votre chef de projet" (JAMAIS "Account Manager")
+  - Sous-titre percutant : ex "Un profil senior, pas un junior qui apprend sur votre budget"
+  - Description : pilote le projet, produit les livrables, assure le reporting. Un seul interlocuteur.
+  - Ne PAS mentionner SEA/GEO si hors perimetre du deal
+- **3 fondateurs en appui** (grid-3, cards centrees avec initiales colorees) :
+  - Anthony L. / Strategie : definit les priorites, valide les choix strategiques
+  - Quentin C. / Business : garant des interets business du client
+  - Benoit D. / Technique : garant de l'expertise et de la qualite des livrables
+  - NE PAS inventer d'anciennete ou de chiffres non verifies
+
+#### Slide 2 : Notre approche
+- **Titre** : "On ne vend pas du temps. On vend un systeme."
+- **3 piliers** (grid-3, cards avec border-top coloree) :
+  1. "Vos donnees, pas des moyennes" (diagnostic sur mesure)
+  2. "Production automatisee" (PAS "Agents & workflows internes")
+  3. "Validation humaine" (PAS "Verification humaine")
+- **Highlight-box** : "Votre budget finance un systeme qui tourne, pas des heures de consultant."
+- **Ligne stack** compacte : "{N} outils internes · {N} projets R&D en cours" + lien vers agence-slashr.fr/r-and-d/
+  - NE PAS lister les noms d'outils internes (Brief Generator, Janus, AI Ranker = bruit pour le prospect)
+  - NE PAS lister DataForSEO dans les outils client-facing
+
+#### Slide 3 : Production
+- **Titre** : "Le bon contenu, au bon format, au bon moment"
+- **3 formats** (grid-3) : Guides/articles, Pages categories/fiches, Optimisations de l'existant
+  - Exemples personnalises au deal (pas generiques)
+  - Volumes adaptes a la Phase 1
+- **Highlight-box** : "Pourquoi on ne compte pas en articles ?"
+
+#### Slide 4 : Collaboration
+- **Titre** : "Comment ca se passe concretement"
+- **4 cards** (grid-2 x2) avec labels temporels colores (pas de lettres cryptiques) :
+  - "Chaque mois" → Comite de pilotage (45 min)
+  - "En continu" → Reporting partage (positions, trafic + resultats business)
+  - "A la demande" → Acces direct (reponse sous **48h** ouvrees, pas 24h)
+  - "Inclus" → Outils et licences (lister seulement les outils du site agence)
+- NE PAS dire "KPIs" → dire "indicateurs", "resultats", "conversions, chiffre d'affaires"
+
+#### Slide 5 : Demarrage (onboarding)
+- **Titre** : "Et apres la signature ?"
+- **Timeline 3 etapes** :
+  - S1 : acces, crawl, prise en main des donnees
+  - S2-3 : audit livre, premieres optimisations, plan d'action partage
+  - M1 : premier comite de pilotage, resultats quick wins, priorites M2
+- **Highlight-box** : "Pas de tunnel de 3 mois avant de voir quelque chose. Les premieres actions sont visibles des les premieres semaines."
+
+**CTA final** : bouton vers l'onglet Investissement.
+
+**Regles design :**
+- Snake hover sur toutes les highlight-boxes (bloc `@property --snake-angle` dans le `<style>` du tab)
+- Fonds opaques obligatoires sur highlight-boxes et snake-inner : `background:linear-gradient(135deg,#1f1810,#1d1623)`
+- Logo SLASHR : `<img src="https://agence-slashr.fr/blog/images/2024/03/LOGO-SLASHR-BLANC-1.png">` (pas un cercle texte)
+
+---
+
+### Onglet 4 : Investissement ("Voici ce que ca coute")
 
 **Spec complete : `agents/prepare-pass2-onglet4.md`.**
 
-Contient : resume decisionnel (6 bullets), board-ready A4, pricing cards Phase 1/Phase 2 avec pont S7, sous-bloc unique "cout de l'inaction", methode S7, FAQ accordion, prochaine etape, CTA final.
+Contient : Phase 1 (audit + 90j), accompagnement mensuel (echelle 4 colonnes), simulateur ROI, FAQ accordion, CTA final.
 
-### Onglet 4 : Cas clients ("Resultats observes sur des profils comparables")
+### Onglet 5 : Cas clients ("Resultats observes sur des profils comparables")
 
 Hero fullscreen propre a cet onglet (tag "Cas clients", subtitle = angle preuves). Apres le hero, ouvre sur une slide intro + les cas selectionnes.
 

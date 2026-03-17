@@ -32,17 +32,18 @@ Inclure un encart final (court) :
 - 3 manquants + acces minimal
 
 
-Prendre le NBP et generer le **contenu HTML des 4-5 onglets** (Contexte conditionnel + 4 obligatoires). Choisir les composants visuels du kit pour chaque section. Assurer le rythme visuel. **Ne PAS modifier le contenu strategique du NBP**, seulement le mettre en forme.
+Prendre le NBP et generer le **contenu HTML des 5-6 onglets** (Contexte conditionnel + Diagnostic + Strategie + Projet conditionnel + Investissement + Cas clients). Choisir les composants visuels du kit pour chaque section. Assurer le rythme visuel. **Ne PAS modifier le contenu strategique du NBP**, seulement le mettre en forme.
 
 ### Architecture skeleton + tabs
 
 Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skeleton.html`. L'agent ne le reproduit PAS. Il genere uniquement le **contenu de chaque onglet** (le HTML entre les balises `<div class="tab-content">` et `</div>`).
 
 **Workflow :**
-1. Generer 4 ou 5 fichiers HTML fragments (un par onglet) :
+1. Generer 5 a 6 fichiers HTML fragments (un par onglet) :
    - (conditionnel) `/tmp/tab_contexte.html` — si CONTEXTE_TAB = YES dans le NBP
    - `/tmp/tab_diagnostic.html`
    - `/tmp/tab_strategie.html`
+   - `/tmp/tab_projet.html`
    - `/tmp/tab_investissement.html`
    - `/tmp/tab_cas_clients.html`
 2. Si le simulateur ROI a du JS custom, ecrire `/tmp/extra_roi_sim.js`
@@ -54,12 +55,13 @@ Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skele
      --contexte /tmp/tab_contexte.html \
      --diagnostic /tmp/tab_diagnostic.html \
      --strategie /tmp/tab_strategie.html \
+     --projet /tmp/tab_projet.html \
      --investissement /tmp/tab_investissement.html \
      --cas-clients /tmp/tab_cas_clients.html \
      --extra-js /tmp/extra_roi_sim.js \
      --output .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html
    ```
-   Note : `--contexte` est optionnel. Sans lui, la proposition a 4 onglets (comportement par defaut).
+   Note : `--contexte` et `--projet` sont optionnels. Sans eux, la proposition a 4 onglets (comportement par defaut).
 
 **Ce que l'agent genere (le vrai travail creatif) :**
 - Le hero de chaque onglet (4 ou 5 heroes fullscreen, un par tab)
@@ -71,7 +73,7 @@ Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skele
 **Ce que le skeleton fournit (boilerplate identique a chaque proposition) :**
 - Le `<head>` (charset, viewport, fonts)
 - Tout le CSS (~2000 lignes, variables, composants, responsive, print)
-- La nav fixe (4 onglets par defaut, 5 si Contexte injecte par build_proposal.py)
+- La nav fixe (4 onglets par defaut, jusqu'a 6 si Contexte et/ou Projet injectes par build_proposal.py)
 - La structure `<div class="main">` + `<div class="tab-content">`
 - Le footer
 - Le JS core (tab switching, bar chart animation, accordion, ticker, donut animation)
@@ -196,6 +198,7 @@ Chaque slide doit tenir sur un ecran standard (1440x900) sans scroll vertical in
 **Nombre max de slides par onglet :**
 - Diagnostic : pas de plafond (la deduplication est le garde-fou)
 - Strategie : 5 slides max (hors hero et CTA)
+- Projet : 5 slides (equipe, approche, production, collaboration, onboarding)
 - Investissement : pas de plafond (structure fixe)
 - Cas clients : 1 intro + 2-4 cas = 3-5 slides
 
@@ -242,13 +245,14 @@ Si `LAYOUT_MODE = "data-heavy"` (defaut) : benchmark + tables + charts, equilibr
 
 ## Etape 3.3 : Structure des onglets
 
-### Nav fixe avec 4-5 tabs
+### Nav fixe avec 5-6 tabs
 
 ```
-(Contexte) | Diagnostic | Strategie | Investissement | Cas clients
+(Contexte) | Diagnostic | Strategie | Projet | Investissement | Cas clients
 ```
 
-Les 4 onglets obligatoires sont **toujours presents**. L'onglet Contexte est conditionnel (si CONTEXTE_TAB = YES dans le NBP, generer `/tmp/tab_contexte.html` et passer `--contexte` a build_proposal.py).
+Les 5 onglets obligatoires sont **toujours presents** : Diagnostic, Strategie, Projet, Investissement, Cas clients. L'onglet Contexte est conditionnel :
+- **Contexte** : si CONTEXTE_TAB = YES dans le NBP
 
 ### Composants specifiques par onglet
 
@@ -258,6 +262,7 @@ Le `hero-tag` et le `hero-subtitle` varient selon l'onglet :
 - **Contexte** (conditionnel) : tag = "Contexte", subtitle = baseline identitaire adaptee au Search
 - **Diagnostic** : tag = "Diagnostic Search", subtitle = baseline du hook (constat principal)
 - **Strategie** : tag = "Strategie Search", subtitle = direction strategique (ex: "De l'audit a l'amplification")
+- **Projet** (conditionnel) : tag = "Projet", subtitle = angle humain (ex: "Un interlocuteur, une methode, un rythme")
 - **Investissement** : tag = "Investissement", subtitle = angle decision (ex: "Ce que cela represente, ce que cela debloque")
 - **Cas clients** : tag = "Cas clients", subtitle = angle preuves (ex: "Des resultats mesures sur des profils comparables")
 
@@ -288,6 +293,16 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 - Highlight box violet pour la conviction ROI
 - **CTA intermediaire leger** (lien texte, pas full-width)
 
+**Onglet Projet** (obligatoire) : hero propre + humanisation
+- Hero fullscreen (tag "Projet", subtitle qui humanise la collaboration)
+- **Slide equipe** : interlocuteur unique (prenom, role, photo placeholder) + associes si pertinent. Composant : `grid-2` avec card accent pour le contact principal + cards compactes pour les specialistes
+- **Slide methode** : S7 en 2-3 phrases + approche data-first + iteration. Composant : routine-grid ou timeline courte
+- **Slide production** : comment SLASHR produit le contenu (brief → redaction → validation → publication). Composant : funnel horizontal ou steps numerotes
+- **Slide collaboration** : outils (Slack/email, dashboard, reporting), rituels (point mensuel, bilan 90j), rythme. Composant : grid-3 avec card-icon
+- **Slide onboarding** : timeline des premieres semaines (S1 brief, S2 audit, S3-4 livrables, S5+ accompagnement). Composant : timeline horizontale
+- **CTA intermediaire** : lien vers onglet Investissement ("Voir l'investissement")
+- **Pas de pricing, pas de budget** dans cet onglet. C'est du "comment on travaille", pas du "combien ca coute"
+
 **Onglet Investissement** : hero propre + resume decisionnel
 - Hero fullscreen (tag "Investissement"). Premiere section apres le hero : resume decisionnel.
 - **Resume decisionnel** : Highlight box (gradient) avec 6 bullets (max 120 chars chacun), en haut de l'onglet, c'est la premiere chose que le decideur voit
@@ -296,6 +311,7 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 - **Investissement v12.0** : 2 blocs separes. (1) **Phase 1 "Mission structurante"** : card accent, scope qualitatif + livrables + budget global HT, SANS jours ni TJM. (2) **Phase 2 "Orchestration mensuelle"** : 3 niveaux d'intensite (Essentiel/Performance/Croissance), le recommande en `.recommended` avec border gradient, les autres compacts. Scope qualitatif + budget mensuel HT, SANS jours/mois ni TJM. Sous chaque scenario, ajouter une ligne : "Ce que ca debloque en priorite : {Pont S7 en langage client, issu du NBP}". Utiliser le langage prospect (ex: "debloquer votre visibilite locale"), PAS les labels internes S7 (ex: PAS "S3 Contenu"). Ne jamais mentionner jours/TJM.
 - **Recommandation conditionnelle** : si Confidence = Low sur 2+ ROI drivers, la carte `.recommended` conserve son statut mais affiche un label supplementaire : "Recommandation conditionnelle — validation des hypotheses en Phase 1".
 - **Sous-section Methode S7** : Card (accent) avec definition 2-3 phrases + liste compacte 7 forces (1 ligne chacune) + 1 phrase d'arbitrage. Peut etre dans un Accordion "Notre methode d'analyse".
+- **Recap budget (slide dedie)** : vue consolidee sur 2 colonnes (annee 1 / annee 2 si applicable). Chaque phase porte : (1) un objectif qualitatif colore (orange Phase 1, magenta Phase 2), (2) budget accompagnement SLASHR, (3) budget media minimum en ligne separee, (4) total phase. Hero gradient avec total global HT. Footnote : "Budget media minimum pressenti : {montant}/mois. Ajustable selon la strategie et la saisonnalite. Sans engagement sur la Phase 2." Ce slide est SEPARE du pricing, jamais dans le meme slide.
 - **Accordion "Questions frequentes"** : reprend les OBJECTIONS A PRE-EMPT du NBP. Chaque item : titre = objection formulee comme question, contenu = reponse data-first + source courte (DataForSEO / GSC / verbatim / benchmark). Si une objection n'a pas de source → ajouter "a confirmer en Phase 1".
 - **Prochaine etape** : bloc 3 lignes (decision, date, action)
 - **CTA full-width** (unique CTA principal de la proposition)
@@ -405,6 +421,8 @@ Les 3 KPIs se recalculent en temps reel (JS vanilla) : visites a M12, CA organiq
 
 Le JS extrait les montants des `.pricing-price` dans `#tab-investissement` OU les hardcode a partir du NBP si l'extraction est trop fragile. 3 boutons radio sous les sliders permettent de choisir le scenario. Le ROI recalcule en temps reel.
 
+**Footnote simulateur (obligatoire)** : sous les resultats du simulateur, ajouter une note en `font-size:11px;color:var(--text-30)` qui cadre les projections : CPC moyen estime, investissement SLASHR (hors budget media), et "Projections a regime de croisiere, hors gain de conversion lie a la refonte" si une refonte est dans le scope.
+
 ---
 
 ## Output
@@ -427,7 +445,7 @@ Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
 S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-Onglets : {Contexte (si active) |} Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement | Cas clients ({N} cas)
+Onglets : {Contexte (si active) |} Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) {| Projet (si active)} | Investissement | Cas clients ({N} cas)
 
 DRAFT, a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.

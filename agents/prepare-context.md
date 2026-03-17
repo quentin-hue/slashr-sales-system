@@ -263,15 +263,15 @@ DataForSEO > 100 KB = gzip automatique. Decompression transparente.
 
 ## 7. Validation rules (resume, detail dans context/validation_rules.md)
 
-45 regles, 4 layers. Execution via `python3 tools/validate_proposal.py`.
+54 regles, 4 layers. Execution via `python3 tools/validate_proposal.py`.
 
-**Layer 1 Structural** (17 regles, PASS/FAIL) : DOM, CSS, regex. 1 FAIL = REJECT.
-**Layer 2 Content** (12 regles, WARN) : heuristiques. Correction recommandee.
+**Layer 1 Structural** (19 regles, PASS/FAIL) : DOM, CSS, regex. 1 FAIL = REJECT.
+**Layer 2 Content** (14 regles, WARN) : heuristiques. Correction recommandee.
 **Layer 3 Semantic** (10 regles, checklist) : revue agent manuelle.
 **Layer 4 Quality Metrics** (6 regles, WARN) : densite donnees, specificite titres, SO WHAT.
 
 Regles critiques a garder en tete :
-- 4 onglets obligatoires (diagnostic, strategie, investissement, cas-clients) + 1 conditionnel (contexte, si BRAND_CONTEXT.CONTEXTE_TAB = YES)
+- 5 onglets obligatoires (diagnostic, strategie, projet, investissement, cas-clients) + 1 conditionnel (contexte, si BRAND_CONTEXT.CONTEXTE_TAB = YES)
 - Section S7 dans Diagnostic, exactement 1 PRIMARY
 - Resume decisionnel <= 6 bullets
 - Board-ready A4 avec window.print()

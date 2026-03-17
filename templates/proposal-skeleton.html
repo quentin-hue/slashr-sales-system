@@ -32,10 +32,10 @@
       --font-display: "Funnel Display", "Sora", "DM Sans", sans-serif;
       --font-body: "Inter", -apple-system, sans-serif;
       --radius: 14px;
-      --radius-md: 14px;
+      --radius-md: 12px;
       --radius-full: 9999px;
       --text-90: rgba(255,255,255,0.9);
-      --magenta-alt: #CE16B5;
+      --magenta-alt: #E61BC9;
       --border-active: rgba(255,255,255,0.3);
     }
 
@@ -77,10 +77,10 @@
       max-width: 1280px;
       margin: 0 auto;
       padding: 0 30px;
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
       height: 56px;
-      gap: 8px;
     }
 
     .nav-logo {
@@ -89,7 +89,13 @@
       font-weight: 700;
       color: var(--text);
       letter-spacing: -0.03em;
-      margin-right: auto;
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .nav-logo span {
@@ -116,19 +122,35 @@
     .nav-tab:hover { color: var(--text-70); background: rgba(255,255,255,0.05); }
     .nav-tab.active { color: var(--text); background: var(--surface); }
 
+    .nav-cta {
+      justify-self: end;
+      padding: 7px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a1a;
+      background: #fff;
+      border: none;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+    }
+    .nav-cta:hover { background: rgba(255,255,255,0.85); }
+
     /* ============================================================
        MAIN CONTAINER — Scroll-snap slide system
        Each tab-content is a scroll container.
        Each .slide or .hero is a snap target.
        ============================================================ */
-    .main { max-width: 100%; margin: 0; padding: 0; height: calc(100vh - 56px); margin-top: 56px; overflow: hidden; }
+    .main { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; overflow: hidden; background: var(--bg); }
 
     .tab-content { display: none; height: 100%; overflow-y: auto; scroll-snap-type: y proximity; scroll-behavior: smooth; }
     .tab-content.active { display: block; }
 
-    /* SLIDE — snap target, vertically centered content */
-    .slide { min-height: calc(100vh - 56px); scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center; padding: 60px 30px; max-width: 1280px; margin: 0 auto; box-sizing: border-box; }
-    .slide-full { min-height: calc(100vh - 56px); scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center; width: 100%; box-sizing: border-box; }
+    /* SLIDE — snap target, vertically centered via CSS grid */
+    .slide { min-height: calc(100vh - 56px); scroll-snap-align: start; display: grid; align-content: center; padding: clamp(24px,5vh,60px) 30px; max-width: 1280px; margin: 0 auto; box-sizing: border-box; }
+    .slide-full { min-height: calc(100vh - 56px); scroll-snap-align: start; display: grid; align-content: center; width: 100%; box-sizing: border-box; }
 
     /* ============================================================
        HERO — Full-width, blobs gradient, toujours present
@@ -137,7 +159,6 @@
       min-height: calc(100vh - 56px);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       text-align: center;
       position: relative;
@@ -145,10 +166,9 @@
       padding: 30px;
       width: 100%;
       background: var(--bg);
-      border-radius: 0 0 40px 40px;
       scroll-snap-align: start;
     }
-    @media (min-width: 900px) { .hero { border-radius: 0 0 75px 75px; } }
+    .hero { justify-content: center; }
 
     .hero-short { min-height: calc(100vh - 56px); }
 
@@ -294,23 +314,23 @@
       color: var(--text);
       line-height: 1.1;
       letter-spacing: -0.04em;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .section-intro {
       font-size: 17px;
       color: var(--text-70);
-      max-width: 680px;
-      margin-bottom: 36px;
+      max-width: 100%;
+      margin-bottom: 24px;
       line-height: 1.6;
     }
 
     /* ============================================================
        GRIDS — 2, 3, 4 colonnes
        ============================================================ */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
 
 
     /* ============================================================
@@ -322,7 +342,7 @@
        VS BLOCK — Face-a-face 2 entites
        Usage : prospect vs concurrent principal
        ============================================================ */
-    .vs-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin-bottom: 40px; align-items: stretch; }
+    .vs-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; margin-bottom: 24px; align-items: stretch; }
     .vs-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 28px; text-align: center;
@@ -359,7 +379,7 @@
 
     .bar-row {
       display: grid;
-      grid-template-columns: 200px 1fr 80px;
+      grid-template-columns: 130px 1fr 110px;
       align-items: center;
       gap: 16px;
       margin-bottom: 12px;
@@ -394,7 +414,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .matrix-wrap table { width: 100%; border-collapse: collapse; }
@@ -447,7 +467,7 @@
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       gap: 0;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
       align-items: stretch;
     }
 
@@ -682,7 +702,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 12px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .kpi-mini {
@@ -740,7 +760,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 20px 32px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .stat-row-item {
@@ -817,7 +837,7 @@
        PROGRESS BAR — [NEW] Barre de progression / gauge
        Usage : score technique, maturite, % du gap comble
        ============================================================ */
-    .progress-group { margin-bottom: 40px; }
+    .progress-group { margin-bottom: 24px; }
 
     .progress-item {
       margin-bottom: 20px;
@@ -877,7 +897,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 24px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .donut-item { text-align: center; }
@@ -935,7 +955,7 @@
       align-items: baseline;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .ticker-value {
@@ -969,8 +989,8 @@
       background: var(--surface);
       border-left: 3px solid var(--magenta);
       border-radius: 0 var(--radius) var(--radius) 0;
-      padding: 22px 28px;
-      margin-bottom: 40px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
       font-size: 16px;
       line-height: 1.6;
       font-style: italic;
@@ -994,7 +1014,7 @@
     .pull-quote {
       text-align: center;
       padding: 60px 40px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
       position: relative;
     }
 
@@ -1045,7 +1065,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 16px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .testimonial {
@@ -1164,7 +1184,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 2px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .routine-step {
@@ -1200,7 +1220,7 @@
       display: flex;
       align-items: stretch;
       gap: 0;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .funnel-step {
@@ -1262,7 +1282,7 @@
        ACCORDION — [NEW] Details cachees sous un resume cliquable
        Usage : FAQ, details methodologiques, scope detaille
        ============================================================ */
-    .accordion { margin-bottom: 40px; }
+    .accordion { margin-bottom: 24px; }
 
     .accordion-item {
       background: var(--surface);
@@ -1336,8 +1356,8 @@
       background: var(--surface);
       border-left: 3px solid var(--orange);
       border-radius: 0 var(--radius) var(--radius) 0;
-      padding: 22px 28px;
-      margin-bottom: 40px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
       font-size: 15px;
       line-height: 1.6;
     }
@@ -1365,7 +1385,7 @@
       text-align: center;
       position: relative;
       overflow: hidden;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .callout-banner::before {
@@ -1481,6 +1501,20 @@
       border: 3px solid var(--bg);
       box-shadow: 0 0 0 2px var(--orange);
     }
+    .sim-slider::-moz-range-thumb {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--orange);
+      cursor: pointer;
+      border: 3px solid var(--bg);
+      box-shadow: 0 0 0 2px var(--orange);
+    }
+    .sim-slider::-moz-range-track {
+      height: 6px;
+      background: var(--surface);
+      border-radius: 3px;
+      border: none;
+    }
 
     .sim-value {
       font-family: var(--font-display);
@@ -1495,7 +1529,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       margin-top: 50px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .sim-result {
@@ -1534,6 +1568,7 @@
       padding: 100px 30px;
       position: relative;
       overflow: hidden;
+      clip-path: inset(0);
       width: 100%;
       min-height: calc(100vh - 56px);
       display: flex;
@@ -1541,6 +1576,7 @@
       justify-content: center;
       align-items: center;
       scroll-snap-align: start;
+      background: var(--bg);
     }
 
     .cta-section .hero-blobs { opacity: 0.5; }
@@ -1645,7 +1681,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 28px;
+      padding: 24px;
       transition: border-color 0.3s, transform 0.3s;
     }
 
@@ -1714,7 +1750,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     table { width: 100%; border-collapse: collapse; }
@@ -1987,13 +2023,16 @@
        Footer | @media (max-width: 900px) | @media print
        ============================================================ */
 
-    .footer {
-      text-align: center;
-      padding: 30px 0;
-      border-top: 1px solid var(--border);
-      font-size: 12px;
-      color: var(--text-30);
-    }
+    .footer { display: none; }
+
+    /* Progress dots — fixed bottom center */
+    .progress-dots { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 90; display: flex; gap: 8px; background: rgba(26,26,26,0.8); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: var(--radius-full); border: 1px solid var(--border); }
+    .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-30); cursor: pointer; transition: all 0.3s; }
+    .progress-dot.active { background: var(--orange); transform: scale(1.3); }
+
+    /* Print button — fixed bottom left */
+    .print-btn { position: fixed; bottom: 32px; left: 32px; z-index: 99; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: all 0.3s ease; }
+    .print-btn:hover { background: rgba(255,255,255,0.12); color: var(--text); border-color: var(--border-hover); }
 
     /* ============================================================
        RESPONSIVE
@@ -2021,6 +2060,9 @@
       .s7-priority-table { font-size: 13px; }
       .s7-priority-table thead th,
       .s7-priority-table tbody td { padding: 10px 12px; }
+      .scroll-table-mobile { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+      .scroll-table-mobile > div { min-width: 600px; }
+      .slide--scrollable { overflow-y: auto; }
     }
 
     /* ============================================================
@@ -2048,6 +2090,56 @@
       .timeline { break-inside: avoid; }
       .cta-section { display: none; } /* masquer les CTA en print */
       button[onclick="window.print()"] { display: none; } /* masquer le bouton print en print */
+      .scroll-arrow { display: none !important; }
+      .progress-dots { display: none !important; }
+      .print-btn { display: none !important; }
+    }
+
+    /* ============================================================
+       SCROLL ARROW — navigation slide-to-slide
+       Bouton fixe bas-droite, scroll vers la slide suivante.
+       ============================================================ */
+    .scroll-arrow {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 99;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--text-50);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .scroll-arrow:hover {
+      background: rgba(255,255,255,0.12);
+      color: var(--text);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .scroll-arrow.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+    }
+    .scroll-arrow svg {
+      width: 20px;
+      height: 20px;
+      animation: arrow-bounce 2s ease-in-out infinite;
+    }
+    @keyframes arrow-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(4px); }
+    }
+    @media (max-height: 820px) {
+      .scroll-arrow { bottom: 16px; right: 16px; width: 40px; height: 40px; }
     }
   </style>
 </head>
@@ -2056,11 +2148,15 @@
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <div class="nav-logo"><span>SLASHR</span></div>
-    <button class="nav-tab active" data-tab="diagnostic">Diagnostic</button>
-    <button class="nav-tab" data-tab="strategie">Strategie</button>
-    <button class="nav-tab" data-tab="investissement">Investissement</button>
-    <button class="nav-tab" data-tab="cas-clients">Cas clients</button>
+    <div class="nav-logo"><img src="https://agence-slashr.fr/blog/images/2024/03/LOGO-SLASHR-BLANC-1.png" alt="SLASHR" style="height:24px;object-fit:contain"></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="diagnostic">Diagnostic</button>
+      <button class="nav-tab" data-tab="strategie">Strategie</button>
+      <button class="nav-tab" data-tab="projet">Projet</button>
+      <button class="nav-tab" data-tab="investissement">Investissement</button>
+      <button class="nav-tab" data-tab="cas-clients">Cas clients</button>
+    </div>
+    <a href="mailto:quentin@agence-slashr.fr?subject=Retour%20proposition%20La%20Fabrique%20des%20Pieds" class="nav-cta">Nous contacter</a>
   </div>
 </nav>
 
@@ -2076,21 +2172,34 @@
 {{TAB_STRATEGIE}}
 </div>
 
-<!-- ONGLET 3 : INVESTISSEMENT -->
+<!-- ONGLET 3 : PROJET -->
+<div id="tab-projet" class="tab-content">
+{{TAB_PROJET}}
+</div>
+
+<!-- ONGLET 4 : INVESTISSEMENT -->
 <div id="tab-investissement" class="tab-content">
 {{TAB_INVESTISSEMENT}}
 </div>
 
-<!-- ONGLET 4 : CAS CLIENTS -->
+<!-- ONGLET 5 : CAS CLIENTS -->
 <div id="tab-cas-clients" class="tab-content">
 {{TAB_CAS_CLIENTS}}
 </div>
 
 </div><!-- /main -->
 
-<footer class="footer">
-  SLASHR · Cabinet strategique Search & IA · Document confidentiel
-</footer>
+<button class="scroll-arrow" id="scroll-arrow" aria-label="Section suivante">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+</button>
+
+<button class="print-btn" onclick="window.print()" aria-label="Imprimer">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+</button>
+
+<div class="progress-dots" id="progress-dots"></div>
 
 <script>
 // Tab switching
@@ -2101,7 +2210,8 @@
       tab.classList.add('active');
       const target = document.getElementById('tab-' + tab.dataset.tab);
       target.classList.add('active');
-      window.scrollTo(0, 0);
+      target.scrollTop = 0;
+      updateDots();
     });
   });
 
@@ -2171,23 +2281,38 @@
 
   function updateSim() {
     const traffic = +document.getElementById('sim-traffic').value;
-    const multi = +document.getElementById('sim-multi').value;
+    const gainEl = document.getElementById('sim-gain');
+    const multiEl = document.getElementById('sim-multi');
     const cvr = +document.getElementById('sim-cvr').value;
     const aov = +document.getElementById('sim-aov').value;
     const invest = +document.getElementById('sim-invest').value;
 
     document.getElementById('val-traffic').textContent = fmt(traffic);
-    document.getElementById('val-multi').textContent = '×' + multi.toFixed(1);
     document.getElementById('val-cvr').textContent = cvr.toFixed(1) + '%';
     document.getElementById('val-aov').textContent = fmt(aov) + ' €';
     document.getElementById('val-invest').textContent = fmt(invest) + ' €';
 
-    const targetTraffic = Math.round(traffic * multi);
-    const annualCA = Math.round(targetTraffic * (cvr / 100) * aov * 12);
-    const roi = invest > 0 ? (annualCA / (invest * 12)) : 0;
+    let targetTraffic, gain;
+    if (gainEl) {
+      gain = +gainEl.value;
+      document.getElementById('val-gain').textContent = '+' + fmt(gain);
+      targetTraffic = traffic + gain;
+    } else if (multiEl) {
+      const multi = +multiEl.value;
+      document.getElementById('val-multi').textContent = '×' + multi.toFixed(1);
+      gain = Math.round(traffic * multi) - traffic;
+      targetTraffic = traffic + gain;
+    } else {
+      gain = 0;
+      targetTraffic = traffic;
+    }
+
+    const additionalCA = Math.round(gain * (cvr / 100) * aov * 12);
+    const totalInvest = 7700 + invest * 9;
+    const roi = totalInvest > 0 ? (additionalCA / totalInvest) : 0;
 
     document.getElementById('res-traffic').textContent = fmt(targetTraffic);
-    document.getElementById('res-ca').textContent = fmt(annualCA) + ' €';
+    document.getElementById('res-ca').textContent = fmt(additionalCA) + ' €';
     document.getElementById('res-roi').textContent = '×' + roi.toFixed(1);
   }
 
@@ -2196,6 +2321,91 @@
   });
 
   updateSim();
+
+  // Scroll arrow — slide-to-slide navigation
+  (function() {
+    const arrow = document.getElementById('scroll-arrow');
+    if (!arrow) return;
+
+    function getSnapTargets() {
+      const activeTab = document.querySelector('.tab-content.active');
+      if (!activeTab) return [];
+      return Array.from(activeTab.querySelectorAll('.slide, .hero, .cta-section, .slide-full'));
+    }
+
+    function getScrollContainer() {
+      return document.querySelector('.tab-content.active');
+    }
+
+    function getCurrentIndex(targets, container) {
+      if (!container) return 0;
+      const scrollTop = container.scrollTop;
+      const viewHeight = container.clientHeight;
+      for (let i = targets.length - 1; i >= 0; i--) {
+        if (targets[i].offsetTop - container.offsetTop <= scrollTop + viewHeight * 0.4) {
+          return i;
+        }
+      }
+      return 0;
+    }
+
+    arrow.addEventListener('click', function() {
+      var targets = getSnapTargets();
+      var container = getScrollContainer();
+      if (targets.length === 0 || !container) return;
+      var current = getCurrentIndex(targets, container);
+      var next = Math.min(current + 1, targets.length - 1);
+      targets[next].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    function checkVisibility() {
+      var targets = getSnapTargets();
+      var container = getScrollContainer();
+      if (targets.length === 0 || !container) { arrow.classList.add('hidden'); return; }
+      var current = getCurrentIndex(targets, container);
+      arrow.classList.toggle('hidden', current >= targets.length - 1);
+    }
+
+    // Listen on all tab-content scroll containers
+    document.querySelectorAll('.tab-content').forEach(function(tc) {
+      tc.addEventListener('scroll', checkVisibility, { passive: true });
+    });
+
+    document.querySelectorAll('.nav-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() { setTimeout(checkVisibility, 100); });
+    });
+
+    checkVisibility();
+  })();
+
+  // Progress dots
+  function updateDots() {
+    const dc = document.getElementById('progress-dots');
+    if (!dc) return;
+    dc.innerHTML = '';
+    const at = document.querySelector('.tab-content.active');
+    if (!at) return;
+    const slides = at.querySelectorAll('.slide, .hero, .cta-section, .slide-full');
+    slides.forEach((s, i) => {
+      const dot = document.createElement('span');
+      dot.className = 'progress-dot';
+      dot.addEventListener('click', () => { s.scrollIntoView({ behavior: 'smooth' }); });
+      dc.appendChild(dot);
+    });
+    if (slides.length > 0) dc.querySelectorAll('.progress-dot')[0].classList.add('active');
+    if (window._dotObs) window._dotObs.disconnect();
+    window._dotObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = Array.from(slides).indexOf(entry.target);
+          dc.querySelectorAll('.progress-dot').forEach((d, i) => { d.classList.toggle('active', i === idx); });
+        }
+      });
+    }, { threshold: 0.5 });
+    slides.forEach(s => window._dotObs.observe(s));
+  }
+  updateDots();
+
 
 {{EXTRA_JS}}
 </script>

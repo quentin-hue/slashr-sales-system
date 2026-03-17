@@ -1,6 +1,6 @@
-# Pricing Rules — v1.0
+# Pricing Rules — v2.0
 
-> Reference interne. Ce fichier definit la logique de calcul des budgets Phase 1 et Phase 2.
+> Reference interne. Ce fichier definit la logique de calcul des budgets.
 > Les jours et TJM sont INTERNES — jamais affiches dans les outputs clients.
 
 ---
@@ -15,106 +15,92 @@
 
 ---
 
-## Phase 1 — Mission structurante (ponctuelle)
+## Audit SEO (ponctuel)
 
-Phase 1 = mission calibree selon les blocs actives. Ce n'est PAS un pack.
+L'audit est le socle de tout engagement. Prix fixe + options.
 
-### Blocs Phase 1
+### Socle
 
-| Bloc | Jours | Condition d'activation | Contenu interne (jamais au client) |
-|------|-------|------------------------|-------------------------------------|
-| **Audit SEO** | 5 (fixe) | Toujours actif | Etude lexicale + diagnostic technique + benchmark concurrentiel |
-| **Refonte SEO** | 3 a 6 (selon volumetrie) | Si refonte prevue | AMOA SEO + plan redirections + recette & monitoring post-bascule |
-| **Activation contenu** | 1 (minimum) | Toujours actif | Specification pages piliers prioritaires |
-| **SEA setup** | 2 (incompressible) | Si SEA_POSTURE = PILOTE ou CONSEIL | Cabinet conseil — strategie et architecture, pas execution quotidienne. PILOTE : audit campagnes + structure compte + strategie encheres + plan activation 90j. CONSEIL : audit strategique + recommandations structure + cahier des charges pour equipe execution. |
-| **GEO setup** | 2 (incompressible) | Si GEO/IA dans le perimetre | Audit visibilite IA + donnees structurees + strategie GEO |
-| **Social setup** | 2 (incompressible) | Si Social Search dans le perimetre | Audit presence sociale + strategie Social Search |
+| Composant | Prix | Condition |
+|-----------|------|-----------|
+| **Audit SEO** (strategie + technique) | 3 500 EUR HT | Toujours inclus |
+
+Contenu interne (jamais au client) : etude lexicale, diagnostic technique, benchmark concurrentiel, plan d'action priorise.
+
+### Options audit
+
+| Option | Prix | Condition d'activation |
+|--------|------|------------------------|
+| **+1 levier** (GEO, SEA, Multicanal) | +1 400 EUR / levier | Si le levier est dans le perimetre |
+| **Environnement technique complexe** | +1 400 EUR | Headless, multi-domaines, stack custom, etc. |
+
+### Calcul budget audit
+
+```
+budget_audit = 3 500
+             + 1 400 x nb_leviers_additionnels
+             + 1 400 (si env complexe)
+```
+
+### Pack Refonte (separe)
+
+Le pack Refonte est un projet a part, vendu separement quand il y a une creation ou refonte de site.
+
+| Volumetrie | Jours | Budget |
+|------------|-------|--------|
+| Site simple (< 200 URLs) | 3 | 2 100 EUR |
+| Site moyen (200-1000 URLs) | 4 | 2 800 EUR |
+| Site volumetrique (1000+ URLs) | 5-6 | 3 500-4 200 EUR |
+
+Contenu interne : AMOA SEO + plan redirections + recette & monitoring post-bascule.
+
+---
+
+## Phase 1 — 90 jours (bloc)
+
+Phase 1 = audit + 3 mois d'accompagnement. Vendu comme un bloc unique.
 
 ### Calcul budget Phase 1
 
 ```
-jours_phase1 = audit_seo (5)
-             + refonte_seo (3-6, si applicable)
-             + activation_contenu (1)
-             + sea_setup (2, si applicable)
-             + geo_setup (2, si applicable)
-             + social_setup (2, si applicable)
-
-budget_phase1 = jours_phase1 x TJM
+budget_phase1 = budget_audit + (budget_mensuel x 3)
 ```
 
-### Variable : Refonte SEO
+### Exemples
 
-Le nombre de jours Refonte s'adapte a la volumetrie :
-
-| Volumetrie | Jours |
-|------------|-------|
-| Site simple (< 200 URLs) | 3 |
-| Site moyen (200-1000 URLs) | 4 |
-| Site volumetrique (1000+ URLs) | 5-6 |
+| Profil | Audit | Mensuel | Phase 1 (bloc) |
+|--------|-------|---------|----------------|
+| SEO seul, pilotage (1j/mois) | 3 500 | 700 | 5 600 EUR |
+| SEO seul, production (2j/mois) | 3 500 | 1 400 | 7 700 EUR |
+| SEO seul, acceleration (3j/mois) | 3 500 | 2 100 | 9 800 EUR |
+| SEO + GEO, production | 4 900 | 2 100 | 11 200 EUR |
+| SEO + SEA, production | 4 900 | 2 100 | 11 200 EUR |
 
 ---
 
-## Phase 2 — Orchestration mensuelle (recurrente)
+## Accompagnement mensuel (recurrent, post-Phase 1)
 
-Chaque levier active en Phase 1 implique un run mensuel incompressible.
+Apres le bilan a 90 jours, l'accompagnement continue **sans engagement**, ajustable chaque mois.
 
-### Run mensuel par levier
+### Intensite du socle Search
 
-| Levier | Jours/mois (minimum incompressible) |
-|--------|--------------------------------------|
-| **SEO run** | 1 |
-| **SEA run** | 1 | Pilotage strategique : revue performance mensuelle, ajustements strategie, recommandations. Pas de bid management quotidien. |
-| **GEO run** | 1 |
-| **Social run** | 1 |
+| Niveau | Label client | Ce que SLASHR fait | Ce que le client fait | Jours/mois | Budget |
+|--------|-------------|-------------------|----------------------|-----------|--------|
+| **Pilotage** | "On pilote, vous executez" | Strategie, specs, monitoring | Produit et implemente | 1 | 700 EUR/mois |
+| **Production** | "On produit, vous validez" | Strategie + production contenu + optimisations | Valide | 2 | 1 400 EUR/mois |
+| **Acceleration** | "On accelere" | Tout + liens externes + couverture elargie | Valide | 3 | 2 100 EUR/mois |
 
-### Niveaux d'intensite
+### Leviers additionnels
 
-L'intensite determine le nombre total de jours/mois. Les incompressibles sont le plancher.
-
-| Niveau | Jours/mois | Profil |
+| Levier | Jours/mois | Budget |
 |--------|-----------|--------|
-| **Essentiel** | 1-2 | PME, execution internalisee, pilotage + monitoring |
-| **Performance** | 2-3 | ETI, execution deleguee, production incluse |
-| **Croissance** | 3-4+ | Grands comptes, multi-leviers, ambition forte |
+| +1 levier (GEO, SEA, Multicanal) | +1 | +700 EUR/mois |
 
-### Calcul budget Phase 2
+### Calcul budget mensuel
 
 ```
-jours_mensuels = somme des incompressibles par levier active
-               + jours supplementaires selon intensite
-
-budget_mensuel = jours_mensuels x TJM
+budget_mensuel = (socle_jours + nb_leviers) x TJM
 ```
-
-### Exemples de calcul
-
-**Exemple 1 — SEO seul, Performance :**
-- SEO run : 1j incompressible + 2j production = 3j/mois
-- Budget : 3 x 700 = 2 100 EUR/mois
-
-**Exemple 2 — SEO + SEA, Performance :**
-- SEO run : 1j + 1j production = 2j
-- SEA run : 1j + 0,5j optimisation = 1,5j
-- Total : 3,5j/mois → 2 450 EUR/mois
-
-**Exemple 3 — SEO + GEO + Social, Croissance :**
-- SEO run : 1j + 2j production = 3j
-- GEO run : 1j
-- Social run : 1j
-- Total : 5j/mois → 3 500 EUR/mois
-
----
-
-## Scenarios types (reperes, pas formules figees)
-
-| Scenario | Phase 1 (exemple SEO + refonte) | Phase 2 |
-|----------|--------------------------------|---------|
-| **Essentiel** | Audit (5j) + Refonte (3j) + Contenu (1j) = 9j → 6 300 EUR | 1-2j/mois → 700-1 400 EUR/mois |
-| **Performance** | Audit (5j) + Refonte (4j) + Contenu (1j) = 10j → 7 000 EUR | 2-3j/mois → 1 400-2 100 EUR/mois |
-| **Croissance** | Audit (5j) + Refonte (4j) + Contenu (1j) + GEO (2j) = 12j → 8 400 EUR | 3-4j/mois → 2 100-2 800 EUR/mois |
-
-> Ces chiffres sont des reperes. Claude adapte au deal.
 
 ---
 
@@ -122,21 +108,38 @@ budget_mensuel = jours_mensuels x TJM
 
 ### Ce que le client VOIT (HTML)
 
-Phase 1 :
+Phase 1 (90 jours) :
+- "Audit SEO" (pas juste "Audit")
 - Description qualitative de ce que la mission inclut (pas de jours)
-- Budget global HT
+- Budget global HT (bloc unique = audit + 3 mois)
 - Ce que ca produit (livrables nommes)
+- "Mise en place du reporting" (pas "Reporting mensuel")
+- Benchmark concurrentiel (sans s'engager sur le nombre d'acteurs)
+- **Non inclus** (obligatoire) : lister explicitement ce qui n'est pas dans la Phase 1 (ex: audit GEO, audit Social Search). "Ces leviers peuvent etre actives apres le bilan, en accelerateur."
 
-Phase 2 :
-- Description qualitative par niveau d'intensite
+Accompagnement mensuel :
+- 1 recommandation mise en avant (pas 3 tiers egaux)
+- Echelle de lecture en 4 colonnes alignees : Pilotage / Production / Acceleration / +Levier accelerateur
+- Labels client : "On pilote, vous executez" / "On produit, vous validez" / "On accelere"
+- Leviers additionnels : +700 EUR/mois par levier ("Acceleration SEO, visibilite IA, Ads, reseaux sociaux")
 - Budget mensuel HT
-- Ce que ca inclut (scope nomme)
+- Budget annee 1 (Phase 1 + 9 mois accompagnement)
+- **Budget achat de liens** : mentionner explicitement "non inclus, facture a part selon la strategie definie"
+- **Sans engagement** : l'accompagnement post-Phase 1 est sans engagement, ajustable apres le bilan
+
+### Recap budget (slide dedie dans l'onglet Investissement)
+
+- **Slide separe** du pricing : vue consolidee sur 2 colonnes (annee 1 / annee 2)
+- **Objectif par phase** : chaque phase porte un objectif qualitatif (ex: "Poser les fondations" / "Accelerer vers 200K de CA")
+- **Budget media** : ligne separee sous l'accompagnement SLASHR, avec mention "minimum pressenti, ajustable selon la strategie et la saisonnalite"
+- **Total global** : hero gradient avec le montant total HT
+- **Footnote** : "Sans engagement sur la Phase 2"
 
 ### Ce que le client NE VOIT PAS
 
 - Nombre de jours
 - TJM
-- Decomposition interne des blocs (etude lexicale, diagnostic, benchmark, AMOA, redirections, recette...)
+- Decomposition interne (etude lexicale, benchmark, AMOA, etc.)
 - Calculs intermediaires
 
 ### Ou sont les jours ?
