@@ -134,6 +134,15 @@ Si le constat et le benchmark utilisent les memes KPIs (volume de marque, mots-c
 
 Ne jamais avoir une section "Le constat" + une section "Benchmark concurrentiel" qui repete les memes metriques. Si les metriques different, les deux sections restent distinctes.
 
+### Regle de fusion Benchmark / Opportunite commerciale (OBLIGATOIRE)
+
+Si le benchmark (positions concurrentes par requete) et l'opportunite commerciale (volumes de recherche par requete) portent sur les MEMES requetes, les fusionner en 1 seule section. Un tableau unique combine volumes + positions + leader. Structure :
+- Tableau : requete | vol/mois | position Delcourt | leader | position leader
+- Stat row : total recherches/mois, requetes top 10, recherches hors top 10
+- 1 seul SO WHAT qui chiffre le gap
+
+Ne jamais avoir une section "Benchmark" + une section "Opportunite commerciale" qui listent les memes requetes sous deux angles differents. Pour le decideur, c'est le meme argument : "on est mal positionne sur les requetes qui comptent".
+
 ### Regle de densite : 1 visuel par slide (OBLIGATOIRE)
 
 Chaque `.slide` contient au maximum **1 composant visuel** (bar chart, donut grid, cards grid, table) + **1 highlight-box** (SO WHAT). Au-dela, decouper en slides supplementaires. Un slide surcharge perd le decideur.

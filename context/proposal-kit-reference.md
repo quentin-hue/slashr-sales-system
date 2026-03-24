@@ -64,9 +64,11 @@ Classes : `.hero`, `.hero-short`, `.hero-blobs`, `.hero-blob-3`, `.hero-tag`, `.
   <h1>Titre</h1>
   <p class="hero-subtitle">Sous-titre</p>
   <p class="hero-date">Date</p>
-  <div class="hero-scroll"></div>
+  <div class="hero-scroll" onclick="window.scrollBy({top:window.innerHeight-56,behavior:'smooth'})"></div>
 </section>
 ```
+
+Le `hero-scroll` DOIT avoir un `onclick` inline pour scroller vers la slide suivante. Ne jamais omettre cet attribut.
 
 Full-height, blobs orange/magenta/violet en fond, scroll indicator anime. Utilise uniquement dans l'onglet Diagnostic.
 

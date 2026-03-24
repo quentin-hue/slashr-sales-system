@@ -44,7 +44,8 @@ def main():
     parser.add_argument("--diagnostic", required=True, help="Path to diagnostic tab HTML fragment")
     parser.add_argument("--strategie", required=True, help="Path to strategie tab HTML fragment")
     parser.add_argument("--investissement", required=True, help="Path to investissement tab HTML fragment")
-    parser.add_argument("--cas-clients", required=True, help="Path to cas-clients tab HTML fragment")
+    parser.add_argument("--projet", default=None, help="Path to projet tab HTML fragment (optional)")
+    parser.add_argument("--cas-clients", default=None, help="Path to cas-clients tab HTML fragment (optional)")
     parser.add_argument("--extra-js", default=None, help="Path to extra JS (ROI simulator custom logic)")
     parser.add_argument("--output", default=None, help="Output path (default: .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-proposal.html)")
     args = parser.parse_args()
@@ -63,7 +64,8 @@ def main():
     tab_diagnostic = read_file(args.diagnostic)
     tab_strategie = read_file(args.strategie)
     tab_investissement = read_file(args.investissement)
-    tab_cas_clients = read_file(args.cas_clients)
+    tab_projet = read_file(args.projet) if args.projet else None
+    tab_cas_clients = read_file(args.cas_clients) if args.cas_clients else None
 
     # Read extra JS (optional)
     extra_js = ""
@@ -100,7 +102,38 @@ def main():
     html = html.replace("{{TAB_DIAGNOSTIC}}", tab_diagnostic)
     html = html.replace("{{TAB_STRATEGIE}}", tab_strategie)
     html = html.replace("{{TAB_INVESTISSEMENT}}", tab_investissement)
-    html = html.replace("{{TAB_CAS_CLIENTS}}", tab_cas_clients)
+
+    # Inject Projet tab if provided, otherwise remove placeholder and nav button
+    if tab_projet:
+        html = html.replace("{{TAB_PROJET}}", tab_projet)
+    else:
+        # Remove Projet nav button
+        html = html.replace(
+            '    <button class="nav-tab" data-tab="projet">Projet</button>\n', ''
+        )
+        # Remove Projet tab-content block
+        html = html.replace(
+            '<!-- ONGLET 4 : PROJET -->\n'
+            '<div id="tab-projet" class="tab-content">\n'
+            '{{TAB_PROJET}}\n'
+            '</div>\n\n', ''
+        )
+
+    # Inject Cas clients tab if provided, otherwise remove placeholder and nav button
+    if tab_cas_clients:
+        html = html.replace("{{TAB_CAS_CLIENTS}}", tab_cas_clients)
+    else:
+        # Remove Cas clients nav button
+        html = html.replace(
+            '    <button class="nav-tab" data-tab="cas-clients">Cas clients</button>\n', ''
+        )
+        # Remove Cas clients tab-content block
+        html = html.replace(
+            '<!-- ONGLET 5 : CAS CLIENTS -->\n'
+            '<div id="tab-cas-clients" class="tab-content">\n'
+            '{{TAB_CAS_CLIENTS}}\n'
+            '</div>\n', ''
+        )
     html = html.replace("{{EXTRA_JS}}", extra_js)
 
     # Verify no unreplaced placeholders remain
@@ -136,7 +169,8 @@ def main():
             "diagnostic": len(tab_diagnostic),
             "strategie": len(tab_strategie),
             "investissement": len(tab_investissement),
-            "cas_clients": len(tab_cas_clients),
+            **({"projet": len(tab_projet)} if tab_projet else {}),
+            **({"cas_clients": len(tab_cas_clients)} if tab_cas_clients else {}),
         },
         "extra_js": bool(extra_js),
     }

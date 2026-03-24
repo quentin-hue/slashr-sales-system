@@ -40,7 +40,7 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; height: 100%; }
+    html { scroll-behavior: smooth; scroll-snap-type: y proximity; scroll-padding-top: 56px; }
 
     body {
       background: var(--bg);
@@ -49,8 +49,6 @@
       font-size: 15px;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      height: 100%;
-      overflow: hidden;
     }
 
     /* ============================================================
@@ -139,13 +137,13 @@
     .nav-cta:hover { background: rgba(255,255,255,0.85); }
 
     /* ============================================================
-       MAIN CONTAINER — Scroll-snap slide system
-       Each tab-content is a scroll container.
-       Each .slide or .hero is a snap target.
+       MAIN CONTAINER — Scroll natif sur html/body
+       Le scroll-snap est sur html. Chaque tab-content est affiche/masque.
+       Modele aligne sur LMP (scroll natif, window.scrollTo).
        ============================================================ */
-    .main { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; overflow: hidden; background: var(--bg); }
+    .main { margin-top: 56px; background: var(--bg); }
 
-    .tab-content { display: none; height: 100%; overflow-y: auto; scroll-snap-type: y proximity; scroll-behavior: smooth; }
+    .tab-content { display: none; }
     .tab-content.active { display: block; }
 
     /* SLIDE — snap target, vertically centered via CSS grid */
@@ -2189,7 +2187,7 @@
 
 </div><!-- /main -->
 
-<button class="scroll-arrow" id="scroll-arrow" aria-label="Section suivante">
+<button onclick="window.scrollBy({top:window.innerHeight-56,behavior:'smooth'})" class="scroll-arrow" id="scroll-arrow" aria-label="Section suivante">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <polyline points="6 9 12 15 18 9"/>
   </svg>
@@ -2210,7 +2208,7 @@
       tab.classList.add('active');
       const target = document.getElementById('tab-' + tab.dataset.tab);
       target.classList.add('active');
-      target.scrollTop = 0;
+      window.scrollTo(0, 0);
       updateDots();
     });
   });
@@ -2322,61 +2320,15 @@
 
   updateSim();
 
-  // Scroll arrow — slide-to-slide navigation
-  (function() {
-    const arrow = document.getElementById('scroll-arrow');
-    if (!arrow) return;
+  // Scroll arrow — onclick inline (window.scrollBy), pas de JS additionnel necessaire
 
-    function getSnapTargets() {
-      const activeTab = document.querySelector('.tab-content.active');
-      if (!activeTab) return [];
-      return Array.from(activeTab.querySelectorAll('.slide, .hero, .cta-section, .slide-full'));
-    }
-
-    function getScrollContainer() {
-      return document.querySelector('.tab-content.active');
-    }
-
-    function getCurrentIndex(targets, container) {
-      if (!container) return 0;
-      const scrollTop = container.scrollTop;
-      const viewHeight = container.clientHeight;
-      for (let i = targets.length - 1; i >= 0; i--) {
-        if (targets[i].offsetTop - container.offsetTop <= scrollTop + viewHeight * 0.4) {
-          return i;
-        }
-      }
-      return 0;
-    }
-
-    arrow.addEventListener('click', function() {
-      var targets = getSnapTargets();
-      var container = getScrollContainer();
-      if (targets.length === 0 || !container) return;
-      var current = getCurrentIndex(targets, container);
-      var next = Math.min(current + 1, targets.length - 1);
-      targets[next].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Hero-scroll click handler (mouse animation in hero = scroll to next slide)
+  document.querySelectorAll('.hero-scroll').forEach(function(hs) {
+    hs.style.cursor = 'pointer';
+    hs.addEventListener('click', function() {
+      window.scrollBy({ top: window.innerHeight - 56, behavior: 'smooth' });
     });
-
-    function checkVisibility() {
-      var targets = getSnapTargets();
-      var container = getScrollContainer();
-      if (targets.length === 0 || !container) { arrow.classList.add('hidden'); return; }
-      var current = getCurrentIndex(targets, container);
-      arrow.classList.toggle('hidden', current >= targets.length - 1);
-    }
-
-    // Listen on all tab-content scroll containers
-    document.querySelectorAll('.tab-content').forEach(function(tc) {
-      tc.addEventListener('scroll', checkVisibility, { passive: true });
-    });
-
-    document.querySelectorAll('.nav-tab').forEach(function(tab) {
-      tab.addEventListener('click', function() { setTimeout(checkVisibility, 100); });
-    });
-
-    checkVisibility();
-  })();
+  });
 
   // Progress dots
   function updateDots() {
@@ -2389,7 +2341,7 @@
     slides.forEach((s, i) => {
       const dot = document.createElement('span');
       dot.className = 'progress-dot';
-      dot.addEventListener('click', () => { s.scrollIntoView({ behavior: 'smooth' }); });
+      dot.addEventListener('click', () => { var top = s.getBoundingClientRect().top + window.scrollY - 56; window.scrollTo({ top: top, behavior: 'smooth' }); });
       dc.appendChild(dot);
     });
     if (slides.length > 0) dc.querySelectorAll('.progress-dot')[0].classList.add('active');

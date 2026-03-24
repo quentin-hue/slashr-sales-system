@@ -293,15 +293,38 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 - Highlight box violet pour la conviction ROI
 - **CTA intermediaire leger** (lien texte, pas full-width)
 
-**Onglet Projet** (obligatoire) : hero propre + humanisation
-- Hero fullscreen (tag "Projet", subtitle qui humanise la collaboration)
-- **Slide equipe** : interlocuteur unique (prenom, role, photo placeholder) + associes si pertinent. Composant : `grid-2` avec card accent pour le contact principal + cards compactes pour les specialistes
-- **Slide methode** : S7 en 2-3 phrases + approche data-first + iteration. Composant : routine-grid ou timeline courte
-- **Slide production** : comment SLASHR produit le contenu (brief → redaction → validation → publication). Composant : funnel horizontal ou steps numerotes
-- **Slide collaboration** : outils (Slack/email, dashboard, reporting), rituels (point mensuel, bilan 90j), rythme. Composant : grid-3 avec card-icon
-- **Slide onboarding** : timeline des premieres semaines (S1 brief, S2 audit, S3-4 livrables, S5+ accompagnement). Composant : timeline horizontale
-- **CTA intermediaire** : lien vers onglet Investissement ("Voir l'investissement")
-- **Pas de pricing, pas de budget** dans cet onglet. C'est du "comment on travaille", pas du "combien ca coute"
+**Onglet Projet** (obligatoire) : template fixe + variables deal-specific
+
+> **Template HTML de reference : `templates/tab-projet-template.html`.**
+> L'agent utilise ce template et remplace les variables `{{...}}` par les valeurs du deal. La structure, le design et le wording des sections fixes ne doivent PAS etre reinventes a chaque deal.
+
+**Variables a remplacer :**
+- `{{PROSPECT_NAME}}` : nom du prospect (h1 hero)
+- `{{PROSPECT_CONTEXT}}` : ligne contexte hero (secteur, CA, contexte)
+- `{{HERO_DATE}}` : date
+- `{{CP_DESCRIPTION}}` : description chef de projet (1-2 phrases adaptees au deal)
+- `{{PRODUCTION_CARD_1/2/3_TITLE}}` : titres des 3 cards production (adaptes au deal)
+- `{{PRODUCTION_CARD_1/2/3_DESC}}` : descriptions (adaptees au deal)
+- `{{PRODUCTION_CARD_1/2/3_EX}}` : exemples concrets (specifiques au prospect)
+- `{{PRODUCTION_CARD_1/2/3_KPI}}` : KPI/volume par type de production
+- `{{REPORTING_AXES}}` : axes du reporting (adaptes au perimetre)
+- `{{ONBOARDING_S1/S24/M2}}` : contenu onboarding (adapte au contexte du deal)
+- `{{ONBOARDING_HIGHLIGHT}}` : phrase highlight onboarding
+
+**Sections fixes (identiques a chaque deal, NE PAS modifier) :**
+- Slide 1 Equipe : chef de projet + 3 associes (AL, QC, BD)
+- Slide 2 Approche : 3 piliers + stack ("19 outils internes · 10 projets R&D")
+- Slide 4 Collaboration : 4 cards (comite, reporting, acces direct, outils)
+- CTA vers onglet Investissement
+
+**Sections adaptees (variables uniquement) :**
+- Hero : nom, contexte, date
+- Slide 1 : description chef de projet
+- Slide 3 Production : 3 cards specifiques au deal
+- Slide 4 Collaboration : axes reporting
+- Slide 5 Onboarding : timeline adaptee au contexte (refonte, AO, standard)
+
+**Pas de pricing, pas de budget** dans cet onglet. C'est du "comment on travaille", pas du "combien ca coute".
 
 **Onglet Investissement** : hero propre + resume decisionnel
 - Hero fullscreen (tag "Investissement"). Premiere section apres le hero : resume decisionnel.

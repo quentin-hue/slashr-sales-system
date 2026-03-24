@@ -469,7 +469,7 @@ Crawle le site reel du prospect pour alimenter les scores S2/S3/S4 avec des donn
 
 **Output :** 4 fichiers JSON dans `.cache/deals/{deal_id}/website/` :
 - `homepage.json` : titre, meta desc, OG, headings, Schema.org, liens, images, CTAs, formulaires
-- `sitemap.json` : nombre total URLs, distribution (product/blog/pages/category), ratio editorial vs catalogue
+- `sitemap.json` : nombre total URLs **declarees dans le sitemap**, distribution (product/blog/pages/category), ratio editorial vs catalogue. **ATTENTION : le sitemap ne reflete pas toujours le nombre de pages indexees par Google.** Pour le nombre reel de pages indexees, utiliser `site:{domain}` ou les donnees GSC. Le SDB doit distinguer clairement "URLs sitemap" et "pages indexees".
 - `sampled_pages.json` : analyse de 3-5 pages echantillonnees (word count, headings, meta, schema)
 - `crawl_summary.json` : synthese + `scoring_hints` (S2, S3, S4) — **fichier principal consomme par l'agent**
 

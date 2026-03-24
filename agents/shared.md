@@ -190,6 +190,22 @@ Avant de traiter une reponse API, verifier :
 14. **Zero pression commerciale** : pas de "ne manquez pas", "il est urgent de", "derniere chance", "vous ne pouvez pas vous permettre". On recommande, on ne pousse pas.
 15. **Zero dramatisation** : pas de "catastrophe", "crise", "vous perdez tout". Les donnees suffisent a creer l'urgence quand elle existe. Pas besoin de forcer le trait.
 16. **Intelligence strategique** : chaque phrase traduit l'expertise en impact business mesurable. Pas de jargon technique sans traduction business. "Votre score Lighthouse de 38 signifie que Google penalise votre site dans les classements" > "Votre score Lighthouse est de 38".
+16b. **Precision des metriques** : chaque chiffre affiche dans le HTML doit etre mesurable et reproductible par le prospect. Indiquer la source ET la methode. "0 page catalogue dans les 20 pages les plus visitées (source: GSC, par clics)" est verifiable. "0 pages produit dans le top 20 Google" est ambigu (top 20 de quoi ? par quel critere ?). Si le prospect peut contester un chiffre en 30 secondes, la formulation est mauvaise.
+16c. **Accents francais obligatoires** : tous les outputs HTML DOIVENT utiliser les accents corrects (é, è, ê, à, ù, ç, etc.). Un texte sans accents est un defaut bloquant. Exemples : "stratégie" (pas "strategie"), "données structurées" (pas "donnees structurees"), "référence" (pas "reference"), "résultat" (pas "resultat"), "intégrer" (pas "integrer"), "sécuriser" (pas "securiser"), "équipe" (pas "equipe"), "accélération" (pas "acceleration"), "décisionnel" (pas "decisionnel"), "requête" (pas "requete"). Cette regle s'applique au HTML genere, pas aux fichiers de spec internes.
+16d. **Lexique interdit dans les outputs clients** (remplacements obligatoires) :
+    - thin content → pages pauvres en contenu
+    - maillage → liens internes
+    - netlinking → acquisition de liens externes
+    - cash cow → pepite sous-exploitee
+    - quick wins → gains rapides
+    - KPIs → indicateurs / resultats
+    - Schema → fiches produit bien structurees / donnees structurees
+    - LLM → moteurs IA
+    - CHR → hotellerie-restauration
+    - cluster → famille
+    - Account Manager → chef de projet
+    - R1 / R2 (dans les attributions de verbatims) → prenom + nom de la personne citee. "R1" est un jargon interne pipeline, le prospect ne sait pas ce que c'est. Ecrire "Florine Fontaine" pas "R1" ni "Florine, R1".
+16e. **Metriques toujours en /mois** : ne jamais presenter des chiffres en /trimestre ou /an sauf si le contexte l'exige explicitement. Convertir les donnees GSC (90 jours) en mensuel (÷3).
 17. **Avantages competitifs tisses** : jamais de section "Pourquoi SLASHR" standalone. Les differenciateurs emergent des donnees elles-memes, sans transition explicite vers SLASHR (cf. `agents/prepare-pass2.md`, Etape 2.4).
 18. **Jamais de tiret cadratin ni semi-cadratin comme separateur** (`—`, `–`, `&mdash;`, `&ndash;`) dans aucun output (HTML, terminal, markdown). C'est un pattern IA identifiable. Remplacer par `:`, `,`, `.`, des parentheses, ou reformuler. Le semi-cadratin reste autorise uniquement dans les plages numeriques (ex: "6-12 mois").
 19. **Domaine principal = site actif du prospect.** Quand plusieurs domaines sont detectes, le domaine principal est celui ou le prospect opere et vend aujourd'hui, pas un ancien domaine, pas un domaine de migration future, pas un domaine d'entite soeur. En cas de doute, demander au closer avant de lancer des appels API. Le domaine principal DOIT etre documente dans le SDB avec sa source de detection.

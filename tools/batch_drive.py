@@ -51,6 +51,7 @@ MAX_RECURSION = 3
 MAX_FILE_SIZE = 100_000  # characters
 DRIVE_API_BASE = "https://www.googleapis.com/drive/v3"
 DOCS_API_BASE = "https://docs.googleapis.com/v1"
+SHEETS_API_BASE = "https://sheets.googleapis.com/v4"
 
 CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache"
 CACHE_FRESHNESS_HOURS = 24
@@ -120,7 +121,10 @@ class Credentials:
             from google.oauth2 import service_account
             self._creds = service_account.Credentials.from_service_account_file(
                 creds_path,
-                scopes=["https://www.googleapis.com/auth/drive"],
+                scopes=[
+                    "https://www.googleapis.com/auth/drive",
+                    "https://www.googleapis.com/auth/spreadsheets.readonly",
+                ],
             )
         except Exception as e:
             raise DriveError("Erreur chargement credentials: {}".format(e))
@@ -259,6 +263,37 @@ class DriveClient:
         )
         return json.loads(raw.decode("utf-8"))
 
+    def get_spreadsheet(self, spreadsheet_id):
+        """Get spreadsheet metadata (sheet names + gids) via Sheets API."""
+        params = {"includeGridData": "false"}
+        raw = self._request(
+            "{}/spreadsheets/{}".format(SHEETS_API_BASE, spreadsheet_id), params
+        )
+        return json.loads(raw.decode("utf-8"))
+
+    def export_sheet_tab(self, file_id, gid):
+        """Export a single sheet tab as CSV via Drive export with gid parameter."""
+        url = "{}/files/{}/export".format(DRIVE_API_BASE, file_id)
+        params = {
+            "mimeType": "text/csv",
+            "supportsAllDrives": "true",
+        }
+        # Add gid to the URL manually (Drive export supports gid as query param)
+        full_url = "{}?{}&gid={}".format(url, urlencode(params), gid)
+        token = self.credentials.get_token()
+        req = urllib_request.Request(full_url, headers={
+            "Authorization": "Bearer {}".format(token),
+            "Accept": "text/csv",
+            "User-Agent": "SLASHR-Bot/1.0",
+        })
+        try:
+            resp = urllib_request.urlopen(req, timeout=TIMEOUT_PER_REQUEST)
+            return resp.read()
+        except HTTPError as e:
+            raise DriveError("HTTP {} {}".format(e.code, e.reason))
+        except (URLError, OSError, TimeoutError) as e:
+            raise DriveError("Network: {}".format(e))
+
 
 # ---------------------------------------------------------------------------
 # Docs API text extraction
@@ -293,6 +328,51 @@ def extract_text_from_doc(doc_data):
         body = tab.get("documentTab", {}).get("body", {})
         text = extract_text_from_content(body.get("content", []))
         parts.append("=== ONGLET: {} ===\n{}".format(title, text))
+    return "\n\n".join(parts)
+
+
+# ---------------------------------------------------------------------------
+# Sheets API text extraction (multi-tab)
+# ---------------------------------------------------------------------------
+
+
+def extract_text_from_spreadsheet(client, file_id):
+    """Extract text from all tabs of a Google Spreadsheet.
+
+    Single tab  → plain CSV (same as current behavior).
+    Multi tabs  → each tab separated by === ONGLET: {title} === markers.
+    """
+    try:
+        metadata = client.get_spreadsheet(file_id)
+    except DriveError:
+        # Sheets API unavailable — fallback to simple CSV export
+        log_warn("Sheets API fallback export CSV simple: {}".format(file_id))
+        raw = client.export_file(file_id, "text/csv")
+        return raw.decode("utf-8", errors="replace")
+
+    sheets = metadata.get("sheets", [])
+    if len(sheets) <= 1:
+        # Single tab — classic CSV export (no need for gid)
+        raw = client.export_file(file_id, "text/csv")
+        return raw.decode("utf-8", errors="replace")
+
+    # Multi-tab — export each tab separately
+    log_info("Spreadsheet multi-onglet ({} tabs): {}".format(
+        len(sheets), file_id))
+    parts = []
+    for sheet in sheets:
+        props = sheet.get("properties", {})
+        title = props.get("title", "Sans titre")
+        gid = props.get("sheetId", 0)
+        try:
+            raw = client.export_sheet_tab(file_id, gid)
+            csv_text = raw.decode("utf-8", errors="replace")
+            parts.append("=== ONGLET: {} ===\n{}".format(title, csv_text))
+        except DriveError as e:
+            log_warn("Export onglet '{}' (gid={}) echoue: {}".format(
+                title, gid, e))
+            parts.append("=== ONGLET: {} ===\n[ERREUR: {}]".format(title, e))
+
     return "\n\n".join(parts)
 
 
@@ -472,6 +552,9 @@ class BatchOrchestrator:
                         log_warn("Docs API fallback export: {}".format(name))
                         raw = self.client.export_file(file_id, export_mime)
                         content = raw.decode("utf-8", errors="replace")
+                elif mime == "application/vnd.google-apps.spreadsheet":
+                    # Google Sheets : Sheets API pour multi-onglets, fallback CSV export
+                    content = extract_text_from_spreadsheet(self.client, file_id)
                 else:
                     raw = self.client.export_file(file_id, export_mime)
                     content = raw.decode("utf-8", errors="replace")

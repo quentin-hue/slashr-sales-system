@@ -103,20 +103,33 @@ Budget = total jours x TJM (cf. `context/pricing_rules.md`).
 
 Le detail en jours est ecrit dans le fichier `INTERNAL-S7` (section "Budget interne").
 
+**Regles de formulation Phase 1 :**
+- Dire "Audit SEO complet" (pas juste "Audit complet")
+- Benchmark concurrentiel : rester vague ("Benchmark concurrentiel"), ne pas s'engager sur un nombre d'acteurs
+- Reporting : "Mise en place du reporting" (pas "Reporting mensuel", qui est un livrable Phase 2)
+- **Non inclus (obligatoire)** : lister explicitement sous la highlight-box ce qui n'est PAS dans la Phase 1 (ex: "Non inclus dans la Phase 1 : audit GEO (visibilite IA), audit Social Search. Ces leviers peuvent etre actives apres le bilan, en accelerateur.")
+
 ---
 
-## Phase 2 : Orchestration mensuelle (recurrente)
+## Phase 2 : Accompagnement mensuel (recurrent, sans engagement)
 
-Chaque levier active en Phase 1 implique un run mensuel incompressible (1j/mois minimum par levier). Voir `context/pricing_rules.md`.
+Apres le bilan a 90 jours, l'accompagnement continue **sans engagement**, ajustable chaque mois.
 
-3 niveaux d'intensite :
-- **Essentiel** (1-2j/mois) : pilotage + monitoring. Execution internalisee.
-- **Performance** (2-3j/mois) : + production deleguee. Pour les prospects qui delegent.
-- **Croissance** (3-4+j/mois) : + multi-leviers + amplification. Ambitions fortes.
+3 niveaux d'intensite avec labels client :
+- **Pilotage** (1j/mois) : "On pilote, vous executez". Strategie, specs, monitoring.
+- **Production** (2j/mois) : "On produit, vous validez". + production contenu + optimisations. **Recommande par defaut.**
+- **Acceleration** (3j/mois) : "On accelere". + liens externes + couverture elargie.
+
+Levier accelerateur : +700 EUR/mois ("Acceleration SEO, visibilite IA, Ads, reseaux sociaux").
 
 Budget mensuel = jours/mois x TJM (cf. `context/pricing_rules.md`).
 
-**Regle d'affichage client (STRICTE) :** le HTML affiche le scope qualitatif par niveau + le budget mensuel. Jamais de jours/mois, jamais de TJM. Voir `context/output_contract.md`.
+**Regle d'affichage client (STRICTE) :**
+- Echelle de lecture en **4 colonnes alignees** (grid) : Pilotage / Production / Acceleration / +Levier accelerateur
+- Production mis en avant visuellement (couleur accent)
+- 1 recommandation snake-wrap au-dessus avec le budget recommande + details + budget annee 1
+- Budget achat de liens : **mentionner explicitement "non inclus, facture a part selon la strategie definie"**
+- Jamais de jours/mois, jamais de TJM. Voir `context/output_contract.md`.
 
 **Regle de coherence levier :** si un levier a un setup Phase 1, il DOIT avoir un run Phase 2. Si un levier n'a PAS de setup, il ne peut PAS avoir de run.
 
@@ -131,10 +144,26 @@ Bloc "M4-M6" qui montre la montee en puissance post-Phase 1 :
 
 ---
 
+## Simulateur ROI (obligatoire)
+
+Slide dedie avec sliders interactifs. Regles UX :
+- **Sliders en colonne unique** (pas de grille 2 colonnes, ca casse l'alignement)
+- **Gap reduit** entre les sliders (6px)
+- **Justification sous chaque curseur** (sim-sub) : source de la donnee ou methode de calcul
+  - Trafic actuel : "Source : Google Search Console, 90 derniers jours"
+  - Gain trafic projete : "{min} a {max} clics/mois (detail dans l'onglet Strategie)"
+  - Taux de conversion : "Benchmark e-commerce niche : X%, a confirmer via Analytics des M1"
+  - Panier moyen : "Valeur moyenne par commande, a affiner avec vos donnees"
+  - Budget mensuel : "Accompagnement Search, ajustable apres le bilan a 90 jours"
+- **Resultats compacts** : 3 KPI (Trafic cible M12, CA additionnel annuel, ROI annee 1) sans justification redondante
+- Pas de highlight-box (trop dense), une simple note de footnote pour le CVR
+
+---
+
 ## Investissement : structure v12.0
 
-Regle : 2 blocs separes (Phase 1 mission + Phase 2 orchestration) + 3 niveaux d'intensite. Pas 3 packs egaux.
-Le scenario recommande est la decision logique. Les deux autres ajustent l'intensite, pas la strategie.
+Regle : 2 blocs separes (Phase 1 mission + Phase 2 accompagnement) + echelle de lecture 4 colonnes. Pas 3 packs egaux.
+Le scenario recommande est la decision logique. Les autres ajustent l'intensite, pas la strategie.
 
 **Bloc Phase 1 : "Mission structurante" :**
 - **Pont S7** (sous-titre) : {1 phrase qui relie la mission au diagnostic}

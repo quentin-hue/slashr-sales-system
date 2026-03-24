@@ -1,0 +1,223 @@
+<!-- ====================================================================
+     ONGLET PROJET — Template réutilisable
+     ====================================================================
+     Variables à remplacer par l'agent (Pass 3) :
+
+     {{PROSPECT_NAME}}         — Nom du prospect (h1 hero)
+     {{PROSPECT_CONTEXT}}      — Ligne de contexte hero (secteur · CA · contexte)
+     {{HERO_DATE}}              — Date (ex: "Mars 2026 · Document confidentiel")
+     {{CP_DESCRIPTION}}         — Description du chef de projet (1-2 phrases, adaptée au deal)
+     {{PRODUCTION_CARD_1_TITLE}} — Titre production card 1
+     {{PRODUCTION_CARD_1_DESC}}  — Description production card 1
+     {{PRODUCTION_CARD_1_EX}}    — Exemples production card 1
+     {{PRODUCTION_CARD_1_KPI}}   — KPI production card 1
+     {{PRODUCTION_CARD_2_TITLE}} — Titre production card 2
+     {{PRODUCTION_CARD_2_DESC}}  — Description production card 2
+     {{PRODUCTION_CARD_2_EX}}    — Exemples production card 2
+     {{PRODUCTION_CARD_2_KPI}}   — KPI production card 2
+     {{PRODUCTION_CARD_3_TITLE}} — Titre production card 3
+     {{PRODUCTION_CARD_3_DESC}}  — Description production card 3
+     {{PRODUCTION_CARD_3_EX}}    — Exemples production card 3
+     {{PRODUCTION_CARD_3_KPI}}   — KPI production card 3
+     {{REPORTING_AXES}}          — Axes du reporting (adaptés au périmètre)
+     {{ONBOARDING_S1}}           — Onboarding semaine 1
+     {{ONBOARDING_S24}}          — Onboarding semaines 2-4
+     {{ONBOARDING_M2}}           — Onboarding mois 2
+     {{ONBOARDING_HIGHLIGHT}}    — Phrase highlight onboarding
+
+     Sections fixes (NE PAS modifier sauf évolution du système) :
+     - Slide 1 : Equipe (chef de projet + 3 associés)
+     - Slide 2 : Approche (3 piliers + stack)
+     - Slide 4 : Collaboration (4 cards)
+     ==================================================================== -->
+
+<!-- HERO PROJET -->
+<section class="hero">
+  <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+  <span class="hero-tag">Projet</span>
+  <h1>{{PROSPECT_NAME}}</h1>
+  <p class="hero-subtitle">Comment on travaille ensemble.</p>
+  <p class="hero-context">{{PROSPECT_CONTEXT}}</p>
+  <p class="hero-date">{{HERO_DATE}}</p>
+  <div class="hero-scroll"></div>
+</section>
+
+<!-- SLIDE 1 : Equipe -->
+<div class="slide">
+  <section class="section">
+    <div class="section-label">Votre équipe</div>
+    <h2>Une seule personne à appeler</h2>
+  </section>
+
+  <div class="highlight-box mt-lg" style="display:flex;align-items:center;gap:24px;padding:24px 28px;flex-wrap:wrap;background:linear-gradient(135deg,#1f1810,#1d1623)">
+    <img src="https://agence-slashr.fr/blog/images/2024/03/LOGO-SLASHR-BLANC-1.png" alt="SLASHR" style="width:64px;height:64px;object-fit:contain;flex-shrink:0">
+    <div style="flex:1;min-width:240px">
+      <p style="color:var(--orange);font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:0 0 4px">Votre chef de projet</p>
+      <h3 style="margin:0 0 8px;font-size:1.15rem">Un interlocuteur senior dédié à votre projet</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">{{CP_DESCRIPTION}}</p>
+    </div>
+  </div>
+
+  <p style="color:var(--text-50);font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin:28px 0 12px">En appui direct</p>
+  <div class="grid-3">
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="width:44px;height:44px;border-radius:50%;background:rgba(231,70,1,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.1rem;font-weight:700;color:var(--orange);">AL</div>
+      <h3 style="margin-bottom:2px;font-size:0.95rem">Anthony L.</h3>
+      <p style="color:var(--orange);font-size:0.8rem;font-weight:600;margin-bottom:8px;">Stratégie</p>
+      <p style="color:var(--text-50);font-size:0.82rem;">Définit les priorités, valide les choix stratégiques.</p>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="width:44px;height:44px;border-radius:50%;background:rgba(137,98,253,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.1rem;font-weight:700;color:var(--violet);">QC</div>
+      <h3 style="margin-bottom:2px;font-size:0.95rem">Quentin C.</h3>
+      <p style="color:var(--violet);font-size:0.8rem;font-weight:600;margin-bottom:8px;">Business</p>
+      <p style="color:var(--text-50);font-size:0.82rem;">Garant de vos intérêts business tout au long du projet.</p>
+    </div>
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="width:44px;height:44px;border-radius:50%;background:rgba(206,8,169,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.1rem;font-weight:700;color:var(--magenta);">BD</div>
+      <h3 style="margin-bottom:2px;font-size:0.95rem">Benoît D.</h3>
+      <p style="color:var(--magenta);font-size:0.8rem;font-weight:600;margin-bottom:8px;">Technique</p>
+      <p style="color:var(--text-50);font-size:0.82rem;">Garant de l'expertise et de la qualité des livrables.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 : Notre système -->
+<div class="slide">
+  <section class="section">
+    <div class="section-label">Notre approche</div>
+    <h2>On ne vend pas du temps. On vend un système.</h2>
+    <p class="section-intro">Tout le monde a accès aux mêmes outils IA. La différence, c'est le système construit dessus.</p>
+  </section>
+
+  <div class="grid-3 mt-lg">
+    <div class="card" style="border-top:3px solid var(--orange)">
+      <h3 style="margin-top:0;font-size:1rem">Vos données, pas des moyennes</h3>
+      <p style="color:var(--text-70);font-size:0.9rem">Vos vraies positions Google, vos vrais concurrents, votre vrai trafic. On travaille avec vos données Search Console, Google Ads et nos bases sectorielles. Pas des estimations génériques.</p>
+      <p style="color:var(--orange);font-size:0.82rem;font-weight:600;margin-top:12px">Diagnostic sur mesure</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--magenta)">
+      <h3 style="margin-top:0;font-size:1rem">Production automatisée</h3>
+      <p style="color:var(--text-70);font-size:0.9rem">Nos outils internes automatisent les tâches répétitives : briefs, contenus, optimisations. Une équipe de 3 seniors produit ce qui en nécessiterait 6 ailleurs.</p>
+      <p style="color:var(--magenta);font-size:0.82rem;font-weight:600;margin-top:12px">Plus de volume, même qualité</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--violet)">
+      <h3 style="margin-top:0;font-size:1rem">Validation humaine</h3>
+      <p style="color:var(--text-70);font-size:0.9rem">L'IA accélère la production, l'humain garantit la pertinence. Chaque livrable est relu et enrichi par un expert avant publication.</p>
+      <p style="color:var(--violet);font-size:0.82rem;font-weight:600;margin-top:12px">Zéro contenu publié sans relecture</p>
+    </div>
+  </div>
+
+  <div class="highlight-box mt-lg" style="border-left:3px solid var(--orange);background:linear-gradient(135deg,#1f1810,#1d1623)">
+    <strong>Concrètement :</strong> votre budget finance un système qui tourne, pas des heures de consultant. Et chaque mois, le système s'améliore avec vos données.
+  </div>
+
+  <div style="margin-top:16px;padding:12px 20px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="color:var(--text-70);font-size:0.85rem">19 outils internes · 10 projets R&amp;D en cours</span>
+    <a href="https://agence-slashr.fr/r-and-d/" target="_blank" style="color:var(--orange);font-size:0.82rem;text-decoration:none;border-bottom:1px solid rgba(231,70,1,0.3);margin-left:auto">Voir notre stack →</a>
+  </div>
+</div>
+
+<!-- SLIDE 3 : Production de contenu -->
+<div class="slide">
+  <section class="section">
+    <div class="section-label">Production</div>
+    <h2>Le bon contenu, au bon format, au bon moment</h2>
+    <p class="section-intro">On ne facture pas un nombre d'articles par mois. Le rythme s'adapte aux opportunités identifiées dans vos données.</p>
+  </section>
+
+  <div class="grid-3 mt-lg">
+    <div class="card" style="border-top:3px solid var(--orange)">
+      <h3 style="margin-top:0;font-size:1rem">{{PRODUCTION_CARD_1_TITLE}}</h3>
+      <p style="color:var(--text-70);font-size:0.9rem">{{PRODUCTION_CARD_1_DESC}}</p>
+      <p style="color:var(--text-50);font-size:0.82rem;margin-top:8px">Ex : <em>{{PRODUCTION_CARD_1_EX}}</em></p>
+      <p style="color:var(--orange);font-size:0.82rem;font-weight:600;margin-top:8px">{{PRODUCTION_CARD_1_KPI}}</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--magenta)">
+      <h3 style="margin-top:0;font-size:1rem">{{PRODUCTION_CARD_2_TITLE}}</h3>
+      <p style="color:var(--text-70);font-size:0.9rem">{{PRODUCTION_CARD_2_DESC}}</p>
+      <p style="color:var(--text-50);font-size:0.82rem;margin-top:8px">Ex : <em>{{PRODUCTION_CARD_2_EX}}</em></p>
+      <p style="color:var(--magenta);font-size:0.82rem;font-weight:600;margin-top:8px">{{PRODUCTION_CARD_2_KPI}}</p>
+    </div>
+    <div class="card" style="border-top:3px solid var(--violet)">
+      <h3 style="margin-top:0;font-size:1rem">{{PRODUCTION_CARD_3_TITLE}}</h3>
+      <p style="color:var(--text-70);font-size:0.9rem">{{PRODUCTION_CARD_3_DESC}}</p>
+      <p style="color:var(--text-50);font-size:0.82rem;margin-top:8px">Ex : <em>{{PRODUCTION_CARD_3_EX}}</em></p>
+      <p style="color:var(--violet);font-size:0.82rem;font-weight:600;margin-top:8px">{{PRODUCTION_CARD_3_KPI}}</p>
+    </div>
+  </div>
+
+  <div class="highlight-box mt-lg" style="border-left:3px solid var(--orange);background:linear-gradient(135deg,#1f1810,#1d1623)">
+    <strong>Pourquoi on ne compte pas en articles ?</strong> Un guide technique de 2 500 mots et 10 fiches produit enrichies ne représentent pas le même effort, mais les deux sont "du contenu". Ce qui compte : chaque contenu produit répond à une opportunité réelle identifiée dans vos données Search.
+  </div>
+</div>
+
+<!-- SLIDE 4 : Collaboration -->
+<div class="slide">
+  <section class="section">
+    <div class="section-label">Collaboration</div>
+    <h2>Comment ça se passe concrètement</h2>
+  </section>
+
+  <div class="grid-2 mt-lg">
+    <div class="card" style="padding:20px 24px">
+      <p style="color:var(--orange);font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:0 0 8px">Chaque mois</p>
+      <h3 style="margin:0 0 8px;font-size:1rem">Comité de pilotage</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">45 min avec votre équipe. Bilan du mois, résultats, plan du mois suivant. Un document concret, pas un rapport générique.</p>
+    </div>
+    <div class="card" style="padding:20px 24px">
+      <p style="color:var(--magenta);font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:0 0 8px">En continu</p>
+      <h3 style="margin:0 0 8px;font-size:1rem">Reporting partagé</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">Dashboard avec {{REPORTING_AXES}}.</p>
+    </div>
+  </div>
+  <div class="grid-2 mt-lg">
+    <div class="card" style="padding:20px 24px">
+      <p style="color:var(--violet);font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:0 0 8px">À la demande</p>
+      <h3 style="margin:0 0 8px;font-size:1rem">Accès direct</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">Questions, validations de contenu, coordination agence web : réponse sous 48h ouvrées. Pas de ticket support, un message direct à votre chef de projet.</p>
+    </div>
+    <div class="card" style="padding:20px 24px">
+      <p style="color:var(--orange);font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:0 0 8px">Inclus</p>
+      <h3 style="margin:0 0 8px;font-size:1rem">Outils et licences</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">Stack pro (Search Console, Google Ads, Screaming Frog, Looker Studio) + outils internes. Aucune licence à votre charge.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 : Onboarding -->
+<div class="slide">
+  <section class="section">
+    <div class="section-label">Démarrage</div>
+    <h2>Et après la signature ?</h2>
+  </section>
+
+  <div class="timeline mt-lg">
+    <div class="phase phase-1">
+      <span class="phase-tag" style="background:var(--orange);color:#fff">S1</span>
+      <h3>Semaine 1</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">{{ONBOARDING_S1}}</p>
+    </div>
+    <div class="phase phase-2">
+      <span class="phase-tag" style="background:var(--magenta);color:#fff">S2-4</span>
+      <h3>Semaines 2 à 4</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">{{ONBOARDING_S24}}</p>
+    </div>
+    <div class="phase phase-3">
+      <span class="phase-tag" style="background:var(--violet);color:#fff">M2</span>
+      <h3>Mois 2</h3>
+      <p style="color:var(--text-70);font-size:0.9rem;margin:0">{{ONBOARDING_M2}}</p>
+    </div>
+  </div>
+
+  <div class="highlight-box mt-lg" style="border-left:3px solid var(--orange);background:linear-gradient(135deg,#1f1810,#1d1623)">
+    <strong>Pas de tunnel de 3 mois avant de voir quelque chose.</strong> {{ONBOARDING_HIGHLIGHT}}
+  </div>
+</div>
+
+<!-- CTA Projet -->
+<section class="cta-section">
+  <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+  <h2>Voir l'investissement</h2>
+  <p>Budget, projections, prochaine étape.</p>
+  <div class="cta-wrap"><a href="#" class="cta-btn" onclick="document.querySelector('[data-tab=investissement]').click();return false;">Onglet Investissement</a></div>
+</section>

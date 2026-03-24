@@ -42,6 +42,7 @@ Seul l'echec du deal Pipedrive est bloquant. Le reste degrade gracieusement, doc
 17. Avantages competitifs tisses : jamais de section "Pourquoi SLASHR" standalone
 18. Jamais de tiret cadratin ni semi-cadratin separateur (`—`, `–`) dans aucun output. Remplacer par `:`, `,`, `.`, des parentheses. Le `–` est tolere uniquement dans les plages numeriques
 19. Domaine principal = site actif du prospect. En cas de doute, demander au closer
+20. **Accents francais obligatoires dans les outputs HTML** : tous les textes visibles doivent porter les accents corrects (é, è, ê, à, ù, ç, etc.). "stratégie", "données", "référence", "résultat", "intégrer", "sécuriser", "équipe", "décisionnel", "requête". Un output sans accents est un defaut bloquant.
 
 ---
 
