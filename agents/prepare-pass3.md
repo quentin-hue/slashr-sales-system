@@ -105,9 +105,9 @@ L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il
 
 | Composant | Usage | Quand le choisir |
 |-----------|-------|------------------|
-| Radar S7 | Heptagramme SVG, 7 axes (0-5), fond sombre, accents orange/violet | Section S7 "Lecture strategique" dans l'onglet Diagnostic, toujours |
-| S7 constraint highlight | Highlight box (orange) + force limitante + implication 1-2 phrases | Apres le radar : contrainte principale |
-| S7 levers row | 2-3 KPI mini alignes horizontalement, 1 force = 1 chiffre d'impact | Sous le radar : leviers prioritaires |
+| Contrainte highlight | Highlight box (orange) + blocage principal en langage business + implication chiffree 1-2 phrases | Section "Priorites strategiques" : contrainte principale |
+| Leviers row | 2-3 KPI mini alignes horizontalement, 1 axe = 1 chiffre d'impact | Section "Priorites strategiques" : axes d'action |
+| ~~Radar S7~~ | **RETIRE** — le radar S7 est un outil interne, il ne doit jamais apparaitre dans le HTML client | Jamais dans le HTML client. Reserve a l'INTERNAL-S7. |
 
 #### QUANTIFIER : chiffres, metriques, scores
 
@@ -277,12 +277,12 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 - **Pas de data DataForSEO** dans cet onglet. Pas de bar charts, pas de tables comparatives. C'est du contexte qualitatif.
 
 **Onglet Diagnostic** : composition libre, hero full screen (catalogue complet)
-- Hero (blobs, contexte client tisse) → sections libres → **section S7** → deferred → implications
+- Hero (blobs, contexte client tisse) → sections libres → **section priorites strategiques** → ce qu'on ne fait pas → implications
 - Tout composant du catalogue est utilisable
-- **Section S7 obligatoire** : Radar S7 + S7 constraint highlight + S7 levers row + Pull quote (insight central)
+- **Section "Priorites strategiques" obligatoire** : traduit les conclusions de l'analyse S7 interne en langage business. Highlight box (contrainte principale en impact business) + 2-3 axes d'action concrets + insight central. **ZERO jargon S7** : pas de radar, pas de noms de forces (S1-S7), pas de scores /5, pas de labels PRIMARY/SECONDARY/DEFERRED. Cf. regle 20 de `agents/shared.md`.
 - **SO WHAT obligatoire** : chaque section se termine par un highlight box qui traduit les donnees en impact business chiffre, **3 lignes max**
 - **Cas clients : onglet dedie** (onglet 4), pas inline dans le Diagnostic
-- **Pas de transitions SLASHR** : la proposition ne mentionne jamais SLASHR ou ses services dans l'onglet Diagnostic, sauf dans la section S7 (methode d'analyse). Le SO WHAT de chaque section suffit comme conclusion.
+- **Pas de transitions SLASHR** : la proposition ne mentionne jamais SLASHR ou ses services dans l'onglet Diagnostic. Le SO WHAT de chaque section suffit comme conclusion.
 - **Fusion constat/benchmark** : si le constat et le benchmark utilisent les memes KPIs, les fusionner en 1 seule slide (KPI large → contexte → bar chart → table optionnelle → SO WHAT)
 
 **Onglet Strategie** : hero propre + decision strategique
@@ -329,11 +329,11 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 **Onglet Investissement** : hero propre + resume decisionnel
 - Hero fullscreen (tag "Investissement"). Premiere section apres le hero : resume decisionnel.
 - **Resume decisionnel** : Highlight box (gradient) avec 6 bullets (max 120 chars chacun), en haut de l'onglet, c'est la premiere chose que le decideur voit
-- **Board-ready A4** : bouton "Version imprimable" qui declenche `window.print()`, page `@media print` avec resume + radar S7 + ROI + pricing
-- **Cout de l'inaction (AVANT le pricing)** : composant s7-insight avec 3 impacts business chiffres. Place AVANT les pricing cards pour l'ancrage psychologique : le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
+- **Board-ready A4** : bouton "Version imprimable" qui declenche `window.print()`, page `@media print` avec resume + priorites strategiques + ROI + pricing
+- **Cout de l'inaction (AVANT le pricing)** : highlight-box avec 3 impacts business chiffres. Place AVANT les pricing cards pour l'ancrage psychologique : le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
 - **Investissement v12.0** : 2 blocs separes. (1) **Phase 1 "Mission structurante"** : card accent, scope qualitatif + livrables + budget global HT, SANS jours ni TJM. (2) **Phase 2 "Orchestration mensuelle"** : 3 niveaux d'intensite (Essentiel/Performance/Croissance), le recommande en `.recommended` avec border gradient, les autres compacts. Scope qualitatif + budget mensuel HT, SANS jours/mois ni TJM. Sous chaque scenario, ajouter une ligne : "Ce que ca debloque en priorite : {Pont S7 en langage client, issu du NBP}". Utiliser le langage prospect (ex: "debloquer votre visibilite locale"), PAS les labels internes S7 (ex: PAS "S3 Contenu"). Ne jamais mentionner jours/TJM.
 - **Recommandation conditionnelle** : si Confidence = Low sur 2+ ROI drivers, la carte `.recommended` conserve son statut mais affiche un label supplementaire : "Recommandation conditionnelle — validation des hypotheses en Phase 1".
-- **Sous-section Methode S7** : Card (accent) avec definition 2-3 phrases + liste compacte 7 forces (1 ligne chacune) + 1 phrase d'arbitrage. Peut etre dans un Accordion "Notre methode d'analyse".
+- **Sous-section Methode d'analyse (optionnel)** : dans l'accordion FAQ si pertinent. 2-3 phrases generiques sur l'approche ("7 dimensions de visibilite Search, priorisation des 2-3 axes a plus fort impact"). Pas de noms S7, pas de scores, pas de radar.
 - **Recap budget (slide dedie)** : vue consolidee sur 2 colonnes (annee 1 / annee 2 si applicable). Chaque phase porte : (1) un objectif qualitatif colore (orange Phase 1, magenta Phase 2), (2) budget accompagnement SLASHR, (3) budget media minimum en ligne separee, (4) total phase. Hero gradient avec total global HT. Footnote : "Budget media minimum pressenti : {montant}/mois. Ajustable selon la strategie et la saisonnalite. Sans engagement sur la Phase 2." Ce slide est SEPARE du pricing, jamais dans le meme slide.
 - **Accordion "Questions frequentes"** : reprend les OBJECTIONS A PRE-EMPT du NBP. Chaque item : titre = objection formulee comme question, contenu = reponse data-first + source courte (DataForSEO / GSC / verbatim / benchmark). Si une objection n'a pas de source → ajouter "a confirmer en Phase 1".
 - **Prochaine etape** : bloc 3 lignes (decision, date, action)
@@ -467,8 +467,8 @@ Diagnostic interne : INTERNAL-S7-{date}-{slug}.md
 Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
-S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-Onglets : {Contexte (si active) |} Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) {| Projet (si active)} | Investissement | Cas clients ({N} cas)
+Diagnostic : contrainte = {en langage business} | leviers = {2-3 axes} | insight = {1 phrase}
+Onglets : {Contexte (si active) |} Diagnostic ({N} sections) | Strategie (decision + 90j + ROI) {| Projet (si active)} | Investissement | Cas clients ({N} cas)
 
 DRAFT, a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.

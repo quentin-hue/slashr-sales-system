@@ -65,10 +65,12 @@ L'agent DOIT lire ces fichiers avant de commencer. Ne pas lire un fichier = ne p
 ## Etapes
 
 1. Lis les fichiers 1-2 de la checklist ci-dessus
-2. Execute les 3 passes dans l'ordre :
-   - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + analyse strategique + S7 + SDB). En mode `--fast`, skip cette passe si SDB frais (< 2h).
-   - **Pass 2** : lis fichiers 3-4, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet 3 (Investissement).
-   - **Pass 3** : lis fichier 5, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`)
+2. Execute les 3 passes avec les 2 checkpoints interactifs :
+   - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + analyse strategique + S7 interne + SDB). En mode `--fast`, skip cette passe si SDB frais (< 2h).
+   - **CHECKPOINT 1** : presente le resume strategique au closer dans le terminal (cf. `agents/prepare.md`). **ATTENDRE la validation** avant de continuer. Si corrections → mettre a jour le SDB.
+   - **Pass 2** : lis fichiers 3-4, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet Investissement.
+   - **CHECKPOINT 2** : presente le plan narratif au closer dans le terminal (cf. `agents/prepare.md`). **ATTENDRE la validation** avant de continuer. Si modifications → mettre a jour le NBP.
+   - **Pass 3** : lis fichier 5, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`). Le S7 ne doit JAMAIS apparaitre dans le HTML client (regle 20).
 
 ## Collecte Pipedrive
 

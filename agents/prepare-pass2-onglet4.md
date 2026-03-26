@@ -32,7 +32,7 @@ Privilegier les chiffres aux mots : "319 kw vs 10 307 leader" plutot que
 
 1. Le probleme business (douleur chiffree)
 2. Le cout de l'inaction (visites/euros/mois perdus)
-3. Le levier principal (contrainte S7 → action)
+3. Le levier principal (contrainte identifiee → action)
 4. Les quick wins 90 jours (resultats rapides)
 5. Le ROI attendu (conservateur, source)
 6. L'investissement (fourchette selon scenario)
@@ -44,7 +44,7 @@ Privilegier les chiffres aux mots : "319 kw vs 10 307 leader" plutot que
 Page print-friendly (CSS `@media print`) qui reprend :
 - En-tete : logo SLASHR + nom prospect + date
 - Les 6 bullets du resume decisionnel
-- Le radar S7 (version print : niveaux de gris ou simplifie)
+- Les priorites strategiques (contrainte + leviers)
 - Le ROI en 1 ligne
 - Le pricing recommande
 - 1 CTA : "Prochaine etape : [action datee]"
@@ -67,17 +67,16 @@ Regles :
 
 ---
 
-## Sous-section Methode S7
+## Sous-section Methode d'analyse (optionnel)
 
-Bloc leger integre dans l'onglet (pas un onglet separe). Place avant le pricing ou dans l'accordion FAQ/methodo.
+Bloc leger optionnel dans l'accordion FAQ/methodo. Le S7 en tant que framework n'est JAMAIS expose au client. Si la methode est mentionnee, c'est en termes generiques.
 
-**Contenu :**
-1. **Definition S7** : 2-3 phrases max. Quoi : un cadre d'analyse en 7 forces. Pourquoi : prioriser les actions a plus fort impact, pas tout faire en meme temps.
-2. **7 forces** : liste compacte, 1 ligne par force (nom + ce qu'elle mesure, pas de score, les scores sont dans l'onglet Diagnostic).
-3. **Regle d'arbitrage** : 1 phrase : "On ne travaille jamais les 7 forces en parallele. Le S7 identifie les 2-3 leviers qui debloquent le plus de valeur pour votre situation."
+**Contenu (si inclus dans la FAQ) :**
+- 2-3 phrases : "Notre analyse couvre 7 dimensions de votre visibilite Search (technique, contenu, concurrence, etc.). On identifie les 2-3 axes qui debloquent le plus de valeur pour votre situation, pas tout en parallele."
+- Pas de noms de forces, pas de scores, pas de radar, pas de "S7".
 
 **Regles :**
-- Pas de jargon "framework", "methodology", dire "grille d'analyse" ou "cadre de priorisation"
+- Pas de jargon "framework", "methodology", "S7", "7 forces". Dire "notre analyse" ou "notre grille de priorisation"
 - Ton : transparent, simple. Le prospect comprend pourquoi on ne fait pas tout.
 - **Ne PAS repeter les scores** : ils sont dans l'onglet Diagnostic. Ici c'est la methode, pas le diagnostic.
 
@@ -138,7 +137,7 @@ Budget mensuel = jours/mois x TJM (cf. `context/pricing_rules.md`).
 ## Trajectoire 6 mois (obligatoire)
 
 Bloc "M4-M6" qui montre la montee en puissance post-Phase 1 :
-- Quels piliers S7 passent de DEFERRED a actif
+- Quels axes strategiques passent de differe a actif
 - Quels KPIs sont attendus a M6
 - Comment l'intensite evolue
 
@@ -166,7 +165,7 @@ Regle : 2 blocs separes (Phase 1 mission + Phase 2 accompagnement) + echelle de 
 Le scenario recommande est la decision logique. Les autres ajustent l'intensite, pas la strategie.
 
 **Bloc Phase 1 : "Mission structurante" :**
-- **Pont S7** (sous-titre) : {1 phrase qui relie la mission au diagnostic}
+- **Pont strategique** (sous-titre) : {1 phrase qui relie la mission au diagnostic}
   Ex : "Poser les fondations Search avant la refonte — securiser ce qui existe, preparer ce qui manque"
 - **Description qualitative contextualisee** : utiliser les `SERVICE_DESCRIPTIONS (description proposition)` du SDB pour decrire le scope. Ces descriptions montrent la methodologie (sequence analyse → clustering → arborescence → contenu → roadmap), les specificites du deal (dimensions B2C/B2B, concurrents, contraintes) et les livrables concrets. Ne JAMAIS utiliser de descriptions generiques ("liste de mots-cles, arborescence, recommandations"). Cf. `context/service_catalog.md`.
 - Liste des livrables produits
@@ -178,14 +177,14 @@ Le scenario recommande est la decision logique. Les autres ajustent l'intensite,
 - 3 niveaux d'intensite presentes comme des curseurs, pas comme des packs :
 
 1. **Essentiel** (recommande pour les PME / execution interne) :
-   - **Pont S7** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
+   - **Pont strategique** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
      Ex : "Pilotage de votre visibilite produit et suivi des positions cles"
    - Scope : pilotage + monitoring + reporting
    - Budget : {montant}/mois HT
    - Engagement : 12 mois
 
 2. **Performance** (recommande, mis en avant visuellement) :
-   - **Pont S7** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
+   - **Pont strategique** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
      Ex : "Ce qui construit votre visibilite produit et securise votre migration"
    - Scope : + production deleguee + accompagnement continu
    - Budget : {montant}/mois HT
@@ -193,26 +192,26 @@ Le scenario recommande est la decision logique. Les autres ajustent l'intensite,
    - Objectifs chiffres : {CA additionnel, timeline}
 
 3. **Croissance** (pour les ambitions fortes / multi-leviers) :
-   - **Pont S7** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
+   - **Pont strategique** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
      Ex : "Visibilite produit + contenus + diffusion multi-canal : le search comme levier de croissance"
    - Scope : + leviers additionnels (SEA, GEO, Social) + amplification
    - Budget : {montant}/mois HT
    - Engagement : 12 mois
 
-> **Regle Pont S7 :** chaque pricing card a un sous-titre de 1 phrase qui relie l'investissement au diagnostic S7. Pas de jargon S7 ("PRIMARY S3") — traduit en impact client ("Ce qui construit votre visibilite produit"). Le sous-titre repond a la question implicite du prospect : "Qu'est-ce que je paie exactement et pourquoi ?"
+> **Regle Pont strategique :** chaque pricing card a un sous-titre de 1 phrase qui relie l'investissement au diagnostic. Traduit en impact client ("Ce qui construit votre visibilite produit"). Le sous-titre repond a la question implicite du prospect : "Qu'est-ce que je paie exactement et pourquoi ?"
 
 **Sous-bloc "Ce que coute l'inaction" (OBLIGATOIRE, AVANT le pricing — ancrage psychologique) :**
 - C'est le **seul endroit** de toute la proposition ou le cout de l'inaction est detaille
 - **PLACEMENT :** le cout de l'inaction est positionne AVANT les pricing cards (Phase 1 + Phase 2). Le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
 - 3 impacts business max, lies aux donnees du diagnostic
-- Chaque impact = chiffre + source DataForSEO/S7
-- Composant : s7-insight (meme style visuel que la contrainte S7)
+- Chaque impact = chiffre + source (DataForSEO, GSC, Google Ads)
+- Composant : highlight-box (style alerte)
 - Pas de dramatisation, les chiffres suffisent
 - INTERDIT : structure anaphorique ("Chaque mois sans X..." repete N fois). Varier les formulations.
 
 **Pont "Du diagnostic aux campagnes" (CONDITIONNEL : si SEA_SIGNAL = EXPLICIT et SEA_POSTURE = CONSEIL) :**
 - Place APRES le cout de l'inaction, AVANT les pricing cards
-- Composant : highlight-box ou s7-insight
+- Composant : highlight-box
 - 3 bullets montrant la cascade organique → paid :
   1. **Phase 1** : cartographie d'intentions + audit technique = fondations partagees SEO & SEA
   2. **M3-M4** : activation campagnes sur les intentions commerciales identifiees en Phase 1
@@ -248,8 +247,8 @@ Structure :
 - Resume decisionnel (6 bullets)
 - Board-ready A4
 - Cout de l'inaction (AVANT les prix)
-- Pricing (Phase 1 + Phase 2) avec pont S7
-- Methode S7
+- Pricing (Phase 1 + Phase 2) avec pont strategique
+- Methode d'analyse (optionnel, dans FAQ)
 - FAQ
 - Prochaine etape
 - CTA final
@@ -260,8 +259,8 @@ Structure identique :
 - Resume decisionnel (6 bullets)
 - Board-ready A4
 - Cout de l'inaction (AVANT les prix)
-- Pricing (Phase 1 + Phase 2) avec pont S7
-- Methode S7
+- Pricing (Phase 1 + Phase 2) avec pont strategique
+- Methode d'analyse (optionnel, dans FAQ)
 - FAQ
 - Prochaine etape
 - CTA final

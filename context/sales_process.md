@@ -103,20 +103,20 @@ La proposition HTML interactive generee par `/prepare`. Elle contient tout : con
 
 Le closer parcourt la proposition HTML en partage d'ecran (ou l'envoie en amont).
 
-### Pitch S7 — quand on arrive sur la section "Lecture strategique"
+### Pitch Priorites — quand on arrive sur la section "Priorites strategiques"
 
-Le closer arrive sur le radar S7 dans l'onglet Diagnostic. **30 secondes max.** Pas de cours sur le framework — juste assez pour que le decideur comprenne la logique.
+Le closer arrive sur la section qui traduit l'analyse en priorites concretes. **30 secondes max.** Pas de jargon methodologique — juste les conclusions.
 
 **Mini-script (a adapter au ton de la conversation) :**
 
-> "On utilise un modele proprietaire en 7 forces pour analyser votre situation Search. L'idee est simple : on ne travaille pas les 7 en meme temps. On identifie les 2-3 leviers qui debloquent le plus de valeur pour vous, et on concentre les ressources dessus."
+> "On a analyse votre situation sur 7 dimensions cles. L'idee est simple : on ne travaille pas tout en meme temps. On identifie les 2-3 axes qui debloquent le plus de valeur pour vous, et on concentre les ressources dessus."
 
-**Enchainer immediatement avec le radar :**
-- Montrer les scores (le visuel parle tout seul)
-- Nommer la contrainte principale et les leviers prioritaires (ils sont affiches)
-- Ne PAS detailler les forces non priorisees — le prospect les voit, ca suffit
+**Enchainer immediatement avec les priorites :**
+- Nommer la contrainte principale (en langage business) et les leviers prioritaires
+- Montrer les chiffres qui justifient la priorisation
+- Ne PAS detailler ce qui est hors perimetre — mentionner juste que c'est volontairement reporte
 
-**2 questions obligatoires apres le pitch S7 :**
+**2 questions obligatoires apres le pitch Priorites :**
 
 | # | Question | Objectif |
 |---|----------|----------|

@@ -12,8 +12,8 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 |---|-------|------|
 | 3 | Fond sombre `#1a1a1a` present | CSS `background` ou `--bg` contient `#1a1a1a` |
 | 5 | 4-6 onglets non-vides : `tab-diagnostic`, `tab-strategie`, `tab-investissement`, `tab-cas-clients` + optionnels `tab-contexte`, `tab-projet` | 4 a 6 `div.tab-content` avec contenu non-placeholder. Si `tab-contexte` present, positionne AVANT `tab-diagnostic`. Si `tab-projet` present, positionne entre `tab-strategie` et `tab-investissement` |
-| 14 | Section S7 dans l'onglet Diagnostic | `s7-grid`, `s7-card`, `s7-radar-wrap` ou `s7-radar-svg` present dans `#tab-diagnostic` |
-| 16 | Exactement 1 PRIMARY dans le S7 | 1 seul `data-state="primary"` ou `data-priority="primary"` dans `#tab-diagnostic` |
+| 14 | Zero S7 dans le HTML client | Regex `s7-radar|s7-grid|s7-card|S[1-7]\s*[·:]\s*(Intentions|Architecture|Contenu|UX|Autorit|Diffusion|Amplification)|PRIMARY|SECONDARY|DEFERRED|7 forces|modele S7|grille S7` absent du body visible. Le S7 est un outil interne, jamais dans le HTML client. |
+| 16 | Section "Priorites" dans le Diagnostic | `#tab-diagnostic` contient une section qui traduit les conclusions strategiques (contrainte principale, leviers) en langage business, SANS nommer le framework S7 |
 | 18 | Resume decisionnel <= 6 bullets | `.highlight-gradient` dans `#tab-investissement` avec max 6 `<li>` |
 | 19 | Board-ready A4 / `window.print()` | `@media print` present dans le CSS ET bouton print dans le HTML ET section `.board-ready-a4` presente avec : resume decisionnel, pricing recommande, "decision attendue" |
 | 26 | CTA avec verbe strategique | CTA ne contient PAS "Planifier un echange", "Discuter", "Echanger", "En savoir plus" |
@@ -25,7 +25,7 @@ Regles verifiables par DOM/CSS/regex. Echec = REJECT automatique.
 | 38 | Pricing cards exclusives a l'onglet Investissement | `.pricing` ou `.pricing-grid` absent de `#tab-strategie` |
 | 39 | ETV vs trafic correctement etiquetes | "ETV" n'apparait pas la ou c'est du trafic (visites) et inversement |
 | 27a | Si refonte : 3 actes narratifs + "0 perte de trafic strategique" | Conditionnel : si le deal implique une refonte |
-| 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" AVANT pricing | `.recommended` present + section cout inaction dans `#tab-investissement` + cout inaction (`.s7-insight`) positionne AVANT `.pricing`/`.pricing-grid` dans le DOM |
+| 28a | Investissement : 1 trajectoire recommandee + sous-bloc "cout de l'inaction" AVANT pricing | `.recommended` present + section cout inaction dans `#tab-investissement` + cout inaction (`.highlight-box`) positionne AVANT `.pricing`/`.pricing-grid` dans le DOM |
 | 30 | Coherence levier : setup Phase 1 ↔ run Phase 2 | Chaque levier avec Phase 1 a un Phase 2 et inversement |
 | 18b | Zero tiret cadratin et semi-cadratin separateur | Regex `\u2014` (em dash) et `\u2013` (en dash hors plages numeriques) absents du texte visible. Inclut `&mdash;` et `&ndash;` dans le HTML source |
 | 50 | CTA H2 coherent avec la destination | Chaque lien `data-tab` dans un CTA a un H2 dont le texte mentionne l'onglet cible (ex: "Voir le projet" → `data-tab="projet"`, pas `data-tab="investissement"`) |
@@ -74,9 +74,9 @@ Regles non-automatisables, revue par l'agent. Affichees comme checklist.
 | 7 | Arc narratif justifie | L'ordre des sections est-il justifie par le contexte du deal ? |
 | 11 | Zero pression commerciale | Aucune phrase type "ne manquez pas", "il est urgent de" ? |
 | 12 | Zero dramatisation | Aucune phrase type "catastrophe", "crise", "vous perdez tout" ? |
-| 13 | S7 : max 3 leviers | Le S7 recommande-t-il max 3 leviers (pas les 7) ? |
-| 15 | Insight S7 non-substituable | L'insight central echoue-t-il au test de substitution ? |
-| 17 | DEFERRED justifies | Chaque force DEFERRED a-t-elle un "pourquoi pas maintenant" ? |
+| 13 | Max 3 priorites strategiques | La proposition recommande-t-elle max 3 axes d'action (pas tout a la fois) ? |
+| 15 | Insight strategique non-substituable | L'insight central echoue-t-il au test de substitution ? |
+| 17 | Priorites secondaires justifiees | Chaque axe non prioritaire a-t-il un "pourquoi pas maintenant" en langage business ? |
 | 17b | Brief paid adresse | Si SEA_SIGNAL=EXPLICIT dans le SDB, le brief paid est-il adresse dans la proposition (section Diagnostic paid + sous-section Strategie paid + FAQ SEA) ? |
 | 17c | Opportunite paid exposee | Si SEA_SIGNAL=OPPORTUNITY dans le SDB, l'opportunite paid est-elle visible dans le diagnostic (CPCs, couverture concurrents) et integree dans la trajectoire Phase 2 ? |
 
@@ -94,6 +94,7 @@ Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING 
 | 43 | SO WHAT : chaque section Diagnostic a un highlight-box | Chaque `.slide` dans `#tab-diagnostic` contient au moins 1 `.highlight-box` | Toutes les sections |
 | 44 | Au moins 1 micro-benchmark dans la proposition | `.micro-benchmark` present dans `#tab-diagnostic` OU `#tab-cas-clients` | ≥ 1 |
 | 45 | Repetition density : aucun nombre n'apparait > 6 fois dans le texte visible | Counter sur les nombres multi-digits, seuil > 6 | Aucun nombre > 6x |
+| 54 | Zero jargon S7 dans le HTML client | Memes patterns que R14 (renforcement Layer 4). Score = % de paragraphes contenant un terme S7. | 0% |
 
 ---
 

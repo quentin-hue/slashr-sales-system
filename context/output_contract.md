@@ -127,6 +127,42 @@ Le recap budget est un slide **dedie** (pas inline dans le pricing). Il presente
 
 ---
 
+## S7 : interne uniquement (REGLE CRITIQUE)
+
+Le framework S7 est un outil d'analyse interne. Il NE DOIT JAMAIS apparaitre dans les outputs clients (HTML).
+
+| Interdit dans le HTML client | Autorise dans l'INTERNAL-S7 |
+|------------------------------|----------------------------|
+| Radar S7 (SVG/canvas) | Radar complet avec scores |
+| Noms de forces "S1 Intentions", "S3 Contenu", etc. | Classification complete |
+| Labels "PRIMARY", "SECONDARY", "DEFERRED" | Trajectoires avec labels |
+| Scores "/5" des forces | Scores detailles |
+| Mention du "modele S7", "7 forces", "grille S7" | Methodologie complete |
+
+**Traduction obligatoire :** les conclusions du S7 sont traduites en langage business dans le HTML. Exemples :
+- "S3 Contenu = 1/5" → "Le site ne produit pas de contenu qui attire de nouveaux visiteurs"
+- "PRIMARY S3, SECONDARY S1+S2" → "La priorite est de creer du contenu sur les recherches commerciales, en parallele de la refonte technique"
+- "DEFERRED S6 Diffusion" → "La presence sur les reseaux sociaux et les moteurs IA sera activee une fois les fondations Search posees"
+
+---
+
+## Evidence chain (tracabilite des chiffres)
+
+Chaque chiffre affiche dans le HTML doit etre tracable :
+
+1. Il existe dans le SDB avec sa source et sa date
+2. La source est identifiable (GSC, Google Ads, DataForSEO, calcul)
+3. Si c'est un calcul, la formule et les inputs sont documentes
+
+**Priorite des sources :**
+```
+GSC > Google Ads > DataForSEO > calcul/hypothese
+```
+
+Si un chiffre ne peut pas etre source → ne pas l'utiliser dans le HTML.
+
+---
+
 ## Output INTERNE : INTERNAL-S7
 
 ### Section "Budget interne" (NOUVELLE — ajoutee en fin de fichier S7)

@@ -309,7 +309,7 @@ Cet onglet cree un ancrage emotionnel et strategique AVANT le diagnostic chiffre
 
 C'est l'onglet principal. Il contient :
 - Le **hero** (full screen, contexte client tisse : pas juste le nom, mais le contexte business : AO, refonte, objectif CA, etc.)
-- Les **sections libres** du diagnostic : constat, benchmark, territoires, S7, deferred, implications
+- Les **sections libres** du diagnostic : constat, benchmark, territoires, priorites strategiques, ce qu'on ne fait pas, implications
 - Un **SO WHAT obligatoire** sur chaque section (highlight box avec impact business chiffre, 3 lignes max)
 
 **Contexte client tisse :** le hero et la premiere section prouvent que le diagnostic est personnalise. Le hero-subtitle tisse le contexte business (AO, refonte, objectif, etc.). La premiere section ouvre sur une donnee que le prospect ne connaissait pas SUR LUI.
@@ -327,7 +327,7 @@ C'est l'onglet principal. Il contient :
 **Si SEA_SIGNAL = DETECTED :** pas de section dediee. Mention de la synergie SEO/SEA dans la section benchmark ou opportunites (1-2 phrases).
 
 **Si SEA_SIGNAL = OPPORTUNITY :** section legere dans l'onglet Diagnostic montrant l'opportunite paid (terrain vierge, CPCs bas, 0 concurrent en Ads). Pas de section strategie paid dediee, mais :
-- Integrer le paid comme axe dans la recommandation (ex: "Axe Amplification S7 : activer le paid sur un terrain vierge")
+- Integrer le paid comme axe dans la recommandation (ex: "Activer le paid sur un terrain vierge une fois les fondations posees")
 - Integrer le paid dans la trajectoire globale en Phase 2 (pas Phase 1)
 - Mentionner les donnees cles (CPCs, couverture concurrents) dans la section S7 ou opportunites
 - Le ton est "opportunite future" (pas urgence, pas demande client) : "Le terrain paid est vierge. C'est un levier a activer une fois les fondations Search posees."
@@ -345,21 +345,21 @@ C'est l'onglet principal. Il contient :
 
 **Cas clients : onglet dedie (pas inline).** Les cas clients ne sont plus integres dans le diagnostic. Ils ont leur propre onglet (onglet 4 "Cas clients"). Voir section Onglet 4 ci-dessous.
 
-#### Section S7 "Lecture strategique" (obligatoire dans l'onglet Diagnostic)
+#### Section "Priorites strategiques" (obligatoire dans l'onglet Diagnostic)
 
-Bloc compact qui traduit le diagnostic S7 interne en lecture C-level. Place apres le diagnostic et avant les implications dans l'arc narratif.
+Bloc compact qui traduit les conclusions de l'analyse interne (S7) en lecture business. Place apres le diagnostic et avant les implications dans l'arc narratif. **Le S7 en tant que framework (radar, noms de forces, scores, labels) ne doit JAMAIS apparaitre dans le HTML client.**
 
 **Contenu :**
-1. **Radar 7 forces** : visualisation SVG/canvas des 7 scores (0-5). Pas de legende longue : le nom de chaque force + son score suffit.
-2. **Contrainte principale** : 1 highlight box qui nomme la force limitante et son implication business en 1-2 phrases.
-3. **Leviers prioritaires** : 1-2 forces secondaires activees, avec l'impact attendu chiffre.
+1. **Contrainte principale** : 1 highlight box qui nomme le blocage en langage business et son implication chiffree en 1-2 phrases. Ex: "Le site ne produit aucun contenu qui attire de nouveaux visiteurs. Sur 2,7M de recherches mensuelles, 96% arrivent chez les concurrents."
+2. **Leviers prioritaires** : 2-3 axes d'action concrets, avec l'impact attendu chiffre. Ex: "Creer les pages categories et recettes (objectif : +500 visiteurs/mois en 6 mois)"
+3. **Ce qu'on ne fait pas maintenant** : transparence sur ce qui est hors perimetre et pourquoi. Ex: "La presence sur les reseaux sociaux sera activee une fois que le site aura du contenu a diffuser."
 4. **Insight central** : 1 phrase de synthese strategique, non generique (doit echouer au test de substitution).
 
 **Regles :**
-- **Ne jamais recommander de travailler les 7 forces.** Le S7 sert a prioriser, pas a tout faire. Si les 7 forces sont affichees dans le radar, seules 2-3 sont mises en avant comme leviers d'action.
-- Les forces non priorisees ne sont pas cachees, elles sont visibles dans le radar mais **pas commentees** (le prospect voit le score, pas une recommandation dessus).
+- **Zero jargon S7** : pas de "S3 Contenu", pas de "PRIMARY", pas de "force", pas de radar, pas de scores /5.
+- **Max 3 axes d'action.** Le prospect ne peut pas tout faire. L'analyse priorise, pas enumere.
 - Le texte est C-level : phrases courtes, chiffres, zero jargon SEO non traduit.
-- Le bloc reste **compact** : pas plus de 1 radar + 1 highlight box + 2-3 lignes de leviers + 1 phrase d'insight.
+- Le bloc reste **compact** : highlight box + 2-3 axes + 1 insight.
 
 #### Composant "Territoires de contenu" (donnees Intent Market Map)
 

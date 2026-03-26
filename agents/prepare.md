@@ -12,19 +12,25 @@ Le HTML n'est pas un template a trous. C'est un livrable genere par l'agent, cha
 
 ---
 
-## Architecture interne : 3 passes sequentielles
+## Architecture interne : 3 passes + 2 checkpoints
 
-L'agent execute 3 passes en sequence. Chaque passe produit un document intermediaire structure (interne, jamais dans l'output). La passe suivante consomme ce document comme input principal.
+L'agent execute 3 passes en sequence avec **2 checkpoints interactifs** ou le closer valide avant de continuer.
 
 ```
 Pass 1 : DATA & STRATEGY ENGINE    → Structured Data Brief (SDB)
+  ↓
+CHECKPOINT 1 : Resume strategique dans le terminal → closer valide / corrige / reoriente
+  ↓
 Pass 2 : NARRATIVE ARCHITECT        → Narrative Blueprint (NBP)
+  ↓
+CHECKPOINT 2 : Plan narratif dans le terminal → closer reordonne / renomme / ajoute / supprime
+  ↓
 Pass 3 : DESIGN ORCHESTRATOR        → HTML final (le seul output)
 ```
 
-**Pourquoi 3 passes ?** Separer les preoccupations. La Pass 1 ne pense pas a la narration. La Pass 2 ne pense pas aux composants visuels. La Pass 3 ne reinvente pas la strategie. Chaque passe fait une chose et la fait bien.
+**Pourquoi les checkpoints ?** Sans validation intermediaire, une erreur en Pass 1 (mauvaise priorisation, donnee manquante) cascade dans les Pass 2 et 3. Le closer decouvre le probleme dans le HTML final et doit tout reprendre. Les checkpoints coupent cette cascade : le closer valide la strategie AVANT la narration, et le plan narratif AVANT la generation HTML.
 
-> **Note :** La Pass 1 inclut l'analyse strategique + S7 (Etape 1.3, bloc unifie) qui produit un `strategy_plan_internal.md` avant le SDB. Le S7 est l'etape de priorisation strategique, il alimente directement le SDB.
+> **Note :** La Pass 1 inclut l'analyse strategique + S7 (Etape 1.3, bloc unifie) qui produit un `strategy_plan_internal.md` avant le SDB. Le S7 est l'etape de priorisation strategique interne, il alimente directement le SDB. Le S7 ne sort JAMAIS dans le HTML client (cf. regle 20).
 
 ---
 
@@ -61,34 +67,114 @@ Ce cadre n'impose pas quoi conclure ; il impose seulement la lisibilite, la preu
 
 ## Execution
 
-Lire et executer chaque passe dans l'ordre :
+Lire et executer chaque passe dans l'ordre, avec les 2 checkpoints interactifs.
 
 ### Pass 1 : DATA & STRATEGY ENGINE
 **Fichier :** `agents/prepare-pass1.md`
 
-Collecte (10 modules) + structuration + analyse strategique + S7 (bloc unifie, Etape 1.3).
+Collecte (10 modules) + structuration + analyse strategique + S7 interne (bloc unifie, Etape 1.3).
 Outputs internes : `strategy_plan_internal.md` puis **Structured Data Brief (SDB)**.
 
-> **Mode `--fast`** : si le flag `--fast` est present et qu'un SDB frais (< 2h) existe, cette passe est entierement skippee. L'agent passe directement a la Pass 2 avec le SDB existant.
+> **Mode `--fast`** : si le flag `--fast` est present et qu'un SDB frais (< 2h) existe, cette passe est entierement skippee. L'agent passe directement au Checkpoint 1 avec le SDB existant.
+
+### CHECKPOINT 1 : Validation strategique (OBLIGATOIRE)
+
+Apres la Pass 1, presenter au closer un **resume strategique compact** dans le terminal. Format :
+
+```
+=== CHECKPOINT 1 : VALIDATION STRATEGIQUE ===
+
+PROSPECT : {nom} | {secteur} | {contexte}
+
+DONNEES CLES :
+1. {donnee 1 — chiffre + source}
+2. {donnee 2 — chiffre + source}
+3. {donnee 3 — chiffre + source}
+4. {donnee 4 — chiffre + source}
+5. {donnee 5 — chiffre + source}
+
+DIAGNOSTIC (traduit du S7 interne) :
+- Contrainte principale : {en langage business, pas en jargon S7}
+- Leviers prioritaires : {en langage business}
+- Ce qu'on ne fait pas maintenant : {et pourquoi}
+
+STRATEGIE RECOMMANDEE :
+- Perimetre : {SEO seul / SEO + Refonte / etc.}
+- Scenario recommande : {Essentiel / Performance / Croissance}
+- Phase 1 : {scope en 1 ligne}
+- Phase 2 : {scope en 1 ligne}
+- ROI estime : {fourchette, confidence}
+
+MANQUANTS :
+- {donnee manquante 1 — impact + plan B}
+- {donnee manquante 2 — impact + plan B}
+
+SOURCES UTILISEES :
+- GSC : {disponible / non}
+- Google Ads : {disponible / non}
+- DataForSEO : {N appels}
+- Drive : {N fichiers}
+
+→ Valide ? Corrige ? Reoriente ?
+```
+
+**Attendre la reponse du closer avant de continuer.** Si le closer corrige (priorisation, perimetre, angle), mettre a jour le SDB en consequence avant de lancer la Pass 2.
 
 ### Pass 2 : NARRATIVE ARCHITECT
 **Fichier :** `agents/prepare-pass2.md`
 
-Plan narratif complet a partir du SDB. Choix du hook, de l'arc emotionnel, planification des 4-5 onglets (Contexte conditionnel, Diagnostic, Strategie, Investissement, Cas clients).
+Plan narratif complet a partir du SDB valide. Choix du hook, de l'arc emotionnel, planification des 5-6 onglets (Contexte conditionnel, Diagnostic, Strategie, Projet, Investissement, Cas clients).
 Output interne : **Narrative Blueprint (NBP)**.
 
 **Pre-validation NBP (OBLIGATOIRE, gate bloquante) :** Apres la Pass 2, executer :
 ```bash
 python3 tools/validate_proposal.py --nbp .cache/deals/{deal_id}/artifacts/NBP.md
 ```
-- **Exit 0** : structure OK, passer a la Pass 3.
-- **Exit 1-3** : problemes structurels. Corriger le NBP et re-valider avant de lancer la Pass 3. Ne PAS sauter cette etape.
+- **Exit 0** : structure OK, passer au Checkpoint 2.
+- **Exit 1-3** : problemes structurels. Corriger le NBP et re-valider.
+
+### CHECKPOINT 2 : Validation narrative (OBLIGATOIRE)
+
+Apres la Pass 2, presenter au closer le **plan narratif** dans le terminal. Format :
+
+```
+=== CHECKPOINT 2 : VALIDATION NARRATIVE ===
+
+ARC CHOISI : {nom de l'arc} — {pourquoi cet arc pour ce deal, 1 phrase}
+HOOK : {hero subtitle propose}
+
+ONGLET DIAGNOSTIC ({N} sections) :
+ 1. "{titre H2}" — {angle en 1 ligne}
+ 2. "{titre H2}" — {angle en 1 ligne}
+ 3. "{titre H2}" — {angle en 1 ligne}
+ ...
+ N. "{titre H2}" — {angle en 1 ligne}
+
+ONGLET STRATEGIE ({N} slides) :
+ 1. "{titre}" — {contenu en 1 ligne}
+ 2. "{titre}" — {contenu en 1 ligne}
+ ...
+
+ONGLET INVESTISSEMENT :
+ - Cout inaction : {3 impacts}
+ - Phase 1 : {budget} — {scope}
+ - Phase 2 recommande : {scenario} — {budget/mois}
+
+OBJECTIONS PRE-EMPTEES (FAQ) :
+ 1. {question}
+ 2. {question}
+ 3. {question}
+
+→ Reordonne ? Renomme ? Ajoute ? Supprime ?
+```
+
+**Attendre la reponse du closer avant de continuer.** Si le closer modifie (ordre, titres, sections a ajouter/supprimer), mettre a jour le NBP en consequence avant de lancer la Pass 3.
 
 ### Pass 3 : DESIGN ORCHESTRATOR
 **Fichier :** `agents/prepare-pass3.md`
 
-Generation du contenu HTML des 4-5 onglets a partir du NBP. Mapping composants par role narratif, regles de composition. Assemblage final via `tools/build_proposal.py` (squelette + contenu). Validation.
-Output : **HTML final** (le seul livrable visible) + **INTERNAL-S7** (diagnostic interne).
+Generation du contenu HTML des 5-6 onglets a partir du NBP valide. Mapping composants par role narratif, regles de composition. Assemblage final via `tools/build_proposal.py` (squelette + contenu). Validation.
+Output : **HTML final** (le seul livrable visible) + **INTERNAL-S7** (diagnostic interne pour le closer).
 
 ---
 
