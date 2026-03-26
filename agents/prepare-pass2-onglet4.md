@@ -168,7 +168,7 @@ Le scenario recommande est la decision logique. Les autres ajustent l'intensite,
 **Bloc Phase 1 : "Mission structurante" :**
 - **Pont S7** (sous-titre) : {1 phrase qui relie la mission au diagnostic}
   Ex : "Poser les fondations Search avant la refonte — securiser ce qui existe, preparer ce qui manque"
-- Description qualitative de ce que la mission inclut (JAMAIS de jours, JAMAIS de TJM)
+- **Description qualitative contextualisee** : utiliser les `SERVICE_DESCRIPTIONS (description proposition)` du SDB pour decrire le scope. Ces descriptions montrent la methodologie (sequence analyse → clustering → arborescence → contenu → roadmap), les specificites du deal (dimensions B2C/B2B, concurrents, contraintes) et les livrables concrets. Ne JAMAIS utiliser de descriptions generiques ("liste de mots-cles, arborescence, recommandations"). Cf. `context/service_catalog.md`.
 - Liste des livrables produits
 - Budget global EUR HT
 - Timeline ("demarrage sous X jours ouvres")

@@ -77,6 +77,7 @@ slashr-sales-system/
 │   ├── validation_rules.md            ← 54 regles de validation consolidees (4 layers)
 │   ├── pricing_rules.md               ← Logique de calcul budgets Phase 1 & Phase 2 (interne)
 │   ├── output_contract.md             ← Frontiere client/interne (ce qui est visible vs masque)
+│   ├── service_catalog.md             ← Descriptions prestations contextualisables par deal
 │   ├── performance_budget.md          ← Budgets d'appels, cache, timeouts
 │   └── proposal-kit-reference.md      ← Aide-memoire classes CSS + snippets standalone
 ├── setup/

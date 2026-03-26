@@ -747,6 +747,7 @@ Enchaine directement depuis le S7, sans relire les donnees.
   - Phase 1 Audit strategique : quels livrables specifiques pour ce deal ?
   - Phase 2 Accompagnement structure : quels piliers activer ? A quelle intensite ?
   - Quel scenario recommander ? (Essentiel / Performance / Croissance)
+- **Quelles descriptions de prestations ?** Contextualiser les templates de `context/service_catalog.md` avec les donnees du deal (secteur, dimensions B2C/B2B/international, concurrents, contraintes specifiques, partenaires techniques). Produire la section SERVICE_DESCRIPTIONS du SDB.
 - **Quelles phases de recommandation ?** Actions concretes par phase, adaptees au contexte
 - **Quel ROI ?** Calcul conservateur avec les donnees reelles du prospect (voir methode ROI dans prepare-pass3.md)
 
@@ -1054,6 +1055,17 @@ BRAND_CONTEXT:
 
 RED FLAGS: {liste}
 GREEN FLAGS: {liste}
+
+SERVICE_DESCRIPTIONS (contextualise depuis context/service_catalog.md):
+- Audit SEO (ligne budget): "{description contextualisee 1-2 lignes}"
+- Audit SEO (description proposition): "{description contextualisee 3-5 lignes}"
+- {Si REFONTE = OUI} AMOA Technique SEO (ligne budget): "{description contextualisee}"
+- {Si REFONTE = OUI} AMOA Technique SEO (description proposition): "{description contextualisee}"
+- {Si contenus dans perimetre} Contenus SEO (ligne budget): "{description contextualisee}"
+- {Si SEA_SIGNAL = EXPLICIT} Audit SEA (ligne budget): "{description contextualisee}"
+- Accompagnement SEO run (ligne budget): "{description contextualisee}"
+- {Si SEA_POSTURE != HORS_PERIMETRE} Accompagnement SEA run (ligne budget): "{description contextualisee}"
+Variables utilisees: secteur={}, dimensions={}, nb_concurrents={}, contraintes={}, type_refonte={}, agence_tech={}
 
 NARRATIVE_HINTS (suggestions pour Pass 2, non-contraignant):
 - Hint 1: {bloc SDB A} + {bloc SDB B} → argument "{nom de l'argument}"

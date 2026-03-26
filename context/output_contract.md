@@ -26,13 +26,16 @@ La frontiere est stricte. Aucune information INTERNE ne doit fuiter dans un outp
 | Livrables produits | Sous-composants (etude lexicale, AMOA, etc.) |
 
 **Formulation type Phase 1 :**
+
+Les descriptions de prestations sont contextualisees a partir de `context/service_catalog.md`. Chaque prestation a une description adaptee au deal (secteur, dimensions B2C/B2B, concurrents, contraintes specifiques). Ne JAMAIS utiliser de formulations generiques comme "liste de mots-cles strategiques, arborescence SEO, carnet de recommandations".
+
 ```
 "La Phase 1 est une mission structurante de {duree qualitative} qui pose les fondations de votre strategie Search."
 
 Inclut :
-→ Audit SEO complet (diagnostic, benchmark, opportunites)
-→ Accompagnement refonte SEO (si applicable)
-→ {Levier additionnel} (si applicable)
+→ {Description contextualisee Audit SEO depuis service_catalog.md}
+→ {Description contextualisee AMOA Refonte si applicable}
+→ {Description contextualisee Levier additionnel si applicable}
 
 Budget : {montant} EUR HT
 ```
