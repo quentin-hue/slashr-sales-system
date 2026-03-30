@@ -164,7 +164,7 @@ Les éléments tangibles qui transforment nos valeurs en crédibilité :
 
 Outils propriétaires : 19 outils internes (Tracking GEO, Content Writer, Analyse SERP, Knowledge Graph Explorer…) qui accélèrent l’analyse et l’exécution.
 
-Grille d’analyse S7 : notre outil de diagnostic interne. 7 critères pour évaluer la situation Search d’un client et identifier les priorités.
+Diagnostic data-first : analyse structuree de la situation Search du client (contrainte principale, leviers prioritaires, confiance). Base sur les donnees reelles (GSC, Google Ads, DataForSEO).
 
 Simulateur ROI interactif : intégré aux propositions. Le client manipule les hypothèses lui-même.
 

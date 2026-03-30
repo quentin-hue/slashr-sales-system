@@ -134,7 +134,7 @@ Le closer arrive sur la section qui traduit l'analyse en priorites concretes. **
 
 Utiliser les 6 bullets du resume decisionnel de la proposition (onglet Investissement). Le decideur les a sous les yeux — le closer les verbalise.
 
-> "Pour resumer : vous avez un probleme de {douleur_principale} qui vous coute {impact_chiffre}. Notre diagnostic montre que {contrainte S7} est le verrou principal. On vous propose un plan en {timeline} avec des premiers resultats a 90 jours. L'investissement est de {prix}."
+> "Pour resumer : vous avez un probleme de {douleur_principale} qui vous coute {impact_chiffre}. Notre diagnostic montre que {contrainte_principale} est le verrou principal. On vous propose un plan en {timeline} avec des premiers resultats a 90 jours. L'investissement est de {prix}."
 
 **Etape 2 — Micro-validation**
 
