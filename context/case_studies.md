@@ -156,6 +156,38 @@ Pour chaque cas selectionne, l'agent ecrit :
 
 ---
 
+### Cas 9 — Multi-sites sante (restructuration Google Ads)
+
+| Champ | Detail |
+|-------|--------|
+| **Secteur** | Sante, reseau de centres specialises |
+| **Taille** | CA 15-30M EUR, 25 centres |
+| **Problematique** | 40 campagnes Google Ads sans structure coherente. Mix d'encheres (mCPC, tCPA, Maximize Impressions) avec des ecarts de CPA de 1 a 15 entre campagnes. Budget marque surdimensionne. Aucune vue par centre. |
+| **Levier** | Audit structure complet + pause des campagnes non rentables + migration encheres + reallocation vers les centres performants + reporting par centre |
+| **Resultats (M4)** | CPA global -28%, +35% de leads a budget constant, 3 centres auparavant non rentables devenus positifs, budget marque reduit de 40% sans perte de conversions |
+| **Timeline** | Audit M1, restructuration M1-2, stabilisation M3, resultats mesures M4 |
+| **Verbatim** | "On depensait pareil chaque mois sans savoir quels centres etaient rentables. Maintenant on a une vue claire centre par centre." |
+| **Contact** | Directeur Marketing |
+| **Tags** | `sante` `multi-sites` `google-ads` `restructuration` `cpa` `encheres` |
+
+---
+
+### Cas 10 — E-commerce B2C (reduction gaspillage Ads + SEO complementaire)
+
+| Champ | Detail |
+|-------|--------|
+| **Secteur** | E-commerce B2C, mode et accessoires |
+| **Taille** | CA 8-15M EUR, 100% online |
+| **Problematique** | Budget Google Ads de 25K EUR/mois avec CPA en hausse de 30% sur 12 mois. PMax cannibalise les requetes marque. Aucune strategie SEO, 100% dependant du paid. |
+| **Levier** | Audit cannibalisation PMax/Search + restructuration budget + exclusions marque + lancement strategie SEO complementaire (bottom-funnel) |
+| **Resultats (M6)** | CPA -22%, identification de 4 200 EUR/mois de gaspillage PMax marque, 1 800 visites organiques/mois (vs 200 au start), CAC global -18% |
+| **Timeline** | Audit Ads + SEO M1, restructuration PMax M2, exclusions marque M2, contenu SEO M3-6 |
+| **Verbatim** | "On pensait que PMax etait notre meilleur canal. En realite il captait nos propres clients et gonflait artificiellement son CPA." |
+| **Contact** | Head of Acquisition |
+| **Tags** | `e-commerce` `b2c` `google-ads` `pmax` `cannibalisation` `dependance-paid` `seo` |
+
+---
+
 ## Ajouter un cas
 
 Pour ajouter un nouveau cas, copier la structure ci-dessus et remplir tous les champs. Les tags permettent a l'agent de matcher rapidement.

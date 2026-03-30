@@ -115,9 +115,9 @@ Detail : voir `context/pricing_rules.md`.
 
 | Niveau | Budget mensuel | Scope | Pour qui |
 |--------|---------------|-------|----------|
-| **Essentiel** | Pilotage + monitoring | Execution internalisee | PME, besoin structure |
-| **Performance** | + production deleguee | Execution deleguee | ETI, objectifs ambitieux |
-| **Croissance** | + multi-leviers + amplification | Multi-canaux actifs | Grands comptes, ambition forte |
+| **Pilotage** | Strategie + monitoring | Execution internalisee | PME, besoin structure |
+| **Production** | + production deleguee | Execution deleguee | ETI, objectifs ambitieux |
+| **Acceleration** | + multi-leviers + amplification | Multi-canaux actifs | Grands comptes, ambition forte |
 
 **Affichage client :** scope qualitatif + budget mensuel. Jamais de jours/mois, jamais de TJM.
 

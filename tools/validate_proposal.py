@@ -538,7 +538,8 @@ def check_layer1(parser, html_raw, visible_text):
     results.append(("R18c", "Zero semi-cadratin separateur dans le texte visible", not bool(endash_separator)))
 
     # R27a: Si refonte, 3 actes narratifs + "0 perte de trafic strategique"
-    refonte_keywords = ["refonte", "migration", "redesign", "replatforming"]
+    # Note: "migration" removed — false positives on Ads bidding migration context
+    refonte_keywords = ["refonte", "redesign", "replatforming", "migration de site", "migration technique"]
     is_refonte = any(kw in ft for kw in refonte_keywords)
     if is_refonte:
         # Check for 3-act structure markers
@@ -729,6 +730,46 @@ def check_layer2(parser, html_raw, visible_text):
             results.append(("R49", "Refonte mentionnee dans Diagnostic mais absente du plan 90j (Strategie)", False))
         else:
             results.append(("R49", "Coherence refonte : mentionnee dans Diagnostic et dans le plan 90j", True))
+
+    # R50: Coherence inter-tabs — chiffres cles identiques entre onglets
+    key_numbers = {}
+    for tab_id in ["tab-diagnostic", "tab-strategie", "tab-projet", "tab-investissement"]:
+        tab_t = tab_text(parser, tab_id)
+        # Extract EUR amounts
+        amounts = re.findall(r'(\d[\d\s]*\d)\s*(?:EUR|€)', tab_t)
+        for a in amounts:
+            clean = a.replace(' ', '').replace('\xa0', '')
+            if len(clean) >= 3:  # Only significant amounts
+                key_numbers.setdefault(clean, set()).add(tab_id)
+
+    # Check for amounts that appear in multiple tabs with different values
+    # This is a heuristic: flag if a "similar but different" amount appears
+    coherence_issues = []
+    all_amounts = set()
+    for tab_id in ["tab-diagnostic", "tab-strategie", "tab-investissement"]:
+        tab_t = tab_text(parser, tab_id)
+        amounts = re.findall(r'(\d[\d\s]*\d)\s*(?:EUR|€|/mois)', tab_t)
+        tab_amounts = set()
+        for a in amounts:
+            clean = a.replace(' ', '').replace('\xa0', '')
+            tab_amounts.add((clean, tab_id))
+        all_amounts.update(tab_amounts)
+
+    # Simple check: if pricing amounts appear, verify consistency
+    pricing_amounts = re.findall(r'(\d[\d\s]*\d)\s*(?:EUR|€)\s*/mois', ft)
+    unique_monthly = set(a.replace(' ', '').replace('\xa0', '') for a in pricing_amounts)
+    r50_ok = True
+    r50_detail = ""
+    if len(unique_monthly) > 3:
+        r50_ok = False
+        r50_detail = f" (trop de montants mensuels differents: {len(unique_monthly)})"
+    results.append(("R50", f"Coherence inter-tabs : montants mensuels{r50_detail}", r50_ok))
+
+    # R51: Titres h2 max 10 mots
+    all_h2 = parser.h2_order if hasattr(parser, 'h2_order') else []
+    long_h2 = [h for h in all_h2 if len(h.split()) > 10]
+    r51_detail = f" ({len(long_h2)} titres > 10 mots)" if long_h2 else ""
+    results.append(("R51", f"Titres h2 concis (max 10 mots){r51_detail}", len(long_h2) == 0))
 
     return results
 

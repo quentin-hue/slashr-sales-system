@@ -1,16 +1,16 @@
 ---
 name: debrief
-description: Collecte le resultat d'un deal (won/lost), le feedback closer, et alimente la boucle de retroaction.
+description: Collecte le resultat d'un deal (won/lost), auto-analyse SDB vs resultat, pattern matching, injection dans futurs /prepare.
 disable-model-invocation: true
 ---
 
-# DEBRIEF — Boucle de retroaction deal-to-deal
+# DEBRIEF — Boucle de retroaction enrichie (v12.0)
 
 **Deal ID :** $ARGUMENTS
 
 ## Prerequis
 
-1. Lis `agents/shared.md` (preambule partage, 19 regles)
+1. Lis `agents/shared.md` (preambule partage, regles)
 
 ## Usage
 
@@ -30,21 +30,20 @@ curl -s "https://api.pipedrive.com/v1/deals/{deal_id}?api_token=$TOKEN"
 
 Extraire :
 - **Status** : `won`, `lost`, ou `open`
-- **r1_score** (field `e529595ef908cdf5851df4355bbce866f322fcae`)
 - **Montant** : `value`
 - **Lost reason** : `lost_reason` (si lost)
-- **r2_pack_link** (field `4b84e7bfe1a6b330318fc7a0d208e2faedf2530a`) : lien vers la proposition (si existe)
-- **qualification_status** : GO / CONDITIONNEL / NURTURE (si renseigne)
+- **r2_pack_link** (field `4b84e7bfe1a6b330318fc7a0d208e2faedf2530a`) : lien vers la proposition
 - **domaine_principal** : domaine analyse (si renseigne)
 
 ### 2. Collecter les artefacts existants
 
 Verifier la presence de :
 - `.cache/deals/{deal_id}/artifacts/PROPOSAL-*.html`
-- `.cache/deals/{deal_id}/artifacts/INTERNAL-S7-*.md`
-- `.cache/deals/{deal_id}/artifacts/strategy_plan_internal.md`
+- `.cache/deals/{deal_id}/artifacts/INTERNAL-DIAG-*.md`
 - `.cache/deals/{deal_id}/artifacts/NBP.md`
 - `.cache/deals/{deal_id}/artifacts/SDB.md`
+- `.cache/deals/{deal_id}/audit.md` (si /audit a ete execute)
+- `.cache/deals/{deal_id}/benchmark.md` (si /benchmark a ete execute)
 
 ### 3. Demander le feedback closer
 
@@ -56,24 +55,53 @@ Poser ces questions au closer (via le terminal) :
 4. **Arc narratif** : "L'angle strategique etait-il le bon ?" (1 phrase)
 5. **Objections non anticipees** : "Y a-t-il eu des objections que la proposition n'avait pas pre-emptees ?" (liste)
 
-### 4. Analyser et stocker
+### 4. Auto-analyse (NOUVEAU v12)
 
-Produire le fichier debrief :
+Comparer automatiquement les predictions du SDB avec le resultat reel :
+
+| Prediction SDB | vs Resultat | Analyse |
+|----------------|-------------|---------|
+| Diagnostic contrainte | Feedback closer | Le diagnostic etait-il correct ? |
+| Arc narratif NBP | Feedback closer | L'angle choisi etait-il adapte ? |
+| ROI estime | Montant signe (won) ou feedback (lost) | Le ROI etait-il credible ? |
+| Scenario recommande | Budget reel du prospect | Le pricing etait-il dans la bonne fourchette ? |
+| Objections anticipees (FAQ) | Objections reelles | Quelles objections n'ont pas ete pre-emptees ? |
+
+Produire un verdict auto :
+```
+AUTO-ANALYSE :
+- Diagnostic contrainte : {CORRECT | PARTIEL | INCORRECT} — {explication}
+- Arc narratif : {ADAPTE | A AJUSTER} — {explication}
+- ROI : {CREDIBLE | SUR-ESTIME | SOUS-ESTIME} — {explication}
+- Pricing : {DANS LA FOURCHETTE | TROP HAUT | TROP BAS} — {explication}
+- Objections : {N} anticipees sur {M} reelles — {lacunes}
+```
+
+### 5. Pattern matching (NOUVEAU v12, des le 1er debrief)
+
+Meme avec 1 seul debrief, identifier les patterns en comparant avec les connaissances systeme :
+
+- **Patterns connus** : quels arcs fonctionnent pour quels profils decideur ?
+- **Correlations** : ROI > x2 correle avec won ? Score audit > 70 correle avec won ?
+- **Anti-patterns** : quelles objections reviennent ? Quels arcs sous-performent ?
+
+Si >= 3 debriefs existent, produire des correlations statistiques.
+
+### 6. Produire le fichier debrief enrichi
 
 ```
-=== DEBRIEF ===
+=== DEBRIEF v12 ===
 
 Deal: {deal_id} · {nom entreprise}
 Date debrief: {date}
 Resultat: {Won | Lost | En cours}
 
 CONTEXTE:
-- Score qualify: {r1_score}/100
 - Montant: {montant} EUR
 - Arc narratif utilise: {arc du NBP}
-- S7 PRIMARY: {force} ({score}/5)
-- Scenario recommande: {Essentiel | Performance | Croissance}
-- Nombre de sections Diagnostic: {N}
+- Contrainte principale: {description}
+- Scenario recommande: {Pilotage | Production | Acceleration}
+- Score audit SEO: {score}/100 (si /audit execute)
 
 FEEDBACK CLOSER:
 - Facteur decisif: {reponse}
@@ -81,67 +109,73 @@ FEEDBACK CLOSER:
 - Arc narratif: {reponse}
 - Objections non anticipees: {liste}
 
-ANALYSE SYSTEME:
-- [ ] Le S7 PRIMARY etait-il le bon ? (comparer avec le feedback)
-- [ ] L'arc narratif etait-il adapte au profil decideur ?
-- [ ] Le ROI etait-il credible ? (comparer avec le montant signe ou le feedback)
-- [ ] Les objections auraient-elles pu etre pre-emptees par le SDB ?
-- [ ] Le pricing etait-il dans la bonne fourchette ?
+AUTO-ANALYSE:
+- Diagnostic contrainte: {verdict}
+- Arc narratif: {verdict}
+- ROI: {verdict}
+- Pricing: {verdict}
+- Objections: {verdict}
 
 PATTERNS IDENTIFIES:
-- {pattern 1 : ex "ROI x1.5+ correle avec won"}
-- {pattern 2 : ex "Arc Technique fonctionne mieux pour les refontes"}
-- {pattern 3 : ex "Objection budget non anticipee"}
+- {pattern 1}
+- {pattern 2}
+- {pattern 3}
 
 RECOMMANDATIONS SYSTEME:
-- {reco 1 pour ameliorer le processus /prepare}
-- {reco 2 pour ameliorer le processus /qualify}
+- {reco 1 pour ameliorer /prepare}
+- {reco 2 pour ameliorer /audit}
+
+WARNINGS POUR FUTURS /prepare:
+- {warning 1 : condition → action}
+- {warning 2 : condition → action}
 
 === FIN DEBRIEF ===
 ```
 
 Ecrire dans : `.cache/deals/{deal_id}/debrief.md`
 
-### 5. Mettre a jour le rapport patterns (si >= 5 debriefs existent)
+### 7. Mettre a jour le rapport patterns
 
-Verifier combien de fichiers debrief existent :
+Lire tous les debriefs existants :
 ```bash
-find .cache/deals/*/debrief.md 2>/dev/null | wc -l
+ls .cache/deals/*/debrief.md 2>/dev/null
 ```
 
-Si >= 5 debriefs : produire un rapport transversal :
+Produire/mettre a jour `.cache/patterns_report.md` avec les correlations cumulees.
 
+### 8. Injection dans futurs /prepare (NOUVEAU v12)
+
+Ecrire/mettre a jour `.cache/debrief_warnings.md` :
 ```
-=== RAPPORT PATTERNS (N deals) ===
+# Warnings actifs (generes par /debrief)
 
-CORRELATIONS:
-- Arc {X} : {N} deals, {win_rate}% won
-- S7 PRIMARY S3 (Contenu) : {N} deals, {win_rate}% won
-- ROI > x2 : {N} deals, {win_rate}% won
-- Score qualify > 70 : {N} deals, {win_rate}% won
+## Arcs narratifs
+- {arc X} : {win_rate}% won ({N} deals) — {recommandation}
 
-OBJECTIONS RECURRENTES:
-1. {objection} ({N} fois) → {deja pre-emptee ? | a ajouter au systeme}
-2. {objection} ({N} fois) → {idem}
+## Objections recurrentes
+- {objection} ({N} fois) — {pre-emption suggeree}
 
-RECOMMANDATIONS:
-- {reco prioritaire basee sur les patterns}
-
-=== FIN RAPPORT ===
+## Pricing
+- {pattern pricing} — {ajustement suggere}
 ```
 
-Ecrire dans : `.cache/patterns_report.md`
+Ce fichier est lu par Pass 2 de /prepare pour injecter des warnings contextuels dans le processus narratif.
 
-### 6. Message de fin
+### 9. Message de fin
 
 ```
 Debrief enregistre : .cache/deals/{deal_id}/debrief.md
 Resultat : {Won | Lost | En cours}
 Facteur decisif : {1 phrase}
-{N} debriefs au total. {Rapport patterns mis a jour. | Rapport patterns disponible apres {5-N} debriefs supplementaires.}
+
+Auto-analyse : Diag={verdict}, Arc={verdict}, ROI={verdict}
+{N} debriefs au total. Rapport patterns mis a jour.
+Warnings injectes dans les futurs /prepare.
 ```
 
 ## Reference
 
 - Field keys Pipedrive : `context/pipedrive_reference.md`
 - Artefacts /prepare : `.cache/deals/{deal_id}/artifacts/`
+- Rapport patterns : `.cache/patterns_report.md`
+- Warnings actifs : `.cache/debrief_warnings.md`

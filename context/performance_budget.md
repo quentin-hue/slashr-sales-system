@@ -1,6 +1,6 @@
 # Performance Budget — v1.0 (Rapidite / Fiabilite / Scalabilite)
 
-Objectif : rendre /qualify et /prepare predictibles, rapides, et rejouables.
+Objectif : rendre /prepare predictible, rapide, et rejouable.
 Ce doc est la source de verite des limites d'execution.
 
 ---
@@ -278,4 +278,4 @@ Cacher **toutes** les reponses API, pas seulement DataForSEO :
 ### Invalidation
 
 - Un re-run `/prepare` sur un deal deja cache reutilise le cache sauf si force (`/prepare {id} --fresh`)
-- Un `/qualify` ne partage PAS le cache avec `/prepare` (les besoins sont differents)
+

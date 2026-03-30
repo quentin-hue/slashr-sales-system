@@ -6,6 +6,7 @@
 
 ## Rappel regles critiques (avant toute generation)
 
+> **Chiffres = copie du SDB, jamais recalcules.** La Pass 3 ne re-collecte PAS les donnees. Chaque chiffre dans le HTML vient du SDB (copie exacte, meme nombre, meme unite). Si le SDB dit "15 676 EUR", le HTML dit "15 676 EUR", pas "14 000 EUR", pas "~15 000 EUR". Arrondir uniquement pour la lisibilite (15 700 EUR acceptable, 14 000 EUR non).
 > **Zero pression commerciale** : pas de "ne manquez pas", "il est urgent de", "derniere chance". Inclut "Chaque mois/jour sans X". (cf. `agents/shared.md`, regle 14)
 > **Zero dramatisation** : pas de "catastrophe", "crise", "vous perdez tout". Les donnees suffisent. (cf. regle 15)
 > **Francais** : tous les outputs en francais. (cf. regle 3)
@@ -16,6 +17,15 @@
 ---
 
 ## Gates qualite avant export (obligatoire)
+
+### 0) Coherence donnees SDB → HTML (AVANT TOUT)
+Verifier que chaque chiffre du HTML existe dans le SDB avec la meme valeur et la meme periode.
+- Budget Ads : le HTML dit X, le SDB dit Y → doivent matcher
+- CPA : meme valeur, meme periode (90j ou 30j)
+- Trafic organique : meme perimetre pays
+- **Pricing : le HTML dit X EUR/mois, le NBP dit Y EUR/mois → doivent matcher exactement.** Si le NBP dit Production 1 400 EUR/mois, le HTML ne peut pas dire 2 100 EUR/mois. La Pass 3 copie le NBP, elle ne recalcule pas.
+
+Si un ecart est detecte → corriger le HTML pour matcher le SDB/NBP. Ne jamais modifier le SDB depuis la Pass 3.
 
 ### 1) Contradiction check
 Appliquer les regles de `context/output_contract.md` (Contradiction check).
@@ -33,6 +43,8 @@ Inclure un encart final (court) :
 
 
 Prendre le NBP et generer le **contenu HTML des 5-6 onglets** (Contexte conditionnel + Diagnostic + Strategie + Projet conditionnel + Investissement + Cas clients). Choisir les composants visuels du kit pour chaque section. Assurer le rythme visuel. **Ne PAS modifier le contenu strategique du NBP**, seulement le mettre en forme.
+
+**Liberte de mise en forme :** l'IA peut adapter la presentation visuelle (choix de composants, decoupage en slides, rythme) tant que le fond strategique du NBP est respecte. Si un composant prevu dans le NBP ne fonctionne pas visuellement, l'IA peut en choisir un autre du kit.
 
 ### Architecture skeleton + tabs
 
@@ -82,92 +94,21 @@ Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skele
 
 ---
 
-## Etape 3.1 : Mapping composants
+### Choix des composants (libre)
 
-Pour chaque section du NBP, choisir les composants par role narratif dans le catalogue.
+L'IA choisit les composants du kit (`templates/proposal-kit.html`, reference condensee dans `context/proposal-kit-reference.md`) pour chaque section.
 
-### Catalogue de composants : par role narratif
+**Contraintes :**
+- **Max 1 composant visuel par slide** (bar-chart, donut, table, cards grid). Si 2 composants sont necessaires, splitter en 2 slides.
+- Pas 2 blocs data consecutifs sans interpretation (highlight-box ou texte)
+- Le rythme visuel doit maintenir l'attention du decideur
+- **Titres h2 : max 8 mots.** Le detail va dans le section-intro, pas dans le titre.
+- **Section labels : max 4 mots.** Ex: "Google Ads France", pas "Google Ads France, Search, 30 derniers jours".
+- **Ne jamais utiliser `.card-accent`** (bordure gradient moche). Utiliser `.card` + `border-top: 3px solid var(--orange/magenta/violet)`.
+- **Simulateur ROI : max 2 sliders.** Le reste en constantes dans le JS. Trop d'inputs perd le decideur.
+- **board-ready-a4 : masque a l'ecran.** Le CSS doit inclure `.board-ready-a4 { display: none }` + `@media print { .board-ready-a4 { display: block } }`.
 
-L'agent ne choisit pas un composant par son nom technique. Il part de **ce qu'il veut montrer**, et le catalogue lui propose les options adaptees.
-
-#### COMPARER : montrer des ecarts, des contrastes
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| VS block | Face-a-face 2 entites | 1 prospect vs 1 concurrent, metriques en miroir. Eviter si les memes donnees sont deja dans un bar chart |
-| Bar chart (anime) | Benchmark horizontal | 3-6 acteurs a comparer sur 1 metrique |
-| Stacked bar chart | Benchmark avec decomposition | Comparer 3+ acteurs avec split interne (ex: marque/hors-marque). Privilegier quand le split est l'argument principal. Legende obligatoire |
-| Constat-tension | Deux KPIs opposes + connecteur | Quand le paradoxe EST l'argument (marque forte + invisible Search). Structure : KPI positif → connecteur ("pourtant") → KPI negatif + preuves en pills. Composant CSS : `.constat-tension` |
-| Comparison matrix | Tableau multi-criteres | Comparer 3+ options sur plusieurs dimensions |
-| Before/After | Transformation en 2 panneaux | Montrer l'etat actuel vs l'objectif post-intervention |
-
-#### DIAGNOSTIQUER : analyser, prioriser, arbitrer
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| Contrainte highlight | Highlight box (orange) + blocage principal en langage business + implication chiffree 1-2 phrases | Section "Priorites strategiques" : contrainte principale |
-| Leviers row | 2-3 KPI mini alignes horizontalement, 1 axe = 1 chiffre d'impact | Section "Priorites strategiques" : axes d'action |
-| ~~Radar S7~~ | **RETIRE** — le radar S7 est un outil interne, il ne doit jamais apparaitre dans le HTML client | Jamais dans le HTML client. Reserve a l'INTERNAL-S7. |
-
-#### QUANTIFIER : chiffres, metriques, scores
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| KPI card (standard) | Chiffre + label + sous-texte | Grille de 2-4 metriques cles |
-| KPI large | 1 chiffre floating hero-style, glow + gradient | UN seul chiffre statement. Pas de box. Glow magenta/violet derriere, gradient orange→magenta sur le texte. Utiliser avec .slide-constat (titre + chiffre + data row + source). **Le titre h2 du slide-constat est un FAIT chiffre, jamais un jugement.** "14 800 recherches/mois sur votre marque. 0 client acquis via le Search generique." (bon) vs "Votre marque est connue. Mais votre site est invisible." (mauvais). Le KPI large amplifie le fait, il ne le remplace pas par une interpretation. |
-| KPI mini | Icone + chiffre + label, compact | 4-8 metriques secondaires sans prendre de place |
-| Stat row | Rangee horizontale avec separateurs | Apercu rapide, metriques legeres en 1 ligne |
-| Cost card | Chiffre d'impact + description | Cout de l'inaction (visites perdues, euros, mois) |
-| Progress bar | Barre de progression coloree | Scores, maturite, % de completion |
-| Donut chart | Repartition en % (SVG) | Part marque/hors-marque, repartition trafic |
-| Number ticker | Compteur anime de 0 a N au scroll | Dramatiser un chiffre unique a l'apparition |
-
-#### CITER : voix du prospect, social proof
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| Verbatim box | Citation prospect (bordure magenta) | Reprendre une phrase exacte du R1 ou des emails |
-| Pull quote | Grande citation centree | Phrase strategique forte, rupture de rythme |
-| Testimonial card | Avatar + citation + nom/role | Social proof, resultat client (onglet Cas clients) |
-
-#### STRUCTURER : organiser, sequencer, hierarchiser
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| Timeline | Roadmap phases | Plan en 2-3 phases temporelles (onglet Investissement) |
-| Routine grid | Etapes numerotees horizontales | Process repetitif, 4 piliers (onglet Investissement) |
-| Funnel | Etapes connectees par des fleches | Parcours conversion, pipeline, flux |
-| Accordion | Details cachees sous un resume | FAQ, scope detaille, methodologie (onglet Investissement) |
-
-#### ALERTER : attirer l'attention, recommander
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| Highlight box (orange) | Interpretation strategique | Apres un bloc de data : "ce que ca signifie" |
-| Highlight box (magenta) | Alerte, risque, contrainte | Point d'attention, red flag |
-| Highlight box (violet) | Conviction, position assumee | "Notre conviction", prise de position SLASHR |
-| Highlight box (gradient) | Conclusion forte | Synthese d'une section majeure |
-| Callout banner | Bandeau full-width, fond gradient | Rupture visuelle, transition majeure |
-
-#### VENDRE : conversion, investissement, ROI
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| Pricing card | Scenarios investissement | 2-3 niveaux, `.recommended` pour le conseille (onglet Investissement) |
-| ROI Simulator | Sliders interactifs + calcul JS | Onglet Strategie (section ROI) |
-| CTA full-width | Appel a l'action avec blobs | En fin d'onglet Investissement uniquement (CTA principal) |
-
-#### CONTEXTUALISER : situation, donnees, details
-
-| Composant | Usage | Quand le choisir |
-|-----------|-------|------------------|
-| Context card | Icone + titre + description | Rappel de la situation prospect |
-| Card (standard) | Titre + paragraphe | Bloc generique, opportunite, territoire |
-| Card (accent) | Idem + bordure top gradient | Attirer l'oeil sur une card specifique |
-| Card (icon) | Idem + icone ronde coloree | Ajouter une dimension visuelle |
-| Quick win card | Icone + titre + desc + impact | Actions immediates a fort impact |
-| Table | Donnees structurees | Keywords, positions, hypotheses sourcees |
-| Tags | brand/generic labels | Dans les tables, pour typer les keywords |
+**L'IA decide :** quel composant pour quelle donnee. Un bar-chart n'est pas obligatoire pour un benchmark. Une table n'est pas obligatoire pour une comparaison. Le kit offre 30 composants, l'IA choisit ceux qui servent le mieux la narration.
 
 ---
 
@@ -279,7 +220,7 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 **Onglet Diagnostic** : composition libre, hero full screen (catalogue complet)
 - Hero (blobs, contexte client tisse) → sections libres → **section priorites strategiques** → ce qu'on ne fait pas → implications
 - Tout composant du catalogue est utilisable
-- **Section "Priorites strategiques" obligatoire** : traduit les conclusions de l'analyse S7 interne en langage business. Highlight box (contrainte principale en impact business) + 2-3 axes d'action concrets + insight central. **ZERO jargon S7** : pas de radar, pas de noms de forces (S1-S7), pas de scores /5, pas de labels PRIMARY/SECONDARY/DEFERRED. Cf. regle 20 de `agents/shared.md`.
+- **Section "Priorites strategiques" obligatoire** : traduit les conclusions du diagnostic strategique interne en langage business. Highlight box (contrainte principale en impact business) + 2-3 axes d'action concrets + insight central. **ZERO jargon interne** : pas de radar, pas de noms de forces, pas de scores /5, pas de labels internes. Cf. regle 20 de `agents/shared.md`.
 - **SO WHAT obligatoire** : chaque section se termine par un highlight box qui traduit les donnees en impact business chiffre, **3 lignes max**
 - **Cas clients : onglet dedie** (onglet 4), pas inline dans le Diagnostic
 - **Pas de transitions SLASHR** : la proposition ne mentionne jamais SLASHR ou ses services dans l'onglet Diagnostic. Le SO WHAT de chaque section suffit comme conclusion.
@@ -289,7 +230,7 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 - Hero fullscreen (tag "Strategie Search"). Premiere section apres le hero : decision strategique.
 - **Decision strategique** ("Nous recommandons...") : OUVRE l'onglet
 - **Timeline 90 jours** : M1/M2/M3
-- **ROI Simulator** : hypotheses sourcees + sliders + calcul JS + 3 scenarios
+- **ROI Simulator** : hypotheses sourcees + sliders + calcul JS + scenario recommande
 - Highlight box violet pour la conviction ROI
 - **CTA intermediaire leger** (lien texte, pas full-width)
 
@@ -297,6 +238,11 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 
 > **Template HTML de reference : `templates/tab-projet-template.html`.**
 > L'agent utilise ce template et remplace les variables `{{...}}` par les valeurs du deal. La structure, le design et le wording des sections fixes ne doivent PAS etre reinventes a chaque deal.
+
+**Sections modulaires (adaptees par deal) :**
+- **Ecosysteme :** le nombre de cards et les partenaires listes dependent du contexte du deal. Si on challenge un prestataire existant, ne PAS le lister comme partenaire. Si le prospect n'a que Buddy comme partenaire, 2 cards suffisent (SLASHR + Buddy). Adapter.
+- **Production :** les 3 cards decrivent le PROCESS de production (identification data-driven, production IA+humain, mesure), PAS le scope strategique (qui est dans l'onglet Strategie). Inclure la redaction d'annonces si deal Ads.
+- **Approche :** montrer les outils proprietaires (19 tools), l'IA integree aux pipelines (pas en surcouche), la capacite a construire des outils sur mesure. C'est le differenciateur.
 
 **Variables a remplacer :**
 - `{{PROSPECT_NAME}}` : nom du prospect (h1 hero)
@@ -325,21 +271,24 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 - Slide 5 Onboarding : timeline adaptee au contexte (refonte, AO, standard)
 
 **Pas de pricing, pas de budget** dans cet onglet. C'est du "comment on travaille", pas du "combien ca coute".
+**Slide Production : expliquer le PROCESS, pas le SCOPE.** La slide production explique comment on produit du contenu (identification data-driven → production IA+humain → mesure). Elle ne repete pas la strategie (pas de "optimisation pages centres" ni "conseil Ads" ici). Inclure la redaction d'annonces dans le process de production.
+**Slide Approche (systeme IA) :** montrer ce qui differencie SLASHR. Outils proprietaires (19 tools), IA integree aux pipelines (pas en surcouche), capacite a construire des outils sur mesure pour le client.
 
 **Onglet Investissement** : hero propre + resume decisionnel
 - Hero fullscreen (tag "Investissement"). Premiere section apres le hero : resume decisionnel.
 - **Resume decisionnel** : Highlight box (gradient) avec 6 bullets (max 120 chars chacun), en haut de l'onglet, c'est la premiere chose que le decideur voit
 - **Board-ready A4** : bouton "Version imprimable" qui declenche `window.print()`, page `@media print` avec resume + priorites strategiques + ROI + pricing
 - **Cout de l'inaction (AVANT le pricing)** : highlight-box avec 3 impacts business chiffres. Place AVANT les pricing cards pour l'ancrage psychologique : le decideur voit d'abord ce qu'il perd, puis ce que ca coute d'agir.
-- **Investissement v12.0** : 2 blocs separes. (1) **Phase 1 "Mission structurante"** : card accent, scope qualitatif + livrables + budget global HT, SANS jours ni TJM. (2) **Phase 2 "Orchestration mensuelle"** : 3 niveaux d'intensite (Essentiel/Performance/Croissance), le recommande en `.recommended` avec border gradient, les autres compacts. Scope qualitatif + budget mensuel HT, SANS jours/mois ni TJM. Sous chaque scenario, ajouter une ligne : "Ce que ca debloque en priorite : {Pont S7 en langage client, issu du NBP}". Utiliser le langage prospect (ex: "debloquer votre visibilite locale"), PAS les labels internes S7 (ex: PAS "S3 Contenu"). Ne jamais mentionner jours/TJM.
+  > **Conditionnel :** n'inclure le cout de l'inaction que si les donnees permettent un chiffrage reel (gaspillage Ads quantifie, trafic concurrent chiffre, perte mesurable). Si les constats sont deja connus du prospect (repetes depuis le diagnostic), ne pas forcer cette section.
+- **Investissement v12.0** : 2 blocs separes. (1) **Phase 1 "Mission structurante"** : card accent, scope qualitatif + livrables + budget global HT, SANS jours ni TJM. (2) **Phase 2 "Notre recommandation"** : 1 scenario recommande en `.recommended` avec border gradient et justification. Les alternatives mentionnees en 1-2 lignes compactes sous la recommandation. Scope qualitatif + budget mensuel HT, SANS jours/mois ni TJM. Sous chaque scenario, ajouter une ligne : "Ce que ca debloque en priorite : {levier en langage client, issu du NBP}". Utiliser le langage prospect (ex: "debloquer votre visibilite locale"), PAS les labels internes (ex: PAS "Contenu S3"). Ne jamais mentionner jours/TJM.
 - **Recommandation conditionnelle** : si Confidence = Low sur 2+ ROI drivers, la carte `.recommended` conserve son statut mais affiche un label supplementaire : "Recommandation conditionnelle — validation des hypotheses en Phase 1".
-- **Sous-section Methode d'analyse (optionnel)** : dans l'accordion FAQ si pertinent. 2-3 phrases generiques sur l'approche ("7 dimensions de visibilite Search, priorisation des 2-3 axes a plus fort impact"). Pas de noms S7, pas de scores, pas de radar.
+- **Sous-section Methode d'analyse (optionnel)** : dans l'accordion FAQ si pertinent. 2-3 phrases generiques sur l'approche ("les dimensions cles de votre visibilite Search, priorisation des 2-3 axes a plus fort impact"). Pas de noms de forces internes, pas de scores, pas de radar.
 - **Recap budget (slide dedie)** : vue consolidee sur 2 colonnes (annee 1 / annee 2 si applicable). Chaque phase porte : (1) un objectif qualitatif colore (orange Phase 1, magenta Phase 2), (2) budget accompagnement SLASHR, (3) budget media minimum en ligne separee, (4) total phase. Hero gradient avec total global HT. Footnote : "Budget media minimum pressenti : {montant}/mois. Ajustable selon la strategie et la saisonnalite. Sans engagement sur la Phase 2." Ce slide est SEPARE du pricing, jamais dans le meme slide.
 - **Accordion "Questions frequentes"** : reprend les OBJECTIONS A PRE-EMPT du NBP. Chaque item : titre = objection formulee comme question, contenu = reponse data-first + source courte (DataForSEO / GSC / verbatim / benchmark). Si une objection n'a pas de source → ajouter "a confirmer en Phase 1".
 - **Prochaine etape** : bloc 3 lignes (decision, date, action)
 - **CTA full-width** (unique CTA principal de la proposition)
 
-**Onglet Cas clients** : hero propre + slide intro
+**Onglet Cas clients** (optionnel, decide au Checkpoint 2) : hero propre + slide intro
 - **Slide intro** : H2 "Resultats observes sur des profils comparables" + section-intro qui cadre la pertinence par rapport au prospect
 - **1 slide par cas client** (2-4 cas), chaque slide contient :
   - Micro-benchmark en tete (`.micro-benchmark`) : prospect → cas (avant) → cas (apres)
@@ -406,13 +355,34 @@ Apres l'assemblage du HTML (via `build_proposal.py`) et avant l'upload Drive :
 3. Benchmark concurrent = C visites/mois
 4. Gap = C - X = potentiel recuperable
 4b. Plafond crédible = benchmark concurrent (C) : les objectifs M12 ne doivent jamais dépasser C sans justification.
-4c. Objectif recommandé par défaut = X + 30% du gap (conservateur), sauf si S7 confidence High + signaux forts.
+4c. Objectif recommandé par défaut = X + 30% du gap (conservateur), sauf si diagnostic confidence High + signaux forts.
 5. Multiplicateur conservateur justifie par le gap reel
 6. Gain trafic → valorisation :
    A. Si taux de conversion connu : gain x CVR x panier moyen = CA additionnel
    B. Si CVR inconnu : utiliser ETV comme proxy
 7. ROI = gain annuel / investissement SLASHR
 ```
+
+### Methode SEA : economie et reallocation
+
+Pour les deals avec un volet Ads, le ROI ne se calcule PAS par la chaine de trafic mais par l'economie et la reallocation :
+
+```
+1. Identifier le gaspillage : campagnes a CPA > 2x la moyenne, 0-2 conversions
+2. Identifier les campagnes performantes : CPA < moyenne, volume significatif
+3. Calculer l'economie directe : budget gaspille recupéré
+4. Calculer le gain de reallocation : budget recupéré / CPA des campagnes performantes = leads supplementaires
+5. NE PAS supposer que PMax absorbe le budget au meme CPA (PMax ne scale pas lineairement)
+6. Projections conservatrices : gain réaliste = economie + reallocation vers le CPA moyen des top performers, pas vers le meilleur CPA
+```
+
+**Reality check obligatoire :**
+- Le CPA cible est-il realiste ? (pas juste budget/CPA = leads)
+- PMax scale-t-il lineairement ? (non, toujours nuancer)
+- Les campagnes mCPC peuvent-elles basculer en tCPA sans transition ? (non, prevoir 2-4 semaines d'apprentissage)
+- Le gain projete est-il coherent avec la mecanique reelle ?
+
+**Simulateur SEA :** max 2 sliders (CPA cible + trafic organique local). Afficher la situation actuelle comme reference (leads actuels → gains → total apres). Les constantes (CPA actuel, budget, CVR) sont fixees dans le JS.
 
 ### Regles ROI
 
@@ -437,12 +407,7 @@ Les 3 KPIs se recalculent en temps reel (JS vanilla) : visites a M12, CA organiq
 
 **Regle UX :** le slider "Visites cibles M12" est l'element central. Son min = trafic actuel, son max = benchmark concurrent (le plafond credible). Le prospect comprend immediatement ce qu'il ajuste. Un "multiplicateur x2.5" est abstrait — "passer de 3 200 a 8 000 visites/mois" est concret.
 
-**Investissement dynamique selon scenario :** le simulateur ROI calcule le ROI dynamiquement selon le scenario choisi. L'investissement total est derive des pricing cards du meme HTML :
-- Essentiel : Phase1 + (Essentiel * 12)
-- Performance : Phase1 + (Performance * 12) [defaut]
-- Croissance : Phase1 + (Croissance * 12)
-
-Le JS extrait les montants des `.pricing-price` dans `#tab-investissement` OU les hardcode a partir du NBP si l'extraction est trop fragile. 3 boutons radio sous les sliders permettent de choisir le scenario. Le ROI recalcule en temps reel.
+**Investissement dans le simulateur :** le simulateur ROI utilise le scenario recommande comme base de calcul. L'investissement total = Phase 1 + (mensuel recommande * 12). Le JS extrait le montant du `.recommended .pricing-price` dans `#tab-investissement` OU le hardcode a partir du NBP.
 
 **Footnote simulateur (obligatoire)** : sous les resultats du simulateur, ajouter une note en `font-size:11px;color:var(--text-30)` qui cadre les projections : CPC moyen estime, investissement SLASHR (hors budget media), et "Projections a regime de croisiere, hors gain de conversion lie a la refonte" si une refonte est dans le scope.
 
@@ -455,15 +420,15 @@ Le JS extrait les montants des `.pricing-price` dans `#tab-investissement` OU le
 | Fichier | Audience | Upload Drive |
 |---------|----------|--------------|
 | `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | Prospect (via closer) | Oui |
-| `INTERNAL-S7-{YYYYMMDD}-{entreprise-slug}.md` | Interne seulement | Oui (prefixe `INTERNAL-` = exclu de la collecte Module 2) |
+| `INTERNAL-DIAG-{YYYYMMDD}-{entreprise-slug}.md` | Interne seulement | Oui (prefixe `INTERNAL-` = exclu de la collecte Module 2) |
 
-Le `INTERNAL-S7-*.md` contient le diagnostic S7 complet tel que produit a l'Etape 1.4 (`strategy_plan_internal.md`). Il est uploade dans le meme dossier Drive pour archivage et rejouabilite, mais n'est jamais partage au prospect.
+Le `INTERNAL-DIAG-*.md` contient le diagnostic strategique complet (section diagnostic du SDB). Il est uploade dans le meme dossier Drive pour archivage et rejouabilite, mais n'est jamais partage au prospect.
 
 ### Message de fin
 
 ```
 Proposition generee : PROPOSAL-{date}-{slug}.html
-Diagnostic interne : INTERNAL-S7-{date}-{slug}.md
+Diagnostic interne : INTERNAL-DIAG-{date}-{slug}.md
 Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]

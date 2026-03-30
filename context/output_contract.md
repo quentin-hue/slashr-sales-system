@@ -8,7 +8,7 @@
 
 Deux niveaux d'information :
 1. **CLIENT** — ce que le prospect voit (HTML proposition)
-2. **INTERNE** — ce que le closer voit (INTERNAL-S7, terminal)
+2. **INTERNE** — ce que le closer voit (INTERNAL-DIAG, terminal)
 
 La frontiere est stricte. Aucune information INTERNE ne doit fuiter dans un output CLIENT.
 
@@ -46,7 +46,7 @@ Les termes "5 jours", "4 jours", "TJM", "jour-homme" sont INTERDITS dans le HTML
 
 | Visible | Invisible |
 |---------|-----------|
-| Nom du niveau ("Essentiel", "Performance", "Croissance") | Nombre de jours/mois |
+| Nom du scenario recommande + mention alternatives | Nombre de jours/mois |
 | Ce que ca inclut (scope qualitatif) | TJM |
 | Budget mensuel EUR HT | Calcul jours x TJM |
 | Engagement (duree) | Incompressibles par levier |
@@ -56,9 +56,8 @@ Les termes "5 jours", "4 jours", "TJM", "jour-homme" sont INTERDITS dans le HTML
 ```
 "L'accompagnement mensuel assure le pilotage, la production et le monitoring de votre visibilite Search."
 
-Essentiel : {budget}/mois — pilotage + monitoring
-Performance : {budget}/mois — + production deleguee
-Croissance : {budget}/mois — + multi-leviers
+{Scenario recommande} : {budget}/mois — {scope qualitatif}
+Ajustable : Pilotage ({budget}/mois) ou Acceleration ({budget}/mois)
 ```
 
 ### Section Investissement — Onglet Projet (conditionnel)
@@ -68,7 +67,7 @@ L'onglet Projet est optionnel, insere entre Strategie et Investissement. Il huma
 | Visible | Invisible |
 |---------|-----------|
 | Point de contact unique (prenom, photo, role) | Organigramme interne |
-| Methode de travail (systeme S7, approche data) | Process internes detailles |
+| Methode de travail (approche data-first) | Process internes detailles |
 | Mode de production contenu (comment SLASHR produit) | TJM, jours |
 | Mode de collaboration (outils, rituels, rythme) | Detail des outils internes |
 | Timeline onboarding Phase 1 (semaines) | Planification interne |
@@ -78,11 +77,30 @@ L'onglet Projet est optionnel, insere entre Strategie et Investissement. Il huma
 "Un interlocuteur unique. Une methode structuree. Un rythme clair."
 
 → Votre contact dedie : {prenom} ({role})
-→ Notre approche : S7, data-first, iteration mensuelle
+→ Notre approche : data-first, iteration mensuelle
 → Production : contenu cree par SLASHR, valide par vous
 → Collaboration : {outil} + {rituel} + reporting mensuel
 → Onboarding : S1 brief → S2 audit → S3-4 livrables → S5+ accompagnement
 ```
+
+**Section Ecosysteme partenaires (si partenaires existants) :**
+
+Quand le prospect a deja des prestataires (agence SEO, agence Meta, freelance, etc.), l'onglet Projet DOIT inclure un slide ou un schema montrant l'articulation :
+
+```
+Qui fait quoi :
+→ SLASHR : {perimetre precis}
+→ {Partenaire 1} : {perimetre}
+→ {Partenaire 2} : {perimetre}
+→ {Prospect (interne)} : {ce qu'il gere lui-meme}
+
+Comment on s'articule :
+→ {Rythme de synchro entre partenaires}
+→ {Qui pilote la strategie globale}
+→ {Comment on partage les learnings}
+```
+
+Le decideur doit comprendre en 10 secondes que les perimetres sont clairs, qu'il n'y a pas de chevauchement, et que SLASHR s'integre dans son ecosysteme existant au lieu de le remplacer.
 
 ### Section Investissement — Recap budget (slide dedie)
 
@@ -127,22 +145,20 @@ Le recap budget est un slide **dedie** (pas inline dans le pricing). Il presente
 
 ---
 
-## S7 : interne uniquement (REGLE CRITIQUE)
+## Diagnostic strategique : interne uniquement (REGLE CRITIQUE)
 
-Le framework S7 est un outil d'analyse interne. Il NE DOIT JAMAIS apparaitre dans les outputs clients (HTML).
+Le diagnostic strategique (contrainte principale, leviers prioritaires, ce qu'on ne fait pas) est un outil d'analyse interne. Les CONCLUSIONS sont traduites en langage business dans le HTML, mais le vocabulaire d'arbitrage interne ne doit JAMAIS apparaitre dans les outputs clients.
 
-| Interdit dans le HTML client | Autorise dans l'INTERNAL-S7 |
+| Interdit dans le HTML client | Autorise dans le fichier INTERNAL |
 |------------------------------|----------------------------|
-| Radar S7 (SVG/canvas) | Radar complet avec scores |
-| Noms de forces "S1 Intentions", "S3 Contenu", etc. | Classification complete |
-| Labels "PRIMARY", "SECONDARY", "DEFERRED" | Trajectoires avec labels |
+| Labels "PRIMARY", "SECONDARY", "DEFERRED" | Classification complete |
+| Mention de "7 forces", "grille", "modele" | Methodologie interne |
 | Scores "/5" des forces | Scores detailles |
-| Mention du "modele S7", "7 forces", "grille S7" | Methodologie complete |
 
-**Traduction obligatoire :** les conclusions du S7 sont traduites en langage business dans le HTML. Exemples :
-- "S3 Contenu = 1/5" → "Le site ne produit pas de contenu qui attire de nouveaux visiteurs"
-- "PRIMARY S3, SECONDARY S1+S2" → "La priorite est de creer du contenu sur les recherches commerciales, en parallele de la refonte technique"
-- "DEFERRED S6 Diffusion" → "La presence sur les reseaux sociaux et les moteurs IA sera activee une fois les fondations Search posees"
+**Traduction obligatoire :** les conclusions sont exprimees en impact business. Exemples :
+- "Le site ne produit pas de contenu qui attire de nouveaux visiteurs"
+- "La priorite est de creer du contenu sur les recherches commerciales, en parallele de la refonte technique"
+- "La presence sur les moteurs IA sera activee une fois les fondations Search posees"
 
 ---
 
@@ -163,9 +179,9 @@ Si un chiffre ne peut pas etre source → ne pas l'utiliser dans le HTML.
 
 ---
 
-## Output INTERNE : INTERNAL-S7
+## Output INTERNE : INTERNAL-DIAG
 
-### Section "Budget interne" (NOUVELLE — ajoutee en fin de fichier S7)
+### Section "Budget interne" (NOUVELLE — ajoutee en fin du fichier diagnostic)
 
 ```markdown
 ## Budget interne (CONFIDENTIEL — closer uniquement)
@@ -192,9 +208,9 @@ Si un chiffre ne peut pas etre source → ne pas l'utiliser dans le HTML.
 
 | Scenario | Phase 1 | Phase 2/mois | Total annuel |
 |----------|---------|-------------|-------------|
-| Essentiel | {budget} | {budget} | {calcul} |
-| Performance | {budget} | {budget} | {calcul} |
-| Croissance | {budget} | {budget} | {calcul} |
+| Recommande ({niveau}) | {budget} | {budget} | {calcul} |
+| Alternative basse | {budget} | {budget} | {calcul} |
+| Alternative haute | {budget} | {budget} | {calcul} |
 ```
 
 ---

@@ -10,7 +10,7 @@
 |---|-------|----------|---------------|
 | 1 | Lead In | — | — |
 | 2 | R1 Scheduled | — | Preparer les 5 questions R1 |
-| 3 | R1 Done | `/qualify {deal_id}` | Relire le scoring, valider |
+| 3 | R1 Done | `/audit {deal_id}` | Relire le scoring, valider |
 | 4 | R2 Scheduled | `/prepare {deal_id}` | Preview la proposition HTML, valider |
 | 5 | R2 Done | — | Relancer manuellement si besoin |
 | 6 | Pending Signature | — | Finaliser le deal |
@@ -25,7 +25,7 @@ Reference IDs Pipedrive : `context/pipedrive_reference.md`
 1. R1 DONE
    -> Deposer les fichiers dans le dossier Drive du deal
    -> Verifier que dossier_r1_link est rempli dans Pipedrive
-   -> /qualify {deal_id}
+   -> /audit {deal_id}
    -> Relire le scoring dans le terminal
 
 2. PREPARER R2
@@ -35,7 +35,7 @@ Reference IDs Pipedrive : `context/pipedrive_reference.md`
 
 3. APRES R2 — PAS DE SIGNATURE
    -> Relancer manuellement (email, call)
-   -> /qualify {deal_id} pour re-scorer si nouvel element
+   -> /audit {deal_id} pour re-diagnostiquer si nouvel element
 
 4. DEAL SIGNE
    -> /pipedrive {deal_id} won
@@ -81,7 +81,7 @@ R1 n'est pas un call de decouverte. C'est un interrogatoire strategique bienveil
 
 ### Scoring
 
-Apres le R1, `/qualify {deal_id}` produit un score 0-100 dans le terminal.
+Apres le R1, `/audit {deal_id}` produit un diagnostic SEO rapide (score 0-100) dans le terminal.
 
 | Seuil | Verdict | Action |
 |-------|---------|--------|

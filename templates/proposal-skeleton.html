@@ -2359,6 +2359,86 @@
   updateDots();
 
 
+  // === ROI SIMULATOR (parameterizable) ===
+  // Usage: add a div with class "roi-sim" and data attributes:
+  //   data-budget="7566" (fixed budget)
+  //   data-cpa-current="25.5"
+  //   data-cpa-target="22" (default slider value)
+  //   data-cpa-min="15" data-cpa-max="30"
+  //   data-traffic-current="0" (current organic local)
+  //   data-traffic-target="2000" (default slider value)
+  //   data-traffic-max="5000"
+  //   data-cvr="2" (fixed CVR %)
+  //
+  // The simulator auto-renders sliders and results inside the .roi-sim container.
+
+  document.querySelectorAll('.roi-sim').forEach(function(sim) {
+    var budget = parseFloat(sim.dataset.budget) || 7566;
+    var cpaCurrent = parseFloat(sim.dataset.cpaCurrent) || 25;
+    var cpaTarget = parseFloat(sim.dataset.cpaTarget) || 22;
+    var cpaMin = parseFloat(sim.dataset.cpaMin) || 15;
+    var cpaMax = parseFloat(sim.dataset.cpaMax) || 30;
+    var trafficTarget = parseFloat(sim.dataset.trafficTarget) || 2000;
+    var trafficMax = parseFloat(sim.dataset.trafficMax) || 5000;
+    var cvr = parseFloat(sim.dataset.cvr) || 2;
+    var leadsNow = Math.round(budget / cpaCurrent);
+
+    // Build HTML
+    sim.innerHTML = ''
+      + '<div class="sim-row">'
+      + '  <div><div class="sim-label">CPA cible après restructuration</div>'
+      + '  <div class="sim-sub">Actuel : ' + cpaCurrent.toLocaleString('fr-FR', {minimumFractionDigits:1}) + ' EUR</div></div>'
+      + '  <input type="range" class="sim-slider" min="' + cpaMin + '" max="' + cpaMax + '" step="0.5" value="' + cpaTarget + '">'
+      + '  <div class="sim-value">' + cpaTarget.toLocaleString('fr-FR', {minimumFractionDigits:1}) + ' EUR</div>'
+      + '</div>'
+      + '<div class="sim-row">'
+      + '  <div><div class="sim-label">Visites organiques locales cible M12</div>'
+      + '  <div class="sim-sub">Actuellement quasi nul</div></div>'
+      + '  <input type="range" class="sim-slider" min="300" max="' + trafficMax + '" step="100" value="' + trafficTarget + '">'
+      + '  <div class="sim-value">' + trafficTarget.toLocaleString('fr-FR') + '</div>'
+      + '</div>'
+      + '<div class="grid-3" style="margin-top:32px">'
+      + '  <div class="card" style="text-align:center;padding:20px">'
+      + '    <div style="font-size:1.8rem;font-weight:700;color:var(--text-50)" class="sim-leads-now">' + leadsNow + '</div>'
+      + '    <p style="color:var(--text-50);font-size:0.85rem;margin:4px 0 0">Leads Ads aujourd\'hui</p>'
+      + '  </div>'
+      + '  <div class="card" style="text-align:center;padding:20px">'
+      + '    <div style="font-size:1.8rem;font-weight:700;color:var(--orange)" class="sim-gain-ads">+0</div>'
+      + '    <p style="color:var(--text-70);font-size:0.85rem;margin:4px 0 0">Gains restructuration Ads</p>'
+      + '  </div>'
+      + '  <div class="card" style="text-align:center;padding:20px">'
+      + '    <div style="font-size:1.8rem;font-weight:700;color:var(--magenta)" class="sim-leads-orga">+0</div>'
+      + '    <p style="color:var(--text-70);font-size:0.85rem;margin:4px 0 0">Leads organiques locaux (M12)</p>'
+      + '  </div>'
+      + '</div>'
+      + '<div class="highlight-box highlight-gradient" style="margin-top:16px;text-align:center">'
+      + '  <span style="font-size:2rem;font-weight:700" class="sim-total">0</span>'
+      + '  <span style="font-size:1rem;color:var(--text-70);margin-left:12px">leads/mois après optimisation</span>'
+      + '</div>';
+
+    var sliders = sim.querySelectorAll('.sim-slider');
+    var values = sim.querySelectorAll('.sim-value');
+
+    function update() {
+      var cpa = parseFloat(sliders[0].value);
+      var traffic = parseFloat(sliders[1].value);
+      values[0].textContent = cpa.toLocaleString('fr-FR', {minimumFractionDigits:1}) + ' EUR';
+      values[1].textContent = Math.round(traffic).toLocaleString('fr-FR');
+
+      var leadsAfter = Math.round(budget / cpa);
+      var gainAds = leadsAfter - leadsNow;
+      var leadsOrga = Math.round(traffic * cvr / 100);
+      var total = leadsNow + gainAds + leadsOrga;
+
+      sim.querySelector('.sim-gain-ads').textContent = (gainAds >= 0 ? '+' : '') + gainAds.toLocaleString('fr-FR');
+      sim.querySelector('.sim-leads-orga').textContent = '+' + leadsOrga.toLocaleString('fr-FR');
+      sim.querySelector('.sim-total').textContent = total.toLocaleString('fr-FR');
+    }
+
+    sliders.forEach(function(s) { s.addEventListener('input', update); });
+    update();
+  });
+
 {{EXTRA_JS}}
 </script>
 

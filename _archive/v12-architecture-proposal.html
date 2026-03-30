@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLASHR v12 — Architecture cible</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 2rem;
+    line-height: 1.6;
+  }
+  h1 { text-align: center; color: #38bdf8; font-size: 1.8rem; }
+  .subtitle { text-align: center; color: #94a3b8; font-weight: 400; font-size: 1rem; margin-bottom: 2rem; }
+  .section {
+    max-width: 1300px;
+    margin: 2rem auto;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #334155;
+  }
+  .section h2 {
+    color: #38bdf8;
+    font-size: 1.15rem;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .section h3 { color: #f1f5f9; font-size: 1rem; margin: 1.5rem 0 0.75rem; }
+  .section p, .section li { color: #cbd5e1; font-size: 0.92rem; }
+  .section ul { padding-left: 1.5rem; }
+  .section li { margin-bottom: 0.4rem; }
+  .mermaid { display: flex; justify-content: center; margin: 1rem 0; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  .new { background: #14532d; color: #4ade80; }
+  .changed { background: #431407; color: #fb923c; }
+  .kept { background: #1e293b; color: #94a3b8; border: 1px solid #475569; }
+  .removed { background: #450a0a; color: #f87171; }
+
+  .gains {
+    max-width: 1300px;
+    margin: 2rem auto;
+    background: linear-gradient(135deg, #14532d 0%, #1e293b 100%);
+    border: 1px solid #22c55e;
+    border-radius: 12px;
+    padding: 2rem;
+  }
+  .gains h2 { color: #4ade80; border: none; padding: 0; margin-bottom: 1rem; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  .card h4 { color: #38bdf8; font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .card p { font-size: 0.85rem; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 1rem 0;
+  }
+  th, td {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #334155;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #0f172a; color: #38bdf8; font-weight: 600; }
+  .highlight-row td { background: rgba(34,197,94,0.08); }
+</style>
+</head>
+<body>
+
+<h1>SLASHR Sales System v12 — Architecture cible</h1>
+<p class="subtitle">Integration des forces de claude-seo dans le systeme de closing</p>
+
+<!-- ================================================================= -->
+<!-- SECTION 0: PRINCIPES -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>0. Principes directeurs de la refonte</h2>
+<div class="grid-2">
+  <div class="card">
+    <h4>Garder ce qui marche</h4>
+    <p>Les 3 passes restent sequentielles (Data → Narration → HTML). Les checkpoints closers sont un avantage competitif. Les 54 regles de validation sont uniques. Le cache/replay est deja mature.</p>
+  </div>
+  <div class="card">
+    <h4>Paralleliser A L'INTERIEUR de chaque passe</h4>
+    <p>La collecte (Pass 1) et la generation des onglets (Pass 3) deviennent paralleles via des subagents, comme claude-seo le fait pour son audit. Le flux global reste sequentiel, mais chaque passe est 3-5x plus rapide.</p>
+  </div>
+  <div class="card">
+    <h4>Modulariser les sources de donnees</h4>
+    <p>Chaque source (Pipedrive, Drive, DataForSEO, GSC, Google Ads) devient une extension autonome avec son agent dedie. Ajouter une source = ajouter un dossier, pas modifier 5 fichiers.</p>
+  </div>
+  <div class="card">
+    <h4>Ajouter des commandes d'analyse rapide</h4>
+    <p>Comme claude-seo a /seo page et /seo technical en plus de /seo audit, SLASHR gagne /audit (diagnostic rapide) et /benchmark (analyse concurrentielle standalone).</p>
+  </div>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 1: COMMANDES -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>1. Nouvelles commandes</h2>
+<table>
+  <thead>
+    <tr><th>Commande</th><th>Statut</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>/qualify &lt;deal_id&gt;</code></td><td><span class="badge kept">conserve</span></td><td>Scoring rapide (terminal + Pipedrive). Inchange.</td></tr>
+    <tr class="highlight-row"><td><code>/audit &lt;deal_id&gt;</code></td><td><span class="badge new">nouveau</span></td><td>Diagnostic SEO rapide du prospect (comme /seo audit de claude-seo, mais calibre SLASHR). Genere un rapport markdown. Pas de proposition. Utile entre R1 et /prepare pour enrichir la discussion.</td></tr>
+    <tr><td><code>/prepare &lt;deal_id&gt;</code></td><td><span class="badge changed">refactore</span></td><td>Proposition HTML. Pass 1 et Pass 3 parallelisees en interne. Memes checkpoints.</td></tr>
+    <tr><td><code>/validate &lt;path&gt;</code></td><td><span class="badge kept">conserve</span></td><td>Validation standalone. Inchange.</td></tr>
+    <tr class="highlight-row"><td><code>/benchmark &lt;deal_id&gt;</code></td><td><span class="badge new">nouveau</span></td><td>Analyse concurrentielle standalone (comme /seo competitor-pages). Utile quand le closer veut preparer ses arguments avant R2 sans generer la proposition complete.</td></tr>
+    <tr><td><code>/debrief &lt;deal_id&gt;</code></td><td><span class="badge changed">enrichi</span></td><td>Boucle retroaction. Nouveau : pattern matching auto (pas besoin d'attendre 5 debriefs), recommandations injectees dans les futurs /prepare.</td></tr>
+    <tr><td><code>/pipedrive &lt;deal_id&gt; &lt;action&gt;</code></td><td><span class="badge kept">conserve</span></td><td>Synchro CRM. Inchange.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 2: ARBO FICHIERS -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>2. Arborescence fichiers v12</h2>
+<pre style="background:#0f172a; padding:1.5rem; border-radius:8px; font-size:0.82rem; overflow-x:auto; color:#94a3b8;">
+slashr-sales-system/
+├── CLAUDE.md                              <span style="color:#38bdf8">← Router principal (inchange)</span>
+├── .claude/
+│   ├── skills/
+│   │   ├── qualify/SKILL.md               <span style="color:#94a3b8">← conserve</span>
+│   │   ├── prepare/SKILL.md               <span style="color:#fb923c">← refactore (orchestrateur subagents)</span>
+│   │   ├── validate/SKILL.md              <span style="color:#94a3b8">← conserve</span>
+│   │   ├── debrief/SKILL.md               <span style="color:#fb923c">← enrichi (pattern matching auto)</span>
+│   │   ├── <span style="color:#4ade80">audit/SKILL.md</span>                <span style="color:#4ade80">← NOUVEAU (diagnostic rapide)</span>
+│   │   └── <span style="color:#4ade80">benchmark/SKILL.md</span>            <span style="color:#4ade80">← NOUVEAU (analyse concurrentielle)</span>
+│   └── agents/                            <span style="color:#4ade80">← NOUVEAU (registered agents)</span>
+│       ├── <span style="color:#4ade80">collector-pipedrive.md</span>        <span style="color:#4ade80">← Subagent collecte Pipedrive</span>
+│       ├── <span style="color:#4ade80">collector-drive.md</span>            <span style="color:#4ade80">← Subagent collecte Drive</span>
+│       ├── <span style="color:#4ade80">collector-seo.md</span>              <span style="color:#4ade80">← Subagent collecte DataForSEO + GSC</span>
+│       ├── <span style="color:#4ade80">collector-website.md</span>          <span style="color:#4ade80">← Subagent crawl technique</span>
+│       ├── <span style="color:#4ade80">analyst-strategy.md</span>           <span style="color:#4ade80">← Subagent analyse S7 + SDB</span>
+│       ├── <span style="color:#4ade80">writer-tab.md</span>                 <span style="color:#4ade80">← Subagent generation onglet HTML</span>
+│       └── <span style="color:#4ade80">auditor-seo.md</span>               <span style="color:#4ade80">← Subagent audit SEO (/audit)</span>
+├── agents/
+│   ├── shared.md                          <span style="color:#94a3b8">← conserve (preambule + 22 regles)</span>
+│   ├── prepare-context.md                 <span style="color:#94a3b8">← conserve (bundle compact)</span>
+│   ├── qualify.md                         <span style="color:#94a3b8">← conserve</span>
+│   ├── prepare.md                         <span style="color:#fb923c">← refactore (orchestrateur 3 passes paralleles)</span>
+│   ├── prepare-pass1.md                   <span style="color:#fb923c">← refactore (lance N subagents collecteurs)</span>
+│   ├── prepare-pass2.md                   <span style="color:#94a3b8">← conserve (sequentiel, narration)</span>
+│   ├── prepare-pass2-onglet4.md           <span style="color:#94a3b8">← conserve</span>
+│   ├── prepare-pass3.md                   <span style="color:#fb923c">← refactore (lance N subagents writers)</span>
+│   ├── <span style="color:#4ade80">audit.md</span>                        <span style="color:#4ade80">← NOUVEAU (diagnostic SEO rapide)</span>
+│   └── <span style="color:#4ade80">benchmark.md</span>                    <span style="color:#4ade80">← NOUVEAU (analyse concurrentielle)</span>
+├── tools/
+│   ├── validate_proposal.py               <span style="color:#94a3b8">← conserve</span>
+│   ├── build_proposal.py                  <span style="color:#94a3b8">← conserve</span>
+│   ├── preflight_check.py                 <span style="color:#94a3b8">← conserve</span>
+│   ├── batch_pipedrive.py                 <span style="color:#94a3b8">← conserve</span>
+│   ├── batch_drive.py                     <span style="color:#94a3b8">← conserve</span>
+│   ├── batch_dataforseo.py                <span style="color:#94a3b8">← conserve</span>
+│   └── <span style="color:#4ade80">fetch_page.py</span>                  <span style="color:#4ade80">← NOUVEAU (inspire de claude-seo, crawl + SSRF protection)</span>
+├── templates/
+│   ├── proposal-skeleton.html             <span style="color:#94a3b8">← conserve</span>
+│   └── proposal-kit.html                  <span style="color:#94a3b8">← conserve</span>
+├── context/
+│   ├── ... (13 fichiers existants)        <span style="color:#94a3b8">← conserves</span>
+│   └── <span style="color:#4ade80">references/</span>                    <span style="color:#4ade80">← NOUVEAU (on-demand, inspire claude-seo)</span>
+│       ├── <span style="color:#4ade80">cwv-thresholds.md</span>           <span style="color:#4ade80">← Seuils Core Web Vitals</span>
+│       ├── <span style="color:#4ade80">eeat-framework.md</span>           <span style="color:#4ade80">← Grille E-E-A-T</span>
+│       ├── <span style="color:#4ade80">geo-checklist.md</span>            <span style="color:#4ade80">← Checklist GEO (AI Overviews)</span>
+│       └── <span style="color:#4ade80">technical-audit.md</span>          <span style="color:#4ade80">← Reference audit technique</span>
+├── extensions/                            <span style="color:#4ade80">← NOUVEAU (systeme modulaire)</span>
+│   ├── <span style="color:#4ade80">dataforseo/</span>
+│   │   ├── <span style="color:#4ade80">extension.md</span>               <span style="color:#4ade80">← Manifest + capabilities</span>
+│   │   └── <span style="color:#4ade80">agent.md</span>                   <span style="color:#4ade80">← Spec du subagent DataForSEO</span>
+│   ├── <span style="color:#4ade80">gsc/</span>
+│   │   ├── <span style="color:#4ade80">extension.md</span>
+│   │   └── <span style="color:#4ade80">agent.md</span>
+│   ├── <span style="color:#4ade80">google-ads/</span>
+│   │   ├── <span style="color:#4ade80">extension.md</span>
+│   │   └── <span style="color:#4ade80">agent.md</span>
+│   └── <span style="color:#4ade80">semrush/</span>                       <span style="color:#4ade80">← Pret pour le futur</span>
+│       ├── <span style="color:#4ade80">extension.md</span>
+│       └── <span style="color:#4ade80">agent.md</span>
+└── .cache/                                <span style="color:#94a3b8">← conserve (enrichi par /audit et /benchmark)</span>
+</pre>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 3: FLUX PREPARE v12 -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>3. /prepare v12 — Flux avec parallelisme interne</h2>
+<p style="margin-bottom:1rem;">Les 3 passes restent sequentielles. Mais Pass 1 et Pass 3 exploitent des subagents paralleles en interne.</p>
+<pre class="mermaid">
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#3b82f6'}}}%%
+flowchart TB
+    START["/prepare deal_id"]
+    PRE["Preflight<br/>Pipedrive check + cache"]
+
+    subgraph PASS1["PASS 1 — DATA & STRATEGY (parallelisee)"]
+        direction TB
+        P1_START["Orchestrateur Pass 1"]
+
+        subgraph COLLECT["Phase A : Collecte parallele (4-5 subagents)"]
+            direction LR
+            AG_PD["Agent<br/>Pipedrive<br/>batch_pipedrive.py"]
+            AG_DR["Agent<br/>Drive<br/>batch_drive.py"]
+            AG_SEO["Agent<br/>SEO Data<br/>batch_dataforseo.py"]
+            AG_WEB["Agent<br/>Website Crawl<br/>fetch_page.py"]
+            AG_GSC["Agent<br/>GSC<br/>(conditionnel)"]
+        end
+
+        MERGE["Merge : toutes les donnees<br/>dans .cache/deals/id/"]
+
+        subgraph ANALYZE["Phase B : Analyse (sequentielle)"]
+            DOMAIN["Cartographie domaines"]
+            S7["Analyse S7 + priorisation"]
+            SDB["Generation SDB"]
+        end
+
+        P1_START --> AG_PD & AG_DR & AG_SEO & AG_WEB & AG_GSC
+        AG_PD & AG_DR & AG_SEO & AG_WEB & AG_GSC --> MERGE
+        MERGE --> DOMAIN --> S7 --> SDB
+    end
+
+    CP1["CHECKPOINT 1<br/>Closer valide strategie + SDB"]
+
+    subgraph PASS2["PASS 2 — NARRATIVE ARCHITECT (sequentielle)"]
+        direction TB
+        HOOK["Choix du hook"]
+        ARC["Arc emotionnel + cascade"]
+        TABS["Plan des 5-6 onglets"]
+        NBP["Generation NBP"]
+        NBPVAL["Pre-validation NBP<br/>validate_proposal.py --nbp"]
+
+        HOOK --> ARC --> TABS --> NBP --> NBPVAL
+    end
+
+    CP2["CHECKPOINT 2<br/>Closer valide plan narratif"]
+
+    subgraph PASS3["PASS 3 — DESIGN ORCHESTRATOR (parallelisee)"]
+        direction TB
+        P3_START["Orchestrateur Pass 3"]
+
+        subgraph GENTABS["Phase A : Generation parallele (4-6 subagents)"]
+            direction LR
+            TAB1["Agent<br/>tab_contexte<br/>(conditionnel)"]
+            TAB2["Agent<br/>tab_diagnostic"]
+            TAB3["Agent<br/>tab_strategie"]
+            TAB4["Agent<br/>tab_projet<br/>(conditionnel)"]
+            TAB5["Agent<br/>tab_investissement"]
+            TAB6["Agent<br/>tab_cas_clients"]
+        end
+
+        ASSEMBLE["build_proposal.py<br/>Assemblage squelette + tabs"]
+
+        subgraph QUALVAL["Phase B : Validation"]
+            VALID["validate_proposal.py<br/>54 regles · 4 layers"]
+            CONTRA["Contradiction check"]
+            RUBRIC["Quality rubric"]
+        end
+
+        UPLOAD["Upload Drive<br/>+ MAJ Pipedrive"]
+
+        P3_START --> TAB1 & TAB2 & TAB3 & TAB4 & TAB5 & TAB6
+        TAB1 & TAB2 & TAB3 & TAB4 & TAB5 & TAB6 --> ASSEMBLE
+        ASSEMBLE --> VALID --> CONTRA --> RUBRIC --> UPLOAD
+    end
+
+    START --> PRE --> PASS1
+    PASS1 --> CP1 --> PASS2
+    PASS2 --> CP2 --> PASS3
+
+    style PASS1 fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
+    style PASS2 fill:#1e293b,stroke:#a855f7,color:#e2e8f0
+    style PASS3 fill:#1e293b,stroke:#22c55e,color:#e2e8f0
+    style COLLECT fill:#0f172a,stroke:#60a5fa,color:#94a3b8
+    style GENTABS fill:#0f172a,stroke:#4ade80,color:#94a3b8
+    style QUALVAL fill:#0f172a,stroke:#ef4444,color:#94a3b8
+    style CP1 fill:#f59e0b,stroke:#fbbf24,color:#000
+    style CP2 fill:#f59e0b,stroke:#fbbf24,color:#000
+</pre>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 4: /AUDIT NOUVEAU -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>4. /audit (nouveau) — Diagnostic SEO rapide</h2>
+<p style="margin-bottom:1rem;">Inspire du /seo audit de claude-seo, mais calibre pour le contexte commercial SLASHR. Genere un rapport Markdown (pas de HTML). Utilisable entre le R1 et le /prepare.</p>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart TB
+    CMD["/audit deal_id"]
+    PD["Pipedrive<br/>(deal + org → domaine)"]
+
+    subgraph PARALLEL["Subagents paralleles (5)"]
+        direction LR
+        T["Agent Technical<br/>Crawl, robots, sitemap,<br/>CWV, HTTPS, mobile"]
+        C["Agent Content<br/>E-E-A-T, thin content,<br/>structure H1-H6"]
+        S["Agent SEO Data<br/>domain_rank, keywords,<br/>competitors"]
+        G["Agent GEO<br/>llms.txt, AI citations,<br/>structured data"]
+        L["Agent Local<br/>(conditionnel)<br/>GBP, NAP, avis"]
+    end
+
+    AGG["Aggregation<br/>Score SEO 0-100<br/>(ponderation SLASHR)"]
+    OUT["Output terminal<br/>+ .cache/deals/id/audit.md"]
+    PREP["Suggestion : /prepare deal_id<br/>si score &lt; seuil"]
+
+    CMD --> PD --> T & C & S & G & L
+    T & C & S & G & L --> AGG --> OUT --> PREP
+
+    style PARALLEL fill:#0f172a,stroke:#22c55e,color:#94a3b8
+    style AGG fill:#14532d,stroke:#4ade80,color:#fff
+</pre>
+
+<h3>Ponderation SLASHR (orientee closing, pas audit technique)</h3>
+<table>
+  <tr><th>Categorie</th><th>Poids</th><th>Justification (vs claude-seo)</th></tr>
+  <tr><td>Potentiel de marche (volumes, gaps)</td><td><strong>30%</strong></td><td>claude-seo: 0%. C'est la raison d'etre du closing : prouver l'opportunite.</td></tr>
+  <tr><td>Technical SEO</td><td><strong>20%</strong></td><td>claude-seo: 22%. Similaire, reste un fondamental.</td></tr>
+  <tr><td>Content & E-E-A-T</td><td><strong>20%</strong></td><td>claude-seo: 23%. Crucial pour la recommandation.</td></tr>
+  <tr><td>Benchmark concurrentiel</td><td><strong>15%</strong></td><td>claude-seo: 0%. Le gap concurrentiel est le meilleur argument de vente.</td></tr>
+  <tr><td>GEO / AI Search</td><td><strong>10%</strong></td><td>claude-seo: 10%. Identique, differenciateur SLASHR.</td></tr>
+  <tr><td>Local (conditionnel)</td><td><strong>5%</strong></td><td>claude-seo: 0% (separe). Poids faible sauf si business local.</td></tr>
+</table>
+
+<p style="margin-top:1rem;"><strong>Difference cle avec claude-seo :</strong> le /audit SLASHR ne produit pas juste un diagnostic technique, il repond a la question <em>"est-ce que ce prospect a un potentiel Search suffisant pour justifier une proposition ?"</em>. C'est un enrichissement du /qualify, pas un remplacement.</p>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 5: EXTENSIONS -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>5. Systeme d'extensions (inspire de claude-seo)</h2>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart TB
+    subgraph CORE["Core (toujours actif)"]
+        PD["Pipedrive<br/>CRM · read/write"]
+        DRIVE["Google Drive<br/>Docs · upload"]
+        CACHE[".cache/<br/>Replay · evidence"]
+    end
+
+    subgraph EXT["Extensions (plug-and-play via MCP)"]
+        DFS["DataForSEO<br/>38 endpoints<br/>domain, keywords,<br/>competitors, SERP"]
+        GSC["Google Search Console<br/>search_analytics<br/>clics, impressions, CTR"]
+        GADS["Google Ads<br/>CPC, volumes,<br/>campagnes"]
+        SEM["Semrush<br/>(futur)"]
+        AHR["Ahrefs<br/>(futur)"]
+        BANANA["Image Gen<br/>(futur)<br/>OG images, heros"]
+    end
+
+    subgraph DETECT["Auto-detection au runtime"]
+        CHECK["Preflight check<br/>Quels MCP servers<br/>sont disponibles ?"]
+    end
+
+    CORE --> CHECK
+    CHECK -->|"present"| DFS & GSC & GADS
+    CHECK -.->|"absent, skip"| SEM & AHR & BANANA
+
+    style CORE fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    style EXT fill:#1e293b,stroke:#22c55e,color:#e2e8f0
+    style DETECT fill:#431407,stroke:#fb923c,color:#e2e8f0
+</pre>
+
+<h3>Format d'une extension</h3>
+<pre style="background:#0f172a; padding:1rem; border-radius:8px; font-size:0.85rem; color:#94a3b8;">
+extensions/dataforseo/
+├── extension.md          # Manifest : nom, version, MCP server requis, capabilities
+├── agent.md              # Spec du subagent (outils autorises, output format)
+└── field-config.json     # Filtrage des champs API (optionnel)
+</pre>
+
+<p style="margin-top:1rem;"><strong>Principe :</strong> le preflight_check.py detecte quels MCP servers sont actifs. Chaque passe adapte ses modules en fonction. Pas de code conditionnel dans les agents : si l'extension est absente, le subagent n'est simplement pas spawne.</p>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 6: REFERENCES ON-DEMAND -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>6. References on-demand (inspire de claude-seo)</h2>
+<p>Aujourd'hui, l'agent lit prepare-context.md (bundle compact de ~8 fichiers). Le probleme : le bundle grossit a chaque version.</p>
+<p style="margin-top:0.75rem;"><strong>Solution :</strong> un dossier <code>context/references/</code> avec des fichiers charges uniquement quand le contexte du deal l'exige.</p>
+
+<table>
+  <tr><th>Reference</th><th>Chargee quand</th><th>Contenu</th></tr>
+  <tr><td>cwv-thresholds.md</td><td>/audit ou refonte detectee</td><td>Seuils LCP, INP, CLS + interpretation</td></tr>
+  <tr><td>eeat-framework.md</td><td>/audit ou contenu YMYL</td><td>Grille E-E-A-T (Sept 2025 QRG)</td></tr>
+  <tr><td>geo-checklist.md</td><td>GEO dans le perimetre deal</td><td>Checklist AI Overviews, llms.txt, citations</td></tr>
+  <tr><td>technical-audit.md</td><td>/audit toujours</td><td>9 categories audit technique</td></tr>
+  <tr><td>local-seo-signals.md</td><td>Business local detecte</td><td>GBP, NAP, citations, avis</td></tr>
+  <tr><td>schema-types.md</td><td>/audit ou e-commerce</td><td>Types Schema.org + deprecation</td></tr>
+</table>
+
+<p style="margin-top:1rem;"><strong>Impact :</strong> ~60% de tokens en moins dans le contexte initial. Les references sont chargees a la demande par les subagents qui en ont besoin.</p>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 7: DEBRIEF v12 -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>7. /debrief v12 — Retroaction enrichie</h2>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart LR
+    subgraph ACTUEL["v11 (actuel)"]
+        D1["Collecte feedback<br/>closer (5 questions)"]
+        D2["Analyse manuelle"]
+        D3["debrief.md"]
+        D4["Pattern report<br/>(si >= 5 debriefs)"]
+
+        D1 --> D2 --> D3 --> D4
+    end
+
+    subgraph V12["v12 (propose)"]
+        E1["Collecte feedback<br/>closer (5 questions)"]
+        E2["Auto-analyse :<br/>comparer SDB predictions<br/>vs resultat reel"]
+        E3["Pattern matching<br/>des le 1er debrief<br/>(vs bibliotheque)"]
+        E4["debrief.md enrichi"]
+        E5["Injection dans<br/>futurs /prepare<br/>(warnings contextuels)"]
+        E6["Dashboard patterns<br/>(HTML, comme les proposals)"]
+
+        E1 --> E2 --> E3 --> E4 --> E5
+        E4 --> E6
+    end
+
+    style ACTUEL fill:#1e293b,stroke:#475569,color:#94a3b8
+    style V12 fill:#14532d,stroke:#22c55e,color:#e2e8f0
+</pre>
+
+<p><strong>Nouveautes :</strong></p>
+<ul>
+  <li><strong>Auto-analyse</strong> : compare automatiquement les predictions du SDB (ROI, scenario recommande, arc) avec le resultat reel</li>
+  <li><strong>Pattern matching immediat</strong> : pas besoin d'attendre 5 debriefs. Des le 1er, compare avec une bibliotheque de patterns connus</li>
+  <li><strong>Injection dans /prepare</strong> : si un pattern negatif est identifie (ex: "arc Technique → lost 3/4 fois sur des DECIDEURS"), le prochain /prepare recoit un warning</li>
+  <li><strong>Dashboard HTML</strong> : rapport patterns en HTML interactif (reutilise le design system existant)</li>
+</ul>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 8: AVANT/APRES -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>8. Avant / Apres : impact mesurable</h2>
+<table>
+  <thead>
+    <tr><th>Metrique</th><th>v11 (actuel)</th><th>v12 (cible)</th><th>Gain</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Temps Pass 1 (collecte)</strong></td>
+      <td>~5-8 min (sequentiel : Pipedrive → Drive → DataForSEO → GSC → Crawl)</td>
+      <td>~2-3 min (5 subagents paralleles)</td>
+      <td style="color:#4ade80">~3x plus rapide</td>
+    </tr>
+    <tr>
+      <td><strong>Temps Pass 3 (generation)</strong></td>
+      <td>~8-12 min (6 onglets sequentiels)</td>
+      <td>~3-5 min (6 subagents paralleles)</td>
+      <td style="color:#4ade80">~2.5x plus rapide</td>
+    </tr>
+    <tr>
+      <td><strong>Temps total /prepare</strong></td>
+      <td>~25-35 min</td>
+      <td>~12-18 min</td>
+      <td style="color:#4ade80">~2x plus rapide</td>
+    </tr>
+    <tr>
+      <td><strong>Commandes disponibles</strong></td>
+      <td>4 skills + 1 inline</td>
+      <td>6 skills + 1 inline</td>
+      <td style="color:#4ade80">+2 commandes (/audit, /benchmark)</td>
+    </tr>
+    <tr>
+      <td><strong>Ajouter une source de donnees</strong></td>
+      <td>Modifier shared.md + pass1.md + performance_budget.md + prepare-context.md</td>
+      <td>Creer 1 dossier dans extensions/ (2 fichiers)</td>
+      <td style="color:#4ade80">1 dossier vs 4 fichiers</td>
+    </tr>
+    <tr>
+      <td><strong>Tokens contexte initial</strong></td>
+      <td>~45K (prepare-context.md charge tout)</td>
+      <td>~25K (references on-demand)</td>
+      <td style="color:#4ade80">-45% tokens</td>
+    </tr>
+    <tr>
+      <td><strong>Retroaction</strong></td>
+      <td>Passive (rapport si >= 5 debriefs)</td>
+      <td>Active (injection warnings dans /prepare)</td>
+      <td style="color:#4ade80">Boucle fermee</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ================================================================= -->
+<!-- SECTION 9: ROADMAP -->
+<!-- ================================================================= -->
+<div class="section">
+<h2>9. Roadmap d'implementation suggeree</h2>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+gantt
+    title SLASHR v12 — Phases d'implementation
+    dateFormat YYYY-MM-DD
+    axisFormat %d %b
+
+    section Phase 1 : Quick wins
+    Subagents collecteurs Pass 1        :a1, 2026-03-27, 3d
+    Subagents writers Pass 3            :a2, 2026-03-27, 3d
+    References on-demand                :a3, 2026-03-30, 2d
+
+    section Phase 2 : Nouvelles commandes
+    /audit skill + agents               :b1, 2026-04-01, 4d
+    /benchmark skill + agent            :b2, 2026-04-01, 3d
+    fetch_page.py (crawl technique)     :b3, 2026-04-04, 2d
+
+    section Phase 3 : Extensions
+    Architecture extensions/            :c1, 2026-04-07, 2d
+    Migration DataForSEO → extension    :c2, 2026-04-09, 2d
+    Migration GSC → extension           :c3, 2026-04-09, 1d
+    Migration Google Ads → extension    :c4, 2026-04-10, 1d
+
+    section Phase 4 : Retroaction
+    /debrief v12 (auto-analyse)         :d1, 2026-04-12, 3d
+    Injection patterns dans /prepare    :d2, 2026-04-15, 2d
+    Dashboard patterns HTML             :d3, 2026-04-17, 2d
+</pre>
+</div>
+
+<!-- ================================================================= -->
+<!-- GAINS -->
+<!-- ================================================================= -->
+<div class="gains">
+<h2>Resume : ce que SLASHR v12 prend de claude-seo</h2>
+<div class="grid-2">
+  <div class="card">
+    <h4>Parallelisme des subagents</h4>
+    <p>Pass 1 : 5 collecteurs paralleles. Pass 3 : 6 writers paralleles. Temps /prepare divise par 2.</p>
+  </div>
+  <div class="card">
+    <h4>Systeme d'extensions</h4>
+    <p>Chaque source de donnees = 1 dossier autonome. Ajouter Semrush ou Ahrefs demain = 0 modif du core.</p>
+  </div>
+  <div class="card">
+    <h4>References on-demand</h4>
+    <p>Les references techniques (CWV, E-E-A-T, GEO) sont chargees par les subagents qui en ont besoin, pas dans le contexte initial.</p>
+  </div>
+  <div class="card">
+    <h4>/audit : diagnostic rapide</h4>
+    <p>Comme /seo audit, mais calibre pour le closing. Score SEO pondre par potentiel de marche + gap concurrentiel.</p>
+  </div>
+</div>
+<h2 style="margin-top:1.5rem;">Ce que SLASHR v12 garde et que claude-seo n'a pas</h2>
+<div class="grid-2">
+  <div class="card">
+    <h4>Checkpoints humains</h4>
+    <p>2 arrets obligatoires. Le closer valide la strategie et le plan narratif. Pas d'autonomie totale sur les delivrables client.</p>
+  </div>
+  <div class="card">
+    <h4>HTML interactif sur-mesure</h4>
+    <p>30 composants CSS, design system, simulateur ROI, board-ready A4. Pas du markdown generique.</p>
+  </div>
+  <div class="card">
+    <h4>54 regles de validation</h4>
+    <p>4 layers automatisees. La rigueur de validation reste superieure a tout ce qui existe dans claude-seo.</p>
+  </div>
+  <div class="card">
+    <h4>Boucle de retroaction</h4>
+    <p>/debrief enrichi : auto-analyse, pattern matching, injection dans les futurs /prepare. Le systeme apprend.</p>
+  </div>
+</div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { curve: 'basis', padding: 15 },
+    gantt: { fontSize: 12 }
+  });
+</script>
+
+</body>
+</html>

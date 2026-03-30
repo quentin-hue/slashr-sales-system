@@ -56,31 +56,47 @@ Contenu interne : AMOA SEO + plan redirections + recette & monitoring post-bascu
 
 ---
 
-## Phase 1 — 90 jours (bloc)
+## Phase 1 — 4 mois (engagement)
 
-Phase 1 = audit + 3 mois d'accompagnement. Vendu comme un bloc unique.
+Phase 1 = audits + 3 mois d'execution. Vendu comme un bloc unique de 4 mois.
 
-### Calcul budget Phase 1
+**Pourquoi 4 mois :** 1 mois d'audit + 3 mois d'execution = assez de temps pour obtenir des resultats ou a minima des signaux positifs. Le client ne decide de la Phase 2 qu'apres avoir vu des resultats concrets.
+
+**Bilan de fin de Phase 1 :** obligatoire. Revue des resultats, ajustement du perimetre Phase 2 si besoin (intensite SEO, ajout de leviers, couverture internationale, acceleration GEO).
+
+### Structure Phase 1
 
 ```
-budget_phase1 = budget_audit + (budget_mensuel x 3)
+Phase 1 = Mois 1 (audits) + Mois 2-4 (execution au tarif Phase 2)
+budget_phase1 = budget_audits + (budget_mensuel_phase2 x 3)
 ```
 
-### Exemples
+### Audits (livrables separes dans le devis, mais vendus dans le bloc Phase 1)
 
-| Profil | Audit | Mensuel | Phase 1 (bloc) |
-|--------|-------|---------|----------------|
-| SEO seul, pilotage (1j/mois) | 3 500 | 700 | 5 600 EUR |
+| Audit | Prix | Contenu |
+|-------|------|---------|
+| **Audit SEO** | 3 500 EUR HT | Architecture, contenu, blog, liens internes, SXO, donnees structurees, benchmark |
+| **Audit SEA** | 1 400 EUR HT | Structure campagnes, encheres, cannibalisation PMax, conformite reglementaire, cartographie par pays |
+| **Audit GEO** (option) | 1 400 EUR HT | Visibilite IA (ChatGPT, Gemini, Perplexity), positionnement vs concurrents |
+
+> **L'audit SEO est TOUJOURS complet** : architecture, contenu, technique, blog, liens internes, SXO. Jamais "audit SEO local" ou "audit technique" seul. Le local est un axe de l'audit, pas l'audit entier.
+
+### Exemples Phase 1
+
+| Profil | Audits | Mensuel (M2-M4) | Phase 1 (bloc 4 mois) |
+|--------|--------|-----------------|----------------------|
 | SEO seul, production (2j/mois) | 3 500 | 1 400 | 7 700 EUR |
-| SEO seul, acceleration (3j/mois) | 3 500 | 2 100 | 9 800 EUR |
-| SEO + GEO, production | 4 900 | 2 100 | 11 200 EUR |
-| SEO + SEA, production | 4 900 | 2 100 | 11 200 EUR |
+| SEO + SEA, production (2j SEO + 2j Ads) | 4 900 | 2 800 | 13 300 EUR |
+| SEO + SEA + GEO, production | 6 300 | 2 800 | 14 700 EUR |
+| SEO + SEA, acceleration (3j SEO + 2j Ads) | 4 900 | 3 500 | 15 400 EUR |
 
 ---
 
-## Accompagnement mensuel (recurrent, post-Phase 1)
+## Phase 2 — Run mensuel (sans engagement)
 
-Apres le bilan a 90 jours, l'accompagnement continue **sans engagement**, ajustable chaque mois.
+Apres le bilan Phase 1, l'accompagnement continue **sans engagement**. Le client reste parce qu'il voit les resultats, pas parce qu'il est engage.
+
+Le perimetre Phase 2 est ajuste lors du bilan Phase 1 : intensite SEO, ajout de leviers (GEO, international), couverture geographique.
 
 ### Intensite du socle Search
 
@@ -96,7 +112,25 @@ Apres le bilan a 90 jours, l'accompagnement continue **sans engagement**, ajusta
 |--------|-----------|--------|
 | +1 levier (GEO, SEA, Multicanal) | +1 | +700 EUR/mois |
 
-### Calcul budget mensuel
+### Accompagnement Google Ads (forfait separe)
+
+| Prestation | Budget | Contenu |
+|-----------|--------|---------|
+| **Accompagnement Google Ads** | 1 400 EUR/mois HT | Optimisation campagnes, encheres, annonces, landing pages, reporting hebdo, veille |
+
+Le pilotage Ads est un forfait mensuel, pas un "+1 jour". Il inclut le reporting hebdomadaire (vs mensuel pour le SEO) et la gestion active des encheres.
+
+**Hors perimetre :** budget media Google Ads (facture directement par Google au client). Toujours mentionner "hors budget media" dans la proposition.
+
+### Calcul budget mensuel (mise a jour)
+
+```
+budget_mensuel = (socle_seo_jours x TJM) + forfait_ads (si applicable)
+```
+
+Exemple : Production SEO (2j = 1 400) + Ads (1 400 forfait) = 2 800 EUR/mois
+
+### Calcul budget mensuel (legacy, SEO seul)
 
 ```
 budget_mensuel = (socle_jours + nb_leviers) x TJM
@@ -108,18 +142,17 @@ budget_mensuel = (socle_jours + nb_leviers) x TJM
 
 ### Ce que le client VOIT (HTML)
 
-Phase 1 (90 jours) :
-- "Audit SEO" (pas juste "Audit")
-- Description qualitative de ce que la mission inclut (pas de jours)
-- Budget global HT (bloc unique = audit + 3 mois)
-- Ce que ca produit (livrables nommes)
-- "Mise en place du reporting" (pas "Reporting mensuel")
-- Benchmark concurrentiel (sans s'engager sur le nombre d'acteurs)
-- **Non inclus** (obligatoire) : lister explicitement ce qui n'est pas dans la Phase 1 (ex: audit GEO, audit Social Search). "Ces leviers peuvent etre actives apres le bilan, en accelerateur."
+Phase 1 (4 mois) :
+- Presenter comme un bloc unique de 4 mois (pas "audit + 3 mois de run")
+- Mois 1 : audits (SEO, SEA, GEO option) avec prix individuels visibles
+- Mois 2-4 : execution au tarif Phase 2 (meme niveau de service)
+- Budget global HT du bloc
+- Bilan de fin de Phase 1 mentionne (ajustement perimetre Phase 2)
+- **Non inclus** (obligatoire) : lister ce qui n'est pas dans la Phase 1. "Ces leviers peuvent etre actives apres le bilan."
 
 Accompagnement mensuel :
-- 1 recommandation mise en avant (pas 3 tiers egaux)
-- Echelle de lecture en 4 colonnes alignees : Pilotage / Production / Acceleration / +Levier accelerateur
+- 1 seule recommandation affichee en hero (pas 3 tiers egaux, pas de grid 3 colonnes)
+- Les alternatives mentionnees en 1 ligne sous la recommandation ("Ajustable : Pilotage {budget}/mois ou Acceleration {budget}/mois")
 - Labels client : "On pilote, vous executez" / "On produit, vous validez" / "On accelere"
 - Leviers additionnels : +700 EUR/mois par levier ("Acceleration SEO, visibilite IA, Ads, reseaux sociaux")
 - Budget mensuel HT
@@ -144,5 +177,5 @@ Accompagnement mensuel :
 
 ### Ou sont les jours ?
 
-Dans le fichier `INTERNAL-S7-{date}-{prospect}.md` — section "Budget interne".
+Dans le fichier `INTERNAL-DIAG-{date}-{prospect}.md` — section "Budget interne".
 Le closer a acces au detail complet. Le prospect ne voit que le budget et le scope.

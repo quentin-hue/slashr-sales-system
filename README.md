@@ -9,7 +9,7 @@ Systeme de closing structure pilote par Claude Code. Un deal ID Pipedrive = tout
 | Commande | Quand | Output | Stockage |
 |----------|-------|--------|----------|
 | `/qualify <deal_id>` | Apres R1 | Scoring terminal + update Pipedrive | Terminal |
-| `/prepare <deal_id>` | R2 a preparer | PROPOSAL-*.html + INTERNAL-S7-*.md | Google Drive |
+| `/prepare <deal_id>` | R2 a preparer | PROPOSAL-*.html + INTERNAL-DIAG-*.md | Google Drive |
 | `/validate <path_or_deal_id>` | Verification HTML | Rapport validation (4 layers, 45 regles) | Terminal |
 | `/debrief <deal_id>` | Apres won/lost | Retroaction closer + patterns | `.cache/` |
 | `/pipedrive <deal_id> <action>` | Sync CRM | Mise a jour Pipedrive | Pipedrive |

@@ -17,7 +17,7 @@ Collecter, structurer, analyser. Produire un document intermediaire factuellemen
 > **Execution :** via `python3 tools/batch_pipedrive.py --deal-id {deal_id}`. Ne pas appeler endpoint par endpoint.
 
 L'outil batch collecte en parallele (5 workers) :
-- Deal (titre, stage, montant, custom fields dont r1_score et decideur_level)
+- Deal (titre, stage, montant, custom fields dont decideur_level)
 - Contact (prenom, nom, email, telephone)
 - Organisation (nom, adresse, website)
 - Notes chronologiques
@@ -90,17 +90,29 @@ Pour chaque domaine detecte :
 
 **Regle SDB thin (ranked_keywords) :** le SDB ne contient que le **top 10 keywords** + statistiques agregees (total keywords, split marque/hors-marque, volume total). Le dump complet reste dans le cache (`.cache/deals/{deal_id}/dataforseo/`) et dans l'evidence log. Ne jamais injecter les 30+ keywords dans le SDB.
 
-#### Module 3b : GSC (Google Search Console) — conditionnel
+#### Module 3b : GSC (Google Search Console) — TOUJOURS TENTER
 
-**Activer si :** le prospect a accorde l'acces Google Search Console au service account SLASHR.
+**TOUJOURS appeler `list_properties` (MCP GSC) pour chercher le prospect dans les proprietes accessibles.** Ne jamais deviner la propriete a partir du domaine Pipedrive : le domaine CRM peut avoir un tiret, le site reel non. La propriete GSC peut etre un sc-domain ou une URL.
 
-**Detection automatique (apres Etape 1.1b) :** appeler le MCP tool `search_analytics` avec :
-- `siteUrl` : `sc-domain:{DOMAINE_PRINCIPAL}` (si echec, essayer `https://www.{DOMAINE_PRINCIPAL}/`)
-- `startDate` / `endDate` : 7 derniers jours
-- `rowLimit` : 1
+**Detection (cf. `.claude/agents/collector-gsc.md` Phase 0) :**
+1. `list_properties` → chercher le domaine du prospect (match exact, sans tiret, partiel par nom de marque)
+2. Si propriete trouvee → probe `get_search_analytics` sur cette propriete
+3. Si aucune propriete → fallback fichier Drive
 
-Si donnees retournees → acces confirme, continuer la collecte.
-Si erreur (403, 404, vide) → pas d'acces API GSC. Tenter le **fallback fichier Drive** ci-dessous avant d'abandonner.
+**Pourquoi toujours tenter :** les donnees GSC changent completement le diagnostic. Sans GSC, on peut croire qu'un site a 0 trafic organique alors qu'il en a 13 500 clics/mois.
+
+#### Module 3c : Google Ads — TOUJOURS TENTER
+
+**Priorite 1 :** lire le champ `gads_customer_id` du deal Pipedrive (field key `2389e066f59aa6dae4edb9903557fdec7924426a`). Si renseigne → utiliser directement (retirer les tirets).
+
+**Priorite 2 (fallback) :** explorer le MCC SLASHR (`1468186390`) via `search` resource `customer_client` → chercher un nom qui matche le prospect.
+
+**Detection (cf. `.claude/agents/collector-google-ads.md` Phase 0) :**
+1. Champ Pipedrive `gads_customer_id` → customer_id direct
+2. Sinon : lister les sous-comptes du MCC, matcher par nom
+3. Si compte trouve → collecter les donnees (campagnes, depenses, conversions, CPA)
+
+**Pourquoi toujours tenter :** les donnees Google Ads reelles (CVR 4.4%, CPA 19.8 EUR) sont incomparablement plus precises que les estimations DataForSEO. Elles permettent de calculer un ROI reel et de credibiliser la proposition.
 
 **Fallback fichier Drive (si pas d'acces API GSC) :**
 
@@ -265,7 +277,7 @@ Apres l'execution des modules de benchmark (4 + 4c si active), l'agent evalue sa
 |-------|-----------------|--------|
 | **Normal** | < 15 appels | Continuer normalement (modules 4b, 5-10 si pertinents) |
 | **Attention** | 15-25 appels | Modules conditionnels (5-10) : activer uniquement ceux avec signal FORT (mention explicite dans le brief/transcript, pas juste une inference) |
-| **Critique** | > 25 appels | Modules conditionnels (5-10) : activer max 2, privilegier ceux qui alimentent le PRIMARY S7. Les autres → marquer dans le SDB : "Module {N} non active (budget API consomme, data insuffisante)" |
+| **Critique** | > 25 appels | Modules conditionnels (5-10) : activer max 2, privilegier ceux qui alimentent la contrainte principale. Les autres → marquer dans le SDB : "Module {N} non active (budget API consomme, data insuffisante)" |
 
 Ce checkpoint est informatif, pas un hard stop. L'objectif est d'eviter les deals ou 40+ appels DataForSEO sont faits alors que 20 suffisaient.
 
@@ -310,7 +322,7 @@ INTENT MARKET MAP:
 ```
 
 **Cette segmentation alimente :**
-- Le score S1 (Intentions de recherche) — un prospect qui ne couvre ni le commercial ni l'informationnel captable a un score plus bas qu'un prospect qui couvre le commercial mais pas l'informationnel
+- Le diagnostic (axe Intentions de recherche) — un prospect qui ne couvre ni le commercial ni l'informationnel captable est plus contraint qu'un prospect qui couvre le commercial mais pas l'informationnel
 - La section "Territoires de contenu" dans l'onglet Strategie (Pass 2)
 - Le chiffrage du marche dans les titres et le benchmark (seul le "marche captable" est cite, jamais le brut non-captable)
 
@@ -375,14 +387,14 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 
 #### Etape post-Module 6 : SEA Signal Classification (OBLIGATOIRE)
 
-Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agent classe le **signal SEA** du deal. Ce signal est independant du score S7 Amplification : le S7 mesure l'etat actuel (0/5 si pas de paid), le signal mesure la **demande du prospect**.
+Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agent classe le **signal SEA** du deal. Ce signal est independant du diagnostic : le diagnostic mesure l'etat actuel, le signal mesure la **demande du prospect**.
 
 | Signal | Definition | Sources de detection | Posture SLASHR |
 |--------|-----------|---------------------|----------------|
 | **EXPLICIT** | Le brief demande du paid | Brief/transcript/emails mentionne : Google Ads, Meta Ads, campagnes paid, budget pub, ROAS, Shopping, Performance Max, retargeting, display | **CONSEIL** (defaut) ou **PILOTE** (si perimetre Croissance) |
 | **DETECTED** | Le prospect a du paid actif mais n'en parle pas | Module 6 `ranked_keywords(paid)` retourne des resultats MAIS aucune mention paid dans brief/transcript/emails | Mentionner la synergie SEO/SEA dans la strategie |
 | **OPPORTUNITY** | Pas de demande prospect, pas de paid actif, MAIS les donnees montrent une opportunite paid | CPCs bas (< 1.50 EUR) sur keywords commerciaux ET/OU 0 concurrent en paid sur 3+ keywords commerciaux ET/OU SHOPPING_SIGNAL = YES | Mentionner l'opportunite dans le diagnostic + integrer en Phase 2 |
-| **ABSENT** | Ni demande, ni activite paid, ni opportunite detectee | Module 6 non active ET aucune mention paid ET aucun signal d'opportunite | DEFERRED-SCOPE standard |
+| **ABSENT** | Ni demande, ni activite paid, ni opportunite detectee | Module 6 non active ET aucune mention paid ET aucun signal d'opportunite | Differe hors perimetre |
 
 **Regles de classification :**
 1. Scanner brief, transcript, emails et notes Pipedrive pour les keywords paid (Google Ads, Meta Ads, Facebook Ads, campagnes, budget pub, ROAS, CPA, Shopping, Performance Max, retargeting, display, paid search, SEA)
@@ -401,7 +413,7 @@ Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agen
 - `OPPORTUNITY` → `SEA_POSTURE = HORS_PERIMETRE` (pas de section dediee paid, mais les donnees sont exposees dans le diagnostic et le paid est integre dans la trajectoire Phase 2)
 - `ABSENT` → `SEA_POSTURE = HORS_PERIMETRE`
 
-**IMPORTANT :** le signal SEA est un routage de la demande prospect, pas un diagnostic. Le diagnostic (S7 Amplification) reste inchange.
+**IMPORTANT :** le signal SEA est un routage de la demande prospect, pas un diagnostic. Le diagnostic strategique reste inchange.
 
 #### Module 7 : Social Search
 
@@ -457,11 +469,31 @@ Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agen
 | `search_intent` (20 keywords prioritaires) | Intent : info, nav, commercial, transactionnel | Prioriser par intent d'achat |
 | `bulk_keyword_difficulty` (opportunites identifiees) | Difficulte de positionnement | Realisme des recos |
 
-#### Module 11 : Website Crawl (toujours actif)
+#### Module 11 : Website Crawl + Structure Audit (TOUJOURS ACTIF, AVANT DIAGNOSTIC)
 
-Crawle le site reel du prospect pour alimenter les scores S2/S3/S4 avec des donnees concretes (contenu, structure, donnees structurees).
+Crawle le site reel du prospect. Ce module est un prerequis au diagnostic : **ne jamais diagnostiquer sans connaitre la structure du site.**
 
-**Execution :** `python3 tools/crawl_site.py {domain} {deal_id}`
+**Etape 1 : Sitemap (OBLIGATOIRE)**
+1. Lire `robots.txt` → trouver le sitemap
+2. Parser le sitemap index puis chaque sous-sitemap
+3. **Inventorier la structure** : combien de pages par type (produit, categorie, blog, local/centre, landing page, etc.)
+4. Ecrire le resume dans le cache
+
+**Pourquoi obligatoire :** sans le sitemap, l'IA peut croire qu'un site n'a pas de pages locales alors qu'il en a 54. Le sitemap revele la structure reelle du site, pas juste les pages qui rankent.
+
+**Etape 2 : Croisement sitemap x GSC (si GSC disponible)**
+1. Pour chaque categorie de pages identifiee (ex: `/centre-*`), filtrer les donnees GSC par URL pattern
+2. Calculer les metriques agregees par categorie : clics, impressions, CTR, position moyenne
+3. Identifier les categories qui sous-performent (beaucoup de pages, peu de trafic)
+
+**Exemple :** 54 pages `/centre-anti-tabac-*` dans le sitemap mais seulement 35 clics/mois sur la meilleure → les pages locales existent mais ne performent pas. C'est un diagnostic completement different de "les pages locales n'existent pas".
+
+**Etape 3 : Crawl echantillon (OBLIGATOIRE)**
+- Homepage + 3-5 pages strategiques (1 page locale, 1 page blog, 1 page service)
+- Extraire : title, meta, H1, schema JSON-LD, liens internes
+- **Verifier les CTA et parcours de conversion** : est-ce que les pages blog ont des CTA vers les pages service/centres ? Est-ce que les pages centres ont un formulaire de prise de rendez-vous ? Est-ce que le store locator fonctionne ?
+
+**REGLE CRITIQUE : ne jamais affirmer l'absence de quelque chose (CTA, pages locales, schema, etc.) sans l'avoir verifie par un crawl.** "Les pages blog n'ont pas de CTA" est une affirmation factuelle qui demande une preuve (crawl de la page). "Les pages blog sous-performent" est un constat mesurable (GSC). Le diagnostic ne doit contenir que des constats verifiables, pas des hypotheses deguisees en faits.
 
 **Budget :** 0 appel DataForSEO, max 10 requetes HTTP, 60s total.
 
@@ -526,6 +558,22 @@ Crawle le site reel du prospect pour alimenter les scores S2/S3/S4 avec des donn
 - Les lots 3 et 4 sont conditionnels (Module 4c) → seulement si aucun concurrent business
 - Le lot 5 attend les resultats precedents (intent market map, modules conditionnels)
 - Si un lot echoue partiellement (exit code 2), lire les resultats OK et noter les echecs dans l'evidence log
+
+### Input consultant SEA (optionnel)
+
+Si le deal inclut un volet Ads et qu'un consultant SEA est disponible :
+
+1. Apres la collecte Google Ads (module conditionnel), partager le SDB avec le consultant
+2. Le consultant injecte ses notes dans le champ `SEA_CONSULTANT_NOTES` du SDB :
+   - Conformite reglementaire
+   - Cannibalisation PMax/Search
+   - Recommandations budget et encheres
+   - Nouveaux canaux (Demand Gen, YouTube)
+   - Risques compte
+3. Ces notes sont integrees dans le diagnostic strategique (Etape 1.3)
+4. Si aucun consultant n'est disponible, l'agent fait son analyse avec les donnees collectees
+
+Le consultant peut aussi deposer un document dans le dossier Drive du deal (prefixe `SEA-NOTES-*`).
 
 ---
 
@@ -666,15 +714,41 @@ ERRORS & FALLBACKS:
 
 Chaque affirmation quantitative dans le SDB DOIT porter une etiquette source inline au format :
 
-`[src: {origine}, {endpoint_ou_fichier}]`
+`[src: {origine}, {endpoint}, {periode}, {date_collecte}]`
 
-Origines valides : `pipedrive`, `drive`, `dataforseo`, `calcul`, `benchmark`
+Origines valides : `pipedrive`, `drive`, `dataforseo`, `gsc`, `google-ads`, `calcul`, `benchmark`, `crawl`
 
 Exemples :
-- Trafic organique: 20,489 visites/mois `[src: dataforseo, domain_rank_overview]`
-- CA web 2025: 55,745 EUR `[src: drive, recap_ventes-web.xlsx]`
-- CVR implicite: 0.45% `[src: calcul, 1099 commandes / (20489 x 12)]`
-- Migration sans perte: 0% `[src: benchmark, cas client 4]`
+- Trafic organique: 13 499 clics/mois `[src: gsc, performance_overview, 28j, 2026-03-27]`
+- Budget Ads: 15 676 EUR/mois `[src: google-ads, campaigns, 2026-02-27 au 2026-03-27, collecte 2026-03-27]`
+- ETV: 2 757 EUR `[src: dataforseo, domain_rank_overview, snapshot, 2026-03-27]`
+- CVR implicite: 4.4% `[src: calcul, 792 conv / 18 063 clics, google-ads 30j]`
+
+**REGLE PERIODE (CRITIQUE)** : ne pas fixer UNE periode unique. Utiliser la bonne periode pour le bon usage.
+
+| Usage | Periode | Source | Pourquoi |
+|-------|---------|--------|----------|
+| **Diagnostic performance** | 90 jours | GSC 90j, Google Ads 90j | Lisse les anomalies, couvre un trimestre, representatif |
+| **Tendance** | 12 mois ou daily trend 28j | GSC daily, Google Ads monthly | Detecte saisonnalite et trajectoire |
+| **Budget mensuel actuel** | Dernier mois complet | Google Ads | Pour citer un budget reel, pas une moyenne |
+| **Quick wins / positions** | 28 jours | GSC 28j | Positions recentes |
+| **Benchmark concurrent** | Snapshot | DataForSEO | Pas de notion de periode, snapshot au jour J |
+
+```
+SNAPSHOT DONNEES:
+- Date de collecte : {YYYY-MM-DD}
+- GSC performance : 90 jours ({start} au {end})
+- GSC tendance : 28 jours daily trend
+- Google Ads diagnostic : 90 jours ({start} au {end})
+- Google Ads budget mensuel : dernier mois complet ({mois})
+- DataForSEO : snapshot au {date}
+```
+
+**REGLE : chaque chiffre du SDB porte sa periode.** "Budget mensuel : 15 676 EUR (mars 2026)" et "CPA moyen : 19.8 EUR (90 jours, jan-mars 2026)" sont deux chiffres avec des periodes differentes. Les deux sont corrects. L'important est que le HTML reprenne la meme periode que le SDB.
+
+**Pourquoi** : si le SDB dit "15 676 EUR" (mars complet) et que la Pass 3 re-collecte et trouve "14 000 EUR" (27 jours de mars), les chiffres du HTML ne matchent plus le diagnostic.
+
+**REGLE PASS 3** : la Pass 3 ne re-collecte JAMAIS les donnees. Elle utilise UNIQUEMENT les chiffres du SDB. Si un chiffre manque dans le SDB, elle remonte au SDB (pas aux APIs). Si le SDB est trop vieux (> 7 jours), relancer la Pass 1.
 
 Les qualificatifs (ex: "maturite digitale faible") ne necessitent pas de source mais doivent pouvoir etre justifies par au moins un data point de l'evidence log.
 
@@ -686,11 +760,58 @@ Ecrire :
 - `.cache/deals/{deal_id}/evidence/evidence_log.md`
 
 
-## Etape 1.3 : Analyse strategique + S7 Engine (bloc unifie)
+## Etape 1.2b : Checklist d'analyse pre-diagnostic (OBLIGATOIRE)
 
-> **Bloc unifie.** L'analyse strategique et le diagnostic S7 sont executes en une seule passe de raisonnement sur les memes donnees. L'agent produit une analyse plus coherente (pas de risque de contradiction entre diagnostic et S7) et plus rapide (une seule passe).
+**AVANT de diagnostiquer, parcourir `context/references/analysis-checklist.md`.**
 
-L'agent repond a ces questions, puis enchaine directement sur le scoring S7 et la strategie, sans relire les donnees.
+Chaque question de la checklist doit etre repondue avec des donnees. Si la donnee manque, le noter. Cette etape empeche les diagnostics fondes sur des hypotheses non verifiees (ex: "pas de pages locales" alors qu'il y en a 54, "pas de CTA" alors qu'il y en a).
+
+**Output :** pour chaque question, ecrire la reponse dans le SDB avec la source. Compteur : "Checklist : X/Y questions repondues."
+
+---
+
+## Etape 1.2c : Approfondissement contextuel (OBLIGATOIRE)
+
+Apres la checklist, l'IA dispose de toutes les donnees de base. Avant de diagnostiquer, elle doit se poser 3 questions d'approfondissement specifiques a CE deal :
+
+**Question 1 : "Qu'est-ce qui pourrait contredire mon diagnostic ?"**
+Identifier le diagnostic qui emerge des donnees, puis chercher activement ce qui pourrait le fausser.
+- Si le diagnostic est "les pages locales sous-performent" → verifier si c'est un probleme de contenu (crawler une page), d'indexation (URL inspection), ou de concurrence (SERP locale)
+- Si le diagnostic est "le prospect depend du paid" → verifier si le paid achete du trafic que l'organique a deja (overlap)
+
+**Question 2 : "Qu'est-ce que le concurrent fait que le prospect ne fait pas ?"**
+Chercher 1-2 SERPs strategiques et comparer la presence du prospect vs le concurrent principal.
+- Qui apparait dans les local packs ?
+- Qui apparait dans les People Also Ask ?
+- Le concurrent achete-t-il la marque du prospect en Ads ?
+- Le concurrent a-t-il du schema que le prospect n'a pas ?
+
+**Question 3 : "Si j'etais le closer en R2, quelle question le prospect me poserait et est-ce que j'ai la donnee pour repondre ?"**
+Les questions typiques :
+- "Qu'est-ce qui ne va pas concretement ?" → donnees specifiques, pas des generalites
+- "Que font mes concurrents ?" → benchmark chiffre
+- "Combien ca va rapporter ?" → ROI avec methode explicite
+- "Par quoi on commence ?" → quick wins concrets et actionnables
+
+**Question 4 : "Mon diagnostic est-il aligne avec le brief du prospect ?"**
+Relire le champ `BRIEF PROSPECT` du SDB (rempli en section 0 de la checklist). Verifier :
+- Le diagnostic ouvre-t-il par la priorite declaree du prospect ? Si le prospect veut des Ads et que le diagnostic ouvre par le SEO, c'est un probleme de cadrage.
+- La proposition repond-elle d'abord a la douleur exprimee, puis ajoute la valeur non demandee ?
+- L'ordre des sections suit-il la hierarchie du prospect, pas celle du systeme ?
+
+**REGLE : on diagnostique ce qu'on trouve, mais on presente dans l'ordre de ce que le prospect veut entendre.** L'analyse SEO peut etre la plus riche, mais si le brief dit "Ads first", le Diagnostic ouvre par les Ads et le SEO vient en opportunite.
+
+**Output :** 3-5 insights specifiques a ce deal + validation de l'alignement brief/diagnostic.
+
+---
+
+## Etape 1.3 : Diagnostic strategique
+
+**Objectif :** a partir de toutes les donnees collectees, de la checklist d'analyse ET de l'approfondissement contextuel, identifier ce qui bloque le plus de valeur et ce qui peut la debloquer.
+
+**L'IA raisonne librement.** Pas de grille a remplir, pas de scores a attribuer. Le diagnostic est un raisonnement structure :
+
+**REGLE D'ORDONNANCEMENT : le diagnostic et la proposition suivent la hierarchie du prospect.** Si `BRIEF PROSPECT > Priorite declaree = Ads`, le diagnostic ouvre par l'analyse Ads, la strategie ouvre par les recommandations Ads, et le SEO vient en opportunite complementaire. L'expertise SEO est le differenciateur de SLASHR, mais ce n'est pas forcement le sujet d'ouverture.
 
 ### A. Comprendre le prospect
 
@@ -701,61 +822,72 @@ L'agent repond a ces questions, puis enchaine directement sur le scoring S7 et l
 - **Quel est le ton des echanges ?** Formel/informel, reactif/lent, technique/business
 - **Qui est le decideur ?** Profil (DG, CMO, responsable digital, fondateur), ses preoccupations (ROI ? image ? rapidite ?)
 
-### B. Diagnostiquer la situation + S7 (en un seul raisonnement)
+### B. Diagnostiquer la situation
 
-Pendant le diagnostic, l'agent evalue simultanement les 7 forces S7. Le S7 est un outil interne de priorisation strategique, jamais expose au prospect.
-
-> Echelle 0-5, classification, anchors quantitatifs : voir `agents/prepare-context.md` section 3.
-> Modele complet (diagnostic vs activation, piliers, anti-patterns) : voir `context/s7_search_operating_model.md`.
-
-**Questions diagnostic :**
-- **Quel est l'etat Search actuel ?** Forces et faiblesses → alimente S1-S5
-- **Quel est le gap concurrentiel ?** Qui capte le trafic, combien, sur quels termes → alimente S1, S3, S5
-- **Quel est le cout de l'inaction ?** Chiffre en visites, en euros, en mois de retard. **Sans dramatiser, juste les donnees**
-- **Y a-t-il des quick wins ?** Pages en top 10-20, donnees structurees manquantes, contenus faciles → alimente S2, S3
-
-**Scoring S7 (7 forces, chacune 0-5 avec SO WHAT) :**
-
-Pour chaque force, l'agent produit :
-1. Score (0-5 avec anchor quantitatif)
-2. Evidence (1 data point minimum)
-3. Confidence (High/Med/Low)
-4. SO WHAT (1-2 phrases, implication business, pas description)
-5. Projection 6-12M (si donnees disponibles)
-6. Interdependance (quelle force conditionne/est conditionnee)
-
-**Sources Module 11 pour le scoring S7 :**
-Si le Module 11 a produit des donnees (`crawl_summary.json` disponible), les integrer :
-
-| Force | Source Module 11 | Impact sur le score |
-|-------|-------------------|---------------------|
-| **S2 · Architecture & technique** | Schema.org coverage, qualite sitemap, structure heading, detection SPA | Sans Schema.org/sitemap/headings → S2 vers le bas |
-| **S3 · Contenu** | Ratio editorial vs catalogue, page count, word count moyen, meta manquantes | Peu de contenu editorial, thin content, meta manquantes → S3 vers le bas |
-| **S4 · UX / Conversion** | CTAs, formulaires, profondeur navigation, images sans alt | Sans CTA/formulaire, navigation pauvre → S4 vers le bas |
+L'agent raisonne sur les donnees collectees pour produire un diagnostic strategique. Le diagnostic est un outil interne de priorisation, jamais expose au prospect.
 
 > Rappel : 5 formulations interdites, test de substitution (cf. `agents/prepare-context.md` section 3).
 
-**Synthese S7 (post-grille, obligatoire) :**
-Produire : CONTRAINTE PRINCIPALE + LEVIERS PRIORITAIRES + INSIGHT CENTRAL + PROJECTIONS.
+### Output obligatoire
+
+```
+DIAGNOSTIC STRATEGIQUE
+GENERATED_AT: {ISO timestamp}
+
+CONTRAINTE PRINCIPALE : {en langage business, 2-3 phrases data-first}
+→ Pourquoi c'est le verrou. Donnees sources.
+→ Confiance : {HIGH / MEDIUM / LOW} — {source de la confiance ou raison du doute}
+
+LEVIERS PRIORITAIRES (max 2) :
+1. {levier} — {impact attendu, chiffre source}
+   Confiance : {HIGH / MEDIUM / LOW} — {justification}
+2. {levier} — {impact attendu, chiffre source}
+   Confiance : {HIGH / MEDIUM / LOW} — {justification}
+
+CE QU'ON NE FAIT PAS MAINTENANT :
+- {force/axe} — {pourquoi pas maintenant, condition de reactivation}
+
+ROI :
+  Methode : {A (Gap CTR) / B (Gap concurrent) / C (Volume adressable)}
+  Fourchette : {min} — {max} EUR/an
+  Confiance : {HIGH / MEDIUM / LOW} — {ex: "GSC + CVR reel = High" ou "DataForSEO estimates + CVR benchmark = Medium"}
+
+SCENARIO RECOMMANDE :
+  Niveau : {Pilotage / Production / Acceleration}
+  Budget : {montant}/mois
+  Confiance : {HIGH / MEDIUM / LOW} — {ex: "gap justifie la production, equipe interne absente" ou "budget prospect inconnu, hypothese"}
+
+TONE_PROFILE : {DIRECT / PEDAGOGIQUE / PROVOCATEUR / TECHNIQUE}
+→ {justification basee sur le profil decideur et le contexte du deal}
+
+CONFIANCE GLOBALE : {HIGH / MEDIUM / LOW}
+→ Resume : {N} decisions HIGH, {N} MEDIUM, {N} LOW. Points d'attention : {liste}
+```
+
+### Regles
+- Max 3 leviers actifs (1 contrainte + 2 leviers)
+- Chaque conclusion appuyee par des donnees (evidence chain)
+- Si les donnees sont insuffisantes pour conclure, le dire (Confiance Low)
+- Le diagnostic est INTERNE. Les conclusions sont traduites en langage business dans le HTML.
 
 ### C. Construire la strategie + ROI + trajectoires
 
-Enchaine directement depuis le S7, sans relire les donnees.
+Enchaine directement depuis le diagnostic, sans relire les donnees.
 
 - **Quel perimetre ?** SEO seul ? Search global ? Quels modules ont produit des donnees exploitables ?
 - **Quelle structure d'offre ?** (cf. `agents/prepare-context.md` section 2, Structure de l'offre)
   - Phase 1 Audit strategique : quels livrables specifiques pour ce deal ?
   - Phase 2 Accompagnement structure : quels piliers activer ? A quelle intensite ?
-  - Quel scenario recommander ? (Essentiel / Performance / Croissance)
+  - Quel scenario recommander ? (Pilotage / Production / Acceleration)
 - **Quelles descriptions de prestations ?** Contextualiser les templates de `context/service_catalog.md` avec les donnees du deal (secteur, dimensions B2C/B2B/international, concurrents, contraintes specifiques, partenaires techniques). Produire la section SERVICE_DESCRIPTIONS du SDB.
 - **Quelles phases de recommandation ?** Actions concretes par phase, adaptees au contexte
-- **Quel ROI ?** Calcul conservateur avec les donnees reelles du prospect (voir methode ROI dans prepare-pass3.md)
+- **Quel ROI ?** Calcul conservateur avec les donnees reelles du prospect (voir `context/references/roi-methodology.md`)
 
-**Classification S7 (max 3 leviers actifs) :**
-- PRIMARY : S{X} → justification 2-3 phrases data-first
-- SECONDARY : S{Y} + S{Z} → 1 phrase chacun
-- DEFERRED-SEQUENTIAL : forces a activer quand condition remplie
-- DEFERRED-SCOPE : forces hors perimetre
+**Classification diagnostic (max 3 leviers actifs) :**
+- Contrainte principale : {axe} → justification 2-3 phrases data-first
+- Leviers prioritaires : {axe A} + {axe B} → 1 phrase chacun
+- Differe (sequentiel) : axes a activer quand condition remplie
+- Differe (hors perimetre) : axes hors perimetre
 
 **Trajectoire 90 jours (contextuelle, JAMAIS generique) :**
 
@@ -772,7 +904,7 @@ Le plan 90 jours est cale sur l'evenement structurant du deal, pas sur un templa
 - Le plan 90 jours est CONSTRUIT AUTOUR de l'evenement structurant, pas a cote
 - Si plusieurs contextes se combinent (refonte + saisonnalite), prioriser celui qui conditionne le reste (generalement la refonte)
 - Chaque mois = 1 objectif + 1 livrable + 1 signal de succes (pas de liste generique)
-- Le plan 90 jours reste aligne sur le PRIMARY S7 : chaque mois doit adresser la contrainte principale
+- Le plan 90 jours reste aligne sur la contrainte principale du diagnostic : chaque mois doit adresser le verrou identifie
 
 **Trajectoire 6 mois :** M4-M6 montee en puissance, piliers actives, objectifs intermediaires. Si SEA_SIGNAL = OPPORTUNITY, integrer l'activation paid en M4+ (pas avant).
 
@@ -795,59 +927,47 @@ L'agent identifie 3-5 "arguments decideurs" et produit les `NARRATIVE_HINTS` dan
 **Exemples de regroupements typiques :**
 - `SEARCH_STATE` + `COMPETITIVE_GAP` → "Le prospect est en retard mesurable"
 - `INTENT_MARKET_MAP` + `OPPORTUNITIES` → "Le potentiel existe et est captable"
-- S7 PRIMARY + `RISKS` → "Le verrou et ses consequences"
+- Contrainte principale + `RISKS` → "Le verrou et ses consequences"
 - `ROI` + `STRATEGIE_RECOMMANDEE` → "Le plan et son rendement"
 
 Les differenciateurs SLASHR emergent des donnees elles-memes dans la proposition (cf. `agents/prepare-pass2.md`, Etape 2.4). Pass 1 ne produit pas de "transition opportunities" explicites.
 
-### Output interne : `strategy_plan_internal.md`
+### Output interne : section diagnostic du SDB
 
-L'agent DOIT produire ce document interne (jamais expose au prospect) avant de rediger le SDB. Il alimente directement les sections "Strategie recommandee" et "ROI" du SDB.
+L'agent produit le diagnostic strategique directement dans le SDB (section `DIAGNOSTIC STRATEGIQUE`). Ce diagnostic est interne (jamais expose au prospect) et alimente directement les sections "Strategie recommandee" et "ROI" du SDB.
 
-**Ecriture obligatoire :** `.cache/deals/{deal_id}/artifacts/strategy_plan_internal.md` (utilise par Pass 2 et par `/debrief`).
+Le diagnostic est aussi archive dans un fichier separe pour rejouabilite :
+
+**Ecriture obligatoire :** `.cache/deals/{deal_id}/artifacts/INTERNAL-DIAG.md` (utilise par Pass 2 et par `/debrief`).
 
 ```
-=== STRATEGY PLAN INTERNAL (S7) ===
+=== DIAGNOSTIC STRATEGIQUE ===
 
-S7 SCORES (avec evidence + confiance):
-| Force | Score | Evidence (1 data point minimum) | Confidence | SO WHAT (business) | Projection 6-12M | Interdependance |
-|-------|-------|----------------------------------|------------|---------------------|-------------------|-----------------|
-| S1 · Intentions | {0-5} | {ex: Intent map: 12 400 req/mois commercial, couverture 6%} | {High/Med/Low} | {1-2 phrases} | {voir regle ci-dessous} | {voir regle ci-dessous} |
-| S2 · Arch & tech | {0-5} | {ex: Lighthouse 38, 40% pages non indexees} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
-| S3 · Contenu | {0-5} | {ex: 23 pages indexees vs 850 req pertinentes} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
-| S4 · UX/CVR | {0-5} | {ex: parcours friction, conversion 100% app} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
-| S5 · Autorite | {0-5} | {ex: Domain Rank / part marque vs hors-marque} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
-| S6 · Diffusion | {0-5} | {ex: absence YouTube/IA/social sur intents cles} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
-| S7 · Amplification | {0-5} | {ex: CPC eleve + dependance paid + saisonnalite} | {High/Med/Low} | {1-2 phrases} | {idem} | {idem} |
+CONTRAINTE PRINCIPALE : {en langage business, 2-3 phrases data-first}
+→ Pourquoi c'est le verrou. Donnees sources.
+→ Projection : {direction} {delta chiffre} {source} → {horizon}
 
-INTERDEPENDANCE / SYSTEMIC LIMITATION :
-→ PRIMARY (obligatoire) : 1 phrase qui explique pourquoi cette force limite l'ensemble du systeme. Doit faire reference a au moins une autre force.
-  Ex: "S3 (Contenu) limite le systeme : sans pages cibles, S1 (Intentions) reste non captee et S5 (Autorite) ne peut pas se construire."
-→ SECONDARY (recommande si pertinent) : 1 phrase d'interdependance, comment cette force conditionne ou est conditionnee par d'autres.
-  Ex: "Si S2 echoue (migration mal geree) → S3 (contenu) et S1 (intentions) perdent leur base"
-→ DEFERRED : optionnel, uniquement si la dependance explique le report ("S6 non priorise car S3 n'a pas encore de contenu a diffuser")
-→ Le tiret (—) reste acceptable pour les forces sans interdependance notable.
+LEVIERS PRIORITAIRES :
+1. {levier} — {impact attendu, chiffre source}
+   → Projection : {direction} {delta} → {horizon}
+2. {levier} — {impact attendu, chiffre source}
+   → Projection : {direction} {delta} → {horizon}
 
-PROJECTION 6-12 MOIS (obligatoire pour PRIMARY et SECONDARY) :
-→ Source : keyword_dynamics (solde new vs lost), historical_rank_overview (si Module 9 actif), tendances concurrents (Module 4c dynamics)
-→ Format : "{direction} {delta chiffre} en {horizon}"
-  Ex PRIMARY : "Erosion: -31 kw nets/mois pour LMP, +709 nets pour le leader. A ce rythme, gap x2 en 12 mois."
-  Ex SECONDARY : "Stagnation: trafic stable +/-5% sur 6 mois mais concurrents en progression de +15%"
-→ Si aucune donnee de tendance disponible : "Projection non disponible (pas de donnees historiques)" + ajouter dans MANQUANTS
-→ Pour les forces DEFERRED : optionnel mais recommande si la donnee existe
-→ Anti-dramatisation : la projection est factuelle. Pas de "catastrophe en vue".
-
-CLASSIFICATION (max 3 leviers actifs) :
-- PRIMARY : S{X} (score {X}/5) → {justif 2-3 phrases data-first}
-- SECONDARY : S{Y} + S{Z} → {1 phrase chacun : pourquoi amplifie}
-- DEFERRED-SEQUENTIAL : {forces} → {1 phrase chacun : "sera active quand {condition}"}
-- DEFERRED-SCOPE : {forces} → {1 phrase chacun : "hors perimetre car {raison}"}
+CE QU'ON NE FAIT PAS MAINTENANT :
+- {axe} — {pourquoi pas maintenant, condition de reactivation}
+- {axe} — {idem}
 
 EXCEPTION SEA_SIGNAL (obligatoire si SEA_SIGNAL = EXPLICIT) :
-Si `SEA_SIGNAL = EXPLICIT`, S7 Amplification ne peut PAS etre DEFERRED-SCOPE. Reclassifier :
-- S7 Amplification >= 2 + perimetre Croissance → SECONDARY
-- S7 Amplification < 2 + brief EXPLICIT → DEFERRED-SEQUENTIAL ("cadrage SEA strategique M1, activation M3-M4 une fois les fondations Search posees")
-- Justification obligatoire : "Le prospect demande un accompagnement paid. Le score {X}/5 confirme l'absence de structure — renforce le besoin de cadrage strategique."
+Si `SEA_SIGNAL = EXPLICIT`, l'axe Amplification/Paid ne peut PAS etre differe hors perimetre. Reclassifier :
+- Si opportunite paid significative + perimetre Croissance → levier prioritaire
+- Si brief EXPLICIT mais fondations Search absentes → differe sequentiel ("cadrage SEA strategique M1, activation M3-M4 une fois les fondations Search posees")
+- Justification obligatoire : "Le prospect demande un accompagnement paid. L'absence de structure paid renforce le besoin de cadrage strategique."
+
+CONFIANCE : {High / Medium / Low}
+→ {justification : quelles donnees manquent, quelles hypotheses}
+
+TONE_PROFILE : {DIRECT / PEDAGOGIQUE / PROVOCATEUR / TECHNIQUE}
+→ {justification basee sur le profil decideur et le contexte du deal}
 
 ARC_CHOICE_RATIONALE :
 - Arc retenu : {Classique | Urgence | Opportunite | Technique | Custom}
@@ -856,30 +976,17 @@ ARC_CHOICE_RATIONALE :
 - Arc ecarte : {quel arc a ete considere et pourquoi rejete}
 
 ROI DRIVERS (pont vers l'onglet ROI) :
-- Driver 1 (Traffic) : {source} → {variable ROI impactée : visites cibles M12}
-- Driver 2 (Conversion) : {source} → {variable ROI impactée : CVR / panier}
-- Driver 3 (Mix marque/hors-marque) : {source} → {variable ROI impactée : part scalable}
+- Driver 1 (Traffic) : {source} → {variable ROI impactee : visites cibles M12}
+- Driver 2 (Conversion) : {source} → {variable ROI impactee : CVR / panier}
+- Driver 3 (Mix marque/hors-marque) : {source} → {variable ROI impactee : part scalable}
 
-PLAN 90 JOURS (contextuel, aligne PRIMARY, 3 etapes max) :
+PLAN 90 JOURS (contextuel, aligne sur la contrainte principale, 3 etapes max) :
 CONTEXTE STRUCTURANT : {Refonte | AO | Saisonnalite | Standard}
 1) M1 · {objectif adapte au contexte} → {livrable} → {signal attendu}
 2) M2 · {objectif adapte au contexte} → {livrable} → {signal attendu}
 3) M3 · {objectif adapte au contexte} → {livrable} → {signal attendu}
 
 INSIGHT CENTRAL : {1 phrase non substituable}
-
-SYNTHESE:
-CONTRAINTE PRINCIPALE : S{X} · {nom} (score {X}/5)
-→ {pourquoi c'est le verrou, 2-3 phrases data-first}
-
-LEVIERS PRIORITAIRES : S{Y} · {nom} + S{Z} · {nom}
-→ {impact attendu si actives, chiffre}
-
-TRAJECTOIRE 90 JOURS · Phase 1 (contextuelle) :
-Contexte : {decrire l'evenement structurant et comment il conditionne le plan}
-- M1 · {titre adapte}: {actions concretes liees au contexte}
-- M2 · {titre adapte}: {actions concretes liees au contexte}
-- M3 · {titre adapte}: {actions concretes liees au contexte}
 
 TRAJECTOIRE 6 MOIS · Phase 2 "Run":
 - M4-M6: {piliers actives, montee en puissance, intensite}
@@ -918,7 +1025,7 @@ EVIDENCE LOG:
 - {affirmation 2} → source: {source}
 - ...
 
-=== FIN STRATEGY PLAN INTERNAL ===
+=== FIN DIAGNOSTIC STRATEGIQUE ===
 ```
 
 ---
@@ -939,6 +1046,7 @@ DECIDEUR_LEVEL: {DECIDEUR | INFLUENCEUR | OPERATIONNEL} [src: pipedrive, decideu
 DOULEUR: {1 phrase} | Verbatim: "{citation exacte}"
 TRIGGER: {pourquoi maintenant}
 TON: {formel/informel} | {reactif/lent} | {technique/business}
+TONE_PROFILE: {DIRECT / PEDAGOGIQUE / PROVOCATEUR / TECHNIQUE} → {justification basee sur le profil decideur et le contexte du deal}
 PERIMETRE_SLASHR: {SEO seul / SEO + GEO / Search global / etc.} [src: pipedrive, notes R1]
 REFONTE: {OUI | NON} | {si OUI: timeline, ex: "go mars, MEL juin 2026"} | {CMS prevu si connu}
 MODULES_ACTIFS: [{liste des modules actives, ex: 1-Pipedrive, 2-Drive, 3-SEO, 3b-GSC, 4-Benchmark, 4b-Intent, 4c-Niche, 5-GEO, 8-Technique, 9-Saisonnalite}]
@@ -993,33 +1101,33 @@ OPPORTUNITIES:
 - {Tendances si module 9 active}: {resultats}
 - {Contenu si module 10 active}: {resultats}
 
-S7 SYNTHESIS (from strategy_plan_internal.md):
-- Primary constraint: {force} ({score}/5) : {1 phrase data-first sur le verrou}
-- Systemic limitation: {1 phrase : pourquoi cette force bloque les autres, reference inter-forces}
-- Levers:
-  - {SECONDARY force A} ({score}/5) : {impact chiffre attendu si active}
-  - {SECONDARY force B} ({score}/5) : {impact chiffre attendu si active}
-- Deferred-Sequential (avec condition d'activation) :
-  - {force} : sera active quand {condition}, horizon {X mois}
-  - {force} : {idem}
-- Deferred-Scope (hors perimetre) :
-  - {force} : hors perimetre car {raison}
-  - {force} : {idem}
-- Projection PRIMARY (obligatoire) : {direction} {delta chiffre} {source} → {projection X mois}
-- Projection SECONDARY (obligatoire pour chaque) : {direction} {delta} → {horizon}
+DIAGNOSTIC STRATEGIQUE:
+- Contrainte principale : {en langage business, 2-3 phrases data-first sur le verrou}
+- Leviers prioritaires :
+  - {levier A} : {impact chiffre attendu si active}
+  - {levier B} : {impact chiffre attendu si active}
+- Differe (sequentiel, avec condition d'activation) :
+  - {axe} : sera active quand {condition}, horizon {X mois}
+  - {axe} : {idem}
+- Differe (hors perimetre) :
+  - {axe} : hors perimetre car {raison}
+  - {axe} : {idem}
+- Projection contrainte principale (obligatoire) : {direction} {delta chiffre} {source} → {projection X mois}
+- Projection leviers (obligatoire pour chaque) : {direction} {delta} → {horizon}
 - Insight central: {1 phrase non substituable}
-- Confidence globale S7: {High/Medium/Low}
+- Confiance globale diagnostic: {High/Medium/Low}
+- TONE_PROFILE: {DIRECT / PEDAGOGIQUE / PROVOCATEUR / TECHNIQUE} → {justification}
 
 STRATEGIE RECOMMANDEE:
 - Perimetre: {SEO seul / Search global / ...}
-- Scenario recommande: {Essentiel / Performance / Croissance}
+- Scenario recommande: {Pilotage / Production / Acceleration} ({budget}/mois) — {justification}
 - Phase 1 "Diagnostic & activation prioritaire" (90 jours):
   - M1 · Cadrage & audit: {livrables}
   - M2 · Quick wins & fondations: {actions}
   - M3 · Activation & premiers resultats: {KPIs}
 - Phase 2 "Run" ({scenario}):
-  - Intensite: {Essentiel = 1 priorite/mois | Performance = 2 priorites/mois | Croissance = 3+ priorites/mois}
-  - Piliers actives: {lesquels, en lien avec S7 SECONDARY}
+  - Intensite: {Pilotage = 1 priorite/mois | Production = 2 priorites/mois | Acceleration = 3+ priorites/mois}
+  - Piliers actives: {lesquels, en lien avec les leviers prioritaires}
   - M4-M6: {trajectoire concrete}
 
 ROI (intervalle) :

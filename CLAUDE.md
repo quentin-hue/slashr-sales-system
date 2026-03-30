@@ -10,15 +10,15 @@ Tu es l'IA du systeme de closing SLASHR. Tu operes un agent unique — le **Deal
 
 | Commande | Type | Action |
 |----------|------|--------|
-| `/qualify <deal_id>` | Skill | Scoring rapide du deal (terminal + Pipedrive). Rejouable. |
-| `/prepare <deal_id>` | Skill | Proposition HTML interactive sur-mesure — 3 passes internes (Data & Strategy, Narrative, Design), 5-6 onglets (Diagnostic, Strategie, Projet, Investissement, Cas clients + optionnel Contexte) (uploadee dans Drive). |
+| `/audit <deal_id>` | Skill | Diagnostic SEO rapide (score 0-100 oriente closing). Rapport markdown. |
+| `/prepare <deal_id>` | Skill | Proposition HTML interactive sur-mesure — 3 passes paralleles (Data & Strategy, Narrative, Design), 5-6 onglets, 2 checkpoints closer (uploadee dans Drive). |
+| `/benchmark <deal_id>` | Skill | Analyse concurrentielle standalone. Compare le prospect a ses concurrents Search. |
 | `/validate <path_or_deal_id>` | Skill | Valide un HTML existant contre les 54 regles (4 layers). Standalone. |
-| `/debrief <deal_id>` | Skill | Collecte le resultat (won/lost), feedback closer, alimente la boucle de retroaction. |
+| `/debrief <deal_id>` | Skill | Collecte le resultat (won/lost), feedback closer, auto-analyse, injection patterns. |
 | `/pipedrive <deal_id> <action>` | Inline | Synchroniser le CRM (voir ci-dessous). |
 
 ### `/pipedrive <deal_id> <action>`
 
-- `score <value>` : met a jour r1_score (0-100)
 - `decideur <DECIDEUR|INFLUENCEUR|OPERATIONNEL>` : met a jour decideur_level
 - `stage <stage_name>` : deplace le deal
 - `won` : marque le deal comme gagne
@@ -31,9 +31,10 @@ Reference field keys et enum IDs : `context/pipedrive_reference.md`
 ## Flux du closer
 
 ```
-1. R1 DONE     → /qualify {deal_id}
+1. R1 DONE     → /audit {deal_id} (diagnostic rapide, optionnel)
 2. PREPARER R2 → /prepare {deal_id}  → preview HTML → valider
-3. APRES R2    → relancer manuellement, /qualify pour re-scorer
+                  /benchmark {deal_id} (analyse concurrentielle standalone, optionnel)
+3. APRES R2    → relancer manuellement
 4. SIGNE       → /pipedrive {deal_id} won → /debrief {deal_id}
 5. PERDU       → /pipedrive {deal_id} lost "motif" → /debrief {deal_id}
 ```
@@ -44,45 +45,78 @@ Reference field keys et enum IDs : `context/pipedrive_reference.md`
 
 ```
 slashr-sales-system/
-├── CLAUDE.md                          ← Ce fichier (router)
-├── .claude/skills/
-│   ├── qualify/SKILL.md               ← Skill /qualify
-│   ├── prepare/SKILL.md              ← Skill /prepare
-│   ├── validate/SKILL.md            ← Skill /validate (HTML standalone)
-│   └── debrief/SKILL.md             ← Skill /debrief (retroaction won/lost)
+├── CLAUDE.md                              ← Ce fichier (router)
+├── .claude/
+│   ├── skills/
+│   │   ├── audit/SKILL.md                 ← Skill /audit (diagnostic rapide)
+│   │   ├── prepare/SKILL.md               ← Skill /prepare (proposition HTML)
+│   │   ├── benchmark/SKILL.md             ← Skill /benchmark (analyse concurrentielle)
+│   │   ├── validate/SKILL.md              ← Skill /validate (HTML standalone)
+│   │   └── debrief/SKILL.md               ← Skill /debrief (retroaction enrichie)
+│   └── agents/                            ← Subagents (spawnes en parallele)
+│       ├── collector-pipedrive.md          ← Collecte CRM
+│       ├── collector-drive.md              ← Collecte Drive
+│       ├── collector-seo.md               ← Collecte DataForSEO
+│       ├── collector-website.md           ← Crawl technique
+│       ├── collector-gsc.md               ← Collecte GSC (auto-detection propriete via list_properties)
+│       ├── collector-google-ads.md        ← Collecte Google Ads (auto-detection compte via MCC)
+│       ├── analyst-strategy.md            ← Diagnostic strategique + SDB
+│       └── writer-tab.md                  ← Generation onglet HTML
 ├── agents/
-│   ├── shared.md                      ← Preambule partage (role, sources, regles)
-│   ├── prepare-context.md             ← Bundle compact specs /prepare (remplace 8 lectures)
-│   ├── qualify.md                     ← Processus scoring
-│   ├── prepare.md                     ← Routeur proposition (3 passes sequentielles)
-│   ├── prepare-pass1.md               ← Pass 1 : Data & Strategy Engine (collecte + analyse+S7 unifie + SDB)
-│   ├── prepare-pass2.md               ← Pass 2 : Narrative Architect (arc + NBP)
-│   ├── prepare-pass2-onglet4.md       ← Pass 2 : Spec detaillee onglet Investissement
-│   └── prepare-pass3.md               ← Pass 3 : Design Orchestrator (tabs HTML + assemblage + validation)
+│   ├── shared.md                          ← Preambule partage (role, sources, regles)
+│   ├── prepare-context.md                 ← Bundle compact specs /prepare
+│   ├── prepare.md                         ← Routeur proposition (3 passes, 2 checkpoints)
+│   ├── prepare-pass1.md                   ← Pass 1 : Data & Strategy (collecte parallele + analyse)
+│   ├── prepare-pass2.md                   ← Pass 2 : Narrative Architect (arc + NBP)
+│   ├── prepare-pass2-onglet4.md           ← Pass 2 : Spec onglet Investissement
+│   ├── prepare-pass3.md                   ← Pass 3 : Design Orchestrator (tabs HTML paralleles + assemblage)
+│   ├── audit.md                           ← Processus diagnostic rapide
+│   └── benchmark.md                       ← Processus analyse concurrentielle
+├── extensions/                            ← Sources de donnees modulaires
+│   ├── dataforseo/                        ← DataForSEO (38 endpoints MCP)
+│   │   ├── extension.md                   ← Manifest + capabilities
+│   │   └── agent.md                       ← Spec subagent
+│   ├── gsc/                               ← Google Search Console (MCP)
+│   │   ├── extension.md
+│   │   └── agent.md
+│   └── google-ads/                        ← Google Ads (MCP)
+│       ├── extension.md
+│       └── agent.md
 ├── tools/
-│   ├── validate_proposal.py          ← Validation HTML automatisee (45 regles, 4 layers)
-│   ├── build_proposal.py             ← Assembleur HTML (squelette + 5-6 onglets → PROPOSAL final)
-│   └── preflight_check.py            ← Verification dependances API pre-run
+│   ├── validate_proposal.py               ← Validation HTML (54 regles, 4 layers)
+│   ├── build_proposal.py                  ← Assembleur HTML (squelette + onglets)
+│   ├── preflight_check.py                 ← Verification dependances API
+│   ├── batch_pipedrive.py                 ← Collecte Pipedrive parallele
+│   ├── batch_drive.py                     ← Collecte Drive parallele
+│   ├── batch_dataforseo.py               ← Collecte DataForSEO parallele
+│   └── sync_brand_docs.py               ← Synchro docs marque depuis Google Drive
 ├── templates/
-│   ├── proposal-kit.html             ← Kit CSS + 30 composants par role narratif (reference, pas template)
-│   └── proposal-skeleton.html        ← Squelette HTML (CSS + JS + nav + structure, boilerplate fixe)
+│   ├── proposal-kit.html                  ← Kit CSS + 30 composants par role narratif
+│   └── proposal-skeleton.html             ← Squelette HTML (CSS + JS + nav + structure)
 ├── context/
-│   ├── pipedrive_reference.md         ← IDs Pipedrive
-│   ├── sales_process.md               ← Closer handbook
-│   ├── positioning.md                 ← Positionnement SLASHR + structure offre (Audit + Accompagnement)
-│   ├── design_system.md               ← Identite visuelle
-│   ├── case_studies.md                ← Bibliotheque cas clients (reference pour onglet Cas Clients)
-│   ├── s7_search_operating_model.md   ← Modele S7 (diagnostic vs activation)
-│   ├── s7_quick_reference.md          ← Digest compact S7 (7 forces, echelle, classification)
-│   ├── validation_rules.md            ← 54 regles de validation consolidees (4 layers)
-│   ├── pricing_rules.md               ← Logique de calcul budgets Phase 1 & Phase 2 (interne)
-│   ├── output_contract.md             ← Frontiere client/interne (ce qui est visible vs masque)
-│   ├── service_catalog.md             ← Descriptions prestations contextualisables par deal
-│   ├── performance_budget.md          ← Budgets d'appels, cache, timeouts
-│   └── proposal-kit-reference.md      ← Aide-memoire classes CSS + snippets standalone
+│   ├── pipedrive_reference.md             ← IDs Pipedrive
+│   ├── sales_process.md                   ← Closer handbook
+│   ├── positioning.md                     ← Positionnement SLASHR + structure offre
+│   ├── brand_platform.md                  ← Plateforme de marque (synchro Google Doc)
+│   ├── tone_of_voice.md                   ← Tone of Voice (synchro Google Doc)
+│   ├── design_system.md                   ← Identite visuelle
+│   ├── case_studies.md                    ← Bibliotheque cas clients
+│   ├── s7_search_operating_model.md       ← Modele S7 (diagnostic vs activation)
+│   ├── s7_quick_reference.md              ← Digest compact S7
+│   ├── validation_rules.md                ← 54 regles de validation (4 layers)
+│   ├── pricing_rules.md                   ← Logique calcul budgets
+│   ├── output_contract.md                 ← Frontiere client/interne
+│   ├── service_catalog.md                 ← Descriptions prestations
+│   ├── performance_budget.md              ← Budgets d'appels, cache, timeouts
+│   ├── proposal-kit-reference.md          ← Aide-memoire CSS
+│   └── references/                        ← References on-demand (chargees par les subagents)
+│       ├── cwv-thresholds.md              ← Core Web Vitals
+│       ├── eeat-framework.md              ← Grille E-E-A-T
+│       ├── geo-checklist.md               ← Checklist GEO / AI Search
+│       └── technical-audit.md             ← Reference audit technique
 ├── setup/
-│   └── google_drive_setup.md          ← Guide setup Google Drive API
-└── _archive/                          ← Versions precedentes
+│   └── google_drive_setup.md
+└── _archive/
 ```
 
 ---
@@ -94,9 +128,10 @@ slashr-sales-system/
 3. **Francais** — tous les outputs en francais
 4. **Ne jamais inventer de data** absente des sources
 5. **Pipedrive = source de verite** — tout passe par le deal ID
-6. **S7 = interne uniquement** — le framework S7 (radar, noms de forces, scores, labels) ne sort JAMAIS dans le HTML client. Traduire en langage business.
+6. **Diagnostic = interne uniquement** — le diagnostic strategique (contrainte, leviers, labels internes) ne sort JAMAIS dans le HTML client. Traduire en langage business.
 7. **Evidence chain** — chaque chiffre dans le HTML doit etre tracable (source + date). Pas de source → pas dans le HTML.
 8. **Priorite sources** — GSC > Google Ads > DataForSEO > calcul/hypothese
 9. **Checkpoints interactifs** — `/prepare` s'arrete 2 fois pour validation du closer (apres Pass 1 et Pass 2)
+10. **Extensions modulaires** — chaque source de donnees externe est une extension autonome dans `extensions/`. Ajouter une source = ajouter un dossier, pas modifier le core.
 
 > **Regles completes (22 regles) : `agents/shared.md`** — c'est la reference unique. Les regles ci-dessus sont un rappel des plus critiques, pas une liste exhaustive.

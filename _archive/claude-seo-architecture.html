@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude SEO — Architecture</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 2rem;
+  }
+  h1 { text-align: center; color: #38bdf8; margin-bottom: 0.25rem; }
+  h2 { text-align: center; color: #94a3b8; font-weight: 400; font-size: 1rem; margin-top: 0; }
+  .diagram-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #334155;
+  }
+  .diagram-section h3 {
+    color: #38bdf8;
+    margin-top: 0;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.5rem;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+  .legend {
+    max-width: 1200px;
+    margin: 1rem auto;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #94a3b8;
+  }
+  .legend span { display: flex; align-items: center; gap: 0.4rem; }
+  .dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .dot.blue { background: #3b82f6; }
+  .dot.green { background: #22c55e; }
+  .dot.orange { background: #f59e0b; }
+  .dot.purple { background: #a855f7; }
+  .dot.red { background: #ef4444; }
+  .dot.teal { background: #14b8a6; }
+</style>
+</head>
+<body>
+
+<h1>Claude SEO — Architecture Systeme</h1>
+<h2>github.com/AgriciDaniel/claude-seo v1.6.0</h2>
+
+<div class="legend">
+  <span><span class="dot blue"></span> Orchestration</span>
+  <span><span class="dot green"></span> Sub-Skills (13)</span>
+  <span><span class="dot orange"></span> Subagents (8)</span>
+  <span><span class="dot purple"></span> Scripts Python (4)</span>
+  <span><span class="dot red"></span> Extensions</span>
+  <span><span class="dot teal"></span> References</span>
+</div>
+
+<!-- ========== DIAGRAMME 1 : VUE GLOBALE ========== -->
+<div class="diagram-section">
+<h3>1. Vue globale — Couches et flux</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#3b82f6', 'lineColor': '#64748b'}}}%%
+flowchart TB
+    USER["fa:fa-user Utilisateur"]
+    CMD["/seo &lt;commande&gt; &lt;url&gt;"]
+
+    subgraph LAYER1["COUCHE 1 — Directive"]
+        CLAUDE["CLAUDE.md<br/>Regles projet"]
+        PLUGIN["plugin.json<br/>Manifeste v1.6.0"]
+    end
+
+    subgraph LAYER2["COUCHE 2 — Orchestration"]
+        ROUTER["seo/SKILL.md<br/>Routeur principal"]
+        DETECT["Detection type business<br/>SaaS | E-com | Local | Publisher | Agency"]
+    end
+
+    subgraph LAYER3["COUCHE 3 — Execution"]
+        direction TB
+        SKILLS["13 Sub-Skills"]
+        AGENTS["8 Subagents<br/>(paralleles)"]
+        SCRIPTS["4 Scripts Python"]
+    end
+
+    subgraph REFS["References (on-demand)"]
+        R1["cwv-thresholds.md"]
+        R2["schema-types.md"]
+        R3["eeat-framework.md"]
+        R4["quality-gates.md"]
+        R5["local-seo-signals.md"]
+    end
+
+    subgraph EXT["Extensions optionnelles"]
+        DFORSEO["DataForSEO<br/>22 cmds · 79 MCP tools"]
+        BANANA["Banana Image Gen<br/>6 cmds · Gemini AI"]
+    end
+
+    USER --> CMD --> ROUTER
+    CLAUDE -.-> ROUTER
+    PLUGIN -.-> ROUTER
+    ROUTER --> DETECT --> SKILLS
+    SKILLS --> AGENTS
+    SKILLS --> SCRIPTS
+    AGENTS --> SCRIPTS
+    REFS -.->|charge si besoin| SKILLS
+    EXT -.->|MCP| AGENTS
+
+    style LAYER1 fill:#1e293b,stroke:#334155,color:#94a3b8
+    style LAYER2 fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    style LAYER3 fill:#1e293b,stroke:#334155,color:#e2e8f0
+    style REFS fill:#134e4a,stroke:#14b8a6,color:#e2e8f0
+    style EXT fill:#3b1525,stroke:#ef4444,color:#e2e8f0
+    style ROUTER fill:#3b82f6,stroke:#60a5fa,color:#fff
+    style DETECT fill:#3b82f6,stroke:#60a5fa,color:#fff
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME 2 : COMMANDES ========== -->
+<div class="diagram-section">
+<h3>2. Les 15 commandes disponibles</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart LR
+    SEO["/seo"]
+
+    subgraph CORE["Core (13 commandes)"]
+        A["audit<br/>Audit complet"]
+        B["page<br/>Analyse page"]
+        C["technical<br/>9 categories"]
+        D["content<br/>E-E-A-T"]
+        E["schema<br/>JSON-LD"]
+        F["images<br/>Optimisation"]
+        G["sitemap<br/>XML"]
+        H["geo<br/>AI Search"]
+        I["plan<br/>Strategie"]
+        J["programmatic<br/>SEO at scale"]
+        K["competitor-pages<br/>X vs Y"]
+        L["hreflang<br/>International"]
+        M["local<br/>SEO local"]
+    end
+
+    subgraph EXTENSIONS["Extensions"]
+        N["dataforseo<br/>22 sous-cmds"]
+        O["banana<br/>6 sous-cmds"]
+    end
+
+    SEO --> A & B & C & D & E & F & G & H & I & J & K & L & M
+    SEO --> N & O
+
+    style CORE fill:#1e293b,stroke:#22c55e,color:#e2e8f0
+    style EXTENSIONS fill:#1e293b,stroke:#ef4444,color:#e2e8f0
+    style SEO fill:#3b82f6,stroke:#60a5fa,color:#fff
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME 3 : FLUX AUDIT ========== -->
+<div class="diagram-section">
+<h3>3. Flux detaille — /seo audit (execution parallele)</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+sequenceDiagram
+    participant U as Utilisateur
+    participant R as Routeur SKILL.md
+    participant F as fetch_page.py
+    participant P as parse_html.py
+    participant T as Agent Technical
+    participant C as Agent Content
+    participant S as Agent Schema
+    participant SM as Agent Sitemap
+    participant PF as Agent Performance
+    participant V as Agent Visual
+    participant G as Agent GEO
+    participant L as Agent Local
+
+    U->>R: /seo audit https://example.com
+    R->>F: Fetch homepage
+    F-->>R: HTML + headers + redirects
+    R->>P: Parse HTML
+    P-->>R: Structure SEO extraite
+    R->>R: Detect business type
+
+    par Execution parallele (7-10 agents)
+        R->>T: Crawl + audit technique
+        R->>C: Analyse E-E-A-T
+        R->>S: Validation schema
+        R->>SM: Analyse sitemap
+        R->>PF: Core Web Vitals
+        R->>V: Screenshots 4 viewports
+        R->>G: AI crawler + citability
+        R->>L: GBP + NAP (si local)
+    end
+
+    T-->>R: Resultats technique
+    C-->>R: Resultats contenu
+    S-->>R: Resultats schema
+    SM-->>R: Resultats sitemap
+    PF-->>R: Resultats CWV
+    V-->>R: Screenshots
+    G-->>R: Resultats GEO
+    L-->>R: Resultats local
+
+    R->>R: Score SEO 0-100 (pondere)
+    R-->>U: FULL-AUDIT-REPORT.md + ACTION-PLAN.md
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME 4 : PONDERATION SCORE ========== -->
+<div class="diagram-section">
+<h3>4. Ponderation du SEO Health Score</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+pie title Score SEO — Ponderation par categorie
+    "Content (23%)" : 23
+    "Technical (22%)" : 22
+    "On-Page (20%)" : 20
+    "Schema (10%)" : 10
+    "Performance (10%)" : 10
+    "AI Search (10%)" : 10
+    "Images (5%)" : 5
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME 5 : SCRIPTS PYTHON ========== -->
+<div class="diagram-section">
+<h3>5. Scripts Python et leurs dependances</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart LR
+    subgraph SCRIPTS["scripts/"]
+        FETCH["fetch_page.py<br/>HTTP + SSRF protection<br/>+ Googlebot UA"]
+        PARSE["parse_html.py<br/>Title, meta, headings,<br/>images, links, schema,<br/>hreflang, word count"]
+        SCREEN["capture_screenshot.py<br/>Playwright · 4 viewports<br/>Desktop, Laptop,<br/>Tablet, Mobile"]
+        VISUAL["analyze_visual.py<br/>Above-fold, layout,<br/>mobile responsive"]
+    end
+
+    subgraph DEPS["Dependances"]
+        REQ["requests + urllib3"]
+        BS["BeautifulSoup + lxml"]
+        PW["Playwright + Chromium"]
+        PIL["Pillow"]
+    end
+
+    FETCH --> REQ
+    PARSE --> BS
+    SCREEN --> PW
+    VISUAL --> PW & PIL
+
+    style SCRIPTS fill:#2e1065,stroke:#a855f7,color:#e2e8f0
+    style DEPS fill:#1e293b,stroke:#334155,color:#94a3b8
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME 6 : EXTENSIONS MCP ========== -->
+<div class="diagram-section">
+<h3>6. Extensions via MCP (Model Context Protocol)</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart TB
+    subgraph CLAUDE_CODE["Claude Code"]
+        SKILL["seo/SKILL.md"]
+        AGENT_DF["agent seo-dataforseo"]
+        AGENT_BN["agent seo-banana"]
+    end
+
+    subgraph MCP["Protocole MCP"]
+        MCP1["MCP Server DataForSEO"]
+        MCP2["MCP Server nanobanana"]
+    end
+
+    subgraph APIS["APIs Externes"]
+        API1["DataForSEO API<br/>SERP · Keywords · Backlinks<br/>On-Page · Content · AI Visibility"]
+        API2["Gemini AI<br/>Image Generation"]
+        API3["PageSpeed Insights"]
+        API4["Chrome UX Report"]
+    end
+
+    SKILL --> AGENT_DF --> MCP1 --> API1
+    SKILL --> AGENT_BN --> MCP2 --> API2
+    SKILL -.-> API3
+    SKILL -.-> API4
+
+    style CLAUDE_CODE fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    style MCP fill:#1e293b,stroke:#f59e0b,color:#e2e8f0
+    style APIS fill:#1e293b,stroke:#334155,color:#94a3b8
+</pre>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { curve: 'basis', padding: 20 },
+    sequence: { mirrorActors: false }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan d'optimisation — Liberer l'IA</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 2rem;
+    line-height: 1.7;
+  }
+  h1 { text-align: center; color: #38bdf8; font-size: 1.8rem; }
+  .subtitle { text-align: center; color: #94a3b8; font-weight: 400; font-size: 1rem; margin-bottom: 2rem; }
+  .section {
+    max-width: 1100px;
+    margin: 2rem auto;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #334155;
+  }
+  .section h2 {
+    color: #38bdf8;
+    font-size: 1.15rem;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .section h3 { color: #f1f5f9; font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+  p, li { color: #cbd5e1; font-size: 0.92rem; }
+  ul { padding-left: 1.5rem; }
+  li { margin-bottom: 0.4rem; }
+  .mermaid { display: flex; justify-content: center; margin: 1rem 0; }
+  code { background: #0f172a; padding: 2px 6px; border-radius: 3px; font-size: 0.85rem; color: #38bdf8; }
+  pre { background: #0f172a; padding: 1.25rem; border-radius: 8px; font-size: 0.85rem; overflow-x: auto; color: #94a3b8; margin: 1rem 0; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+  .done { background: #14532d; color: #4ade80; }
+  .todo { background: #431407; color: #fb923c; }
+  .wip { background: #1e3a5f; color: #60a5fa; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 1rem 0; }
+  th, td { padding: 0.6rem 0.8rem; border: 1px solid #334155; text-align: left; vertical-align: top; }
+  th { background: #0f172a; color: #38bdf8; font-weight: 600; }
+  .principle {
+    max-width: 1100px;
+    margin: 2rem auto;
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+    border: 1px solid #3b82f6;
+    border-radius: 12px;
+    padding: 2rem;
+  }
+  .principle h2 { color: #60a5fa; border: none; padding: 0; margin-bottom: 1rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+  .card { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 1rem; }
+  .card h4 { color: #38bdf8; font-size: 0.9rem; margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+
+<h1>Plan d'optimisation : liberer l'IA</h1>
+<p class="subtitle">SLASHR v12 — Passer de "suivre des instructions" a "resoudre un probleme"</p>
+
+<!-- ================================================================= -->
+<div class="principle">
+<h2>Le principe directeur</h2>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart LR
+    subgraph AVANT["Avant : L'IA execute des specs"]
+        A1["Lis ce fichier"] --> A2["Applique ces regles"]
+        A2 --> A3["Remplis ce template"]
+        A3 --> A4["Valide contre ces 54 regles"]
+    end
+
+    subgraph APRES["Apres : L'IA resout un probleme"]
+        B1["Objectif + contraintes"] --> B2["L'IA choisit comment"]
+        B2 --> B3["Checkpoints closer"]
+        B3 --> B4["Garde-fous automatiques"]
+    end
+
+    style AVANT fill:#450a0a,stroke:#f87171,color:#fca5a5
+    style APRES fill:#14532d,stroke:#4ade80,color:#a7f3d0
+</pre>
+<p>Chaque spec du systeme tombe dans une de ces 3 categories :</p>
+<div class="grid-2" style="margin-top:1rem">
+  <div class="card">
+    <h4>OBJECTIF (le QUOI)</h4>
+    <p>Ce que le prospect doit ressentir/comprendre. Ex: "Le prospect comprend pourquoi il perd du trafic". L'IA a besoin de ca.</p>
+  </div>
+  <div class="card">
+    <h4>CONTRAINTE (les INTERDITS)</h4>
+    <p>Les garde-fous non-negociables. Ex: "Zero pression commerciale", "Evidence chain". L'IA a besoin de ca.</p>
+  </div>
+</div>
+<div class="card" style="margin-top:1rem; border-color:#f87171">
+  <h4 style="color:#f87171">METHODE (le COMMENT) — a supprimer</h4>
+  <p>La facon de faire. Ex: "Ouvrir par un gap concurrentiel", "Utiliser un bar-chart pour le benchmark", "3 cards pricing en grid". L'IA n'a PAS besoin de ca. C'est la que se joue la liberation.</p>
+</div>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>1. Changements deja appliques</h2>
+<table>
+  <thead><tr><th>Changement</th><th>Statut</th><th>Impact</th></tr></thead>
+  <tbody>
+    <tr><td>Suppression du framework S7 (7 forces, scores, radar, classifications)</td><td><span class="badge done">FAIT</span></td><td>~200 lignes de spec supprimees. L'IA fait un diagnostic libre structure (contrainte + leviers + confiance).</td></tr>
+    <tr><td>Scenario unique recommande (au lieu de 3 cards egales)</td><td><span class="badge done">FAIT</span></td><td>L'IA choisit et justifie UN scenario. Les autres sont en mention discrete.</td></tr>
+    <tr><td>Suppression de /qualify</td><td><span class="badge done">FAIT</span></td><td>Plus de gate artificielle avant /prepare.</td></tr>
+    <tr><td>Subagents paralleles (Pass 1 + Pass 3)</td><td><span class="badge done">FAIT</span></td><td>Architecture prete pour la parallelisation.</td></tr>
+    <tr><td>Extensions modulaires</td><td><span class="badge done">FAIT</span></td><td>DataForSEO, GSC, Google Ads en dossiers autonomes.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>2. Pass 1 : de "10 modules sequentiels" a "collecter et diagnostiquer"</h2>
+
+<h3>Probleme actuel</h3>
+<p>Pass 1 est un script de 350+ lignes avec 10 modules numerotes, des sous-etapes (1.1b, 4b, 4c, 4d), des Budget Checkpoints, et des conditions en cascade. L'IA suit un plan de vol au lieu de raisonner.</p>
+
+<h3>Transformation proposee</h3>
+<table>
+  <tr><th>Element</th><th>Avant (deterministe)</th><th>Apres (libre + contraintes)</th></tr>
+  <tr>
+    <td><strong>Collecte</strong></td>
+    <td>10 modules dans un ordre fixe, avec conditions explicites pour chaque module conditionnel</td>
+    <td><span class="badge done">FAIT</span> 5 subagents paralleles. L'orchestrateur les lance tous, chacun gere son perimetre.</td>
+  </tr>
+  <tr>
+    <td><strong>Modules conditionnels</strong></td>
+    <td>"Activer si SEA_SIGNAL != ABSENT", "Activer si Shopping features sur 3+ queries"</td>
+    <td><span class="badge todo">A FAIRE</span> L'IA decide quels modules activer en fonction des donnees collectees. Contrainte : budget API max, pas de module sans signal dans les sources.</td>
+  </tr>
+  <tr>
+    <td><strong>Diagnostic</strong></td>
+    <td>S7 : scorer 7 forces 0-5, classifier PRIMARY/SECONDARY/DEFERRED</td>
+    <td><span class="badge done">FAIT</span> Diagnostic libre : contrainte principale + 2 leviers max + confiance. L'IA raisonne, pas elle ne remplit une grille.</td>
+  </tr>
+  <tr>
+    <td><strong>SDB</strong></td>
+    <td>Template fixe avec champs obligatoires (DOMAINE_PRINCIPAL, COMPETITIVE_GAP, INTENT_MARKET_MAP, etc.)</td>
+    <td><span class="badge todo">A FAIRE</span> Le SDB garde sa structure thin (obligatoire pour la performance), mais les sections sont libres. Seuls les champs critiques sont imposes (domaine, sources, evidence log).</td>
+  </tr>
+  <tr>
+    <td><strong>ROI</strong></td>
+    <td>Methodologie implicite, varie d'un deal a l'autre</td>
+    <td><span class="badge todo">A FAIRE</span> 3 methodes documentees dans <code>context/references/roi-methodology.md</code>. L'IA choisit la plus adaptee et l'applique de facon reproductible.</td>
+  </tr>
+</table>
+
+<h3>Fichiers impactes</h3>
+<ul>
+  <li><code>agents/prepare-pass1.md</code> : simplifier de 350 lignes a ~150 lignes (objectif + contraintes, pas pas-a-pas)</li>
+  <li>Creer <code>context/references/roi-methodology.md</code></li>
+</ul>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>3. Pass 2 : de "menu de hooks" a "convaincre ce decideur"</h2>
+
+<h3>Probleme actuel</h3>
+<p>Pass 2 liste 6 types de hooks, impose une cascade 3 couches, definit des arcs types, fixe l'ordre des sections. L'IA choisit dans un menu au lieu d'inventer.</p>
+
+<h3>Transformation proposee</h3>
+<table>
+  <tr><th>Element</th><th>Avant</th><th>Apres</th></tr>
+  <tr>
+    <td><strong>Hook</strong></td>
+    <td>6 hooks listes (gap, verbatim, paradoxe, cout inaction, opportunite, ancrage identitaire)</td>
+    <td><span class="badge todo">A FAIRE</span> Objectif : "L'ouverture est le fait le plus frappant pour CE prospect." Contrainte : cascade QUOI/POURQUOI/PREUVE. L'IA invente le hook.</td>
+  </tr>
+  <tr>
+    <td><strong>Arc narratif</strong></td>
+    <td>Arcs types listes dans le flux principal (biais d'ancrage)</td>
+    <td><span class="badge todo">A FAIRE</span> Deplacer les arcs types dans <code>context/references/arcs-narratifs.md</code> comme inspiration, pas dans le flux. Le flux dit : "Emmener le decideur du constat a la conviction."</td>
+  </tr>
+  <tr>
+    <td><strong>Sections Diagnostic</strong></td>
+    <td>"L'agent cree les sections qu'il veut" (bien en theorie, mais encadre par trop d'exemples)</td>
+    <td><span class="badge todo">A FAIRE</span> Garder la liberte. Supprimer les exemples du flux. Contrainte unique : max 5 slides, alternance data/interpretation.</td>
+  </tr>
+  <tr>
+    <td><strong>Cas clients</strong></td>
+    <td>Selection par match sectoriel + metrique cle</td>
+    <td><span class="badge todo">A FAIRE</span> Selection par pertinence de l'angle strategique (primaire), puis secteur (secondaire). Un cas e-commerce peut illustrer un deal B2B si le levier est le meme.</td>
+  </tr>
+  <tr>
+    <td><strong>Ton</strong></td>
+    <td>Identique sur tous les deals ("partenaire strategique")</td>
+    <td><span class="badge todo">A FAIRE</span> Ajouter un champ <code>TONE_PROFILE</code> dans le SDB : DIRECT (defaut) | PEDAGOGIQUE | PROVOCATEUR | TECHNIQUE. Le closer peut moduler au Checkpoint 1.</td>
+  </tr>
+  <tr>
+    <td><strong>Onglets</strong></td>
+    <td>4 obligatoires + 2 conditionnels, ordre fixe</td>
+    <td><span class="badge todo">A FAIRE</span> 4 obligatoires minimum. L'IA peut proposer un onglet custom au Checkpoint 2 (ex: "Migration" pour une refonte lourde). Le closer valide ou refuse.</td>
+  </tr>
+</table>
+
+<h3>Fichiers impactes</h3>
+<ul>
+  <li><code>agents/prepare-pass2.md</code> : reecrire en objectif + contraintes</li>
+  <li>Creer <code>context/references/arcs-narratifs.md</code> (exemples deplacer ici)</li>
+</ul>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>4. Pass 3 : de "mapper composant par composant" a "mettre en scene"</h2>
+
+<h3>Probleme actuel</h3>
+<p>Pass 3 a un mapping composant-par-role-narratif explicite. L'IA suit une table de correspondance au lieu de faire du design.</p>
+
+<h3>Transformation proposee</h3>
+<table>
+  <tr><th>Element</th><th>Avant</th><th>Apres</th></tr>
+  <tr>
+    <td><strong>Choix composants</strong></td>
+    <td>Table de mapping (donnee quantitative → bar-chart, comparaison → table, etc.)</td>
+    <td><span class="badge todo">A FAIRE</span> L'IA choisit les composants du kit. Contraintes : rythme visuel (pas 2 charts consecutifs), max 2 composants visuels par slide, le kit CSS reste la reference.</td>
+  </tr>
+  <tr>
+    <td><strong>Rythme visuel</strong></td>
+    <td>Regles explicites (alternance data/highlight)</td>
+    <td><span class="badge todo">A FAIRE</span> Objectif : "Le prospect ne decroche jamais." Contrainte : pas 2 blocs data sans interpretation. L'IA gere le rythme.</td>
+  </tr>
+  <tr>
+    <td><strong>Simulateur ROI</strong></td>
+    <td>Structure JS fixe avec sliders specifiques</td>
+    <td><span class="badge todo">A FAIRE</span> L'IA genere le JS custom adapte au deal. Si le deal n'a pas de CVR mesure, pas de slider CVR. Les inputs du simulateur = les hypotheses reelles du SDB, pas un template.</td>
+  </tr>
+</table>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>5. Validation : de 54 regles a "garde-fous + liberte"</h2>
+
+<h3>Probleme actuel</h3>
+<p>54 regles sur 4 layers. Certaines sont des vrais garde-fous (zero S7, evidence chain). D'autres sont des preferences de mise en forme deguisees en regles (regle 8 : "alternance data/highlight-box").</p>
+
+<h3>Transformation proposee</h3>
+<p>Reclassifier les 54 regles en 2 categories :</p>
+
+<table>
+  <tr><th>Categorie</th><th>Nombre estime</th><th>Exemples</th><th>Comportement</th></tr>
+  <tr>
+    <td><strong>HARD (non-negociable)</strong></td>
+    <td>~25</td>
+    <td>Zero jargon interne dans le HTML, evidence chain, accents obligatoires, pas de tiret cadratin, pas de jours/TJM visibles, coherence levier Phase 1 ↔ Phase 2</td>
+    <td>PASS/FAIL automatique. L'IA n'a aucune liberte.</td>
+  </tr>
+  <tr>
+    <td><strong>SOFT (recommandation)</strong></td>
+    <td>~29</td>
+    <td>Alternance data/interpretation, nombre de slides par onglet, structure FAQ, presence de "Ce que cela implique"</td>
+    <td>WARNING informatif. L'IA peut violer une regle soft si elle justifie pourquoi (ex: "Pas d'alternance data/highlight dans cet onglet car il n'y a que 2 sections").</td>
+  </tr>
+</table>
+
+<h3>Fichiers impactes</h3>
+<ul>
+  <li><code>context/validation_rules.md</code> : reclassifier chaque regle HARD/SOFT</li>
+  <li><code>tools/validate_proposal.py</code> : ajouter un flag <code>--strict</code> (HARD only) vs <code>--full</code> (HARD + SOFT)</li>
+</ul>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>6. Prepare-context.md : de "bundle de 8 fichiers" a "brief d'objectifs"</h2>
+
+<h3>Probleme actuel</h3>
+<p><code>agents/prepare-context.md</code> est un copie-colle condense de 8 fichiers (~200+ lignes). L'IA le lit et retient des instructions, pas des objectifs.</p>
+
+<h3>Transformation proposee</h3>
+<p>Reecrire en 3 blocs :</p>
+<pre>
+## 1. Ton objectif
+Generer une proposition HTML qui convainc CE decideur d'investir dans sa visibilite Search.
+Pas un template. Pas une plaquette. Un argumentaire sur-mesure, base sur les donnees de CE prospect.
+
+## 2. Tes contraintes (non-negociables)
+- Evidence chain : chaque chiffre source
+- Zero jargon interne (diagnostic, leviers, confiance = internes)
+- Accents francais obligatoires
+- Zero pression commerciale / dramatisation
+- Lexique interdit : [liste]
+- Max 3 leviers actifs
+- Pricing : 1 recommandation, pas 3 choix
+
+## 3. Tes outils
+- Kit composants : `templates/proposal-kit.html` (30 composants)
+- Design system : `context/design_system.md`
+- Cas clients : `context/case_studies.md`
+- Pricing : `context/pricing_rules.md`
+- References on-demand : `context/references/` (charger si besoin)
+</pre>
+<p>~50 lignes au lieu de 200+. L'IA sait quoi faire, pourquoi, et avec quels outils. Le comment est libre.</p>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>7. Diagramme : la nouvelle matrice determinisme/liberte</h2>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart TB
+    subgraph DET["DETERMINISTE (non-negociable)"]
+        D1["Collecte API<br/>(batch tools, cache)"]
+        D2["Pricing formules<br/>(TJM x jours)"]
+        D3["Evidence chain<br/>(source + date)"]
+        D4["Validation HARD<br/>(~25 regles)"]
+        D5["Upload + CRM sync"]
+        D6["Assemblage HTML<br/>(skeleton + tabs)"]
+    end
+
+    subgraph GUIDE["GUIDE (objectif + contraintes)"]
+        G1["Diagnostic strategique<br/>Objectif: identifier contrainte + leviers<br/>Contrainte: max 3, data-first, confiance"]
+        G2["ROI<br/>Objectif: projection credible<br/>Contrainte: 3 methodes standard"]
+        G3["Choix scenario<br/>Objectif: 1 reco claire<br/>Contrainte: criteres deterministes"]
+    end
+
+    subgraph LIBRE["LIBRE (l'IA decide)"]
+        L1["Hook<br/>(invente par l'IA)"]
+        L2["Arc narratif<br/>(libre, pas de menu)"]
+        L3["Sections Diagnostic<br/>(nombre, ordre, contenu)"]
+        L4["Cas clients<br/>(par angle, pas secteur)"]
+        L5["Composants visuels<br/>(choix libre dans le kit)"]
+        L6["Ton<br/>(modulable via TONE_PROFILE)"]
+        L7["Onglets custom<br/>(propose au Checkpoint 2)"]
+        L8["Simulateur ROI<br/>(inputs adaptes au deal)"]
+    end
+
+    style DET fill:#1e293b,stroke:#ef4444,color:#e2e8f0
+    style GUIDE fill:#1e293b,stroke:#f59e0b,color:#e2e8f0
+    style LIBRE fill:#1e293b,stroke:#22c55e,color:#e2e8f0
+</pre>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>8. Roadmap d'implementation</h2>
+<table>
+  <thead><tr><th>#</th><th>Action</th><th>Fichiers</th><th>Effort</th><th>Statut</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Supprimer S7, remplacer par diagnostic libre</td><td>6 fichiers</td><td>Moyen</td><td><span class="badge done">FAIT</span></td></tr>
+    <tr><td>2</td><td>Scenario unique recommande</td><td>4 fichiers</td><td>Moyen</td><td><span class="badge done">FAIT</span></td></tr>
+    <tr><td>3</td><td>Hooks : supprimer la liste, garder la cascade</td><td>prepare-pass2.md</td><td>Leger</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>4</td><td>Arcs narratifs : deplacer en reference</td><td>prepare-pass2.md + creer arcs-narratifs.md</td><td>Leger</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>5</td><td>Cas clients : selection par angle strategique</td><td>prepare-pass2.md</td><td>Leger</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>6</td><td>TONE_PROFILE dans le SDB</td><td>prepare-pass1.md, prepare-pass2.md</td><td>Leger</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>7</td><td>Onglets custom (proposition au Checkpoint 2)</td><td>prepare.md, prepare-pass3.md, build_proposal.py</td><td>Moyen</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>8</td><td>ROI methodology (3 methodes standard)</td><td>creer roi-methodology.md, prepare-pass1.md</td><td>Moyen</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>9</td><td>Reclassifier validation HARD/SOFT</td><td>validation_rules.md, validate_proposal.py</td><td>Lourd</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>10</td><td>Reecrire prepare-context.md (brief objectifs)</td><td>prepare-context.md</td><td>Moyen</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>11</td><td>Simplifier prepare-pass1.md (350→150 lignes)</td><td>prepare-pass1.md</td><td>Lourd</td><td><span class="badge todo">A FAIRE</span></td></tr>
+    <tr><td>12</td><td>Composants visuels : supprimer le mapping, garder le kit</td><td>prepare-pass3.md</td><td>Leger</td><td><span class="badge todo">A FAIRE</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ================================================================= -->
+<div class="section">
+<h2>9. Mesure du succes</h2>
+<p>Comment savoir si les changements fonctionnent ?</p>
+<table>
+  <tr><th>Metrique</th><th>Avant</th><th>Apres (cible)</th><th>Comment mesurer</th></tr>
+  <tr><td>Lignes de spec (agents/)</td><td>~1500</td><td>~800</td><td>wc -l agents/*.md</td></tr>
+  <tr><td>Diversite des hooks</td><td>6 types (toujours les memes)</td><td>Hook unique par deal</td><td>/debrief : "L'angle etait-il le bon ?"</td></tr>
+  <tr><td>Corrections post-Checkpoint 1</td><td>Frequent (priorisation incorrecte)</td><td>Rare (diagnostic libre + data-first)</td><td>Tracking closer</td></tr>
+  <tr><td>Tokens contexte initial</td><td>~45K</td><td>~20K</td><td>Mesure en conversation</td></tr>
+  <tr><td>Propositions "qui se ressemblent"</td><td>Frequent (meme arc, meme structure)</td><td>Chaque proposition a sa personnalite</td><td>Review closer</td></tr>
+</table>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose', flowchart: { curve: 'basis', padding: 15 } });
+</script>
+</body>
+</html>

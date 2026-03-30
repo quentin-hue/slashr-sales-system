@@ -291,6 +291,7 @@ Grille 3 colonnes (avant | fleche | apres). Le panel `.after` a une bordure oran
 
 ## DIAGNOSTIQUER
 
+<!-- DEPRECATED v12: ce composant n'est plus utilise depuis la suppression du S7. Conserve pour reference CSS. -->
 ### S7 Overview Grid — 7 force cards avec score et etat
 
 Classes : `.s7-grid`, `.s7-card`, `.s7-card[data-state="primary|secondary|deferred"]`, `.s7-card-header`, `.s7-card-id`, `.s7-badge`, `.s7-badge-primary`, `.s7-badge-secondary`, `.s7-badge-deferred`, `.s7-card-title`, `.s7-score`, `.s7-score-bar`, `.s7-score-fill`, `.s7-score-value`, `.s7-card-diagnostic`
@@ -314,6 +315,7 @@ Classes : `.s7-grid`, `.s7-card`, `.s7-card[data-state="primary|secondary|deferr
 
 Grille 4 colonnes. `data-state` controle la bordure et l'opacite (deferred = 0.6). Score fill colore selon l'etat.
 
+<!-- DEPRECATED v12: ce composant n'est plus utilise depuis la suppression du S7. Conserve pour reference CSS. -->
 ### S7 Radar Interactif — visualisation 7 forces avec tooltips
 
 Classes : `.s7-radar-wrap`, `.s7-radar-svg`, `.s7-radar-point`, `.s7-radar-point[data-state]`, `.s7-radar-tooltip`, `.s7-radar-label`
@@ -351,9 +353,10 @@ Classes : `.s7-radar-wrap`, `.s7-radar-svg`, `.s7-radar-point`, `.s7-radar-point
 
 **Regles :**
 - Le radar remplace le listing statique des 7 forces — il est plus compact et plus engageant
-- Les SO WHAT dans les tooltips sont des versions **simplifiees** (1 phrase max, C-level) des SO WHAT du strategy_plan_internal.md
+- Les SO WHAT dans les tooltips sont des versions **simplifiees** (1 phrase max, C-level) des SO WHAT du diagnostic du SDB
 - Ne pas surcharger : le radar est un outil d'exploration, pas un dump de donnees
 
+<!-- DEPRECATED v12: ce composant n'est plus utilise depuis la suppression du S7. Conserve pour reference CSS. -->
 ### S7 Insight Callout — contrainte principale
 
 Classes : `.s7-insight`, `.s7-insight-label`, `.s7-insight-constraint`, `.s7-insight-why`
@@ -368,6 +371,7 @@ Classes : `.s7-insight`, `.s7-insight-label`, `.s7-insight-constraint`, `.s7-ins
 
 Fond gradient subtil orange/magenta, bordure gauche orange epaisse. Utilise apres la grille S7.
 
+<!-- DEPRECATED v12: ce composant n'est plus utilise depuis la suppression du S7. Conserve pour reference CSS. -->
 ### S7 Priority Table — Force / Diagnostic / Action / Horizon
 
 Classes : `.s7-priority-table`, `tr[data-priority="primary|secondary|deferred"]`, `.s7-horizon`, `.s7-horizon-90j`, `.s7-horizon-6m`, `.s7-horizon-12m`
@@ -1082,6 +1086,7 @@ Si un style inline est necessaire pour un cas unique, il est tolere. Mais les pa
 </html>
 ```
 
+<!-- DEPRECATED v12: ce composant n'est plus utilise depuis la suppression du S7. Conserve pour reference CSS. -->
 ### DIAGNOSTIQUER — S7 Card (test standalone)
 
 ```html

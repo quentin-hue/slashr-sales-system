@@ -23,7 +23,7 @@ Si une estimation repose sur des hypotheses (CTR, conversion, panier moyen) :
 - proposer comment valider rapidement
 
 
-Bloc compact de 6 bullets maximum, issu du `strategy_plan_internal.md`. C'est ce que le decideur retient, ce qu'il presente a son board.
+Bloc compact de 6 bullets maximum, issu du diagnostic strategique du SDB. C'est ce que le decideur retient, ce qu'il presente a son board.
 
 **Contrainte de longueur (STRICTE) :** chaque bullet = 1 phrase, max 120 caracteres.
 Le decideur a 30 secondes. Si un bullet depasse 1 ligne a l'ecran, il est trop long.
@@ -69,16 +69,15 @@ Regles :
 
 ## Sous-section Methode d'analyse (optionnel)
 
-Bloc leger optionnel dans l'accordion FAQ/methodo. Le S7 en tant que framework n'est JAMAIS expose au client. Si la methode est mentionnee, c'est en termes generiques.
+Bloc leger optionnel dans l'accordion FAQ/methodo.
 
 **Contenu (si inclus dans la FAQ) :**
-- 2-3 phrases : "Notre analyse couvre 7 dimensions de votre visibilite Search (technique, contenu, concurrence, etc.). On identifie les 2-3 axes qui debloquent le plus de valeur pour votre situation, pas tout en parallele."
-- Pas de noms de forces, pas de scores, pas de radar, pas de "S7".
+- 2-3 phrases : "Notre analyse couvre les dimensions cles de votre visibilite Search (technique, contenu, concurrence, etc.). On identifie les 2-3 axes qui debloquent le plus de valeur pour votre situation, pas tout en parallele."
+- Pas de jargon interne, pas de scores, pas de radar.
 
 **Regles :**
-- Pas de jargon "framework", "methodology", "S7", "7 forces". Dire "notre analyse" ou "notre grille de priorisation"
 - Ton : transparent, simple. Le prospect comprend pourquoi on ne fait pas tout.
-- **Ne PAS repeter les scores** : ils sont dans l'onglet Diagnostic. Ici c'est la methode, pas le diagnostic.
+- **Ne PAS repeter le diagnostic** : il est dans l'onglet Diagnostic. Ici c'est la methode, pas le diagnostic.
 
 ---
 
@@ -100,7 +99,7 @@ Budget = total jours x TJM (cf. `context/pricing_rules.md`).
 
 **Regle d'affichage client (STRICTE) :** le HTML affiche le scope qualitatif + le budget global. Jamais de jours, jamais de TJM, jamais de sous-composants internes. Voir `context/output_contract.md`.
 
-Le detail en jours est ecrit dans le fichier `INTERNAL-S7` (section "Budget interne").
+Le detail en jours est ecrit dans le fichier `INTERNAL-DIAG` (section "Budget interne").
 
 **Regles de formulation Phase 1 :**
 - Dire "Audit SEO complet" (pas juste "Audit complet")
@@ -114,21 +113,47 @@ Le detail en jours est ecrit dans le fichier `INTERNAL-S7` (section "Budget inte
 
 Apres le bilan a 90 jours, l'accompagnement continue **sans engagement**, ajustable chaque mois.
 
-3 niveaux d'intensite avec labels client :
+L'IA choisit UN niveau d'intensite et le recommande comme la decision logique pour ce deal. Les autres niveaux sont mentionnes en 1 ligne ("ajustable").
+
+3 niveaux de reference (internes) :
 - **Pilotage** (1j/mois) : "On pilote, vous executez". Strategie, specs, monitoring.
-- **Production** (2j/mois) : "On produit, vous validez". + production contenu + optimisations. **Recommande par defaut.**
+- **Production** (2j/mois) : "On produit, vous validez". + production contenu + optimisations.
 - **Acceleration** (3j/mois) : "On accelere". + liens externes + couverture elargie.
 
 Levier accelerateur : +700 EUR/mois ("Acceleration SEO, visibilite IA, Ads, reseaux sociaux").
 
 Budget mensuel = jours/mois x TJM (cf. `context/pricing_rules.md`).
 
-**Regle d'affichage client (STRICTE) :**
-- Echelle de lecture en **4 colonnes alignees** (grid) : Pilotage / Production / Acceleration / +Levier accelerateur
-- Production mis en avant visuellement (couleur accent)
-- 1 recommandation snake-wrap au-dessus avec le budget recommande + details + budget annee 1
-- Budget achat de liens : **mentionner explicitement "non inclus, facture a part selon la strategie definie"**
-- Jamais de jours/mois, jamais de TJM. Voir `context/output_contract.md`.
+### Criteres de choix du scenario (deterministe)
+
+L'IA choisit le scenario en fonction du deal :
+- **Pilotage** : le prospect a une equipe interne capable d'executer, OU le budget est serre et le besoin est du cadrage
+- **Production** : le prospect n'a pas d'equipe interne, OU le gap necessite de la production, OU c'est le choix par defaut quand aucun signal fort
+- **Acceleration** : le prospect a une ambition multi-leviers forte (verbatim), OU le gap concurrentiel est > 5x et le budget le permet
+
+### Affichage client : UNE recommandation
+
+**Structure HTML :**
+1. **Bloc recommandation** (hero) : le scenario choisi, mis en avant, avec :
+   - Sous-titre strategique : {1 phrase qui relie au diagnostic}
+   - Scope qualitatif (ce que SLASHR fait, ce que le client fait)
+   - Budget mensuel EUR HT
+   - Pourquoi ce niveau pour CE prospect (2-3 lignes justificatives liees au diagnostic)
+   - Budget annee 1 (Phase 1 + 9 mois accompagnement)
+
+2. **Mention ajustable** (compact, sous la recommandation) :
+   - "Ajustable selon vos ressources internes : Pilotage ({budget}/mois) si equipe dediee, Acceleration ({budget}/mois) si ambition multi-leviers."
+   - 1-2 lignes max. Pas de cards egales. Pas de grid 3 colonnes.
+
+3. **Levier accelerateur** : "+700 EUR/mois par levier additionnel (visibilite IA, Ads, reseaux sociaux)"
+
+4. **Budget achat de liens** : "Non inclus, facture a part selon la strategie definie"
+
+**INTERDIT :**
+- Grille 3 colonnes avec les 3 scenarios egaux
+- ".pricing-grid" avec 3 cards
+- Laisser le decideur choisir sans recommandation claire
+- Jamais de jours/mois, jamais de TJM
 
 **Regle de coherence levier :** si un levier a un setup Phase 1, il DOIT avoir un run Phase 2. Si un levier n'a PAS de setup, il ne peut PAS avoir de run.
 
@@ -161,44 +186,23 @@ Slide dedie avec sliders interactifs. Regles UX :
 
 ## Investissement : structure v12.0
 
-Regle : 2 blocs separes (Phase 1 mission + Phase 2 accompagnement) + echelle de lecture 4 colonnes. Pas 3 packs egaux.
-Le scenario recommande est la decision logique. Les autres ajustent l'intensite, pas la strategie.
+Regle : 1 recommandation claire, pas 3 packs a choisir.
+Le scenario recommande est la decision logique. Les alternatives ajustent l'intensite, pas la strategie.
 
 **Bloc Phase 1 : "Mission structurante" :**
 - **Pont strategique** (sous-titre) : {1 phrase qui relie la mission au diagnostic}
-  Ex : "Poser les fondations Search avant la refonte — securiser ce qui existe, preparer ce qui manque"
+  Ex : "Poser les fondations Search avant la refonte : securiser ce qui existe, preparer ce qui manque"
 - **Description qualitative contextualisee** : utiliser les `SERVICE_DESCRIPTIONS (description proposition)` du SDB pour decrire le scope. Ces descriptions montrent la methodologie (sequence analyse → clustering → arborescence → contenu → roadmap), les specificites du deal (dimensions B2C/B2B, concurrents, contraintes) et les livrables concrets. Ne JAMAIS utiliser de descriptions generiques ("liste de mots-cles, arborescence, recommandations"). Cf. `context/service_catalog.md`.
 - Liste des livrables produits
 - Budget global EUR HT
 - Timeline ("demarrage sous X jours ouvres")
 
-**Bloc Phase 2 : "Orchestration mensuelle" :**
-- Explication pedagogique : "Chaque levier active necessite un accompagnement mensuel."
-- 3 niveaux d'intensite presentes comme des curseurs, pas comme des packs :
-
-1. **Essentiel** (recommande pour les PME / execution interne) :
-   - **Pont strategique** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
-     Ex : "Pilotage de votre visibilite produit et suivi des positions cles"
-   - Scope : pilotage + monitoring + reporting
-   - Budget : {montant}/mois HT
-   - Engagement : 12 mois
-
-2. **Performance** (recommande, mis en avant visuellement) :
-   - **Pont strategique** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
-     Ex : "Ce qui construit votre visibilite produit et securise votre migration"
-   - Scope : + production deleguee + accompagnement continu
-   - Budget : {montant}/mois HT
-   - Engagement : 12 mois
-   - Objectifs chiffres : {CA additionnel, timeline}
-
-3. **Croissance** (pour les ambitions fortes / multi-leviers) :
-   - **Pont strategique** (sous-titre) : {1 phrase qui relie au diagnostic, en langage client}
-     Ex : "Visibilite produit + contenus + diffusion multi-canal : le search comme levier de croissance"
-   - Scope : + leviers additionnels (SEA, GEO, Social) + amplification
-   - Budget : {montant}/mois HT
-   - Engagement : 12 mois
-
-> **Regle Pont strategique :** chaque pricing card a un sous-titre de 1 phrase qui relie l'investissement au diagnostic. Traduit en impact client ("Ce qui construit votre visibilite produit"). Le sous-titre repond a la question implicite du prospect : "Qu'est-ce que je paie exactement et pourquoi ?"
+**Bloc Phase 2 : "Notre recommandation" :**
+- UN scenario recommande, justifie par le diagnostic
+- Sous-titre strategique (1 phrase liee au deal)
+- Scope qualitatif + budget mensuel + budget annee 1
+- Mention ajustable en 1-2 lignes
+- Levier accelerateur si pertinent
 
 **Sous-bloc "Ce que coute l'inaction" (OBLIGATOIRE, AVANT le pricing — ancrage psychologique) :**
 - C'est le **seul endroit** de toute la proposition ou le cout de l'inaction est detaille

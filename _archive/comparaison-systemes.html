@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparaison : SLASHR Sales System vs Claude SEO</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 2rem;
+    line-height: 1.6;
+  }
+  h1 { text-align: center; color: #38bdf8; margin-bottom: 0.25rem; font-size: 1.8rem; }
+  h2.subtitle { text-align: center; color: #94a3b8; font-weight: 400; font-size: 1rem; margin-bottom: 2rem; }
+
+  .section {
+    max-width: 1300px;
+    margin: 2rem auto;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #334155;
+  }
+  .section h3 {
+    color: #38bdf8;
+    margin-top: 0;
+    font-size: 1.15rem;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Comparison table */
+  .cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .cmp-table th, .cmp-table td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #334155;
+    vertical-align: top;
+  }
+  .cmp-table th {
+    background: #0f172a;
+    color: #38bdf8;
+    font-weight: 600;
+    text-align: left;
+    position: sticky;
+    top: 0;
+  }
+  .cmp-table th:first-child { width: 18%; }
+  .cmp-table td:nth-child(2) { background: rgba(59,130,246,0.06); }
+  .cmp-table td:nth-child(3) { background: rgba(34,197,94,0.06); }
+  .cmp-table .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .tag-blue { background: #1e3a5f; color: #60a5fa; }
+  .tag-green { background: #14532d; color: #4ade80; }
+  .tag-orange { background: #431407; color: #fb923c; }
+  .tag-red { background: #450a0a; color: #f87171; }
+  .tag-purple { background: #2e1065; color: #c084fc; }
+
+  .mermaid { display: flex; justify-content: center; margin: 1rem 0; }
+
+  .verdict {
+    max-width: 1300px;
+    margin: 2rem auto;
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #3b82f6;
+  }
+  .verdict h3 { color: #38bdf8; margin-bottom: 1rem; border: none; padding: 0; }
+  .verdict ul { padding-left: 1.5rem; }
+  .verdict li { margin-bottom: 0.5rem; }
+  .verdict strong { color: #f1f5f9; }
+</style>
+</head>
+<body>
+
+<h1>SLASHR Sales System vs Claude SEO</h1>
+<h2 class="subtitle">Comparaison architecturale de deux systemes Claude Code</h2>
+
+<!-- ========== TABLE COMPARATIVE ========== -->
+<div class="section">
+<h3>1. Comparaison synthetique</h3>
+<table class="cmp-table">
+  <thead>
+    <tr>
+      <th>Dimension</th>
+      <th>SLASHR Sales System <span class="tag tag-blue">v11.0</span></th>
+      <th>Claude SEO <span class="tag tag-green">v1.6.0</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Vocation</strong></td>
+      <td>Systeme de closing commercial pour un cabinet SEO. Qualifie les deals, genere des propositions sur-mesure, boucle de retroaction.</td>
+      <td>Outil d'audit SEO universel. Analyse n'importe quel site web sur 13 dimensions SEO.</td>
+    </tr>
+    <tr>
+      <td><strong>Utilisateur cible</strong></td>
+      <td>1 closer specifique (equipe SLASHR). Workflows lies a un pipeline Pipedrive.</td>
+      <td>N'importe quel utilisateur Claude Code. Plug-and-play via installation.</td>
+    </tr>
+    <tr>
+      <td><strong>Commandes</strong></td>
+      <td><span class="tag tag-blue">4 skills</span> + 1 inline<br/>/qualify, /prepare, /validate, /debrief, /pipedrive</td>
+      <td><span class="tag tag-green">15 commandes</span> (13 core + 2 extensions)<br/>/seo audit, page, technical, content, schema, images, sitemap, geo, plan, programmatic, competitor-pages, hreflang, local</td>
+    </tr>
+    <tr>
+      <td><strong>Modele d'execution</strong></td>
+      <td><span class="tag tag-orange">Sequentiel</span> : 3 passes + 2 checkpoints humains<br/>Pass 1 (Data) → Checkpoint → Pass 2 (Narration) → Checkpoint → Pass 3 (HTML)</td>
+      <td><span class="tag tag-green">Parallele</span> : 7-10 subagents simultanes<br/>Fetch → Detect → Spawn agents → Aggregate → Score</td>
+    </tr>
+    <tr>
+      <td><strong>Agents</strong></td>
+      <td><span class="tag tag-blue">6 fichiers agent</span> (shared, qualify, prepare, pass1-2-3). Execution sequentielle par 1 agent unique.</td>
+      <td><span class="tag tag-green">8 subagents</span> paralleles (technical, content, schema, sitemap, performance, visual, geo, local) + 2 extensions.</td>
+    </tr>
+    <tr>
+      <td><strong>Output principal</strong></td>
+      <td><span class="tag tag-purple">HTML interactif</span> sur-mesure (4-6 onglets, 30 composants CSS, design system complet, squelette + assembleur Python)</td>
+      <td><span class="tag tag-green">Markdown</span> (FULL-AUDIT-REPORT.md + ACTION-PLAN.md + screenshots)</td>
+    </tr>
+    <tr>
+      <td><strong>Validation</strong></td>
+      <td><span class="tag tag-red">54 regles, 4 layers</span><br/>L1: 19 structurelles (PASS/FAIL)<br/>L2: 14 contenu (WARN)<br/>L3: checklist manuelle<br/>L4: qualite redactionnelle<br/>+ validateur Python automatise</td>
+      <td><span class="tag tag-orange">Quality gates</span> legeres (seuils CWV, contenu min, schema deprecation) + pre-commit hook HTML</td>
+    </tr>
+    <tr>
+      <td><strong>APIs externes</strong></td>
+      <td>Pipedrive (CRM), Google Drive (docs), DataForSEO (MCP), GSC (MCP), Google Ads (MCP)</td>
+      <td>PageSpeed Insights, CrUX, DataForSEO (MCP), Gemini (MCP), Playwright (screenshots)</td>
+    </tr>
+    <tr>
+      <td><strong>CRM integre</strong></td>
+      <td><span class="tag tag-blue">Oui</span> : Pipedrive (lecture + ecriture, scoring, stage, won/lost)</td>
+      <td><span class="tag tag-red">Non</span></td>
+    </tr>
+    <tr>
+      <td><strong>Boucle de retroaction</strong></td>
+      <td><span class="tag tag-blue">Oui</span> : /debrief (won/lost → patterns → amelioration systeme)</td>
+      <td><span class="tag tag-red">Non</span></td>
+    </tr>
+    <tr>
+      <td><strong>Cache / Replay</strong></td>
+      <td><span class="tag tag-blue">Oui</span> : .cache/deals/{id}/ (API responses + artefacts inter-pass). Mode --fast pour skip Pass 1.</td>
+      <td><span class="tag tag-red">Non</span> (re-fetch a chaque execution)</td>
+    </tr>
+    <tr>
+      <td><strong>Scripts Python</strong></td>
+      <td>5 : validate_proposal, build_proposal, preflight_check, batch_pipedrive, batch_drive</td>
+      <td>4 : fetch_page, parse_html, capture_screenshot, analyze_visual</td>
+    </tr>
+    <tr>
+      <td><strong>Context files</strong></td>
+      <td><span class="tag tag-blue">13 fichiers</span> : positioning, design_system, case_studies, S7 model, pricing_rules, validation_rules, output_contract, etc.</td>
+      <td><span class="tag tag-green">6 fichiers</span> : CWV thresholds, schema types, E-E-A-T, quality gates, local SEO signals, local schema</td>
+    </tr>
+    <tr>
+      <td><strong>Design system</strong></td>
+      <td><span class="tag tag-purple">Complet</span> : 30 composants CSS par role narratif, squelette HTML (~2000 lignes CSS), kit reference, gradients, typo</td>
+      <td><span class="tag tag-red">Aucun</span> (output text/markdown)</td>
+    </tr>
+    <tr>
+      <td><strong>Intervention humaine</strong></td>
+      <td><span class="tag tag-orange">2 checkpoints</span> obligatoires (closer valide strategie puis plan narratif avant HTML)</td>
+      <td><span class="tag tag-green">Aucune</span> (full autonome)</td>
+    </tr>
+    <tr>
+      <td><strong>Distribuabilite</strong></td>
+      <td><span class="tag tag-red">Usage interne</span> (lie a un compte Pipedrive, un Drive, des credentials specifiques)</td>
+      <td><span class="tag tag-green">Open source</span> (install.sh, n'importe qui peut installer)</td>
+    </tr>
+    <tr>
+      <td><strong>Complexite</strong></td>
+      <td><span class="tag tag-orange">Haute</span> : 21 regles absolues, lexique interdit, evidence chain, S7 framework proprietaire, pricing interne</td>
+      <td><span class="tag tag-green">Moderee</span> : references on-demand, detection business type automatique, scoring pondere</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ========== DIAGRAMME : MODELE D'EXECUTION ========== -->
+<div class="section">
+<h3>2. Modele d'execution compare</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#3b82f6'}}}%%
+flowchart LR
+    subgraph SLASHR["SLASHR Sales System (sequentiel + checkpoints)"]
+        direction TB
+        Q["/qualify<br/>Scoring terminal"]
+        P1["Pass 1<br/>Data & Strategy<br/>(10 modules collecte)"]
+        CP1["CHECKPOINT 1<br/>Closer valide la strategie"]
+        P2["Pass 2<br/>Narrative Architect<br/>(arc + NBP)"]
+        CP2["CHECKPOINT 2<br/>Closer valide le plan"]
+        P3["Pass 3<br/>Design Orchestrator<br/>(HTML 4-6 onglets)"]
+        VAL["Validation<br/>54 regles · 4 layers"]
+        UP["Upload Drive<br/>+ MAJ Pipedrive"]
+        DEB["/debrief<br/>Retroaction"]
+
+        Q --> P1 --> CP1 --> P2 --> CP2 --> P3 --> VAL --> UP --> DEB
+    end
+
+    subgraph SEO["Claude SEO (parallele + autonome)"]
+        direction TB
+        CMD["/seo audit url"]
+        FETCH["Fetch + Parse<br/>homepage"]
+        DET["Detect<br/>business type"]
+
+        AG1["Agent<br/>Technical"]
+        AG2["Agent<br/>Content"]
+        AG3["Agent<br/>Schema"]
+        AG4["Agent<br/>Sitemap"]
+        AG5["Agent<br/>Perf"]
+        AG6["Agent<br/>Visual"]
+        AG7["Agent<br/>GEO"]
+        AG8["Agent<br/>Local"]
+
+        AGG["Aggregation<br/>Score 0-100"]
+        OUT["Output<br/>Report + Plan"]
+
+        CMD --> FETCH --> DET
+        DET --> AG1 & AG2 & AG3 & AG4 & AG5 & AG6 & AG7 & AG8
+        AG1 & AG2 & AG3 & AG4 & AG5 & AG6 & AG7 & AG8 --> AGG --> OUT
+    end
+
+    style SLASHR fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
+    style SEO fill:#1e293b,stroke:#22c55e,color:#e2e8f0
+    style CP1 fill:#f59e0b,stroke:#fbbf24,color:#000
+    style CP2 fill:#f59e0b,stroke:#fbbf24,color:#000
+    style VAL fill:#ef4444,stroke:#f87171,color:#fff
+    style DEB fill:#a855f7,stroke:#c084fc,color:#fff
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME : SOURCES DE DONNEES ========== -->
+<div class="section">
+<h3>3. Sources de donnees comparees</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart TB
+    subgraph SLASHR_SRC["SLASHR — Sources"]
+        PD["Pipedrive CRM<br/>Deal + Contact + Org<br/>Notes + Activities + Emails"]
+        GD["Google Drive<br/>Transcripts, briefs,<br/>CDC, notes closer"]
+        DFS1["DataForSEO (MCP)<br/>domain_rank, keywords,<br/>competitors, SERP"]
+        GSC1["Google Search Console<br/>(MCP, conditionnel)<br/>Clics, impressions, CTR"]
+        GA1["Google Ads (MCP)<br/>CPC, volumes, campagnes"]
+    end
+
+    subgraph SEO_SRC["Claude SEO — Sources"]
+        WEB["WebFetch<br/>Crawl pages (500 max)<br/>+ robots.txt"]
+        PSI["PageSpeed Insights<br/>Core Web Vitals"]
+        CRUX["Chrome UX Report<br/>Field data"]
+        DFS2["DataForSEO (MCP ext.)<br/>SERP, keywords, backlinks<br/>AI visibility"]
+        PW["Playwright<br/>Screenshots 4 viewports"]
+    end
+
+    subgraph COMMON["En commun"]
+        DFSC["DataForSEO"]
+    end
+
+    DFS1 --- DFSC --- DFS2
+
+    style SLASHR_SRC fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    style SEO_SRC fill:#14532d,stroke:#22c55e,color:#e2e8f0
+    style COMMON fill:#431407,stroke:#fb923c,color:#e2e8f0
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME : OUTPUTS ========== -->
+<div class="section">
+<h3>4. Outputs compares</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart LR
+    subgraph SLASHR_OUT["SLASHR — Outputs"]
+        direction TB
+        TERM["Terminal<br/>Score /qualify<br/>Checkpoints"]
+        HTML["HTML interactif<br/>4-6 onglets<br/>30 composants CSS<br/>Simulateur ROI<br/>Board-ready A4 print"]
+        S7["INTERNAL-S7.md<br/>Diagnostic interne<br/>(jamais partage)"]
+        SDB["SDB.md<br/>Structured Data Brief<br/>(artefact inter-pass)"]
+        NBP["NBP.md<br/>Narrative Blueprint<br/>(artefact inter-pass)"]
+        PIPE["Pipedrive<br/>Score, stage, liens"]
+        DRIVE["Google Drive<br/>Upload auto"]
+        DEB_OUT["Debrief.md<br/>Patterns report"]
+    end
+
+    subgraph SEO_OUT["Claude SEO — Outputs"]
+        direction TB
+        AUDIT["FULL-AUDIT-REPORT.md<br/>Score SEO 0-100"]
+        ACTION["ACTION-PLAN.md<br/>Priorites Critical → Low"]
+        SCREENS["Screenshots/<br/>4 viewports"]
+        PAGE["Analyse page<br/>(terminal)"]
+        TECH["Audit technique<br/>(terminal)"]
+        SCHEMA["Schema JSON-LD<br/>(genere)"]
+        SITEMAP["Sitemap XML<br/>(genere)"]
+    end
+
+    style SLASHR_OUT fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
+    style SEO_OUT fill:#1e293b,stroke:#22c55e,color:#e2e8f0
+    style HTML fill:#7c3aed,stroke:#a78bfa,color:#fff
+    style AUDIT fill:#22c55e,stroke:#4ade80,color:#000
+</pre>
+</div>
+
+<!-- ========== DIAGRAMME : VALIDATION ========== -->
+<div class="section">
+<h3>5. Systemes de validation compares</h3>
+<pre class="mermaid">
+%%{init: {'theme': 'dark'}}%%
+flowchart TB
+    subgraph SLASHR_VAL["SLASHR — 54 regles, 4 layers"]
+        direction TB
+        L1["Layer 1 : Structural<br/>19 regles · PASS/FAIL<br/>DOM, CSS, regex<br/>Echec = REJECT auto"]
+        L2["Layer 2 : Content<br/>14 regles · WARN<br/>Heuristiques contenu<br/>Correction recommandee"]
+        L3["Layer 3 : Checklist<br/>Items manuels<br/>Verification closer"]
+        L4["Layer 4 : Redactionnel<br/>WARN<br/>Qualite texte"]
+        SCRIPT["validate_proposal.py<br/>Execution automatisee"]
+        NBPVAL["Pre-validation NBP<br/>Gate bloquante<br/>avant Pass 3"]
+
+        L1 --> SCRIPT
+        L2 --> SCRIPT
+        L3 --> SCRIPT
+        L4 --> SCRIPT
+        NBPVAL -.-> L1
+    end
+
+    subgraph SEO_VAL["Claude SEO — Quality gates"]
+        direction TB
+        QG["quality-gates.md<br/>Seuils contenu min"]
+        CWV["cwv-thresholds.md<br/>LCP, INP, CLS"]
+        SCH["schema-types.md<br/>Deprecation check"]
+        HOOK["pre-commit hook<br/>Placeholder, title,<br/>alt text, FID→INP"]
+    end
+
+    style SLASHR_VAL fill:#450a0a,stroke:#ef4444,color:#e2e8f0
+    style SEO_VAL fill:#14532d,stroke:#22c55e,color:#e2e8f0
+    style L1 fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+    style SCRIPT fill:#7f1d1d,stroke:#f87171,color:#fca5a5
+</pre>
+</div>
+
+<!-- ========== VERDICT ========== -->
+<div class="verdict">
+<h3>Synthese : deux philosophies differentes</h3>
+<table class="cmp-table" style="margin-top:1rem;">
+  <thead>
+    <tr>
+      <th style="width:25%">Axe</th>
+      <th>SLASHR</th>
+      <th>Claude SEO</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Philosophie</strong></td>
+      <td>Workflow metier vertical (closing B2B). Chaque deal est unique, le systeme s'adapte avec l'humain dans la boucle.</td>
+      <td>Outil horizontal generique (audit SEO). Tout site peut etre analyse de la meme facon, full autonome.</td>
+    </tr>
+    <tr>
+      <td><strong>Force</strong></td>
+      <td>Profondeur de personalisation, qualite narrative, boucle d'apprentissage (debrief → patterns)</td>
+      <td>Rapidite (parallelisme), couverture large (13 dimensions SEO), accessibilite (open source, install facile)</td>
+    </tr>
+    <tr>
+      <td><strong>Faiblesse</strong></td>
+      <td>Execution lente (sequentiel + checkpoints), non distribuable, forte dependance au contexte metier</td>
+      <td>Pas de personnalisation deal-by-deal, pas de CRM, pas de retroaction, outputs basiques (markdown)</td>
+    </tr>
+    <tr>
+      <td><strong>Ce que SLASHR pourrait emprunter</strong></td>
+      <td colspan="2">Parallelisme des agents (les 10 modules de collecte Pass 1 pourraient tourner en parallele comme les subagents de claude-seo). Systeme d'extensions modulaire (MCP plug-and-play).</td>
+    </tr>
+    <tr>
+      <td><strong>Ce que Claude SEO pourrait emprunter</strong></td>
+      <td colspan="2">Validation rigoureuse (54 regles automatisees plutot que des quality gates legeres). Boucle de retroaction (/debrief). Checkpoints humains pour les outputs critiques. Cache/replay pour eviter les re-fetch.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { curve: 'basis', padding: 15 }
+  });
+</script>
+
+</body>
+</html>

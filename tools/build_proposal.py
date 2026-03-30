@@ -155,6 +155,18 @@ def main():
     # Ensure parent directory exists
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Versioning: if output file already exists, archive it as -v{N}
+    if output_path.exists():
+        import glob
+        base = output_path.stem
+        ext = output_path.suffix
+        parent = output_path.parent
+        existing_versions = glob.glob(str(parent / f"{base}-v*{ext}"))
+        next_version = len(existing_versions) + 1
+        archive_path = parent / f"{base}-v{next_version}{ext}"
+        output_path.rename(archive_path)
+        print(f"[INFO] Archived previous version as {archive_path.name}", file=sys.stderr)
+
     # Write output
     output_path.write_text(html, encoding="utf-8")
 

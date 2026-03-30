@@ -29,22 +29,26 @@ Le mode `--fast` est concu pour les re-runs : "refais la presentation avec un an
 
 ## Prerequis
 
-Le deal doit avoir ete qualifie (`/qualify`). Score >= 60 (GO) ou CONDITIONNEL valide par le manager.
+Aucun prerequis de scoring. Le closer decide quand lancer /prepare.
 
 ## Etape 0 — Verification prerequis (OBLIGATOIRE avant toute collecte)
 
-Avant de lancer la collecte, verifier que le deal est pret :
+### 0a. Synchro docs de marque
+```bash
+python3 tools/sync_brand_docs.py
+```
+Met a jour `context/brand_platform.md` et `context/tone_of_voice.md` si le cache a expire (> 7 jours). Silencieux si les docs sont frais.
 
+### 0b. Verifier le deal
 ```bash
 TOKEN=$(cat ~/.pipedrive_token)
 curl -s "https://api.pipedrive.com/v1/deals/{deal_id}?api_token=$TOKEN"
 ```
 
 Checker dans la reponse :
-1. **`r1_score` (field `e529595ef908cdf5851df4355bbce866f322fcae`)** : doit exister et etre > 0. Si absent ou null → STOP : "Ce deal n'a pas ete qualifie. Lance `/qualify {deal_id}` d'abord."
-2. **Score >= 40** : si < 40 (NURTURE) → STOP : "Score {score}/100 = NURTURE. Ce deal n'est pas eligible a /prepare."
-3. **Score 40-59** (CONDITIONNEL) → AVERTISSEMENT : "Score {score}/100 = CONDITIONNEL. Confirmer avec le closer avant de continuer." Attendre confirmation.
-4. **`dossier_r1_link` (field `1fd2ec1073fa60e11fb59bddfec7a2f6656c4b0c`)** : si absent → AVERTISSEMENT : "Pas de dossier Drive renseigne. La collecte Drive sera ignoree." Continuer sans le module Drive.
+1. **Deal existe** : si 404 → STOP : "Ce deal n'existe pas dans Pipedrive."
+2. **`dossier_r1_link` (field `1fd2ec1073fa60e11fb59bddfec7a2f6656c4b0c`)** : si absent → AVERTISSEMENT : "Pas de dossier Drive renseigne. La collecte Drive sera ignoree." Continuer sans le module Drive.
+3. **Audit disponible** : si `.cache/deals/{deal_id}/audit.md` existe, le lire pour enrichir l'analyse (donnees deja collectees reutilisables).
 
 Si les checks passent → continuer avec les etapes suivantes.
 
@@ -54,23 +58,23 @@ L'agent DOIT lire ces fichiers avant de commencer. Ne pas lire un fichier = ne p
 
 | # | Fichier | Contenu | Quand |
 |---|---------|---------|-------|
-| 1 | `agents/prepare-context.md` | **Bundle compact** : role, regles, positionnement, S7, pricing, output contract, validation, performance budget | Avant tout |
+| 1 | `agents/prepare-context.md` | **Bundle compact** : role, regles, positionnement, pricing, output contract, validation, performance budget | Avant tout |
 | 2 | `agents/prepare.md` | Routeur — architecture 3 passes | Avant tout |
 | 3 | `context/design_system.md` | Couleurs, typo, gradients, espacements | Avant Pass 3 |
 | 4 | `context/case_studies.md` | Bibliotheque cas clients | Avant Pass 2 |
 | 5 | `context/proposal-kit-reference.md` | Aide-memoire classes CSS condensees | Avant Pass 3 |
 
-> Les fichiers originaux (shared.md, positioning.md, s7_search_operating_model.md, pricing_rules.md, output_contract.md, validation_rules.md, s7_quick_reference.md, performance_budget.md) restent la reference complete si un detail manque dans le bundle.
+> Les fichiers originaux (shared.md, positioning.md, pricing_rules.md, output_contract.md, validation_rules.md, performance_budget.md) restent la reference complete si un detail manque dans le bundle.
 
 ## Etapes
 
 1. Lis les fichiers 1-2 de la checklist ci-dessus
 2. Execute les 3 passes avec les 2 checkpoints interactifs :
-   - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + analyse strategique + S7 interne + SDB). En mode `--fast`, skip cette passe si SDB frais (< 2h).
+   - **Pass 1** : lis `agents/prepare-pass1.md` et execute (collecte + diagnostic strategique + SDB). En mode `--fast`, skip cette passe si SDB frais (< 2h).
    - **CHECKPOINT 1** : presente le resume strategique au closer dans le terminal (cf. `agents/prepare.md`). **ATTENDRE la validation** avant de continuer. Si corrections → mettre a jour le SDB.
    - **Pass 2** : lis fichiers 3-4, puis `agents/prepare-pass2.md` et execute (arc narratif + NBP). Lire aussi `agents/prepare-pass2-onglet4.md` pour l'onglet Investissement.
    - **CHECKPOINT 2** : presente le plan narratif au closer dans le terminal (cf. `agents/prepare.md`). **ATTENDRE la validation** avant de continuer. Si modifications → mettre a jour le NBP.
-   - **Pass 3** : lis fichier 5, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`). Le S7 ne doit JAMAIS apparaitre dans le HTML client (regle 20).
+   - **Pass 3** : lis fichier 5, puis `agents/prepare-pass3.md` et execute (HTML + validation + `tools/validate_proposal.py`). Le diagnostic interne ne doit JAMAIS apparaitre dans le HTML client (regle 20).
 
 ## Collecte Pipedrive
 
@@ -110,7 +114,6 @@ Le champ `dossier_r1_link` du deal contient l'URL du dossier. Extraire le folder
 - Assembleur HTML : `tools/build_proposal.py`
 - Design system : `context/design_system.md`
 - Positionnement + structure offre : `context/positioning.md`
-- Modele S7 (diagnostic vs activation) : `context/s7_search_operating_model.md`
 - Cas clients : `context/case_studies.md`
 
 ## Output
@@ -119,8 +122,8 @@ Le champ `dossier_r1_link` du deal contient l'URL du dossier. Extraire le folder
 
 | Fichier | Audience | Contenu |
 |---------|----------|---------|
-| `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | **Prospect** (via closer) | Proposition HTML interactive — 4 onglets (Diagnostic + S7, Strategie, Investissement, Cas clients) |
-| `INTERNAL-S7-{YYYYMMDD}-{entreprise-slug}.md` | **Interne seulement** | Diagnostic S7 complet (scores, classification PRIMARY/SECONDARY/DEFERRED, synthese, trajectoires, ROI, resume decisionnel, evidence log) |
+| `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | **Prospect** (via closer) | Proposition HTML interactive — 4 onglets (Diagnostic, Strategie, Investissement, Cas clients) |
+| `INTERNAL-DIAG-{YYYYMMDD}-{entreprise-slug}.md` | **Interne seulement** | Diagnostic complet (contrainte, leviers, confiance, ROI, resume decisionnel, evidence log) |
 
 > Le prefixe `INTERNAL-` garantit que le fichier est exclu des outputs prospect (cf. Module 2 : exclure `DEAL-*`, `DECK-*`, `PROPOSAL-*`, `INTERNAL-*`).
 
@@ -129,12 +132,12 @@ Apres upload, mettre a jour `r2_pack_link` dans Pipedrive avec l'URL Drive du fi
 Message de fin :
 ```
 Proposition generee : PROPOSAL-{date}-{slug}.html
-Diagnostic interne : INTERNAL-S7-{date}-{slug}.md
+Diagnostic interne : INTERNAL-DIAG-{date}-{slug}.md
 Uploades dans le dossier Drive du deal.
 
 Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
-S7 : contrainte = {force} | leviers = {2-3 forces} | insight = {1 phrase}
-4 onglets : Diagnostic ({N} sections + S7) | Strategie (decision + 90j + ROI) | Investissement | Cas clients ({N} cas)
+Diagnostic : contrainte = {description} | leviers = {2-3 leviers} | insight = {1 phrase}
+4-6 onglets : Diagnostic ({N} sections) | Strategie (decision + 90j + ROI) | Investissement | Cas clients ({N} cas)
 
 DRAFT — a valider avant partage avec le prospect.
 Ouvre le fichier HTML dans un navigateur pour preview.

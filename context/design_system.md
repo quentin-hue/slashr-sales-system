@@ -304,7 +304,7 @@ x8    : 60px
 
 | Element | Proprietes | Duree | Easing |
 |---------|-----------|-------|--------|
-| Cartes (card, kpi, testimonial, s7-card) | `border-color, transform` | 300ms | ease (defaut) |
+| Cartes (card, kpi, testimonial, diagnostic-card) | `border-color, transform` | 300ms | ease (defaut) |
 | Pricing cards | `border-color, transform` | 300ms | ease |
 | Boutons CTA | `background` (wrapper) | 300ms | ease |
 | Nav tabs | `all` | 200ms | ease |
@@ -316,7 +316,7 @@ x8    : 60px
 | Cartes generiques | `border-color: white/20` + `transform: scale(1.02)` |
 | KPI cards | `border-color: white/20` + `transform: scale(1.02)` |
 | Testimonials | `border-color: white/20` + `transform: scale(1.02)` |
-| S7 cards | `border-color: white/20` + `transform: scale(1.02)` |
+| Diagnostic cards | `border-color: white/20` + `transform: scale(1.02)` |
 | Pricing cards | `transform: scale(1.02)` |
 | CTA button | Wrapper passe de `transparent` a `var(--gradient)` (bordure gradient 2px) |
 
@@ -357,9 +357,9 @@ Le board-ready A4 est une version imprimable de la proposition, destinee aux com
 | Ordre | Element | Source | Contrainte |
 |-------|---------|--------|------------|
 | 1 | En-tete | Design system | Logo SLASHR (petit, discret) + nom prospect + date |
-| 2 | Insight central | S7 SYNTHESIS | 1 phrase, en gras, centree |
-| 3 | Resume decisionnel | strategy_plan_internal.md | 6 bullets max, numerotes |
-| 4 | Radar S7 simplifie | Onglet Strategie | Version niveaux de gris, labels + scores, pas de couleur |
+| 2 | Insight central | Diagnostic du SDB | 1 phrase, en gras, centree |
+| 3 | Resume decisionnel | diagnostic du SDB | 6 bullets max, numerotes |
+| 4 | Diagnostic visuel | Onglet Strategie | Version niveaux de gris, labels + scores, pas de couleur |
 | 5 | ROI en 1 ligne | Onglet ROI | "ROI conservateur : x{N_bas} sur {periode}" |
 | 6 | Pricing recommande | Onglet Livrables | Scenario recommande uniquement : Phase 1 + Phase 2/mois |
 | 7 | Decision attendue | NBP | Encadre : {scenario} + {date cible} + {prochaine etape} |

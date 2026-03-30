@@ -13,7 +13,7 @@ Chaque prestation a 3 niveaux de description :
 2. **Description proposition** (3-5 lignes) — pour l'onglet Investissement HTML
 3. **Variables contextuelles** — ce qui change selon le deal (secteur, B2C/B2B, concurrents, contraintes)
 
-L'agent contextualise chaque description en remplacant les variables par les donnees du deal (issues du SDB et du strategy_plan_internal).
+L'agent contextualise chaque description en remplacant les variables par les donnees du deal (issues du SDB).
 
 ---
 
@@ -44,6 +44,32 @@ L'agent contextualise chaque description en remplacant les variables par les don
 
 **Methodologie a communiquer (si le prospect demande des precisions) :**
 > L'audit suit une sequence logique : analyse semantique exhaustive → clustering par intention et cible → arborescence → strategie de contenu → roadmap. Chaque etape nourrit la suivante. C'est pourquoi on ne s'engage pas sur un nombre fixe de mots-cles : l'objectif est la couverture complete du marche, pas un quota. Sur un marche comme {secteur}, avec {nb_concurrents} concurrents et les dimensions {dimensions}, l'analyse produit typiquement {fourchette_kw} mots-cles exploitables.
+
+---
+
+### Audit SEA
+
+**Ligne budget :**
+> Audit complet de la structure des campagnes Google Ads ({nb_campagnes} campagnes), analyse des strategies d'encheres, cannibalisation PMax/Search, conformite reglementaire sectorielle, cartographie par pays et par centre. Plan de restructuration priorise par impact.
+
+**Description proposition :**
+> On commence par une radiographie complete de votre compte Google Ads. Chaque campagne est analysee : structure, strategie d'encheres, repartition budget, performance par zone geographique et par centre. On identifie les campagnes qui gaspillent du budget, celles qui surperforment, et les leviers de reallocation a budget constant. L'audit inclut la verification de conformite reglementaire Google (certification sectorielle si applicable) et l'analyse de cannibalisation entre PMax et Search. Le livrable est un plan de restructuration actionnable des le mois 1.
+
+**Livrables concrets :**
+- Cartographie des campagnes (structure, encheres, budget, CPA par campagne)
+- Analyse de cannibalisation PMax / Search
+- Identification du gaspillage (campagnes a CPA > seuil, 0 conversions)
+- Analyse par zone geographique et par centre (si multi-sites)
+- Verification conformite reglementaire Google Ads
+- Plan de restructuration priorise (pause, reallocation, migration encheres)
+- Recommandations landing pages et parcours de conversion
+
+**Variables contextuelles :**
+- `{nb_campagnes}` : nombre de campagnes actives (ex: "60", "25")
+- `{budget_mensuel}` : budget media mensuel (ex: "16 278 EUR/mois")
+- `{nb_pays}` : nombre de pays cibles (ex: "7 pays", "France uniquement")
+- `{secteur_sensible}` : si secteur reglemente (ex: "sante/addiction : certification requise")
+- `{nb_centres}` : si multi-sites (ex: "46 centres")
 
 ---
 
@@ -151,13 +177,34 @@ L'agent contextualise chaque description en remplacant les variables par les don
 
 ---
 
+### Accompagnement Google Ads (mensuel)
+
+**Ligne budget :**
+> Pilotage continu des campagnes Google Ads : optimisation Search et PMax, gestion des encheres, redaction et tests d'annonces, recommandations landing pages, reporting hebdomadaire, veille concurrentielle et reglementaire.
+
+**Description proposition :**
+> L'accompagnement Ads couvre trois axes. La gestion des campagnes : optimisation continue des encheres, reallocation budgetaire par centre et par pays, redaction et rotation des annonces. La strategie : recommandations landing pages et parcours de conversion, tests de nouveaux formats (Demand Gen, YouTube), veille concurrentielle. Le pilotage : reporting hebdomadaire, performance par centre, synergies SEA/SEO (les search terms Ads orientent la strategie de contenu SEO et inversement).
+
+**Livrables concrets (par mois) :**
+- Optimisation continue campagnes Search + PMax
+- Gestion des encheres et allocation budget par centre/pays
+- Redaction, tests et rotation des annonces
+- Recommandations landing pages et parcours de conversion
+- Veille concurrentielle et reglementaire
+- Reporting hebdomadaire
+- Synergies SEA/SEO
+
+**Prix :** 1 400 EUR/mois HT (forfait, hors budget media)
+
+---
+
 ## Regles de contextualisation
 
 ### Pour le `/prepare` (onglet Investissement)
 
 1. La Pass 1 identifie les variables contextuelles dans le SDB (secteur, dimensions, concurrents, refonte, leviers)
 2. La Pass 2 utilise les **descriptions proposition** contextualisees pour l'onglet Investissement — integrees dans les blocs Phase 1 et Phase 2
-3. Les descriptions ne remplacent pas la structure existante (Pont S7, pricing cards, etc.) — elles enrichissent le **scope qualitatif** de chaque phase
+3. Les descriptions ne remplacent pas la structure existante (pont strategique, pricing cards, etc.) — elles enrichissent le **scope qualitatif** de chaque phase
 
 ### Pour les budgets partenaires (Excel, devis)
 
