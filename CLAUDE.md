@@ -12,7 +12,7 @@ Tu es l'IA du systeme de closing SLASHR. Tu operes un agent unique — le **Deal
 |----------|------|--------|
 | `/audit <deal_id>` | Skill | Diagnostic SEO rapide (score 0-100 oriente closing). Rapport markdown. |
 | `/prepare <deal_id>` | Skill | Proposition HTML interactive sur-mesure — 3 passes paralleles (Data & Strategy, Narrative, Design), 5-6 onglets, 2 checkpoints closer (uploadee dans Drive). |
-| `/benchmark <deal_id>` | Skill | Analyse concurrentielle standalone. Compare le prospect a ses concurrents Search. |
+| `/benchmark <deal_id>` | Skill | Analyse concurrentielle standalone (le benchmark est integre par defaut dans /prepare, cette commande sert pour une analyse isolee). |
 | `/validate <path_or_deal_id>` | Skill | Valide un HTML existant contre les 54 regles (4 layers). Standalone. |
 | `/review <deal_id>` | Skill | Preview live + review interactive slide par slide. Serveur local avec auto-refresh. Persistance de session (reprise possible). |
 | `/debrief <deal_id>` | Skill | Collecte le resultat (won/lost), feedback closer, auto-analyse, injection patterns. |
@@ -34,7 +34,7 @@ Reference field keys et enum IDs : `context/pipedrive_reference.md`
 ```
 1. R1 DONE     → /audit {deal_id} (diagnostic rapide, optionnel)
 2. PREPARER R2 → /prepare {deal_id}  → /review {deal_id} → valider
-                  /benchmark {deal_id} (analyse concurrentielle standalone, optionnel)
+                  /benchmark {deal_id} (analyse concurrentielle isolee, le benchmark est deja dans /prepare)
 3. APRES R2    → relancer manuellement
 4. SIGNE       → /pipedrive {deal_id} won → /debrief {deal_id}
 5. PERDU       → /pipedrive {deal_id} lost "motif" → /debrief {deal_id}

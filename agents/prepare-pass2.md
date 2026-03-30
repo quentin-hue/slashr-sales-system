@@ -76,6 +76,23 @@ Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc em
 - (champ `TRANSITION_OPPORTUNITIES` supprime du SDB, cf. Etape 2.4)
 - `ROI Confidence globale` : determine si le label "Recommandation conditionnelle" est necessaire
 - `CAS CLIENTS RETENUS` enrichis : `match_criteria`, `key_metric`, `sdb_juxtaposition`, `angle` par cas
+- `BENCHMARK_SYNTHESIS` : gap principal, concurrents cles, opportunites, insight benchmark — **colonne vertebrale du storytelling**
+- `COMPETITIVE_ADS` : paysage concurrentiel paid (si Google Ads disponible)
+
+### Le benchmark comme colonne vertebrale narrative
+
+Le `BENCHMARK_SYNTHESIS` du SDB n'est pas une section parmi d'autres. C'est le fil rouge du diagnostic. Chaque slide du diagnostic devrait repondre a la question : "ou en est le prospect par rapport a ses concurrents sur CE point ?"
+
+- Le hook d'ouverture vient souvent de l'INSIGHT BENCHMARK ("Laserostop domine les local packs de toutes vos villes")
+- Chaque constat est contextualize par la concurrence ("votre CPA France est 25,5 EUR, la Belgique est a 14,8 EUR")
+- Le "et alors ?" de chaque slide relie le constat a la position concurrentielle
+- La strategie est une reponse a la position concurrentielle, pas une liste de best practices
+
+**Si le benchmark est pauvre** (pas assez de donnees DataForSEO, niche sans concurrent identifiable) :
+- Fallback 1 : utiliser les donnees GSC (top queries, positions) comme proxy de positionnement
+- Fallback 2 : utiliser les SERPs manuelles (3-5 requetes commerciales) pour identifier qui domine
+- Fallback 3 : contextualiser par le secteur ("dans votre secteur, les acteurs qui performent font X, vous faites Y")
+- Ne jamais skipper le benchmark. Degrader gracieusement, mais toujours positionner le prospect par rapport a quelque chose.
 
 ---
 

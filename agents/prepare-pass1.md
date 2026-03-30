@@ -385,6 +385,78 @@ Completer avec les donnees manuelles du closer si disponibles (tests ChatGPT, Pe
 | `ranked_keywords` avec `item_types: ["paid"]` | Keywords payes actifs du prospect | Ce qu'il achete deja |
 | `keyword_overview` sur 10-15 keywords strategiques | CPC, competition level, search volume | Valeur du paid vs organique |
 
+#### Module 4e : Competitive Ads Analysis (conditionnel)
+
+**Activer si :** Google Ads MCP disponible ET `SEA_SIGNAL = EXPLICIT` ou `DETECTED`.
+
+**Objectif :** comprendre le paysage concurrentiel paid, pas juste organique. Qui achete les memes mots-cles ? A quel CPA ? Quelle part d'impressions ?
+
+**Etape 1 :** Auction insights (si disponible via Google Ads API)
+- Identifier les concurrents qui encherissent sur les memes keywords
+- Part d'impressions du prospect vs concurrents
+- Taux de chevauchement (overlap rate)
+
+**Etape 2 :** Analyse SERP paid (via DataForSEO si pas d'auction insights)
+- Sur les 5 keywords commerciaux cles, verifier qui apparait en annonces
+- Comparer les positions payantes du prospect vs concurrents
+
+**Etape 3 :** Integrer dans le SDB
+
+```
+COMPETITIVE_ADS:
+- Concurrents Ads identifies : {liste}
+- Part d'impressions prospect : {%} (si disponible)
+- Concurrent dominant Ads : {domaine} (present sur {N}/{total} requetes)
+- Opportunite : {description — ex: "0 concurrent Ads sur les requetes locales"}
+Source : [src: google-ads auction_insights / dataforseo serp, {date}]
+```
+
+**Budget API :** 0-3 appels Google Ads (auction_insights) + 0 appels DataForSEO supplementaires (reutilise les SERPs existantes).
+
+---
+
+#### Module 4f : Benchmark Synthesis (TOUJOURS ACTIF — apres tous les modules 4*)
+
+**Objectif :** agreger toutes les donnees concurrentielles en une synthese structuree pour le storytelling. C'est cette section que la Pass 2 utilise comme **colonne vertebrale narrative**.
+
+**Etape 1 :** Construire la synthese
+
+```
+BENCHMARK SYNTHESIS:
+---
+GAP PRINCIPAL:
+  Prospect : {trafic hors-marque ou clics GSC} / mois
+  Leader : {domaine} — {trafic} / mois
+  Ratio : 1:{X} (le leader capte {X}x plus de trafic)
+  Source : {GSC clics reels | DataForSEO ETV — preciser}
+
+CONCURRENTS CLES (top 3 business) :
+  1. {domaine} : {trafic}, {keywords}, domine sur {requetes}. Present en {local packs / PAA / featured snippets}.
+  2. {domaine} : {trafic}, {keywords}. {angle specifique — ex: "contenu blog agressif"}
+  3. {domaine} : {trafic}, {keywords}. {angle}
+
+OPPORTUNITES NON COUVERTES (top 5 keywords a fort volume que le prospect n'a pas) :
+  1. "{keyword}" — {volume}/mois — {intent} — couvert par {concurrent}
+  2. "{keyword}" — {volume}/mois — ...
+  ...
+
+QUI DOMINE OU :
+  - Local packs : {domaine} (present sur {N}/{total} requetes locales)
+  - PAA : {domaine} (present sur {N}/{total})
+  - Featured snippets : {domaine} (si applicable)
+  - Ads : {domaine} ({part d'impressions} si disponible)
+
+INSIGHT BENCHMARK (1 phrase) :
+  "{ex: Laserostop est le seul concurrent present dans les resultats locaux de toutes les villes. Le prospect est invisible malgre 46 centres indexes.}"
+---
+```
+
+**Etape 2 :** Inserer dans le SDB (section dediee, apres COMPETITIVE_GAP et SERP_FEATURES_MAP).
+
+**Regle :** l'INSIGHT BENCHMARK est la phrase qui devient le fil rouge du diagnostic en Pass 2. C'est le "et alors ?" du benchmark, pas un resume des chiffres. C'est ce que le closer dit au prospect quand il ouvre la proposition.
+
+---
+
 #### Etape post-Module 6 : SEA Signal Classification (OBLIGATOIRE)
 
 Apres l'execution du Module 6 (ou apres la decision de ne pas l'activer), l'agent classe le **signal SEA** du deal. Ce signal est independant du diagnostic : le diagnostic mesure l'etat actuel, le signal mesure la **demande du prospect**.
