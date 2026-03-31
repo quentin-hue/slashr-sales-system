@@ -62,7 +62,12 @@ slashr-sales-system/
 │       ├── collector-website.md           ← Crawl technique
 │       ├── collector-gsc.md               ← Collecte GSC (auto-detection propriete via list_properties)
 │       ├── collector-google-ads.md        ← Collecte Google Ads (auto-detection compte via MCC)
-│       ├── analyst-strategy.md            ← Diagnostic strategique + SDB
+│       ├── analyst-technical.md           ← Analyse technique approfondie (CWV, indexation, schema, images)
+│       ├── analyst-content.md             ← Analyse contenu & E-E-A-T
+│       ├── analyst-competitive.md         ← Analyse concurrentielle (autorite, contenu, SERP features)
+│       ├── analyst-geo.md                 ← Analyse GEO / AI Search readiness (conditionnel)
+│       ├── analyst-signals.md             ← Analyse signaux faibles emails/notes (optionnel)
+│       ├── analyst-strategy.md            ← Synthese strategique + SDB (recoit les analyses)
 │       └── writer-tab.md                  ← Generation onglet HTML
 ├── agents/
 │   ├── shared.md                          ← Preambule partage (role, sources, regles)
@@ -84,13 +89,16 @@ slashr-sales-system/
 │   └── google-ads/                        ← Google Ads (MCP)
 │       ├── extension.md
 │       └── agent.md
+├── hooks/
+│   └── hooks.json                         ← Post-tool-use hooks (validation auto post-Write)
 ├── tools/
-│   ├── validate_proposal.py               ← Validation HTML (54 regles, 4 layers)
+│   ├── validate_proposal.py               ← Validation HTML (54 regles, 4 layers, score 0-100)
 │   ├── build_proposal.py                  ← Assembleur HTML (squelette + onglets)
 │   ├── preflight_check.py                 ← Verification dependances API
 │   ├── batch_pipedrive.py                 ← Collecte Pipedrive parallele
 │   ├── batch_drive.py                     ← Collecte Drive parallele
 │   ├── batch_dataforseo.py               ← Collecte DataForSEO parallele
+│   ├── debrief_aggregate.py              ← Aggregation debriefs (patterns + warnings)
 │   └── sync_brand_docs.py               ← Synchro docs marque depuis Google Drive
 ├── templates/
 │   ├── proposal-kit.html                  ← Kit CSS + 30 composants par role narratif

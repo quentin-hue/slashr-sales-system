@@ -6,13 +6,9 @@
 
 ## Rappel regles critiques (avant toute generation)
 
-> **Chiffres = copie du SDB, jamais recalcules.** La Pass 3 ne re-collecte PAS les donnees. Chaque chiffre dans le HTML vient du SDB (copie exacte, meme nombre, meme unite). Si le SDB dit "15 676 EUR", le HTML dit "15 676 EUR", pas "14 000 EUR", pas "~15 000 EUR". Arrondir uniquement pour la lisibilite (15 700 EUR acceptable, 14 000 EUR non).
-> **Zero pression commerciale** : pas de "ne manquez pas", "il est urgent de", "derniere chance". Inclut "Chaque mois/jour sans X". (cf. `agents/shared.md`, regle 14)
-> **Zero dramatisation** : pas de "catastrophe", "crise", "vous perdez tout". Les donnees suffisent. (cf. regle 15)
-> **Francais** : tous les outputs en francais. (cf. regle 3)
-> **Verbatims = citations exactes** entre guillemets. (cf. regle 12)
-> **Pas de tiret cadratin ni semi-cadratin separateur** (`—`, `–`, `&mdash;`, `&ndash;`) dans aucun output. Remplacer par `:`, `,`, `.`, des parentheses. Le `–` est tolere uniquement dans les plages numeriques ("6-12 mois"). (cf. regle 18)
-> **Pas de sur-engineering** : le closer copie-colle, on ne complique pas. (cf. regle 7)
+> **Regles completes : `agents/shared.md`.** Rappel des plus critiques pour Pass 3 :
+> - **Chiffres = copie du SDB, jamais recalcules.** Copie exacte, meme nombre, meme unite. Arrondir uniquement pour la lisibilite.
+> - R3 Francais | R7 Pas de sur-engineering | R12 Verbatims exacts | R14 Zero pression (inclut "chaque mois/jour sans") | R15 Zero dramatisation | R18 Zero tiret cadratin
 
 ---
 
@@ -50,16 +46,20 @@ Prendre le NBP et generer le **contenu HTML des 5-6 onglets** (Contexte conditio
 
 Le boilerplate (CSS, JS, nav, structure page) est dans `templates/proposal-skeleton.html`. L'agent ne le reproduit PAS. Il genere uniquement le **contenu de chaque onglet** (le HTML entre les balises `<div class="tab-content">` et `</div>`).
 
-**Workflow :**
-1. Generer 5 a 6 fichiers HTML fragments (un par onglet) :
-   - (conditionnel) `/tmp/tab_contexte.html` — si CONTEXTE_TAB = YES dans le NBP
-   - `/tmp/tab_diagnostic.html`
-   - `/tmp/tab_strategie.html`
-   - `/tmp/tab_projet.html`
-   - `/tmp/tab_investissement.html`
-   - `/tmp/tab_cas_clients.html`
-2. Si le simulateur ROI a du JS custom, ecrire `/tmp/extra_roi_sim.js`
-3. Assembler avec `tools/build_proposal.py` :
+**Workflow (PARALLELE OBLIGATOIRE) :**
+
+Les onglets sont **independants** (chacun consomme le NBP, pas les autres onglets). Les generer en **parallele** via des subagents `writer-tab` :
+
+1. Spawner en parallele 5-6 subagents `writer-tab` (un par onglet) :
+   - (conditionnel) writer-tab → `/tmp/tab_contexte.html` — si CONTEXTE_TAB = YES dans le NBP
+   - writer-tab → `/tmp/tab_diagnostic.html`
+   - writer-tab → `/tmp/tab_strategie.html`
+   - writer-tab → `/tmp/tab_projet.html`
+   - writer-tab → `/tmp/tab_investissement.html`
+   - writer-tab → `/tmp/tab_cas_clients.html`
+2. Attendre que tous les writer-tab terminent. Verifier que les fichiers existent.
+3. Si le simulateur ROI a du JS custom, ecrire `/tmp/extra_roi_sim.js`
+4. Assembler avec `tools/build_proposal.py` :
    ```bash
    python3 tools/build_proposal.py \
      --deal-id {deal_id} \
@@ -413,6 +413,51 @@ Les 3 KPIs se recalculent en temps reel (JS vanilla) : visites a M12, CA organiq
 
 ---
 
+## Boucle self-critique (OBLIGATOIRE, apres assemblage, avant upload)
+
+Apres l'assemblage par `build_proposal.py`, le systeme ne montre PAS le HTML au closer. Il execute une boucle d'auto-amelioration (max 2 iterations).
+
+### Iteration 1
+
+```bash
+python3 tools/validate_proposal.py .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html
+```
+
+**Lire le score et les resultats :**
+- **Score >= 85 ET 0 HARD failures** → proposition prete, sortir de la boucle
+- **HARD failures (Layer 1)** → corriger les onglets concernes :
+  - Identifier quel onglet contient le probleme (jargon interne, tirets cadratins, TJM visible, CTA generique)
+  - Re-generer le fragment HTML de cet onglet
+  - Re-assembler avec `build_proposal.py`
+  - Passer a l'iteration 2
+- **Score < 85, 0 HARD** → analyser les WARN les plus impactants :
+  - Densite slide excessive → decouper les slides sur-denses
+  - Deduplication manquante → fusionner les sections redondantes
+  - Accents manquants → corriger
+  - Passer a l'iteration 2
+
+### Iteration 2 (si declenchee)
+
+```bash
+python3 tools/validate_proposal.py .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html
+```
+
+- **Score >= 75 ET 0 HARD** → acceptable, sortir
+- **Sinon** → sortir avec WARNING : "Score {X}/100, {N} problemes non resolus — verifier manuellement"
+
+### Ce que le systeme corrige sans demander
+- HARD failures Layer 1 (jargon interne R14, tirets R18b, TJM/jours R29, CTA R26)
+- Accents manquants (R16c)
+- Coherence chiffres SDB → HTML (gate 0)
+- Slides sur-denses (Layer 2 R48)
+
+### Ce que le systeme signale mais ne touche pas
+- Choix narratifs (Layer 3 semantic) — c'est le territoire du closer
+- Structure globale de l'arc — validee au Checkpoint 2
+- Pricing — valide au Checkpoint 2
+
+---
+
 ## Output
 
 ### Fichiers generes
@@ -420,6 +465,7 @@ Les 3 KPIs se recalculent en temps reel (JS vanilla) : visites a M12, CA organiq
 | Fichier | Audience | Upload Drive |
 |---------|----------|--------------|
 | `PROPOSAL-{YYYYMMDD}-{entreprise-slug}.html` | Prospect (via closer) | Oui |
+| `PROPOSAL-{YYYYMMDD}-{entreprise-slug}-score.json` | Interne (tracking) | Non |
 | `INTERNAL-DIAG-{YYYYMMDD}-{entreprise-slug}.md` | Interne seulement | Oui (prefixe `INTERNAL-` = exclu de la collecte Module 2) |
 
 Le `INTERNAL-DIAG-*.md` contient le diagnostic strategique complet (section diagnostic du SDB). Il est uploade dans le meme dossier Drive pour archivage et rejouabilite, mais n'est jamais partage au prospect.
@@ -427,14 +473,24 @@ Le `INTERNAL-DIAG-*.md` contient le diagnostic strategique complet (section diag
 ### Message de fin
 
 ```
-Proposition generee : PROPOSAL-{date}-{slug}.html
-Diagnostic interne : INTERNAL-DIAG-{date}-{slug}.md
-Uploades dans le dossier Drive du deal.
+=== PROPOSITION GENEREE ===
 
-Arc narratif : [description en 1 ligne de l'arc choisi et pourquoi]
-Diagnostic : contrainte = {en langage business} | leviers = {2-3 axes} | insight = {1 phrase}
-Onglets : {Contexte (si active) |} Diagnostic ({N} sections) | Strategie (decision + 90j + ROI) {| Projet (si active)} | Investissement | Cas clients ({N} cas)
+Score qualite : {X}/100 (Grade {A/B/C/D/F})
+  Structure  : {X}/35
+  Contenu    : {X}/25
+  Qualite    : {X}/25
+  Semantique : {X}/15
+
+{Si self-critique active : "Auto-corrigee : {N} problemes resolus (HARD: {n}, SOFT: {n})"}
+{Si score < 75 : "Score bas — verifier les WARN ci-dessus"}
+
+Arc narratif : {description en 1 ligne de l'arc choisi et pourquoi}
+Diagnostic : contrainte = {en langage business} | leviers = {2-3 axes}
+Onglets : {Contexte |} Diagnostic ({N} sections) | Strategie | {Projet |} Investissement | Cas clients ({N} cas)
+
+Fichier : .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html
+{Si uploade : Drive : {lien}}
 
 DRAFT, a valider avant partage avec le prospect.
-Ouvre le fichier HTML dans un navigateur pour preview.
+→ /review {deal_id} pour preview live + review slide par slide
 ```

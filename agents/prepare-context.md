@@ -14,33 +14,20 @@ Pas un template. Pas une plaquette. Un argumentaire sur-mesure, base sur les don
 
 ## 2. Tes contraintes (non-negociables)
 
-### Contenu
-- **Evidence chain** : chaque chiffre source (API + date + periode dans le SDB). Pas de source → pas dans le HTML.
-- **SDB = source unique des chiffres** : la Pass 3 ne re-collecte JAMAIS les donnees. Elle copie les chiffres du SDB. Si le SDB dit 15 676 EUR, le HTML dit 15 676 EUR. Pas d'arrondi sauvage, pas de re-calcul.
-- **Diagnostic = interne** : les labels d'arbitrage (contrainte, leviers, confiance) ne sortent JAMAIS dans le HTML. Traduire en langage business.
+> **Reference unique des regles : `agents/shared.md`** (22 regles). Ci-dessous les rappels critiques pour /prepare + regles specifiques a la proposition.
+
+### Regles shared.md applicables (rappel compact)
+R3 Francais + R16c accents | R4-5 Data-first + evidence chain (R21) | R10 ROI conservateur | R11 Pas de data inventee | R12 Verbatims exacts | R13 Test de substitution | R14 Zero pression | R15 Zero dramatisation | R16d Lexique interdit | R18 Zero tiret cadratin | R20 Diagnostic = interne
+
+### Regles specifiques /prepare
+- **SDB = source unique des chiffres** : la Pass 3 ne re-collecte JAMAIS les donnees. Copie exacte du SDB.
 - **Max 3 leviers actifs** (1 contrainte + 2 leviers), meme si le prospect demande tout.
 - **1 scenario recommande** : pas 3 choix. Justifier pourquoi ce niveau pour ce deal.
-- **Zero pression commerciale** : pas de "ne manquez pas", "il est urgent de", "derniere chance", "chaque mois sans".
-- **Zero dramatisation** : pas de "catastrophe", "crise", "vous perdez tout". Les donnees suffisent.
-- **Test de substitution** : si une phrase fonctionne pour n'importe quel prospect, la reecrire.
-- **Verbatims = citations exactes** entre guillemets.
-- **ROI conservateur** : CTR reels > estimes. Fourchette, pas valeur unique. Methode dans `context/references/roi-methodology.md`.
-- **Confiance par bloc** : chaque decision (contrainte, leviers, ROI, scenario) porte un indicateur HIGH/MEDIUM/LOW. Les blocs MEDIUM/LOW sont signales au Checkpoint 1 pour review.
-- **Ne jamais affirmer une absence sans preuve** : "pas de CTA", "pas de pages locales", "pas de schema" demandent un crawl. "Les pages locales sous-performent" demande des donnees GSC. Le diagnostic ne contient que des constats verifiables, pas des hypotheses deguisees en faits.
-
-### Forme
-- **Francais** avec accents obligatoires (stratégie, données, référence, résultat, etc.)
-- **Lexique interdit** : thin content, maillage, netlinking, KPIs, Schema, LLM, cluster, R1/R2. Remplacements dans `agents/shared.md` regle 16d.
-- **Zero tiret cadratin/semi-cadratin** separateur. Remplacer par `:`, `,`, `.`, parentheses.
+- **Confiance par bloc** : chaque decision porte un indicateur HIGH/MEDIUM/LOW. Les MEDIUM/LOW sont signales au Checkpoint 1.
+- **Ne jamais affirmer une absence sans preuve** : "pas de CTA" demande un crawl. Constats verifiables, pas hypotheses deguisees.
 - **Pas de jours/TJM/AMOA** dans le HTML. Le scope est qualitatif, le budget est global.
-
-### Priorite des sources
-```
-GSC (donnees reelles) > Google Ads (donnees reelles) > DataForSEO (estimations) > calcul/hypothese
-```
-
-### Fallbacks
-Seul l'echec du deal Pipedrive est bloquant. Le reste degrade gracieusement.
+- **Priorite sources** : GSC > Google Ads > DataForSEO > calcul/hypothese
+- **Fallbacks** : seul l'echec du deal Pipedrive est bloquant. Le reste degrade gracieusement.
 
 ---
 

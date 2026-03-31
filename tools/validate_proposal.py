@@ -19,6 +19,8 @@ Python 3.9, stdlib uniquement (html.parser, re, os, sys).
 import sys
 import os
 import re
+import json
+from datetime import datetime, timezone
 from collections import Counter
 from html.parser import HTMLParser
 
@@ -971,14 +973,64 @@ def print_results(layer1, layer2, layer3, layer4):
     if fails > 0:
         print(f"\nResultat : REJECT ({fails} FAIL)")
         print("Corriger les regles FAIL avant upload Drive.")
-        return 1
+        exit_code = 1
     elif warns > 0:
         print(f"\nResultat : CONDITIONNEL ({warns} WARN)")
         print("Corriger les WARN recommande avant upload Drive.")
-        return 0
+        exit_code = 0
     else:
         print(f"\nResultat : PASS")
-        return 0
+        exit_code = 0
+
+    # --- Composite Quality Score ---
+    l1_total = l1_pass + l1_fail
+    l2_total = l2_pass + l2_warn  # exclude MANUAL from scoring
+    l4_total = l4_pass + l4_warn  # exclude MANUAL from scoring
+    l3_total = len(layer3)
+
+    score_structure = (l1_pass / l1_total * 35) if l1_total > 0 else 0
+    score_content = (l2_pass / l2_total * 25) if l2_total > 0 else 0
+    score_quality = (l4_pass / l4_total * 25) if l4_total > 0 else 0
+    # Layer 3 is manual checklist — count as fully checked (best-case) since
+    # the validator cannot determine pass/fail for semantic items.
+    score_semantic = l3_total / l3_total * 15 if l3_total > 0 else 0
+
+    total = round(score_structure + score_content + score_quality + score_semantic)
+
+    if total >= 90:
+        grade = "A"
+    elif total >= 75:
+        grade = "B"
+    elif total >= 60:
+        grade = "C"
+    elif total >= 45:
+        grade = "D"
+    else:
+        grade = "F"
+
+    print(f"\n{'═' * 43}")
+    print(f"  QUALITY SCORE: {total}/100")
+    print(f"{'═' * 43}")
+    print(f"  Structure  : {round(score_structure)}/35  ({l1_pass}/{l1_total} rules passed)")
+    print(f"  Content    : {round(score_content)}/25  ({l2_pass}/{l2_total} rules passed)")
+    print(f"  Quality    : {round(score_quality)}/25  (readability + density)")
+    print(f"  Semantic   : {round(score_semantic)}/15  ({l3_total}/{l3_total} checks passed)")
+    print(f"")
+    print(f"  Grade: {grade}")
+    print(f"    A = 90+, B = 75-89, C = 60-74, D = 45-59, F = <45")
+    print(f"{'═' * 43}")
+
+    score_data = {
+        "score": total,
+        "grade": grade,
+        "structure": round(score_structure),
+        "content": round(score_content),
+        "quality": round(score_quality),
+        "semantic": round(score_semantic),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+    return exit_code, score_data
 
 
 # ---------------------------------------------------------------------------
@@ -1154,7 +1206,21 @@ def main():
     layer3 = LAYER3_CHECKLIST
     layer4 = check_layer4(parser, html_raw, visible_text)
 
-    exit_code = print_results(layer1, layer2, layer3, layer4)
+    exit_code, score_data = print_results(layer1, layer2, layer3, layer4)
+
+    # Write score JSON sidecar next to the HTML file
+    # Try to detect deal_id from path: .cache/deals/{deal_id}/artifacts/PROPOSAL-*.html
+    abs_path = os.path.abspath(filepath)
+    deal_match = re.search(r'\.cache/deals/(\d+)/artifacts/', abs_path)
+    if deal_match:
+        artifacts_dir = os.path.dirname(abs_path)
+        html_basename = os.path.basename(abs_path)
+        score_filename = html_basename.replace(".html", "-score.json")
+        score_path = os.path.join(artifacts_dir, score_filename)
+        with open(score_path, "w", encoding="utf-8") as f:
+            json.dump(score_data, f, indent=2, ensure_ascii=False)
+        print(f"\nScore JSON : {score_path}")
+
     sys.exit(exit_code)
 
 

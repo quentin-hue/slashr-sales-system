@@ -87,6 +87,52 @@ Meme avec 1 seul debrief, identifier les patterns en comparant avec les connaiss
 
 Si >= 3 debriefs existent, produire des correlations statistiques.
 
+### 5b. Ecrire le debrief structure (JSON)
+
+En plus du fichier markdown, ecrire `.cache/deals/{deal_id}/debrief.json` :
+
+```json
+{
+  "deal_id": {deal_id},
+  "date": "{ISO date}",
+  "result": "won|lost|open",
+  "company": "{nom entreprise}",
+  "sector": "{secteur}",
+  "amount_proposed": {montant propose EUR},
+  "amount_signed": {montant signe EUR, null si lost/open},
+  "arc_used": "{arc du NBP}",
+  "hook_type": "{type de hook}",
+  "tone_profile": "{DIRECT|PEDAGOGIQUE|PROVOCATEUR|TECHNIQUE}",
+  "scenario_proposed": "{Pilotage|Production|Acceleration}",
+  "budget_proposed": {budget mensuel EUR},
+  "budget_accepted": {budget mensuel accepte EUR, null si lost},
+  "roi_estimated": {multiplicateur ROI estime},
+  "audit_score": {score audit 0-100, null si pas d'audit},
+  "confidence_global": "{High|Medium|Low}",
+  "decideur_level": "{DECIDEUR|INFLUENCEUR|OPERATIONNEL}",
+  "sea_signal": "{EXPLICIT|DETECTED|OPPORTUNITY|ABSENT}",
+  "modules_used": ["liste des modules actives"],
+  "gsc_available": true|false,
+  "google_ads_available": true|false,
+  "closer_feedback": {
+    "decisive_factor": "{reponse}",
+    "proposal_quality": "{reponse}",
+    "narrative_arc": "{reponse}",
+    "unanticipated_objections": ["{objection1}", "{objection2}"]
+  },
+  "auto_analysis": {
+    "diagnostic_accuracy": "{CORRECT|PARTIEL|INCORRECT}",
+    "arc_fit": "{ADAPTE|A_AJUSTER}",
+    "roi_accuracy": "{CREDIBLE|SUR_ESTIME|SOUS_ESTIME}",
+    "pricing_fit": "{DANS_FOURCHETTE|TROP_HAUT|TROP_BAS}",
+    "objections_anticipated": {N},
+    "objections_total": {M}
+  },
+  "patterns": ["{pattern1}", "{pattern2}"],
+  "recommendations": ["{reco1}", "{reco2}"]
+}
+```
+
 ### 6. Produire le fichier debrief enrichi
 
 ```
@@ -136,12 +182,13 @@ Ecrire dans : `.cache/deals/{deal_id}/debrief.md`
 
 ### 7. Mettre a jour le rapport patterns
 
-Lire tous les debriefs existants :
 ```bash
-ls .cache/deals/*/debrief.md 2>/dev/null
+python3 tools/debrief_aggregate.py
 ```
 
-Produire/mettre a jour `.cache/patterns_report.md` avec les correlations cumulees.
+Le script lit tous les `debrief.json` et produit/met a jour :
+- `.cache/patterns_report.md` (correlations cumulees)
+- `.cache/debrief_warnings.md` (warnings pour futurs /prepare)
 
 ### 8. Injection dans futurs /prepare (NOUVEAU v12)
 
@@ -164,7 +211,7 @@ Ce fichier est lu par Pass 2 de /prepare pour injecter des warnings contextuels 
 ### 9. Message de fin
 
 ```
-Debrief enregistre : .cache/deals/{deal_id}/debrief.md
+Debrief enregistre : .cache/deals/{deal_id}/debrief.md + debrief.json
 Resultat : {Won | Lost | En cours}
 Facteur decisif : {1 phrase}
 

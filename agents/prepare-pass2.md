@@ -78,6 +78,11 @@ Prendre le SDB et construire le plan narratif complet. Choisir l'angle, l'arc em
 - `CAS CLIENTS RETENUS` enrichis : `match_criteria`, `key_metric`, `sdb_juxtaposition`, `angle` par cas
 - `BENCHMARK_SYNTHESIS` : gap principal, concurrents cles, opportunites, insight benchmark — **colonne vertebrale du storytelling**
 - `COMPETITIVE_ADS` : paysage concurrentiel paid (si Google Ads disponible)
+- `CLOSER_INPUT` (nouveau) : input du closer au Checkpoint 1
+  - `CLOSER_ANGLE` : ce que le prospect attend → **oriente le choix du hook et de l'arc narratif**. Si le closer dit "il veut du ROI chiffre", l'arc doit ouvrir par les chiffres, pas par la marque. Si "il veut etre rassure sur la methode", l'onglet Projet prend plus de poids.
+  - `CLOSER_INSIGHTS` : contexte hors-data → **enrichit les verbatims et le TONE_CONTEXT**. "Nouveau DG qui pousse le digital" change le framing (opportunite, pas menace).
+  - `CLOSER_RED_FLAGS` : risques non detectes → **integres dans les objections FAQ et dans le pricing**. "Il compare avec 2 agences" → FAQ "Pourquoi SLASHR plutot qu'une autre agence" ou angles differenciateurs tisses plus fort.
+- `SIGNALS` (si analyst-signals active) : sentiment, objections detectees, concurrence SLASHR → **calibre le ton et les objections FAQ**
 
 ### Le benchmark comme colonne vertebrale narrative
 

@@ -80,8 +80,8 @@ Lire et executer chaque passe dans l'ordre, avec les 2 checkpoints interactifs.
 ### Pass 1 : DATA & STRATEGY ENGINE
 **Fichier :** `agents/prepare-pass1.md`
 
-Collecte (10 modules) + structuration + analyse strategique + diagnostic interne (Etape 1.3).
-Output interne : **Structured Data Brief (SDB)** (inclut le diagnostic strategique).
+Collecte (10 modules) + analyse dimensionnelle parallele (4 analystes) + structuration + synthese strategique + diagnostic interne (Etape 1.3).
+Output interne : **Structured Data Brief (SDB)** (inclut les scores dimensionnels + le diagnostic strategique).
 
 > **Mode `--fast`** : si le flag `--fast` est present et qu'un SDB frais (< 2h) existe, cette passe est entierement skippee. L'agent passe directement au Checkpoint 1 avec le SDB existant.
 
@@ -108,6 +108,12 @@ Apres la Pass 1, presenter au closer un **resume strategique compact** dans le t
 
 PROSPECT : {nom} | {secteur} | {contexte}
 
+SCORES DIMENSIONNELS :
+- Technical  : {X}/100 — {top probleme en 1 ligne}
+- Contenu    : {X}/100 ({Fort/Moyen/Faible}) — {gap principal}
+- Competitive: {insight benchmark en 1 ligne}
+- GEO/IA     : {X}/100 ({Pret/Partiel/Absent}) ou N/A
+
 DONNEES CLES :
 1. {donnee 1 — chiffre + source}
 2. {donnee 2 — chiffre + source}
@@ -117,6 +123,7 @@ DONNEES CLES :
 
 DIAGNOSTIC :                                    CONFIANCE
 - Contrainte : {en langage business}             {HIGH/MEDIUM/LOW}
+  Dimensions : {technique + contenu / etc.}
 - Levier 1 : {en langage business}               {HIGH/MEDIUM/LOW}
 - Levier 2 : {en langage business}               {HIGH/MEDIUM/LOW}
 - Ce qu'on ne fait pas : {et pourquoi}
@@ -141,10 +148,42 @@ SOURCES :
 CONFIANCE GLOBALE : {HIGH/MEDIUM/LOW} — {N} decisions sures, {N} a valider
 → Les blocs MEDIUM/LOW meritent ton attention. Le reste est fonde sur des donnees reelles.
 
-→ Valide ? Corrige ? Reoriente ?
+SIGNAUX CLOSER (si analyst-signals active) :
+- Sentiment prospect : {Chaud/Tiede/Froid}
+- Objections detectees : {liste ou "aucune"}
+- Concurrence : {Confirmee/Suspectee/Absente}
+
+─────────────────────────────────────
+QUESTIONS POUR TOI (reponds en 1-2 phrases chacune) :
+
+1. CONFIANCE : Sur le diagnostic ci-dessus, ton niveau de confiance ? (1-5)
+   → 1 = "je ne suis pas d'accord", 5 = "c'est exactement ca"
+
+2. ANGLE : Quel angle le prospect attend-il ?
+   → Ex: "il veut du ROI chiffre", "il veut etre rassure sur la methode", "il veut voir que ses concurrents avancent"
+
+3. HORS-DATA : Quelque chose que les donnees ne montrent pas ?
+   → Ex: "il a un nouveau DG qui pousse le digital", "il a ete decu par son agence actuelle", "decision a prendre avant juin"
+
+4. TONE : Le ton propose ({TONE_PROFILE}) te semble adapte ?
+   → Sinon, quel profil ? (DIRECT / PEDAGOGIQUE / PROVOCATEUR / TECHNIQUE)
+
+5. RED FLAGS : Un risque que le systeme n'a pas detecte ?
+   → Ex: "budget serre", "il compare avec 2 autres agences", "le decideur n'etait pas en R1"
+─────────────────────────────────────
 ```
 
-**Attendre la reponse du closer avant de continuer.** Si le closer corrige (priorisation, perimetre, angle), mettre a jour le SDB en consequence avant de lancer la Pass 2.
+**Attendre la reponse du closer avant de continuer.**
+
+**Traitement des reponses :**
+- Si confiance <= 2 → demander ce qui ne va pas, corriger le diagnostic, re-presenter
+- Si confiance 3 → traiter les points specifiques mentionnes, ajuster
+- Si confiance 4-5 → continuer
+- Les reponses aux questions 2-5 sont integrees dans le SDB :
+  - Q2 (angle) → champ `CLOSER_ANGLE` dans le SDB (utilise par Pass 2 pour choisir le hook et l'arc)
+  - Q3 (hors-data) → champ `CLOSER_INSIGHTS` dans le SDB (contexte non mesurable)
+  - Q4 (tone) → met a jour `TONE_PROFILE` si le closer change
+  - Q5 (red flags) → ajoute aux `RED FLAGS` du SDB
 
 ### Pass 2 : NARRATIVE ARCHITECT
 **Fichier :** `agents/prepare-pass2.md`
@@ -197,16 +236,94 @@ DECISIONS A FAIBLE CONFIANCE (blocs MEDIUM/LOW du Checkpoint 1) :
  - {decision} : {comment elle est traitee}
 → Si un bloc LOW est toujours non resolu, le signaler ici.
 
-→ Reordonne ? Renomme ? Ajoute ? Supprime ?
+─────────────────────────────────────
+QUESTIONS POUR TOI :
+
+1. SCROLLING TEST : En lisant les titres H2 du Diagnostic dans l'ordre, est-ce que l'histoire tient ?
+   → Sinon, quel titre changer ou deplacer ?
+
+2. HOOK : Le hero subtitle "{hook}" va accrocher TON prospect ?
+   → Sinon, quel angle preferes-tu ?
+
+3. OBJECTIONS : Les 3 FAQ pre-emptent les vraies objections que tu anticipes ?
+   → Manque-t-il une question que le prospect posera forcement ?
+
+4. CAS CLIENTS : Les cas selectionnes sont pertinents pour ce prospect ?
+   → Preferes-tu d'autres cas ? Ou pas de cas clients du tout ?
+
+5. PRICING : Le scenario {scenario} a {budget}/mois, ca passe pour ce prospect ?
+   → Trop haut ? Trop bas ? Faut-il ajuster avant de generer ?
+─────────────────────────────────────
 ```
 
-**Attendre la reponse du closer avant de continuer.** Si le closer modifie (ordre, titres, sections a ajouter/supprimer), mettre a jour le NBP en consequence avant de lancer la Pass 3.
+**Attendre la reponse du closer avant de continuer.**
+
+**Traitement des reponses :**
+- Q1-2 : ajuster les titres/hook dans le NBP
+- Q3 : ajouter/modifier les FAQ dans le NBP
+- Q4 : changer les cas clients ou supprimer l'onglet
+- Q5 : ajuster le scenario/budget dans le NBP et le SDB (coherence pricing_rules.md)
+- Toute modification → re-valider le NBP avec `validate_proposal.py --nbp`
 
 ### Pass 3 : DESIGN ORCHESTRATOR
 **Fichier :** `agents/prepare-pass3.md`
 
-Generation du contenu HTML des 5-6 onglets a partir du NBP valide. Mapping composants par role narratif, regles de composition. Assemblage final via `tools/build_proposal.py` (squelette + contenu). Validation.
+Generation du contenu HTML des 5-6 onglets a partir du NBP valide. Mapping composants par role narratif, regles de composition. Assemblage final via `tools/build_proposal.py` (squelette + contenu).
 Output : **HTML final** (le seul livrable visible) + **INTERNAL-DIAG** (diagnostic interne pour le closer).
+
+### Boucle self-critique (OBLIGATOIRE, apres assemblage, avant upload)
+
+Apres assemblage du HTML par `build_proposal.py`, le systeme ne montre PAS immediatement le resultat. Il execute une boucle d'auto-amelioration :
+
+```
+BOUCLE SELF-CRITIQUE (max 2 iterations)
+
+Iteration 1:
+  1. Valider : python3 tools/validate_proposal.py {html_path}
+  2. Lire le score (0-100) et les resultats
+  3. Si score >= 85 ET 0 HARD failures → SORTIR (proposition prete)
+  4. Si HARD failures → corriger les onglets concernes, re-assembler, re-valider
+  5. Si score < 85 (mais 0 HARD) → analyser les WARN et SOFT, corriger les plus impactants
+
+Iteration 2 (si declenchee):
+  1. Re-valider apres corrections
+  2. Si score >= 75 ET 0 HARD failures → SORTIR (acceptable)
+  3. Sinon → SORTIR avec WARNING au closer : "Score {X}/100, {N} problemes non resolus"
+
+Post-boucle:
+  - Afficher le score final dans le terminal
+  - Uploader le HTML dans Drive
+  - Presenter le resultat au closer avec le score
+```
+
+**Ce que le systeme corrige automatiquement (sans demander) :**
+- HARD failures Layer 1 (jargon interne, tirets cadratins, TJM/jours visibles, CTA generiques)
+- Accents manquants (regle 16c)
+- Coherence chiffres SDB → HTML (gate 0 de Pass 3)
+
+**Ce que le systeme signale mais ne corrige pas :**
+- Problemes narratifs (Layer 3 semantic)
+- Densité de slides (Layer 2 content)
+- Score qualite redactionnelle (Layer 4)
+
+**Affichage au closer :**
+```
+=== PROPOSITION GENEREE ===
+
+Score qualite : {X}/100 (Grade {A/B/C/D/F})
+  Structure  : {X}/35
+  Contenu    : {X}/25
+  Qualite    : {X}/25
+  Semantique : {X}/15
+
+{Si iterations > 0 : "Auto-corrigee : {N} problemes resolus (HARD: {n}, SOFT: {n})"}
+{Si score < 75 : "⚠ Score bas — verifier les WARN dans le terminal ci-dessus"}
+
+Fichier : .cache/deals/{deal_id}/artifacts/PROPOSAL-{date}-{slug}.html
+Drive : {lien si uploade}
+
+→ /review {deal_id} pour preview live + review slide par slide
+```
 
 ---
 

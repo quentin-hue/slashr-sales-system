@@ -1,0 +1,8 @@
+[
+  {
+    "event": "after_write",
+    "pattern": "**/artifacts/PROPOSAL-*.html",
+    "command": "python3 tools/validate_proposal.py \"$FILE_PATH\"",
+    "description": "Auto-validate proposal HTML after every write"
+  }
+]
