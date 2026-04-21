@@ -22,9 +22,29 @@ Lancer en parallele :
 ### Agent 2 : Collector Website
 - robots.txt, sitemap, homepage, 3 pages samples
 - Schema JSON-LD, mobile, HTTPS
+- **Detection de blocage bot obligatoire** (cf. collector-website.md, Etape 0)
 
 ### Agent 3 : Collector GSC (conditionnel)
 - Probe d'acces → si OK : performance, queries, pages
+- **Si GSC dispo : URL inspection sur la homepage + 1 fiche produit** (source de verite pour schema, indexation, fetch status)
+- **Si GSC dispo : list_sitemaps_enhanced** (source de verite pour le sitemap)
+
+---
+
+## Cross-validation post-collecte (OBLIGATOIRE)
+
+Avant de scorer, croiser les resultats du crawl avec les donnees GSC :
+
+### Si `bot_protection == "detected"` dans le crawl :
+1. **Tous les findings negatifs du crawl** (pas de sitemap, pas de schema, contenu vide, images sans alt) sont NON VERIFIE
+2. **Utiliser GSC comme source de verite** si disponible :
+   - GSC sitemaps → sitemap present ou absent ?
+   - GSC URL inspection → rich results detectes ? fetch successful ?
+3. **Si GSC non disponible** : scorer les dimensions Technical SEO et Content avec la mention `(non verifiable, crawl bloque)` et avertir le closer dans le rapport
+4. **Ne jamais conclure "absent"** sur la base d'un seul crawl bloque. Formuler "non detecte par le crawl (protection anti-bot active)"
+
+### Si `bot_protection == "none"` :
+Scorer normalement. Les findings du crawl sont fiables.
 
 ---
 
@@ -95,8 +115,10 @@ Active si business local detecte (adresse physique, GMB, NAP).
 
 ## Regles
 
-1. **Rapide.** Max 15 appels API au total (DataForSEO + crawl + GSC).
+1. **Rapide.** Max 15 appels API au total (DataForSEO + crawl + GSC). Les appels GSC URL inspection comptent dans ce budget mais sont prioritaires sur les appels DataForSEO supplementaires.
 2. **Factuel.** Chaque score est justifie par un signal mesurable.
 3. **Pas de proposition.** C'est un diagnostic, pas un delivrable client.
 4. **Cache reutilise.** Si un /prepare a deja collecte les donnees, les reutiliser.
 5. **Enrichit le /prepare.** Le rapport audit est lu par Pass 1 pour accelerer l'analyse.
+6. **Niveaux de confiance.** Chaque finding du scoring porte un niveau (VERIFIE / PROBABLE / NON VERIFIE) selon la regle 22 de shared.md. Si un finding est NON VERIFIE (crawl bloque, pas de GSC pour cross-valider), le signaler dans le rapport avec `⚠️` et ne pas le compter comme penalite dans le score. Un score gonfle artificiellement par des faux negatifs de crawl est plus dangereux qu'un score optimiste.
+7. **Jamais "absent" sans 2 sources.** Cf. regle 23 de shared.md. "Le crawl ne detecte pas de sitemap" ≠ "il n'y a pas de sitemap".

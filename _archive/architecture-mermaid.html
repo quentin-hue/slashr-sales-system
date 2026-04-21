@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLASHR Sales System — Architecture v13.0</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #e0e0e8;
+    --text-muted: #8888a0;
+    --orange: #ff6b35;
+    --magenta: #e040a0;
+    --violet: #7c5cfc;
+    --cyan: #00d4ff;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #12121a 0%, #1a1028 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 40px 40px;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--orange), var(--magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  .nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .nav a:hover, .nav a.active {
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .nav a.active {
+    border: 1px solid var(--border);
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px;
+  }
+
+  .section {
+    margin-bottom: 64px;
+    scroll-margin-top: 60px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .section-number {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--orange);
+    background: rgba(255, 107, 53, 0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+
+  .section h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+    max-width: 800px;
+  }
+
+  .diagram-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    overflow-x: auto;
+  }
+
+  .diagram-card .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .stat-card .value {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--orange), var(--magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; }
+    .container { padding: 20px; }
+    .header { padding: 32px 20px; }
+    .nav { padding: 12px 20px; }
+  }
+
+  /* Mermaid theme overrides */
+  .mermaid svg {
+    max-width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SLASHR Sales System</h1>
+  <p>Architecture complete v13.0 : agent unique, 6 commandes, 13 subagents, 8 outils</p>
+</div>
+
+<nav class="nav">
+  <a href="#overview" class="active">Vue globale</a>
+  <a href="#commands">Commandes</a>
+  <a href="#prepare">Pipeline /prepare</a>
+  <a href="#pass1">Pass 1 : Collecte</a>
+  <a href="#analysts">Analystes</a>
+  <a href="#pass2-3">Pass 2-3 : Narration & Design</a>
+  <a href="#data">Sources de donnees</a>
+  <a href="#cache">Cache & Artefacts</a>
+  <a href="#validation">Validation</a>
+  <a href="#debrief">Boucle retro</a>
+</nav>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-grid" style="margin-top: 24px;">
+    <div class="stat-card">
+      <div class="value">6</div>
+      <div class="label">Commandes (skills)</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">13</div>
+      <div class="label">Subagents</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">8</div>
+      <div class="label">Outils Python</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">6</div>
+      <div class="label">Sources de donnees</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">54</div>
+      <div class="label">Regles de validation</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">3</div>
+      <div class="label">Passes sequentielles</div>
+    </div>
+  </div>
+
+  <!-- 1. VUE GLOBALE -->
+  <div class="section" id="overview">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2>Vue globale du systeme</h2>
+    </div>
+    <p class="section-desc">
+      Un agent unique (Deal Analyst) orchestre le cycle complet d'un deal, de la qualification au debrief post-signature.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+graph TB
+  subgraph CLOSER["fa:fa-user CLOSER (humain)"]
+    direction LR
+    C1["/audit"]
+    C2["/prepare"]
+    C3["/benchmark"]
+    C4["/validate"]
+    C5["/review"]
+    C6["/debrief"]
+    C7["/pipedrive"]
+  end
+
+  subgraph AGENT["fa:fa-robot DEAL ANALYST (agent unique)"]
+    direction TB
+    ROUTER["Router<br/>CLAUDE.md"]
+    SHARED["Contexte partage<br/>agents/shared.md"]
+
+    subgraph MODES["Modes d'execution"]
+      AUDIT["AUDIT<br/>Diagnostic rapide"]
+      PREPARE["PREPARE<br/>Proposition HTML"]
+      BENCH["BENCHMARK<br/>Analyse concurrentielle"]
+      VALID["VALIDATE<br/>54 regles"]
+      REVIEW["REVIEW<br/>Preview + corrections"]
+      DEBRIEF["DEBRIEF<br/>Retroaction"]
+    end
+  end
+
+  subgraph EXTERNAL["SOURCES EXTERNES"]
+    PD["fa:fa-database Pipedrive"]
+    GD["fa:fa-folder Google Drive"]
+    DFS["fa:fa-search DataForSEO<br/>38 endpoints MCP"]
+    GSC["fa:fa-chart-line Google Search Console<br/>MCP"]
+    GADS["fa:fa-bullhorn Google Ads<br/>MCP"]
+    WEB["fa:fa-globe Website Crawl<br/>HTTP"]
+  end
+
+  subgraph OUTPUT["OUTPUTS"]
+    HTML["fa:fa-file-code Proposition HTML<br/>fichier unique"]
+    DIAG["INTERNAL-DIAG<br/>closer only"]
+    REPORT["Audit Report<br/>markdown"]
+    DRIVE["fa:fa-cloud Google Drive<br/>upload"]
+  end
+
+  C1 --> ROUTER
+  C2 --> ROUTER
+  C3 --> ROUTER
+  C4 --> ROUTER
+  C5 --> ROUTER
+  C6 --> ROUTER
+  C7 --> ROUTER
+
+  ROUTER --> SHARED
+  SHARED --> MODES
+
+  AUDIT --> EXTERNAL
+  PREPARE --> EXTERNAL
+  BENCH --> EXTERNAL
+
+  PREPARE --> HTML
+  PREPARE --> DIAG
+  AUDIT --> REPORT
+  HTML --> DRIVE
+  REVIEW --> HTML
+
+  style CLOSER fill:#1a1028,stroke:#7c5cfc,color:#e0e0e8
+  style AGENT fill:#12121a,stroke:#ff6b35,color:#e0e0e8
+  style EXTERNAL fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+  style OUTPUT fill:#1a1015,stroke:#e040a0,color:#e0e0e8
+  style ROUTER fill:#2a1a10,stroke:#ff6b35,color:#e0e0e8
+      </pre>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7c5cfc"></div>Closer (humain)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b35"></div>Agent IA</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Sources externes</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e040a0"></div>Outputs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. COMMANDES & FLUX -->
+  <div class="section" id="commands">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2>Flux du closer et enchainement des commandes</h2>
+    </div>
+    <p class="section-desc">
+      Le cycle de vie d'un deal, de R1 a la signature (ou perte). Chaque etape correspond a une commande.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart LR
+  R1["R1 terminee"]
+  AUDIT["/audit<br/>Diagnostic rapide<br/>Score 0-100"]
+  PREPARE["/prepare<br/>Proposition HTML<br/>3 passes + 2 checkpoints"]
+  BENCHMARK["/benchmark<br/>Analyse concurrentielle<br/>standalone"]
+  REVIEW["/review<br/>Preview live<br/>+ corrections slide/slide"]
+  VALIDATE["/validate<br/>54 regles<br/>score 0-100"]
+  R2["R2 Presentation"]
+  WON["/pipedrive won<br/>+ /debrief"]
+  LOST["/pipedrive lost<br/>+ /debrief"]
+
+  R1 --> AUDIT
+  AUDIT -.->|optionnel| PREPARE
+  R1 -->|direct| PREPARE
+  BENCHMARK -.->|enrichit| PREPARE
+  PREPARE --> REVIEW
+  REVIEW --> VALIDATE
+  VALIDATE -->|score >= 85| R2
+  VALIDATE -->|score < 85| REVIEW
+  R2 -->|signe| WON
+  R2 -->|perdu| LOST
+
+  style R1 fill:#1a1028,stroke:#7c5cfc,color:#e0e0e8
+  style R2 fill:#1a1028,stroke:#7c5cfc,color:#e0e0e8
+  style AUDIT fill:#12121a,stroke:#00d4ff,color:#e0e0e8
+  style PREPARE fill:#2a1a10,stroke:#ff6b35,color:#e0e0e8
+  style BENCHMARK fill:#12121a,stroke:#00d4ff,color:#e0e0e8
+  style REVIEW fill:#12121a,stroke:#fbbf24,color:#e0e0e8
+  style VALIDATE fill:#12121a,stroke:#e040a0,color:#e0e0e8
+  style WON fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+  style LOST fill:#1a1015,stroke:#ef4444,color:#e0e0e8
+      </pre>
+    </div>
+  </div>
+
+  <!-- 3. PIPELINE /PREPARE -->
+  <div class="section" id="prepare">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2>Pipeline /prepare : 3 passes + 2 checkpoints</h2>
+    </div>
+    <p class="section-desc">
+      Le coeur du systeme. Collecte, analyse, narration, design, le tout avec validation intermediaire du closer a chaque etape critique.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart TB
+  START(["/prepare deal_id"])
+
+  subgraph P1["PASS 1 : DATA & STRATEGY ENGINE"]
+    direction TB
+    COLLECT["Collecte parallele<br/>11 modules<br/>(6 collectors)"]
+    DOMAIN["Cartographie domaines<br/>(PRINCIPAL / SECONDAIRE / TIERS)"]
+    ANALYSE["Analyse dimensionnelle<br/>4 analystes en parallele"]
+    CHECKLIST["Checklist pre-diagnostic<br/>+ approfondissement contextuel"]
+    DIAG["Diagnostic strategique<br/>(contrainte + leviers + ROI)"]
+    STRATEGY["Strategie + pricing<br/>+ cas clients"]
+    SDB["SDB.md<br/>Structured Data Brief"]
+  end
+
+  subgraph CP1["CHECKPOINT 1"]
+    RESUME1["Resume strategique<br/>scores dimensionnels<br/>5 questions closer"]
+    CLOSER1{"Closer valide ?"}
+  end
+
+  subgraph P2["PASS 2 : NARRATIVE ARCHITECT"]
+    direction TB
+    HOOK["Choix du hook<br/>cascade narrative 3 couches"]
+    ARC["Arc narratif Diagnostic<br/>deduplication arguments"]
+    STRAT_NAR["Strategie narrative<br/>+ onglet Investissement"]
+    FAQ["Objections FAQ<br/>pre-emptees"]
+    NBP["NBP.md<br/>Narrative Blueprint"]
+    PREVAL["Pre-validation NBP<br/>validate_proposal.py --nbp"]
+  end
+
+  subgraph CP2["CHECKPOINT 2"]
+    RESUME2["Plan narratif complet<br/>hook + arc + pricing<br/>5 questions closer"]
+    CLOSER2{"Closer valide ?"}
+  end
+
+  subgraph P3["PASS 3 : DESIGN ORCHESTRATOR"]
+    direction TB
+    GATES["Gates qualite<br/>(coherence SDB, contradictions)"]
+    WRITERS["5-6 writer-tab<br/>en parallele"]
+    ASSEMBLE["build_proposal.py<br/>skeleton + onglets"]
+    SELFCRIT["Boucle self-critique<br/>max 2 iterations<br/>validate_proposal.py"]
+    UPLOAD["Upload Drive<br/>+ score final"]
+  end
+
+  START --> COLLECT
+  COLLECT --> DOMAIN
+  DOMAIN --> ANALYSE
+  ANALYSE --> CHECKLIST
+  CHECKLIST --> DIAG
+  DIAG --> STRATEGY
+  STRATEGY --> SDB
+
+  SDB --> RESUME1
+  RESUME1 --> CLOSER1
+  CLOSER1 -->|"confiance 4-5"| HOOK
+  CLOSER1 -->|"confiance <= 2"| DIAG
+
+  HOOK --> ARC
+  ARC --> STRAT_NAR
+  STRAT_NAR --> FAQ
+  FAQ --> NBP
+  NBP --> PREVAL
+  PREVAL -->|pass| RESUME2
+
+  RESUME2 --> CLOSER2
+  CLOSER2 -->|ok| GATES
+  CLOSER2 -->|corrections| HOOK
+
+  GATES --> WRITERS
+  WRITERS --> ASSEMBLE
+  ASSEMBLE --> SELFCRIT
+  SELFCRIT -->|"score >= 85"| UPLOAD
+  SELFCRIT -->|"HARD fail"| WRITERS
+
+  style P1 fill:#1a1510,stroke:#ff6b35,color:#e0e0e8
+  style P2 fill:#1a1020,stroke:#7c5cfc,color:#e0e0e8
+  style P3 fill:#101a18,stroke:#34d399,color:#e0e0e8
+  style CP1 fill:#1a1a10,stroke:#fbbf24,color:#e0e0e8
+  style CP2 fill:#1a1a10,stroke:#fbbf24,color:#e0e0e8
+  style SDB fill:#2a1a10,stroke:#ff6b35,color:#fff,font-weight:bold
+  style NBP fill:#201030,stroke:#7c5cfc,color:#fff,font-weight:bold
+  style UPLOAD fill:#0f1a12,stroke:#34d399,color:#fff,font-weight:bold
+      </pre>
+    </div>
+  </div>
+
+  <!-- 4. PASS 1 COLLECTORS -->
+  <div class="section" id="pass1">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2>Pass 1 : Collecte parallele (11 modules, 6 collectors)</h2>
+    </div>
+    <p class="section-desc">
+      Les collectors sont des subagents autonomes lances en parallele. Chaque source a son outil batch Python dedie.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart TB
+  DEAL_ID(["deal_id"])
+
+  subgraph CORE["MODULES OBLIGATOIRES (toujours)"]
+    direction LR
+    subgraph M1["Module 1<br/>Pipedrive"]
+      PD_AGENT["collector-pipedrive"]
+      PD_TOOL["batch_pipedrive.py<br/>5 workers"]
+      PD_API["Pipedrive API<br/>deal + contact + org<br/>+ notes + emails"]
+    end
+
+    subgraph M2["Module 2<br/>Drive"]
+      DR_AGENT["collector-drive"]
+      DR_TOOL["batch_drive.py<br/>3 workers"]
+      DR_API["Google Drive API<br/>listing recursif<br/>25 fichiers max"]
+    end
+
+    subgraph M3["Module 3<br/>SEO"]
+      SEO_AGENT["collector-seo"]
+      SEO_TOOL["batch_dataforseo.py<br/>5 workers, 5 lots"]
+      SEO_API["DataForSEO MCP<br/>rank overview<br/>ranked keywords<br/>keywords for site"]
+    end
+
+    subgraph M4["Module 4<br/>Benchmark"]
+      M4_NOTE["competitors_domain<br/>+ rank overview x3<br/>+ domain_intersection"]
+    end
+
+    subgraph M11["Module 11<br/>Website"]
+      WEB_AGENT["collector-website"]
+      WEB_NOTE["robots.txt + sitemap<br/>+ homepage + 3-5 pages<br/>max 10 req HTTP"]
+    end
+  end
+
+  subgraph COND["MODULES CONDITIONNELS"]
+    direction LR
+    subgraph M3b["Module 3b<br/>GSC"]
+      GSC_AGENT["collector-gsc"]
+      GSC_NOTE["Probe acces<br/>→ performance<br/>→ queries, pages"]
+    end
+
+    subgraph M3c["Module 3c<br/>Google Ads"]
+      ADS_AGENT["collector-google-ads"]
+      ADS_NOTE["Campagnes<br/>depenses<br/>conversions, CPA"]
+    end
+
+    subgraph M5_10["Modules 5-10"]
+      M5["M5 GEO/IA"]
+      M6["M6 SEA/Paid"]
+      M7["M7 Social Search"]
+      M8["M8 Technique/UX"]
+      M9["M9 Tendances"]
+      M10["M10 Contenu"]
+    end
+  end
+
+  subgraph CACHE[".cache/deals/deal_id/"]
+    PD_CACHE["pipedrive/<br/>deal.json, org.json,<br/>notes.json, emails_*.json"]
+    DR_CACHE["drive/<br/>manifest.json,<br/>files/*.txt"]
+    DFS_CACHE["dataforseo/<br/>domain_*/...json(.gz)"]
+    WEB_CACHE["website/<br/>homepage.json,<br/>crawl_summary.json"]
+    GSC_CACHE["gsc/<br/>performance.json,<br/>queries.json"]
+  end
+
+  DEAL_ID --> M1
+  DEAL_ID --> M2
+  DEAL_ID --> M3
+  DEAL_ID --> M11
+  DEAL_ID -.-> M3b
+  DEAL_ID -.-> M3c
+
+  PD_AGENT --> PD_TOOL --> PD_API
+  DR_AGENT --> DR_TOOL --> DR_API
+  SEO_AGENT --> SEO_TOOL --> SEO_API
+  M3 --> M4
+
+  M1 --> PD_CACHE
+  M2 --> DR_CACHE
+  M3 --> DFS_CACHE
+  M4 --> DFS_CACHE
+  M11 --> WEB_CACHE
+  M3b --> GSC_CACHE
+
+  style CORE fill:#12121a,stroke:#ff6b35,color:#e0e0e8
+  style COND fill:#12121a,stroke:#fbbf24,color:#e0e0e8
+  style CACHE fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+      </pre>
+    </div>
+  </div>
+
+  <!-- 5. ANALYSTES -->
+  <div class="section" id="analysts">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2>Phase A' : Analystes dimensionnels + synthese strategique</h2>
+    </div>
+    <p class="section-desc">
+      Apres la collecte, 4 analystes lisent le cache en parallele (0 appel API). Puis analyst-strategy synthetise tout en diagnostic + SDB.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart TB
+  CACHE[(".cache/deals/deal_id/<br/>donnees brutes")]
+
+  subgraph PARALLEL["PHASE A' : ANALYSTES EN PARALLELE (30-45s, 0 API)"]
+    direction LR
+    AT["analyst-technical<br/>CWV, indexation,<br/>schema, images"]
+    AC["analyst-content<br/>E-E-A-T, gaps,<br/>qualite contenu"]
+    ACO["analyst-competitive<br/>autorite, SERP features,<br/>benchmark chiffre"]
+    AG["analyst-geo<br/>AI Search readiness<br/>(conditionnel)"]
+  end
+
+  subgraph OUTPUTS_A["ANALYSES DIMENSIONNELLES"]
+    direction LR
+    OT["TECHNICAL_ANALYSIS.md<br/>score /100"]
+    OC["CONTENT_ANALYSIS.md<br/>score /100"]
+    OCO["COMPETITIVE_ANALYSIS.md<br/>insights"]
+    OG["GEO_ANALYSIS.md<br/>score /100"]
+  end
+
+  subgraph OPTIONAL["OPTIONNEL"]
+    AS["analyst-signals<br/>sentiment prospect,<br/>objections, concurrence SLASHR"]
+  end
+
+  subgraph SYNTH["PHASE B : SYNTHESE STRATEGIQUE"]
+    ASTRAT["analyst-strategy<br/>Recoit toutes les analyses<br/>+ donnees brutes"]
+  end
+
+  subgraph DIAG_OUT["OUTPUTS STRATEGIQUES"]
+    SDB["SDB.md<br/>Structured Data Brief<br/>(thin + evidence log)"]
+    IDIAG["INTERNAL-DIAG.md<br/>(closer only)"]
+    ELOG["evidence_log.md"]
+  end
+
+  CACHE --> AT
+  CACHE --> AC
+  CACHE --> ACO
+  CACHE -.-> AG
+  CACHE -.-> AS
+
+  AT --> OT
+  AC --> OC
+  ACO --> OCO
+  AG --> OG
+
+  OT --> ASTRAT
+  OC --> ASTRAT
+  OCO --> ASTRAT
+  OG -.-> ASTRAT
+  AS -.-> ASTRAT
+  CACHE --> ASTRAT
+
+  ASTRAT --> SDB
+  ASTRAT --> IDIAG
+  ASTRAT --> ELOG
+
+  style PARALLEL fill:#1a1028,stroke:#7c5cfc,color:#e0e0e8
+  style OUTPUTS_A fill:#12121a,stroke:#00d4ff,color:#e0e0e8
+  style SYNTH fill:#2a1a10,stroke:#ff6b35,color:#e0e0e8
+  style DIAG_OUT fill:#1a1510,stroke:#ff6b35,color:#e0e0e8
+  style OPTIONAL fill:#12121a,stroke:#fbbf24,color:#e0e0e8
+  style SDB fill:#2a1a10,stroke:#ff6b35,color:#fff,font-weight:bold
+      </pre>
+    </div>
+  </div>
+
+  <!-- 6. PASS 2 + 3 -->
+  <div class="section" id="pass2-3">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <h2>Pass 2 (Narration) et Pass 3 (Design)</h2>
+    </div>
+    <p class="section-desc">
+      Pass 2 transforme les donnees en recit. Pass 3 transforme le recit en HTML via des writer-tab paralleles et un assembleur.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart TB
+  SDB["SDB.md<br/>(valide au Checkpoint 1)"]
+  WARNINGS["debrief_warnings.md<br/>(patterns des deals passes)"]
+
+  subgraph P2["PASS 2 : NARRATIVE ARCHITECT"]
+    direction TB
+    TONE["TONE_PROFILE<br/>DIRECT / PEDAGOGIQUE<br/>PROVOCATEUR / TECHNIQUE"]
+    HOOK["Hook : cascade 3 couches<br/>1. Hero subtitle (QUOI)<br/>2. H2 section 1 (POURQUOI)<br/>3. KPIs (PREUVE)"]
+    CTX["Section contexte<br/>'Votre situation en un coup d'oeil'"]
+    ARC["Arc narratif libre<br/>max 5 slides diagnostic<br/>deduplication arguments"]
+    INVEST["Onglet Investissement<br/>pricing_rules.md<br/>3 scenarios + ROI"]
+    FAQ["FAQ objections<br/>pre-emptees"]
+    NBP_OUT["NBP.md"]
+  end
+
+  subgraph P3["PASS 3 : DESIGN ORCHESTRATOR"]
+    direction TB
+    GATES["Gate 0 : coherence SDB/HTML<br/>Gate 1 : contradiction check<br/>Gate 2 : quality rubric"]
+
+    subgraph WRITERS["WRITER-TAB x 5-6 (parallele)"]
+      direction LR
+      W1["tab_contexte<br/>(conditionnel)"]
+      W2["tab_diagnostic"]
+      W3["tab_strategie"]
+      W4["tab_projet"]
+      W5["tab_investissement"]
+      W6["tab_cas_clients"]
+    end
+
+    BUILD["build_proposal.py<br/>skeleton + onglets<br/>= 1 fichier HTML"]
+    KIT["proposal-kit.html<br/>30 composants CSS"]
+    SKEL["proposal-skeleton.html<br/>CSS + JS + nav"]
+  end
+
+  SDB --> TONE
+  WARNINGS -.-> P2
+  TONE --> HOOK
+  HOOK --> CTX --> ARC --> INVEST --> FAQ --> NBP_OUT
+
+  NBP_OUT --> GATES
+  GATES --> WRITERS
+  KIT --> WRITERS
+  W1 --> BUILD
+  W2 --> BUILD
+  W3 --> BUILD
+  W4 --> BUILD
+  W5 --> BUILD
+  W6 --> BUILD
+  SKEL --> BUILD
+
+  style P2 fill:#1a1028,stroke:#7c5cfc,color:#e0e0e8
+  style P3 fill:#101a18,stroke:#34d399,color:#e0e0e8
+  style WRITERS fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+  style NBP_OUT fill:#201030,stroke:#7c5cfc,color:#fff,font-weight:bold
+  style BUILD fill:#0f1a12,stroke:#34d399,color:#fff,font-weight:bold
+      </pre>
+    </div>
+  </div>
+
+  <!-- 7. SOURCES DE DONNEES -->
+  <div class="section" id="data">
+    <div class="section-header">
+      <span class="section-number">07</span>
+      <h2>Sources de donnees et priorite</h2>
+    </div>
+    <p class="section-desc">
+      6 sources externes avec hierarchie de confiance stricte. GSC prime sur DataForSEO pour les metriques de trafic.
+    </p>
+    <div class="two-col">
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart TB
+  subgraph PRIO["PRIORITE METRIQUES SEARCH"]
+    direction TB
+    GSC["1. GSC<br/>donnees reelles, first-party<br/>clics, impressions, CTR, positions"]
+    GADS["2. Google Ads<br/>donnees reelles, paid<br/>CPC, volumes exacts, campagnes"]
+    DFS["3. DataForSEO<br/>estimations third-party<br/>volumes marche, concurrents, KD"]
+    CALC["4. Calcul / hypothese<br/>derive des sources ci-dessus"]
+  end
+
+  GSC --> GADS --> DFS --> CALC
+
+  style PRIO fill:#12121a,stroke:#ff6b35,color:#e0e0e8
+  style GSC fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+  style GADS fill:#1a1a10,stroke:#fbbf24,color:#e0e0e8
+  style DFS fill:#12121a,stroke:#00d4ff,color:#e0e0e8
+  style CALC fill:#12121a,stroke:#8888a0,color:#e0e0e8
+        </pre>
+      </div>
+      <div class="diagram-card">
+        <pre class="mermaid">
+flowchart TB
+  subgraph QUAL["PRIORITE SOURCES QUALITATIVES"]
+    direction TB
+    T["1. Transcripts R1"]
+    NC["2. Notes closer"]
+    EM["3. Emails Pipedrive"]
+    DP["4. Documents prospect (Drive)"]
+    NP["5. Notes Pipedrive"]
+  end
+
+  T --> NC --> EM --> DP --> NP
+
+  style QUAL fill:#12121a,stroke:#7c5cfc,color:#e0e0e8
+  style T fill:#201030,stroke:#7c5cfc,color:#e0e0e8
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. CACHE & ARTEFACTS -->
+  <div class="section" id="cache">
+    <div class="section-header">
+      <span class="section-number">08</span>
+      <h2>Cache, artefacts et flux de donnees inter-passes</h2>
+    </div>
+    <p class="section-desc">
+      Tout est cache sous .cache/deals/deal_id/. Les artefacts intermediaires (SDB, NBP) permettent de rejouer chaque passe independamment.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart LR
+  subgraph CACHE[".cache/deals/deal_id/"]
+    direction TB
+
+    subgraph RAW["Donnees brutes (collecteurs)"]
+      PD["pipedrive/<br/>deal.json, org.json, person.json,<br/>notes.json, activities.json,<br/>emails_*.json"]
+      DR["drive/<br/>manifest.json, files/*.txt"]
+      DFS["dataforseo/<br/>domain_*/*.json(.gz)"]
+      WEB["website/<br/>homepage.json, sitemap.json,<br/>sampled_pages.json, crawl_summary.json"]
+      GSC_C["gsc/<br/>performance.json, queries.json, pages.json"]
+    end
+
+    subgraph ANALYSIS["Analyses (analystes)"]
+      TA["analysis/TECHNICAL_ANALYSIS.md"]
+      CA["analysis/CONTENT_ANALYSIS.md"]
+      COA["analysis/COMPETITIVE_ANALYSIS.md"]
+      GA["analysis/GEO_ANALYSIS.md"]
+    end
+
+    subgraph ARTIFACTS["Artefacts (inter-passes)"]
+      SDB["artifacts/SDB.md"]
+      NBP["artifacts/NBP.md"]
+      IDIAG["artifacts/INTERNAL-DIAG.md"]
+      PROP["artifacts/PROPOSAL-date-slug.html"]
+      REVSTATE["artifacts/REVIEW-STATE.json"]
+      REVLOG["artifacts/REVISION-LOG.md"]
+    end
+
+    subgraph EVIDENCE["Tracabilite"]
+      ELOG["evidence/evidence_log.md"]
+    end
+  end
+
+  subgraph FLOW["Flux inter-passes"]
+    direction TB
+    F1["Pass 1<br/>ecrit SDB + INTERNAL-DIAG"]
+    F2["Pass 2<br/>lit SDB → ecrit NBP"]
+    F3["Pass 3<br/>lit NBP → ecrit HTML"]
+    F4["/review<br/>lit HTML → ecrit REVIEW-STATE"]
+  end
+
+  RAW --> F1
+  ANALYSIS --> F1
+  F1 --> SDB
+  F1 --> IDIAG
+  SDB --> F2
+  F2 --> NBP
+  NBP --> F3
+  F3 --> PROP
+  PROP --> F4
+  F4 --> REVSTATE
+
+  style CACHE fill:#12121a,stroke:#34d399,color:#e0e0e8
+  style RAW fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+  style ANALYSIS fill:#1a1028,stroke:#7c5cfc,color:#e0e0e8
+  style ARTIFACTS fill:#2a1a10,stroke:#ff6b35,color:#e0e0e8
+  style EVIDENCE fill:#12121a,stroke:#fbbf24,color:#e0e0e8
+  style FLOW fill:#1a1015,stroke:#e040a0,color:#e0e0e8
+      </pre>
+    </div>
+  </div>
+
+  <!-- 9. VALIDATION -->
+  <div class="section" id="validation">
+    <div class="section-header">
+      <span class="section-number">09</span>
+      <h2>Pipeline de validation (54 regles, 4 layers)</h2>
+    </div>
+    <p class="section-desc">
+      La validation s'execute automatiquement (hook post-Write) et dans la boucle self-critique. 4 couches de regles, score 0-100.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart TB
+  HTML["PROPOSAL-*.html"]
+  HOOK["Hook after_write<br/>(hooks.json)<br/>auto-trigger"]
+
+  subgraph VALIDATOR["validate_proposal.py"]
+    direction TB
+    L1["Layer 1 : STRUCTURE (35 pts)<br/>Nav, onglets, hero, sections,<br/>jargon interdit, tirets cadratins,<br/>TJM/jours visibles"]
+    L2["Layer 2 : CONTENU (25 pts)<br/>Densite slides, SO WHAT,<br/>evidence chain, chiffres sources"]
+    L3["Layer 3 : SEMANTIC (15 pts)<br/>Coherence narrative,<br/>test de substitution"]
+    L4["Layer 4 : QUALITE (25 pts)<br/>Accents, lexique,<br/>zero pression, zero dramatisation"]
+  end
+
+  subgraph SEVERITY["Severites"]
+    direction LR
+    HARD["HARD<br/>bloquant<br/>(auto-corrige)"]
+    SOFT["SOFT<br/>degrade le score"]
+    WARN["WARN<br/>signal"]
+  end
+
+  subgraph RESULT["Resultat"]
+    SCORE["Score 0-100<br/>Grade A/B/C/D/F"]
+    PASS_R["Pass : score >= 85<br/>ET 0 HARD"]
+    FAIL_R["Fail : HARD > 0<br/>OU score < 75"]
+    ACCEPTABLE["Acceptable : score >= 75<br/>ET 0 HARD"]
+  end
+
+  HTML --> HOOK --> VALIDATOR
+  L1 --> L2 --> L3 --> L4
+  VALIDATOR --> SCORE
+  SCORE --> PASS_R
+  SCORE --> ACCEPTABLE
+  SCORE --> FAIL_R
+  FAIL_R -->|"boucle self-critique<br/>max 2 iterations"| HTML
+
+  style VALIDATOR fill:#1a1015,stroke:#e040a0,color:#e0e0e8
+  style SEVERITY fill:#12121a,stroke:#fbbf24,color:#e0e0e8
+  style HARD fill:#1a1015,stroke:#ef4444,color:#e0e0e8
+  style SOFT fill:#1a1a10,stroke:#fbbf24,color:#e0e0e8
+  style WARN fill:#12121a,stroke:#8888a0,color:#e0e0e8
+  style RESULT fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+  style PASS_R fill:#0f1a12,stroke:#34d399,color:#e0e0e8
+  style FAIL_R fill:#1a1015,stroke:#ef4444,color:#e0e0e8
+      </pre>
+    </div>
+  </div>
+
+  <!-- 10. BOUCLE RETRO -->
+  <div class="section" id="debrief">
+    <div class="section-header">
+      <span class="section-number">10</span>
+      <h2>Boucle de retroaction (/debrief)</h2>
+    </div>
+    <p class="section-desc">
+      Chaque deal (won ou lost) alimente un fichier de patterns qui influence les futurs /prepare. Le systeme apprend de ses erreurs.
+    </p>
+    <div class="diagram-card">
+      <pre class="mermaid">
+flowchart TB
+  RESULT["Deal termine<br/>(won ou lost)"]
+  DEBRIEF["/debrief deal_id"]
+
+  subgraph COLLECT_D["Collecte debrief"]
+    PD["Pipedrive<br/>status, montant, lost_reason"]
+    ARTS["Artefacts existants<br/>SDB, NBP, PROPOSAL, REVIEW-STATE"]
+    FEEDBACK["Feedback closer<br/>(questions interactives)"]
+  end
+
+  subgraph ANALYSE_D["Auto-analyse"]
+    COMPARE["SDB predictions<br/>vs resultat reel"]
+    PATTERNS["Pattern matching<br/>arcs qui performent,<br/>objections recurrentes"]
+    WARNINGS["Extraction warnings<br/>pour futurs deals"]
+  end
+
+  subgraph OUTPUT_D["Outputs debrief"]
+    DEBRIEF_FILE[".cache/deals/deal_id/<br/>debrief.md"]
+    AGG["debrief_aggregate.py<br/>agregation cross-deals"]
+    WARN_FILE[".cache/<br/>debrief_warnings.md"]
+  end
+
+  FUTURE["/prepare futur<br/>lit debrief_warnings.md<br/>AVANT Pass 2"]
+
+  RESULT --> DEBRIEF
+  DEBRIEF --> COLLECT_D
+  COLLECT_D --> ANALYSE_D
+  ANALYSE_D --> OUTPUT_D
+  WARN_FILE --> FUTURE
+
+  PD --> COMPARE
+  ARTS --> COMPARE
+  FEEDBACK --> PATTERNS
+  COMPARE --> PATTERNS --> WARNINGS
+  WARNINGS --> DEBRIEF_FILE
+  WARNINGS --> AGG --> WARN_FILE
+
+  style COLLECT_D fill:#12121a,stroke:#00d4ff,color:#e0e0e8
+  style ANALYSE_D fill:#1a1028,stroke:#7c5cfc,color:#e0e0e8
+  style OUTPUT_D fill:#2a1a10,stroke:#ff6b35,color:#e0e0e8
+  style FUTURE fill:#0f1a12,stroke:#34d399,color:#fff,font-weight:bold
+  style WARN_FILE fill:#1a1a10,stroke:#fbbf24,color:#fff,font-weight:bold
+
+  linkStyle 8 stroke:#34d399,stroke-width:3px
+      </pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1a1028',
+      primaryTextColor: '#e0e0e8',
+      primaryBorderColor: '#7c5cfc',
+      lineColor: '#555570',
+      secondaryColor: '#12121a',
+      tertiaryColor: '#0f1a12',
+      fontFamily: 'Inter, -apple-system, sans-serif',
+      fontSize: '13px',
+      nodeBorder: '#555570',
+      clusterBkg: '#12121a',
+      clusterBorder: '#2a2a40',
+      edgeLabelBackground: '#12121a',
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      padding: 16,
+      nodeSpacing: 30,
+      rankSpacing: 40,
+    }
+  });
+
+  // Nav active state on scroll
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const activeLink = document.querySelector(`.nav a[href="#${entry.target.id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
-# Prepare Context — v12.0
+# Prepare Context — v12.1
 
 > Brief compact pour /prepare. L'IA sait QUOI faire et POURQUOI. Le COMMENT est libre.
+> **Ce fichier est un INDEX, pas une copie.** Les regles completes sont dans `agents/shared.md` (24 regles). Les rappels ci-dessous sont des pointeurs, pas des definitions. En cas de doute, shared.md fait foi.
 
 ---
 
@@ -14,17 +15,17 @@ Pas un template. Pas une plaquette. Un argumentaire sur-mesure, base sur les don
 
 ## 2. Tes contraintes (non-negociables)
 
-> **Reference unique des regles : `agents/shared.md`** (22 regles). Ci-dessous les rappels critiques pour /prepare + regles specifiques a la proposition.
+> **Reference unique des regles : `agents/shared.md`** (24 regles). Ci-dessous les rappels critiques pour /prepare + regles specifiques a la proposition.
 
 ### Regles shared.md applicables (rappel compact)
-R3 Francais + R16c accents | R4-5 Data-first + evidence chain (R21) | R10 ROI conservateur | R11 Pas de data inventee | R12 Verbatims exacts | R13 Test de substitution | R14 Zero pression | R15 Zero dramatisation | R16d Lexique interdit | R18 Zero tiret cadratin | R20 Diagnostic = interne
+R3 Francais + R16c accents | R4-5 Data-first + evidence chain (R21) | R10 ROI conservateur | R11 Pas de data inventee | R12 Verbatims exacts | R13 Test de substitution | R14 Zero pression | R15 Zero dramatisation | R16d Lexique interdit | R18 Zero tiret cadratin | R20 Diagnostic = interne | **R22 Niveaux de confiance** (VERIFIE/PROBABLE/NON VERIFIE/HYPOTHESE sur chaque finding technique) | **R23 Cross-validation 2 sources** (absence outil ≠ absence site) | **R24 CMS-aware** (suspecter le crawl avant le site sur un CMS pro)
 
 ### Regles specifiques /prepare
 - **SDB = source unique des chiffres** : la Pass 3 ne re-collecte JAMAIS les donnees. Copie exacte du SDB.
 - **Max 3 leviers actifs** (1 contrainte + 2 leviers), meme si le prospect demande tout.
 - **1 scenario recommande** : pas 3 choix. Justifier pourquoi ce niveau pour ce deal.
 - **Confiance par bloc** : chaque decision porte un indicateur HIGH/MEDIUM/LOW. Les MEDIUM/LOW sont signales au Checkpoint 1.
-- **Ne jamais affirmer une absence sans preuve** : "pas de CTA" demande un crawl. Constats verifiables, pas hypotheses deguisees.
+- **Ne jamais affirmer une absence sans preuve (R23)** : "non detecte par le crawl" ≠ "absent". Si un crawl est bloque (Cloudflare, WAF), tous ses findings negatifs sont NON VERIFIE. Cross-valider via GSC ou demander au closer de verifier dans son navigateur.
 - **Pas de jours/TJM/AMOA** dans le HTML. Le scope est qualitatif, le budget est global.
 - **Priorite sources** : GSC > Google Ads > DataForSEO > calcul/hypothese
 - **Fallbacks** : seul l'echec du deal Pipedrive est bloquant. Le reste degrade gracieusement.

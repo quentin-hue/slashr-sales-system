@@ -16,9 +16,27 @@ Crawler le site du prospect pour extraire les signaux techniques (robots.txt, si
 
 ## Execution
 
+### 0. Detection de blocage bot (OBLIGATOIRE, avant tout)
+
+Avant de lancer le crawl, tester si le site bloque les bots non-navigateur :
+
+1. `GET https://{domain}/` avec un User-Agent standard
+2. Verifier la reponse :
+   - **Body < 2 KB** ET contient `challenge`, `captcha`, `cf-`, `__cf_bm`, `AES`, `decrypt`, `cookie` → **BOT_BLOCKED**
+   - **Redirect vers une URL avec parametre crypto** (ex: `?c4dbf5544f66252c3efc189c4eabe16e=1`) → **BOT_BLOCKED**
+   - **Status 403/503** avec body Cloudflare/Akamai/Incapsula → **BOT_BLOCKED**
+   - Sinon → **BOT_OK**
+
+**Si BOT_BLOCKED :**
+- Flagger `bot_protection: "detected"` dans l'output JSON
+- Continuer le crawl normalement MAIS ajouter un warning sur CHAQUE finding :
+  `⚠️ BOT_BLOCKED: ce resultat peut etre un artefact du blocage anti-bot. Cross-validation GSC requise.`
+- Les findings d'un crawl BOT_BLOCKED sont automatiquement NON VERIFIE (cf. regle 22 de shared.md)
+- Inclure dans l'output : `"bot_protection_warning": "Cloudflare/WAF detecte. Tous les findings techniques de ce crawl doivent etre cross-valides via GSC URL inspection avant utilisation dans le diagnostic client."`
+
 ### 1. Fondamentaux (toujours)
-1. **robots.txt** : `GET https://{domain}/robots.txt`
-2. **Sitemap** : parser robots.txt pour trouver le sitemap, sinon essayer `/sitemap.xml`, `/sitemap_index.xml`
+1. **robots.txt** : `GET https://{domain}/robots.txt`. Si la reponse contient du HTML/JS au lieu de directives robots.txt → noter `robots_txt: "blocked_by_waf"` (pas "not_found")
+2. **Sitemap** : parser robots.txt pour trouver le sitemap, sinon essayer `/sitemap.xml`, `/sitemap_index.xml`. **Aussi verifier via GSC** (`mcp__gsc__list_sitemaps_enhanced`) si la propriete est accessible. Le sitemap peut exister a un chemin non standard (ex: `/media/sitemaps/`) et etre soumis dans GSC sans etre dans robots.txt.
 3. **Homepage** : `GET https://{domain}/` (extraire title, meta, H1, schema JSON-LD, CWV hints)
 
 ### 2. Inventaire sitemap par type de page
@@ -94,8 +112,11 @@ Retourner un resume JSON :
   "status": "ok|partial|error",
   "domain": "...",
   "business_type": "...",
-  "robots_txt": "found|not_found|blocked",
-  "sitemap": "found|not_found",
+  "bot_protection": "none|detected",
+  "bot_protection_warning": "...",
+  "robots_txt": "found|not_found|blocked_by_waf",
+  "sitemap": "found|not_found|found_via_gsc_only",
+  "sitemap_source": "robots_txt|direct_url|gsc|not_found",
   "sitemap_urls_count": 0,
   "sitemap_inventory": {"blog": 0, "produit": 0, "categorie": 0, "local": 0, "service": 0, "autre": 0},
   "homepage_title": "...",

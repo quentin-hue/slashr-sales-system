@@ -79,6 +79,15 @@ Tu ne proposes pas de diagnostic alternatif. Tu forces l'agent principal a affro
 - Y a-t-il des contradictions que la confrontation a ratees ? Croiser manuellement les top 3 conclusions des analystes.
 - La confiance echantillon LOW est-elle correctement propagee dans les pre-conclusions ?
 
+### 8. "Les donnees du crawl sont biaisees" (CRITIQUE)
+Cet angle vise specifiquement les faux negatifs de crawl (le crawl ne voit pas quelque chose qui existe en realite). Verifier :
+- Le `bot_protection` du crawl est-il `"detected"` ? Si oui, TOUS les findings negatifs du crawl technique sont suspects.
+- Y a-t-il des findings qui concluent a l'absence d'un element (pas de sitemap, pas de schema, pas de meta, contenu vide, images sans alt) bases uniquement sur le crawl ? Croiser avec les donnees GSC (inspection URL, sitemaps list, rich results).
+- Le CMS identifie est-il un CMS professionnel (OroCommerce, Magento, Shopify, PrestaShop, Salesforce Commerce) ? Si oui, des absences basiques (pas de sitemap, pas de schema Product sur un e-commerce) sont ANORMALES et doivent etre cross-validees.
+- **Test du navigateur** : si le closer ouvrait ce site dans son navigateur et verifiait les findings en 5 minutes, est-ce que le diagnostic tiendrait ? Si la reponse est "je ne suis pas sur", c'est un signal CRITIQUE.
+- **Formulation** : les analyses utilisent-elles "absent" / "inexistant" / "aucun" la ou "non detecte par le crawl" serait plus precis ? Chaque "absent" affirmatif qui repose sur un seul crawl est un risque de credibilite.
+- Si ce check revele des problemes, marquer le verdict PROBLEME CRITIQUE — les findings biaises doivent etre corriges AVANT le diagnostic client.
+
 ## Output
 
 Ecrire `.cache/deals/{deal_id}/analysis/DEVIL_ADVOCATE.md` :

@@ -23,6 +23,28 @@ Analyser en profondeur les signaux techniques du site prospect a partir des donn
 - `context/references/technical-audit.md` — grille de reference
 - `context/references/cwv-thresholds.md` — seuils Core Web Vitals
 
+## Protocole GSC-first (OBLIGATOIRE avant l'analyse)
+
+Quand les donnees GSC sont disponibles, COMMENCER par verifier la realite Google avant d'analyser les donnees crawl :
+
+### Etape 0a : Verification GSC
+1. **Sitemaps** : lire `.cache/deals/{deal_id}/gsc/sitemaps.json` ou utiliser les donnees GSC disponibles. Combien de sitemaps soumis ? Combien d'URLs ? Erreurs ?
+2. **URL Inspection** : si des inspections URL sont disponibles dans le cache, les lire. Verifier : fetch status, rich results detectes, indexation.
+3. **Pages indexees** : comparer le nombre de pages dans le sitemap GSC vs le nombre de pages dans le crawl. Une divergence importante signale un probleme de crawl, pas un probleme de site.
+
+### Etape 0b : Detection de biais crawl
+Lire le `bot_protection` dans le crawl summary. Si `"detected"` :
+- **TOUS les findings negatifs du crawl sont NON VERIFIE par defaut**
+- Croiser systematiquement avec les donnees GSC avant de conclure
+- "Le crawl ne voit pas de schema" + "GSC detecte Product snippets" = le schema existe, c'est le crawl qui est bloque
+- "Le crawl voit du contenu vide" + "GSC fetch = SUCCESSFUL" = le contenu existe, c'est le crawl qui recoit le challenge JS
+- **Ne jamais reporter un finding negatif d'un crawl BOT_BLOCKED sans l'avoir cross-valide avec GSC**
+
+### Etape 0c : Ajustement des scores
+Si `bot_protection == "detected"` et que les donnees GSC ne sont pas disponibles pour cross-valider :
+- Les dimensions qui dependent du crawl (Schema, Images, Architecture) recoivent la mention "NON EVALUABLE (crawl bloque, cross-validation GSC requise)" au lieu d'un score.
+- Seules les dimensions verifiables via GSC ou des sources independantes recoivent un score.
+
 ## Analyse (6 dimensions)
 
 ### 1. Infrastructure & Accessibilite (20 pts)
@@ -144,3 +166,5 @@ GENERATED_AT: {ISO timestamp}
 - **Charger les references** : lire `context/references/technical-audit.md` et `context/references/cwv-thresholds.md` avant d'analyser.
 - **Confiance echantillon obligatoire.** Lire le `SAMPLE_CONFIDENCE` du crawl summary. Si le niveau est LOW, temperer les conclusions qui dependent de l'echantillon (architecture, CTA, maillage) et le signaler explicitement. Les conclusions basees sur des donnees exhaustives (robots.txt, sitemap, homepage) ne sont pas impactees.
 - **Top 3 conclusions obligatoires.** Ce bloc est lu par l'etape de confrontation croisee (Etape 1.2a-bis). Chaque conclusion doit etre factuelle, chiffree, et autonome (comprehensible sans lire le reste du rapport).
+- **Niveau de confiance obligatoire sur chaque finding.** Chaque probleme dans le Top 5 et chaque score de dimension doit porter un niveau de confiance (VERIFIE / PROBABLE / NON VERIFIE / HYPOTHESE) selon la regle 22 de shared.md. Un finding base uniquement sur un crawl BOT_BLOCKED est automatiquement NON VERIFIE.
+- **Jamais "absent" sans preuve d'absence.** Ne jamais conclure "pas de sitemap", "pas de schema", "pas de meta description" sur la base d'un seul crawl. Si le crawl ne voit pas quelque chose, formuler : "non detecte par le crawl (possible artefact de protection anti-bot)" et recommander la cross-validation GSC. La difference entre "non detecte" et "absent" est la difference entre une analyse fiable et une erreur embarrassante.

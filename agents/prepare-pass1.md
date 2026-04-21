@@ -224,11 +224,31 @@ Ecris ton output dans .cache/deals/{deal_id}/analysis/{OUTPUT_FILE}.
    - `.cache/deals/{deal_id}/analysis/CONTENT_ANALYSIS.md` — OBLIGATOIRE
    - `.cache/deals/{deal_id}/analysis/COMPETITIVE_ANALYSIS.md` — OBLIGATOIRE
    - `.cache/deals/{deal_id}/analysis/GEO_ANALYSIS.md` — conditionnel
-3. Si un analyste echoue → le noter dans l'evidence log, continuer sans (degradation gracieuse). analyst-strategy travaillera avec les donnees brutes pour cette dimension.
+
+3. **Gestion des echecs (fallback par analyste) :**
+
+| Analyste | Si echec (timeout ou erreur) | Impact sur le flow |
+|----------|------------------------------|-------------------|
+| **analyst-technical** | Degradation : analyst-strategy utilise les donnees brutes du crawl (website cache). Noter "analyse technique non disponible, diagnostic base sur donnees brutes" dans evidence log. | Le diagnostic technique sera moins structure mais les donnees existent. |
+| **analyst-content** | Degradation : analyst-strategy utilise les ranked_keywords et le crawl. | Le diagnostic contenu sera base sur les metriques, pas sur l'analyse qualitative. |
+| **analyst-competitive** | Degradation : analyst-strategy utilise le benchmark brut (competitors_domain, rank_overview). | Le gap concurrentiel sera chiffre mais pas interprete. |
+| **analyst-geo** | Ignorer (conditionnel). | Pas d'impact si GEO n'est pas dans le perimetre. Si GEO est dans le perimetre, noter "analyse GEO non disponible" au Checkpoint 1. |
+| **analyst-devil-advocate** | **CRITIQUE** : relancer 1 fois. Si echec au 2e essai, l'agent principal execute le challenge manuellement (lire les analyses, appliquer la grille des 8 angles, documenter dans DEVIL_ADVOCATE.md). Ne JAMAIS diagnostiquer sans challenge. |
+
+4. **Documenter les echecs dans l'evidence log :**
+```
+SUBAGENT_STATUS:
+  analyst-technical: {OK / FAILED (reason) / TIMEOUT}
+  analyst-content: {OK / FAILED / TIMEOUT}
+  analyst-competitive: {OK / FAILED / TIMEOUT}
+  analyst-geo: {OK / SKIPPED (not activated) / FAILED / TIMEOUT}
+  analyst-devil-advocate: {OK / FAILED / MANUAL_FALLBACK}
+```
 
 ### Budget temps
-- Cible : 30-45 secondes (pas d'appels API, que de la lecture + analyse)
-- Si un analyste depasse 90 secondes → timeout, continuer sans
+- Cible : 30-45 secondes par analyste (pas d'appels API, que de la lecture + analyse)
+- Timeout : 90 secondes par analyste. Au-dela, appliquer le fallback ci-dessus.
+- Si 2+ analystes OBLIGATOIRES echouent → avertir le closer au Checkpoint 1 : "Analyse partielle, les dimensions {X} et {Y} sont basees sur les donnees brutes."
 
 ---
 
@@ -400,6 +420,38 @@ DEVIL_ADVOCATE_RESOLVED:
 - Le devil's advocate ne peut PAS bloquer le process. Il challenge, l'agent principal decide.
 - Si le devil's advocate detecte un probleme CRITIQUE (mauvais domaine, donnee manifestement fausse, desalignement total brief/analyses), c'est un hard stop : corriger avant de diagnostiquer.
 - Budget temps : < 30 secondes (lecture + raisonnement, pas d'appel API)
+
+---
+
+## Etape 1.2e : Checkpoint verification browser (CONDITIONNEL)
+
+> **Declencheur :** cette etape est obligatoire si le crawl technique a detecte `bot_protection: "detected"` OU si le devil's advocate a identifie des findings NON VERIFIE necessitant une cross-validation navigateur.
+
+**Objectif :** demander au closer de verifier dans son navigateur les findings qui ne peuvent pas etre cross-valides automatiquement (GSC indisponible ou insuffisant pour trancher).
+
+**Procedure :**
+1. Lister les findings NON VERIFIE restants apres la cross-validation GSC
+2. Pour chaque finding, formuler une question claire et verifiable en 30 secondes :
+
+```
+Avant de finaliser le diagnostic, peux-tu verifier ces points dans ton navigateur ?
+- [ ] {url}/robots.txt → le fichier s'affiche normalement ? Copie-colle le contenu.
+- [ ] {url}/sitemap.xml → le fichier se telecharge ou s'affiche ?
+- [ ] {url fiche produit} → clic droit > code source > chercher "ld+json" → tu vois du schema ?
+- [ ] {url categorie} → la page a du contenu texte au-dessus des produits ?
+```
+
+3. Attendre les reponses du closer
+4. Mettre a jour les niveaux de confiance : les findings confirmes passent a VERIFIE, les infirmes sont retires du diagnostic
+
+**Si le closer repond :**
+- Mettre a jour les analyses techniques avec les corrections
+- Documenter dans l'evidence log : `[src: browser-check, {element}, {date}]`
+
+**Si le closer ne peut pas verifier (pas d'acces, pas le temps) :**
+- Les findings restent NON VERIFIE
+- Les exclure des outputs clients
+- Les mentionner dans le fichier INTERNAL comme "a verifier"
 
 ---
 
