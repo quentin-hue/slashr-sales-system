@@ -28,13 +28,12 @@ CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache"
 STALE_THRESHOLD_DAYS = 7
 
 REQUIRED_FIELD_KEYS = {
-    "e529595ef908cdf5851df4355bbce866f322fcae": "r1_score",
     "0b4c7e8cc10ced7badf65b34dac6254bd10a0179": "decideur_level",
-    "4b84e7bfe1a6b330318fc7a0d208e2faedf2530a": "r2_pack_link",
+    "0705bff8791956fcfc59c51d138e24fdc9d6d16f": "r2_pack_link",
     "1fd2ec1073fa60e11fb59bddfec7a2f6656c4b0c": "dossier_r1_link",
     "f8c51fb60ea43a34c56998b6ad9bf946234149a1": "leviers_pressentis",
     "d76190f6be0ca288aeac6107f2fb5d784d0f5e28": "domaine_principal",
-    "52fe480f70327c9f1a06bb113cfeabe398ae8f9c": "qualification_status",
+    "2389e066f59aa6dae4edb9903557fdec7924426a": "gads_customer_id",
 }
 
 REQUIRED_ENUM_IDS = {

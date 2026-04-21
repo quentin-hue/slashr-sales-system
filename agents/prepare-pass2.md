@@ -565,7 +565,9 @@ Hero fullscreen propre a cet onglet (tag "Cas clients", subtitle = angle preuves
 
 **Critere secondaire :** proximite sectorielle (le prospect se reconnait plus facilement).
 
-L'IA choisit 2-4 cas en justifiant le critere de selection pour chacun. Voir `context/case_studies.md`. Jamais inventer un cas.
+**Source prioritaire : KB SLASHR.** AVANT d'utiliser les cas generiques de `context/case_studies.md`, interroger la KB SLASHR (MCP slashr-kb) avec `kb_search(query="bilan résultats trafic clics hors-marque", scope="drive")` pour trouver des bilans clients reels avec des resultats chiffres. Prioriser les cas reels (donnees sourcees, bilans existants) sur les cas generiques. Les cas generiques de `case_studies.md` sont un fallback si la KB ne retourne rien de pertinent.
+
+L'IA choisit 1-3 cas en justifiant le critere de selection pour chacun. Jamais inventer un cas ni un chiffre.
 
 **Regle de cadrage :** chaque cas est presente sous l'angle qui resonne avec le prospect. Le meme cas peut etre presente differemment selon le deal.
 

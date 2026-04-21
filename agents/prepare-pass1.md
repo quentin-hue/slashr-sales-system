@@ -275,6 +275,7 @@ CONFIANCE GLOBALE : {HIGH / MEDIUM / LOW}
 - Chaque conclusion appuyee par des donnees (evidence chain)
 - Si les donnees sont insuffisantes, le dire (Confiance Low)
 - Le diagnostic est INTERNE. Les conclusions sont traduites en langage business dans le HTML.
+- **ROI sans donnees business :** si aucune donnee de conversion n'est disponible (pas d'acces GA4, pas de donnees e-commerce, pas de panier moyen reel), ne PAS estimer de ROI monetaire. Utiliser des metriques trafic : gain de clics/mois, gain de positions, gain de CTR. Le ROI monetaire sera calcule en Phase 1 quand les donnees Analytics seront accessibles. Marquer `ROI Confidence: LOW` dans le SDB.
 
 ### C. Construire la strategie + ROI + trajectoires
 

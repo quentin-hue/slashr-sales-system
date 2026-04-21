@@ -1,7 +1,7 @@
 # Plateforme de marque SLASHR
 
 > Source : Google Doc (synchro automatique via `tools/sync_brand_docs.py`)
-> Derniere synchro : 2026-03-26 17:53
+> Derniere synchro : 2026-04-20 10:18
 > Pour mettre a jour : modifier le Google Doc, puis `python3 tools/sync_brand_docs.py --force`
 
 ---
@@ -164,7 +164,7 @@ Les éléments tangibles qui transforment nos valeurs en crédibilité :
 
 Outils propriétaires : 19 outils internes (Tracking GEO, Content Writer, Analyse SERP, Knowledge Graph Explorer…) qui accélèrent l’analyse et l’exécution.
 
-Diagnostic data-first : analyse structuree de la situation Search du client (contrainte principale, leviers prioritaires, confiance). Base sur les donnees reelles (GSC, Google Ads, DataForSEO).
+Grille d’analyse S7 : notre outil de diagnostic interne. 7 critères pour évaluer la situation Search d’un client et identifier les priorités.
 
 Simulateur ROI interactif : intégré aux propositions. Le client manipule les hypothèses lui-même.
 

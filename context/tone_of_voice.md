@@ -1,7 +1,7 @@
 # Tone of Voice SLASHR
 
 > Source : Google Doc (synchro automatique via `tools/sync_brand_docs.py`)
-> Derniere synchro : 2026-03-26 17:53
+> Derniere synchro : 2026-04-20 10:18
 > Pour mettre a jour : modifier le Google Doc, puis `python3 tools/sync_brand_docs.py --force`
 
 ---

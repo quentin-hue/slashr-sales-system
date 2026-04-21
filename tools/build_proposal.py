@@ -22,9 +22,17 @@ Exit codes: 0=OK, 1=usage error, 2=file not found, 3=assembly error
 
 import argparse
 import os
+import re
 import sys
+import unicodedata
 from datetime import datetime
 from pathlib import Path
+
+
+def slugify(text):
+    """Remove accents and normalize text for use in HTML IDs and data-attributes."""
+    nfkd = unicodedata.normalize('NFKD', text)
+    return ''.join(c for c in nfkd if not unicodedata.combining(c))
 
 
 def read_file(path):
@@ -136,8 +144,17 @@ def main():
         )
     html = html.replace("{{EXTRA_JS}}", extra_js)
 
+    # Slugify all tab IDs and data-tab attributes (remove accents)
+    # Matches id="tab-xxx" and data-tab="xxx"
+    def slugify_match(m):
+        return m.group(0)[:m.start(1) - m.start(0)] + slugify(m.group(1)) + m.group(0)[m.end(1) - m.start(0):]
+    html = re.sub(r'id="(tab-[^"]+)"', lambda m: f'id="{slugify(m.group(1))}"', html)
+    html = re.sub(r'data-tab="([^"]+)"', lambda m: f'data-tab="{slugify(m.group(1))}"', html)
+    # Also fix getElementById calls in onclick handlers
+    html = re.sub(r"getElementById\('(tab-[^']+)'\)", lambda m: f"getElementById('{slugify(m.group(1))}')", html)
+    html = re.sub(r"querySelector\('\[data-tab=([^\]]+)\]'\)", lambda m: f"querySelector('[data-tab={slugify(m.group(1))}]')", html)
+
     # Verify no unreplaced placeholders remain
-    import re
     remaining = re.findall(r'\{\{[A-Z_]+\}\}', html)
     if remaining:
         print(f"[ERROR] Unreplaced placeholders: {remaining}", file=sys.stderr)

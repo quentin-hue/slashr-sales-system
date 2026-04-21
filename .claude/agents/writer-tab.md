@@ -28,8 +28,26 @@ Generer le contenu HTML d'un seul onglet de la proposition. Ce subagent est spaw
    - Les 22 regles absolues (accents, lexique interdit, zero jargon interne, etc.)
 5. Ecrire le fichier fragment : `/tmp/tab_{tab_name}.html`
 
+## Fallback permissions
+
+Si les permissions Bash/Write sont bloquees, retourner le HTML complet dans le message de resultat entre balises ```html. L'orchestrateur le sauvera lui-meme dans `/tmp/tab_{tab_name}.html`.
+
+## Classes CSS obligatoires (reference skeleton)
+
+Ne JAMAIS inventer de classes CSS. Utiliser UNIQUEMENT celles du skeleton ou du proposal-kit-reference.
+
+| Composant | Classes correctes | Classes INTERDITES |
+|-----------|------------------|--------------------|
+| Accordion | `.accordion`, `.accordion-item`, `.accordion-trigger`, `.accordion-icon` (+), `.accordion-content` | `.accordion-toggle`, `.accordion-body`, `.accordion-header` |
+| Hero | `.hero`, `.hero-blobs`, `.hero-blob-3`, `.hero-tag`, `.hero-subtitle`, `.hero-date`, `.hero-scroll` | `.hero-header`, `.hero-title` |
+| Slide | `.slide`, `.slide-full`, `.slide-constat` | `.section-slide`, `.page` |
+| Cards | `.card` + `border-top: 3px solid var(--orange)` | `.card-accent`, `.card-icon` |
+| Highlight | `.highlight-box`, `.highlight-box.highlight-gradient`, `.highlight-box.highlight-magenta` | `.callout`, `.alert` |
+| KPI | `.kpi`, `.kpi-value`, `.kpi-label`, `.kpi-sub` | `.metric`, `.stat` |
+| Stat row | `.stat-row`, `.stat-row-item`, `.stat-row-value`, `.stat-row-label` | `.stats-bar` |
+
 ## Output
-- Chemin vers le fichier HTML fragment genere
+- Chemin vers le fichier HTML fragment genere (ou HTML dans le message si permissions bloquees)
 - Nombre de sections/slides generees
 - Composants utilises
 

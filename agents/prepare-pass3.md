@@ -94,18 +94,28 @@ Les onglets sont **independants** (chacun consomme le NBP, pas les autres onglet
 
 ---
 
+### Architecture des onglets (obligatoire)
+
+**Hero sur chaque onglet :** chaque onglet COMMENCE par un `<section class="hero">` avec blobs gradient. Structure identique au hero Diagnostic : `hero-tag` (nom de l'onglet), `h1` (titre), `hero-subtitle` (1 phrase), `hero-scroll`. Pas de `.tab-header` compact.
+
+**Footer entre onglets :** chaque onglet (sauf le dernier) SE TERMINE par une slide footer avec CTA vers l'onglet suivant. Structure : `<div class="slide">` (PAS `<section class="hero">` car ca casse les progress dots) avec blobs en fond (`<div class="hero-blobs"><div class="hero-blob-3"></div></div>`), contenu en `z-index:10`, et un `<a>` style inline (background gradient, padding, border-radius) avec un `onclick` qui change de tab + appelle `updateDots()`. Ne PAS utiliser `.nav-tab` ni `.cta-button` (styles ecrases par le skeleton).
+
+**IDs sans accents :** les IDs des tabs ne doivent JAMAIS contenir de caracteres accentues. `tab-strategie` et non `tab-stratégie`. Les `data-tab` de la nav doivent matcher exactement.
+
 ### Choix des composants (libre)
 
 L'IA choisit les composants du kit (`templates/proposal-kit.html`, reference condensee dans `context/proposal-kit-reference.md`) pour chaque section.
 
 **Contraintes :**
 - **Max 1 composant visuel par slide** (bar-chart, donut, table, cards grid). Si 2 composants sont necessaires, splitter en 2 slides.
+- **Budget viewport : ~700px de contenu utile max par slide** (1440x900 - nav 56px - paddings). Si le contenu depasse, scinder en 2 slides. Le writer-tab doit verifier la densite AVANT de retourner le HTML.
 - Pas 2 blocs data consecutifs sans interpretation (highlight-box ou texte)
+- **Max 1 highlight-box (SO WHAT) par slide**, 3 lignes max.
 - Le rythme visuel doit maintenir l'attention du decideur
 - **Titres h2 : max 8 mots.** Le detail va dans le section-intro, pas dans le titre.
 - **Section labels : max 4 mots.** Ex: "Google Ads France", pas "Google Ads France, Search, 30 derniers jours".
 - **Ne jamais utiliser `.card-accent`** (bordure gradient moche). Utiliser `.card` + `border-top: 3px solid var(--orange/magenta/violet)`.
-- **Simulateur ROI : max 2 sliders.** Le reste en constantes dans le JS. Trop d'inputs perd le decideur.
+- **Simulateur ROI : max 2 sliders.** Le reste en constantes dans le JS. Trop d'inputs perd le decideur. Si ROI Confidence = LOW dans le SDB, remplacer le simulateur ROI par un simulateur de trafic (1 slider : gain clics) ou le supprimer.
 - **board-ready-a4 : masque a l'ecran.** Le CSS doit inclure `.board-ready-a4 { display: none }` + `@media print { .board-ready-a4 { display: block } }`.
 
 **L'IA decide :** quel composant pour quelle donnee. Un bar-chart n'est pas obligatoire pour un benchmark. Une table n'est pas obligatoire pour une comparaison. Le kit offre 30 composants, l'IA choisit ceux qui servent le mieux la narration.

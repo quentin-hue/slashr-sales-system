@@ -168,9 +168,13 @@ Bloc "M4-M6" qui montre la montee en puissance post-Phase 1 :
 
 ---
 
-## Simulateur ROI (obligatoire)
+## Simulateur ROI (conditionnel)
 
-Slide dedie avec sliders interactifs. Regles UX :
+**Regle :** si `ROI Confidence = LOW` dans le SDB (pas de donnees de conversion, pas d'acces GA4), ne PAS afficher de simulateur ROI monetaire. Deux options :
+1. **Simulateur de trafic** (1 slider : gain de clics/mois, resultat = trafic cible M12). Pas de valeur monetaire.
+2. **Pas de simulateur** si les objectifs trafic sont deja affiches dans la slide Phase 2.
+
+**Si ROI Confidence = MEDIUM ou HIGH** (donnees de conversion disponibles) : slide dediee avec sliders interactifs. Regles UX :
 - **Sliders en colonne unique** (pas de grille 2 colonnes, ca casse l'alignement)
 - **Gap reduit** entre les sliders (6px)
 - **Justification sous chaque curseur** (sim-sub) : source de la donnee ou methode de calcul
