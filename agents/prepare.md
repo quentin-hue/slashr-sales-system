@@ -80,8 +80,8 @@ Lire et executer chaque passe dans l'ordre, avec les 2 checkpoints interactifs.
 ### Pass 1 : DATA & STRATEGY ENGINE
 **Fichier :** `agents/prepare-pass1.md`
 
-Collecte (10 modules) + analyse dimensionnelle parallele (4 analystes) + structuration + synthese strategique + diagnostic interne (Etape 1.3).
-Output interne : **Structured Data Brief (SDB)** (inclut les scores dimensionnels + le diagnostic strategique).
+Collecte en 2 phases (contexte puis SEO) + analyse dimensionnelle parallele (4 analystes) + confrontation croisee + structuration + synthese strategique + devil's advocate + diagnostic interne.
+Output interne : **Structured Data Brief (SDB)** (inclut les scores dimensionnels, la validation croisee inter-sources, et le diagnostic strategique challenge).
 
 > **Mode `--fast`** : si le flag `--fast` est present et qu'un SDB frais (< 2h) existe, cette passe est entierement skippee. L'agent passe directement au Checkpoint 1 avec le SDB existant.
 

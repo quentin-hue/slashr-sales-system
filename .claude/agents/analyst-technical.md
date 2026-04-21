@@ -87,6 +87,19 @@ GENERATED_AT: {ISO timestamp}
 
 ## Score global : {X}/100
 
+## Confiance echantillon
+- Pages analysees : {N} / {total sitemap}
+- Archetypes couverts : {liste des types crawles}
+- Archetypes manquants : {liste ou "aucun"}
+- Niveau de confiance : {HIGH / MEDIUM / LOW}
+- Note : {si LOW, preciser quelles conclusions sont fragiles et pourquoi}
+
+## Top 3 conclusions (pour confrontation croisee)
+1. {conclusion 1 — 1 phrase avec chiffre}
+2. {conclusion 2 — 1 phrase avec chiffre}
+3. {conclusion 3 — 1 phrase avec chiffre}
+→ Recommandation principale : {1 phrase}
+
 ## Top 5 problemes (par impact business)
 
 1. **{probleme}** — Score: -{X} pts
@@ -129,3 +142,5 @@ GENERATED_AT: {ISO timestamp}
 - **Pas de catastrophisme.** Un score de 45/100 n'est pas "catastrophique", c'est "avec des marges de progression significatives".
 - **Prioriser par impact.** Le top 5 est ordonne par impact business, pas par severite technique.
 - **Charger les references** : lire `context/references/technical-audit.md` et `context/references/cwv-thresholds.md` avant d'analyser.
+- **Confiance echantillon obligatoire.** Lire le `SAMPLE_CONFIDENCE` du crawl summary. Si le niveau est LOW, temperer les conclusions qui dependent de l'echantillon (architecture, CTA, maillage) et le signaler explicitement. Les conclusions basees sur des donnees exhaustives (robots.txt, sitemap, homepage) ne sont pas impactees.
+- **Top 3 conclusions obligatoires.** Ce bloc est lu par l'etape de confrontation croisee (Etape 1.2a-bis). Chaque conclusion doit etre factuelle, chiffree, et autonome (comprehensible sans lire le reste du rapport).

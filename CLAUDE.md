@@ -67,6 +67,7 @@ slashr-sales-system/
 │       ├── analyst-competitive.md         ← Analyse concurrentielle (autorite, contenu, SERP features)
 │       ├── analyst-geo.md                 ← Analyse GEO / AI Search readiness (conditionnel)
 │       ├── analyst-signals.md             ← Analyse signaux faibles emails/notes (optionnel)
+│       ├── analyst-devil-advocate.md      ← Challenge du diagnostic (biais, failles, donnees ignorees)
 │       ├── analyst-strategy.md            ← Synthese strategique + SDB (recoit les analyses)
 │       └── writer-tab.md                  ← Generation onglet HTML
 ├── agents/

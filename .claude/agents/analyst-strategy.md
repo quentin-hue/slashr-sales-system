@@ -25,6 +25,9 @@ Synthetiser les analyses dimensionnelles (technique, contenu, concurrentiel, GEO
 - `.cache/deals/{deal_id}/analysis/GEO_ANALYSIS.md` — score citabilite, readiness IA (conditionnel)
 - `.cache/deals/{deal_id}/analysis/SIGNALS_ANALYSIS.md` — sentiment, objections, urgence, concurrence (optionnel)
 
+### Confrontation croisee (Etape 1.2a-bis — LIRE APRES les analyses)
+- `.cache/deals/{deal_id}/analysis/CONFRONTATION.md` — contradictions detectees et resolues entre analystes, coherences fortes, confiance echantillon
+
 ### Donnees collecteurs (complement)
 - `.cache/deals/{deal_id}/pipedrive/` — contexte deal, contact, notes, emails
 - `.cache/deals/{deal_id}/drive/` — fichiers R1, transcript, brief
@@ -35,20 +38,72 @@ Synthetiser les analyses dimensionnelles (technique, contenu, concurrentiel, GEO
 ## Execution
 
 1. **Lire les analyses dimensionnelles** (Phase A') — ce sont les inputs principaux
-2. **Lire les donnees Pipedrive + Drive** — contexte business, brief, verbatims
-3. **Cartographie des domaines** : classifier tous les domaines (PRINCIPAL, SECONDAIRE, TIERS)
-4. **Synthese cross-dimensionnelle** :
+2. **Lire la confrontation croisee** (Etape 1.2a-bis) — contradictions resolues, coherences fortes
+3. **Lire les donnees Pipedrive + Drive** — contexte business, brief, verbatims
+4. **Cartographie des domaines** : classifier tous les domaines (PRINCIPAL, SECONDAIRE, TIERS)
+5. **Validation croisee inter-sources** (voir section dediee ci-dessous)
+6. **Synthese cross-dimensionnelle** :
    - Croiser les 4 analyses pour identifier le verrou principal
+   - **Integrer les contradictions resolues** de CONFRONTATION.md : si une contradiction impacte le diagnostic, ajuster
    - Exemple : score technique bas + gap contenu large + concurrent avec schema riche = le verrou est l'absence de fondations techniques ET editoriales
    - Exemple : technique OK + E-E-A-T faible + concurrent dominant en contenu = le verrou est la credibilite editoriale
-5. **Diagnostic strategique** (inchange dans la methode, enrichi dans les inputs) :
+7. **Diagnostic strategique** (inchange dans la methode, enrichi dans les inputs) :
    - Contrainte principale (le verrou cross-dimensionnel)
    - Max 2 leviers prioritaires
    - Ce qu'on ne fait pas maintenant (et pourquoi)
    - Confiance (High / Medium / Low)
-6. **Integrer les scores dimensionnels dans le SDB** (nouvelles sections)
-7. **Lire les debrief warnings** : si `.cache/debrief_warnings.md` existe, integrer les patterns connus
-8. **Generer le SDB** (thin + evidence log)
+8. **Integrer les scores dimensionnels dans le SDB** (nouvelles sections)
+9. **Lire les debrief warnings** : si `.cache/debrief_warnings.md` existe, integrer les patterns connus
+10. **Generer le SDB** (thin + evidence log)
+
+## Validation croisee inter-sources (OBLIGATOIRE)
+
+Quand plusieurs sources couvrent la meme metrique, les comparer systematiquement. Un ecart > 50% est un **signal d'alerte**, pas juste un conflit de priorite.
+
+### Metriques a croiser
+
+| Metrique | Source A | Source B | Seuil d'alerte |
+|----------|----------|----------|----------------|
+| Trafic organique mensuel | GSC (clics) | DataForSEO (estimated traffic) | > 50% d'ecart |
+| Nombre de keywords indexes | GSC (queries avec impressions) | DataForSEO (ranked_keywords total) | > 100% d'ecart |
+| Split marque / hors-marque | GSC (filtrage queries) | DataForSEO (heuristique) | > 20 points d'ecart |
+| CPA / conversions | Google Ads (reel) | Pipedrive notes (declaratif) | Tout ecart significatif |
+| Nombre de pages indexees | GSC (pages avec impressions) | Sitemap (URLs) | > 50% d'ecart |
+| Budget Ads mensuel | Google Ads (depenses reelles) | Pipedrive notes (declaratif) | > 30% d'ecart |
+
+### Procedure
+
+1. Pour chaque metrique ou 2+ sources sont disponibles, calculer l'ecart en pourcentage
+2. Si ecart <= seuil → **OK**, utiliser la source prioritaire (GSC > Ads > DataForSEO > declaratif)
+3. Si ecart > seuil → **ALERTE**, documenter dans le SDB :
+
+```
+SOURCE_CROSS_VALIDATION:
+  Alertes : {N}
+
+  ALERTE 1 : {metrique}
+    Source A : {valeur} [src: {source}]
+    Source B : {valeur} [src: {source}]
+    Ecart : {X}%
+    Interpretation : {ce que ca signifie pour le diagnostic}
+    Decision : {quelle valeur utiliser et pourquoi}
+
+  ALERTE 2 : ...
+
+  Metriques coherentes : {liste des metriques sans alerte}
+```
+
+### Interpretations types des ecarts
+
+| Ecart | Interpretation probable |
+|-------|----------------------|
+| GSC >> DataForSEO (trafic) | DataForSEO sous-estime, le prospect est plus gros qu'il n'y parait. Bon signe pour le potentiel. |
+| DataForSEO >> GSC (trafic) | Le prospect a peut-etre des problemes d'indexation ou de cannibalisation. Verifier dans TECHNICAL_ANALYSIS. |
+| GSC pages << Sitemap URLs | Probleme d'indexation majeur. Signal fort pour le diagnostic technique. |
+| Google Ads CPA ≠ notes Pipedrive | Le prospect a peut-etre cite un chiffre ancien ou un CPA d'un autre canal. Utiliser Google Ads (reel). |
+| Marque GSC >> Marque DataForSEO | DataForSEO classifie mal certaines requetes marque. Recalculer manuellement si possible. |
+
+**Regle :** les alertes inter-sources sont des **insights**, pas des erreurs. Un ecart GSC/DataForSEO de 4x sur le trafic change le diagnostic ("le prospect a deja du trafic significatif" vs "le prospect part de zero"). Ne pas juste noter l'ecart, en tirer une consequence pour le diagnostic.
 
 ## Nouvelles sections du SDB
 
@@ -147,3 +202,6 @@ NARRATIVE_HINTS:
 - Format SDB : GENERATED_AT en premiere ligne (pour le mode --fast)
 - Si audit.md ou benchmark.md existent pour ce deal, reutiliser les donnees
 - **Les scores dimensionnels ne sont pas des verdicts.** Ce sont des inputs pour le raisonnement strategique. Un score technique de 30/100 peut etre secondaire si le verrou est le contenu.
+- **Confrontation croisee obligatoire.** Lire CONFRONTATION.md avant de diagnostiquer. Si une contradiction non resolue impacte le diagnostic, la resoudre ici. Si toutes sont resolues, integrer les resolutions.
+- **Validation croisee obligatoire.** Executer la validation inter-sources avant le diagnostic. Les alertes (ecarts > seuil) peuvent changer le diagnostic. Exemple : si GSC montre 4x plus de trafic que DataForSEO, le diagnostic "le prospect part de zero" est faux.
+- **Confiance echantillon.** Lire le niveau de confiance echantillon dans CONFRONTATION.md et dans chaque analyse. Si plusieurs analystes signalent LOW confidence, le signaler dans CONFIANCE GLOBALE du SDB.

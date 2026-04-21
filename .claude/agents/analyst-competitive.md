@@ -95,6 +95,12 @@ Ecrire `.cache/deals/{deal_id}/analysis/COMPETITIVE_ANALYSIS.md` :
 # Analyse Concurrentielle — {domain}
 GENERATED_AT: {ISO timestamp}
 
+## Top 3 conclusions (pour confrontation croisee)
+1. {conclusion 1 — 1 phrase avec chiffre}
+2. {conclusion 2 — 1 phrase avec chiffre}
+3. {conclusion 3 — 1 phrase avec chiffre}
+→ Recommandation principale : {1 phrase}
+
 ## Vue d'ensemble
 
 | Metrique | {prospect} | {concurrent1} | {concurrent2} | {concurrent3} |
@@ -141,3 +147,4 @@ GENERATED_AT: {ISO timestamp}
 - **Evidence chain.** Chaque chiffre comparatif avec source.
 - **Pas de decouragement.** Meme un gap 10x se presente comme une opportunite de marche non captee, pas comme un retard irrecuperable.
 - **Insight benchmark = fil rouge.** Cette phrase est celle que le closer utilisera en ouverture. Elle doit etre memorable, factuelle, et orientee action.
+- **Top 3 conclusions obligatoires.** Ce bloc est lu par l'etape de confrontation croisee (Etape 1.2a-bis). Chaque conclusion doit etre factuelle, chiffree, et autonome.

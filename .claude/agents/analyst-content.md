@@ -109,6 +109,19 @@ GENERATED_AT: {ISO timestamp}
 ## Score global : {X}/100
 ## Niveau E-E-A-T : {Fort / Moyen / Faible}
 
+## Confiance echantillon
+- Pages analysees : {N} / {total sitemap}
+- Archetypes couverts : {liste des types crawles}
+- Archetypes manquants : {liste ou "aucun"}
+- Niveau de confiance : {HIGH / MEDIUM / LOW}
+- Note : {si LOW, preciser quelles conclusions sont fragiles et pourquoi}
+
+## Top 3 conclusions (pour confrontation croisee)
+1. {conclusion 1 — 1 phrase avec chiffre}
+2. {conclusion 2 — 1 phrase avec chiffre}
+3. {conclusion 3 — 1 phrase avec chiffre}
+→ Recommandation principale : {1 phrase}
+
 ## Diagnostic E-E-A-T
 
 ### Experience : {X}/8
@@ -159,3 +172,5 @@ GENERATED_AT: {ISO timestamp}
 - **Evidence chain.** Chaque evaluation avec source (fichier cache + donnee).
 - **Charger** `context/references/eeat-framework.md` avant d'analyser.
 - **YMYL** : si le secteur est YMYL (sante, finance, juridique), durcir les criteres E-E-A-T et le signaler.
+- **Confiance echantillon obligatoire.** Lire le `SAMPLE_CONFIDENCE` du crawl summary. Si le niveau est LOW, temperer les conclusions sur la qualite redactionnelle, la profondeur editoriale, et les CTA. Les conclusions basees sur des donnees exhaustives (sitemap inventory, keywords DFS) ne sont pas impactees.
+- **Top 3 conclusions obligatoires.** Ce bloc est lu par l'etape de confrontation croisee (Etape 1.2a-bis). Chaque conclusion doit etre factuelle, chiffree, et autonome.

@@ -8,12 +8,18 @@ Collecter, structurer, analyser. Produire un document intermediaire factuellemen
 
 ---
 
-## Etape 1.1 : Collecte (11 modules)
+## Etape 1.1 : Collecte en 2 phases (CONTEXTE puis SEO)
 
 > **Specs detaillees de chaque module :** `context/references/collection-modules.md`
 > **Templates SDB et INTERNAL-DIAG :** `context/references/sdb-template.md`
 
-### Module 1 : Pipedrive
+> **Pourquoi 2 phases ?** Les appels SEO (DataForSEO, GSC, Ads, Website Crawl) dependent du domaine principal et du brief prospect. Lancer ces appels AVANT d'avoir lu le brief risque d'analyser le mauvais domaine ou de gaspiller du budget API sur un axe non prioritaire. Phase A collecte le contexte, Phase B collecte les donnees SEO sur le bon domaine.
+
+### Phase A : Collecte contexte (PARALLELE)
+
+Lancer en parallele :
+
+#### Module 1 : Pipedrive
 
 > **Execution :** via `python3 tools/batch_pipedrive.py --deal-id {deal_id}`. Ne pas appeler endpoint par endpoint.
 
@@ -30,7 +36,7 @@ L'outil batch collecte en parallele (5 workers) :
 2. Lire le JSON stdout (summary avec cache_paths)
 3. Lire les fichiers cache dans `.cache/deals/{deal_id}/pipedrive/` pour exploiter les donnees
 
-### Module 2 : Drive
+#### Module 2 : Drive
 
 > **Execution :** via `python3 tools/batch_drive.py --deal-id {deal_id} --folder-url {dossier_r1_link}`. Ne pas telecharger fichier par fichier.
 
@@ -45,9 +51,60 @@ L'outil batch liste recursivement (3 niveaux) et telecharge en parallele (3 work
 2. Executer `python3 tools/batch_drive.py --deal-id {deal_id} --folder-id {folder_id}`
 3. Lire le JSON stdout, puis les fichiers `.cache/deals/{deal_id}/drive/files/*.txt`
 
-### Etape 1.1b : Cartographie des domaines (OBLIGATOIRE avant Module 3)
+### Etape 1.1b : Lecture brief + Cartographie domaines (SEQUENTIEL, OBLIGATOIRE avant Phase B)
 
-Apres collecte Pipedrive (Module 1) et Drive (Module 2), l'agent identifie et classe TOUS les domaines mentionnes dans les sources. Cette etape est un prerequis au Module 3 : aucun appel DataForSEO ne peut etre lance sans domaine principal confirme.
+**Apres** que la Phase A est terminee (Pipedrive + Drive collectes), l'agent effectue 2 operations sequentielles AVANT tout appel SEO.
+
+#### b1. Lecture du brief prospect
+
+Lire les sources dans l'ordre de priorite :
+1. Transcripts Drive (type `transcript`)
+2. Notes closer Drive (type `notes_closer`)
+3. Documents prospect Drive (type `document_prospect`)
+4. Notes Pipedrive
+5. Emails Pipedrive
+
+Extraire et **ecrire dans un fichier dedie** :
+
+**Ecriture obligatoire :** `.cache/deals/{deal_id}/artifacts/BRIEF_EXTRACT.md`
+
+```markdown
+# Brief Prospect — Deal {deal_id}
+GENERATED_AT: {ISO timestamp}
+SOURCES: {liste des fichiers lus, ex: "transcript-r1.txt, notes.json, brief-client.txt"}
+
+## Demande explicite
+"{verbatim exact du prospect}"
+
+## Priorite declaree
+{Ads / SEO / les deux / refonte / autre}
+Source : "{verbatim qui justifie cette classification}"
+
+## Douleur
+"{verbatim exact}"
+
+## Partenaires existants
+- {nom} : {perimetre} — {CHALLENGE ou ARTICULE}
+
+## Business type
+{Multi-sites / E-commerce / Service B2B / Contenu-media / Local unique}
+
+## Ce qui n'a PAS ete demande mais qu'on recommande
+- {axe} — {pourquoi}
+
+## Verbatims cles (a reutiliser dans la proposition)
+- "{verbatim 1}" — contexte : {ou et quand}
+- "{verbatim 2}" — contexte : {ou et quand}
+- "{verbatim 3}" — contexte : {ou et quand}
+```
+
+**Pourquoi un fichier separe ?** Ce fichier est lu par le devil's advocate (Etape 1.2d) comme point d'ancrage independant des analyses. C'est la voix non filtree du prospect. Le contenu est aussi recopie dans le SDB a la fin de Pass 1.
+
+**Le `business_type` detecte est transmis au collector-website (Phase B) pour un crawl cible par archetype de page.**
+
+#### b2. Cartographie des domaines
+
+L'agent identifie et classe TOUS les domaines mentionnes dans les sources. Aucun appel DataForSEO ne peut etre lance sans domaine principal confirme.
 
 **Etape 1 : Extraire tous les domaines**
 Scanner toutes les sources collectees :
@@ -75,11 +132,13 @@ Scanner toutes les sources collectees :
 - Si 2+ domaines detectes ET le PRINCIPAL est clair (regle 1-4) → continuer
 - Si 2+ domaines detectes ET ambiguite → **STOP : demander au closer** "Quel est le site actif du prospect ? Domaines detectes : {liste avec contexte de chaque mention}"
 
-**Output :** Ajouter les champs `DOMAINE_PRINCIPAL` et `DOMAINES_SECONDAIRES` au debut du SDB.
+**Output :** Ajouter les champs `DOMAINE_PRINCIPAL`, `DOMAINES_SECONDAIRES` et `BUSINESS_TYPE` au debut du SDB.
 
-### Modules 3-11 : Collecte SEO, GSC, Ads, Benchmark, Crawl
+### Phase B : Collecte SEO (PARALLELE, sur domaine confirme)
 
-> **Specs detaillees :** `context/references/collection-modules.md`
+> **Prerequis :** domaine principal confirme (Etape 1.1b), brief lu, business_type identifie.
+
+Lancer en parallele les collecteurs SEO :
 
 | Module | Nom | Activation | Ce qu'il produit |
 |--------|-----|------------|-----------------|
@@ -98,9 +157,11 @@ Scanner toutes les sources collectees :
 | **8** | Technique / UX | Refonte OU brief perf/UX OU conversion faible | Lighthouse, instant pages |
 | **9** | Tendances | Secteur saisonnier OU timing budget | Trends, historical rank |
 | **10** | Contenu | Gap contenu important OU strategie contenu = pilier | keyword_ideas, related, difficulty |
-| **11** | Website Crawl | TOUJOURS (avant diagnostic) | Sitemap, crawl echantillon, CTA, schema |
+| **11** | Website Crawl | TOUJOURS (avant diagnostic) | Sitemap, crawl par archetype (`business_type`), CTA, schema |
 
 **Execution DataForSEO :** TOUS les appels via `python3 tools/batch_dataforseo.py` en 5 lots sequentiels. Voir `context/references/collection-modules.md` section "Strategie d'execution DataForSEO".
+
+**Collector-website :** passer `--business-type {business_type}` pour un crawl cible par archetype de page (cf. `.claude/agents/collector-website.md`).
 
 ### Budget checkpoint (obligatoire apres Module 4 + 4c)
 
@@ -171,6 +232,94 @@ Ecris ton output dans .cache/deals/{deal_id}/analysis/{OUTPUT_FILE}.
 
 ---
 
+## Etape 1.2a-bis : Confrontation croisee (OBLIGATOIRE, apres analyses)
+
+> **Pourquoi ?** Les analystes travaillent en silos. Chacun produit un score et des conclusions sans connaitre les conclusions des autres. Cela peut generer des contradictions non detectees (ex: analyst-content recommande de produire du contenu alors que analyst-technical a detecte que 76% des pages ne sont pas indexees). La confrontation croisee detecte ces incoherences AVANT le diagnostic strategique.
+
+### Procedure
+
+1. **Extraire les conclusions cles de chaque analyste** (lire les fichiers analysis/*.md)
+
+Pour chaque analyste, extraire :
+- Score global
+- Top 3 conclusions (problemes OU forces)
+- Recommandation principale
+
+2. **Construire la matrice de confrontation**
+
+```
+=== CONFRONTATION CROISEE ===
+
+ANALYST-TECHNICAL ({score}/100) :
+  1. {conclusion 1}
+  2. {conclusion 2}
+  3. {conclusion 3}
+  → Recommandation : {reco}
+
+ANALYST-CONTENT ({score}/100) :
+  1. {conclusion 1}
+  2. {conclusion 2}
+  3. {conclusion 3}
+  → Recommandation : {reco}
+
+ANALYST-COMPETITIVE :
+  1. {conclusion 1}
+  2. {conclusion 2}
+  3. {conclusion 3}
+  → Recommandation : {reco}
+
+ANALYST-GEO ({score}/100 ou N/A) :
+  1. {conclusion 1}
+  ...
+```
+
+3. **Detecter les contradictions**
+
+Verifier systematiquement ces patterns de contradiction :
+
+| Pattern | Contradiction | Resolution |
+|---------|--------------|------------|
+| Content dit "produire du contenu" + Technical dit "indexation cassee" | Produire du contenu sur un site qui n'indexe pas = effort gaspille | Prioriser l'indexation AVANT la production de contenu |
+| Technical dit "site performant" + Competitive dit "gap technique vs concurrent" | Contradiction sur l'etat technique relatif | Distinguer technique absolue (OK) vs technique relative (en retard) |
+| Content dit "E-E-A-T fort" + Competitive dit "concurrent domine en contenu" | Contradiction sur la force editoriale | Verifier si la force est qualitative (E-E-A-T) mais pas quantitative (couverture) |
+| GEO dit "absent de l'IA Search" + Technical dit "schema riche" | Contradiction sur la citabilite | Le schema existe mais le contenu n'est pas structure pour la citation IA |
+| Content dit "quick wins position 10-30" + Technical dit "CWV rouge" | Quick wins SEO inaccessibles si perf bloque le ranking | Les quick wins ne livreront leur plein effet qu'apres correction CWV |
+
+4. **Documenter les contradictions resolues**
+
+**Output :** Ecrire dans `.cache/deals/{deal_id}/analysis/CONFRONTATION.md` :
+
+```markdown
+# Confrontation croisee — Deal {deal_id}
+GENERATED_AT: {ISO timestamp}
+
+## Contradictions detectees : {N}
+
+### Contradiction 1 : {titre court}
+- Analyste A dit : "{conclusion}"
+- Analyste B dit : "{conclusion}"
+- Resolution : {comment on tranche, avec source}
+- Impact sur le diagnostic : {comment ca change la priorisation}
+
+### Contradiction 2 : ...
+
+## Coherences fortes (renforcement mutuel)
+- {dimension A} + {dimension B} convergent vers : {insight}
+- ...
+
+## Metriques de confiance echantillon
+- analyst-technical : analyse basee sur {N} pages / {total sitemap} — Confiance echantillon : {HIGH/MEDIUM/LOW}
+- analyst-content : analyse basee sur {N} pages / {total sitemap} — Confiance echantillon : {HIGH/MEDIUM/LOW}
+```
+
+**Regles :**
+- Si 0 contradiction detectee → documenter quand meme ("Pas de contradiction identifiee. Les analyses convergent.")
+- Chaque contradiction doit etre **resolue** (pas juste signalee). L'agent tranche avec une source.
+- Les contradictions resolues sont transmises a `analyst-strategy` via le fichier CONFRONTATION.md
+- Budget temps : < 15 secondes (lecture + raisonnement, pas d'appel API)
+
+---
+
 ## Etape 1.2b : Checklist d'analyse pre-diagnostic (OBLIGATOIRE)
 
 **AVANT de diagnostiquer, parcourir `context/references/analysis-checklist.md`.**
@@ -216,9 +365,47 @@ Relire le champ `BRIEF PROSPECT` du SDB (rempli en section 0 de la checklist). V
 
 ---
 
+## Etape 1.2d : Devil's Advocate (OBLIGATOIRE, avant diagnostic)
+
+> **Pourquoi avant le diagnostic ?** L'approfondissement (1.2c) est execute par le meme agent qui va diagnostiquer. Le biais de confirmation est structurel. Le devil's advocate est un **subagent separe** qui challenge les donnees et pre-conclusions AVANT que le diagnostic soit formalise. Il ne challenge pas un diagnostic deja ecrit (trop tard pour reorienter), il force l'agent a confronter des contre-arguments avant de trancher.
+
+**Spawner** un subagent `analyst-devil-advocate` :
+
+```
+Tu es le devil's advocate du systeme SLASHR.
+Deal ID : {deal_id}
+Domaine : {domain}
+
+Tu recois les analyses et les donnees assemblees. Ton job : argumenter CONTRE l'intervention SLASHR et contre les pre-conclusions qui emergent des analyses.
+Lis ton agent spec dans .claude/agents/analyst-devil-advocate.md puis execute le challenge.
+Ecris ton output dans .cache/deals/{deal_id}/analysis/DEVIL_ADVOCATE.md.
+```
+
+**Attente et integration :**
+1. Attendre l'output du devil's advocate
+2. Lire `.cache/deals/{deal_id}/analysis/DEVIL_ADVOCATE.md`
+3. **Integrer dans le diagnostic (Etape 1.3)** : chaque challenge valide doit etre adresse dans le diagnostic. Chaque challenge rejete doit etre documente avec la raison du rejet. Le diagnostic est plus solide quand il a survecu a un adversaire.
+
+**Output dans le SDB :**
+
+```
+DEVIL_ADVOCATE_RESOLVED:
+  Challenges recus : {N}
+  Acceptes (pre-conclusions ajustees) : {N} — {liste courte}
+  Rejetes (pre-conclusions confirmees) : {N} — {liste courte}
+  Impact sur le diagnostic : {ce qui a change grace au challenge}
+```
+
+**Regles :**
+- Le devil's advocate ne peut PAS bloquer le process. Il challenge, l'agent principal decide.
+- Si le devil's advocate detecte un probleme CRITIQUE (mauvais domaine, donnee manifestement fausse, desalignement total brief/analyses), c'est un hard stop : corriger avant de diagnostiquer.
+- Budget temps : < 30 secondes (lecture + raisonnement, pas d'appel API)
+
+---
+
 ## Etape 1.3 : Diagnostic strategique
 
-**Objectif :** a partir de toutes les donnees collectees, de la checklist d'analyse ET de l'approfondissement contextuel, identifier ce qui bloque le plus de valeur et ce qui peut la debloquer.
+**Objectif :** a partir de toutes les donnees collectees, de la checklist d'analyse, de l'approfondissement contextuel ET des challenges du devil's advocate, identifier ce qui bloque le plus de valeur et ce qui peut la debloquer.
 
 **L'IA raisonne librement.** Pas de grille a remplir, pas de scores a attribuer. Le diagnostic est un raisonnement structure :
 
