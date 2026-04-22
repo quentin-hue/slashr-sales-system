@@ -515,6 +515,23 @@ CONFIANCE GLOBALE : {HIGH / MEDIUM / LOW}
 - Si les donnees sont insuffisantes, le dire (Confiance Low)
 - Le diagnostic est INTERNE. Les conclusions sont traduites en langage business dans le HTML.
 - **ROI sans donnees business :** si aucune donnee de conversion n'est disponible (pas d'acces GA4, pas de donnees e-commerce, pas de panier moyen reel), ne PAS estimer de ROI monetaire. Utiliser des metriques trafic : gain de clics/mois, gain de positions, gain de CTR. Le ROI monetaire sera calcule en Phase 1 quand les donnees Analytics seront accessibles. Marquer `ROI Confidence: LOW` dans le SDB.
+- **COMPLETENESS obligatoire.** Le SDB doit commencer par le bloc COMPLETENESS (cf. `context/references/sdb-template.md`). Si verdict = INSUFFISANT, STOP. Ne pas diagnostiquer.
+- **Causalite sourcee (R25/R26).** Toute phrase du SDB qui attribue une cause a un constat de performance doit citer la source de verification directe. "Position 25 parce que contenu insuffisant" est interdit sans word count ou extraction source.
+
+**Champs requis par Pass 2 (a remplir au Checkpoint 1 si non remplis par le diagnostic) :**
+
+Le SDB et l'INTERNAL-DIAG doivent contenir ces champs pour que Pass 2 puisse fonctionner correctement. Si un champ ne peut pas etre rempli automatiquement par le diagnostic, le Checkpoint 1 demande au closer de le remplir.
+
+| Champ | Source | Utilise par Pass 2 pour |
+|-------|--------|------------------------|
+| TONE_PROFILE | Diagnostic (profil decideur) ou Checkpoint 1 (closer) | Calibrer le ton de la narration |
+| ARC_CHOICE_RATIONALE | Diagnostic (pattern donnees) | Choisir l'arc narratif |
+| CLOSER_ANGLE | Checkpoint 1 Q2 (reponse closer) | Hook et subtitle du hero |
+| CLOSER_INSIGHTS | Checkpoint 1 (points non-mesurables du closer) | Enrichir les transitions narratives |
+| RED_FLAGS | Checkpoint 1 Q3 (objections anticipees par le closer) | Construire les FAQ pre-emptives |
+| CAS_CLIENTS_SELECTION | Checkpoint 1 Q4 (validation closer) | Onglet Cas Clients |
+
+Si le closer ne repond pas a une question du Checkpoint 1, le champ est marque `[NON RENSEIGNE]` et Pass 2 utilise un default conservateur (TONE_PROFILE = DIRECT, CAS_CLIENTS = selection automatique par secteur).
 
 ### C. Construire la strategie + ROI + trajectoires
 

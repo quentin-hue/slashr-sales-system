@@ -13,9 +13,10 @@ Evaluer la qualite du contenu et les signaux E-E-A-T du site prospect. Identifie
 - `deal_id` : ID du deal
 - `domain` : domaine principal du prospect
 
-## Sources (cache collecteurs)
+## Sources (cache collecteurs — cf. `context/references/cache-structure.md` pour l'arborescence exacte)
+- `.cache/deals/{deal_id}/website/crawl_sf.csv` — **PRIORITAIRE si present.** Crawl Screaming Frog avec rendering navigateur. Donnees fiables : word count reel, contenu extrait, meta tags, liens internes. Utiliser en priorite sur toutes les autres sources page-level.
 - `.cache/deals/{deal_id}/website/homepage.json` — headings, contenu, meta
-- `.cache/deals/{deal_id}/website/sampled_pages.json` — contenu pages echantillonnees
+- `.cache/deals/{deal_id}/website/sampled_pages.json` — contenu pages echantillonnees (crawl automatique, peut etre biaise si bot_protection detected)
 - `.cache/deals/{deal_id}/website/sitemap.json` — distribution par type de page
 - `.cache/deals/{deal_id}/dataforseo/ranked_keywords*.json` — keywords actuels
 - `.cache/deals/{deal_id}/dataforseo/keywords_for_site*.json` — opportunites
@@ -174,3 +175,6 @@ GENERATED_AT: {ISO timestamp}
 - **YMYL** : si le secteur est YMYL (sante, finance, juridique), durcir les criteres E-E-A-T et le signaler.
 - **Confiance echantillon obligatoire.** Lire le `SAMPLE_CONFIDENCE` du crawl summary. Si le niveau est LOW, temperer les conclusions sur la qualite redactionnelle, la profondeur editoriale, et les CTA. Les conclusions basees sur des donnees exhaustives (sitemap inventory, keywords DFS) ne sont pas impactees.
 - **Top 3 conclusions obligatoires.** Ce bloc est lu par l'etape de confrontation croisee (Etape 1.2a-bis). Chaque conclusion doit etre factuelle, chiffree, et autonome.
+- **Jamais d'affirmation sans lecture de la page (R26).** Si le crawl a extrait le contenu d'une page, utiliser le word count et le contenu reel pour evaluer. Si le crawl n'a PAS extrait le contenu (page non crawlee, BOT_BLOCKED, extraction vide), ne PAS conclure "contenu insuffisant" ou "pas de contenu". Formuler : "contenu non evalue (page non crawlee)" et le noter dans la confiance echantillon. Une page en position 25 n'est pas une preuve de contenu faible. C'est une observation de performance, pas un diagnostic de contenu.
+- **Utiliser les donnees de crawl reelles quand disponibles.** Si un crawl Screaming Frog ou equivalent est fourni avec extraction de contenu (word count, texte extrait par page), TOUJOURS l'utiliser comme source de verite pour evaluer la presence et la qualite du contenu. Compter les pages avec/sans contenu editorial et donner le ratio reel (ex: "87/200 categories principales ont du contenu editorial = 43%") plutot que des generalisations ("les pages n'ont pas de contenu").
+- **Observation ≠ cause (R25).** Separer systematiquement le constat de positionnement (verifiable) de l'hypothese sur la cause (a demontrer). "La page defibrillateurs est en position 25" = observation. "Parce que le contenu est insuffisant" = hypothese. Les hypotheses doivent etre etayees par des donnees de la page elle-meme, pas inferees du ranking.

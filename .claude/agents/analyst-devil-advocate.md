@@ -88,6 +88,14 @@ Cet angle vise specifiquement les faux negatifs de crawl (le crawl ne voit pas q
 - **Formulation** : les analyses utilisent-elles "absent" / "inexistant" / "aucun" la ou "non detecte par le crawl" serait plus precis ? Chaque "absent" affirmatif qui repose sur un seul crawl est un risque de credibilite.
 - Si ce check revele des problemes, marquer le verdict PROBLEME CRITIQUE — les findings biaises doivent etre corriges AVANT le diagnostic client.
 
+### 9. "Les conclusions ne tiennent pas si le prospect verifie" (CRITIQUE)
+Cet angle vise les erreurs de raisonnement, pas les erreurs de donnees. Pour chaque conclusion du diagnostic :
+- L'affirmation est-elle basee sur des donnees de la page elle-meme, ou inferee du ranking ? "Position 25 donc contenu faible" est une inference, pas un constat. Le contenu peut etre riche et la page ne pas ranker pour d'autres raisons (autorite, ciblage). **(R25)**
+- Si l'analyse dit "le prospect n'a pas X" (pas de contenu, pas de maillage, pas de sous-categories), est-ce verifie avec des donnees reelles de la page, ou deduit sans l'avoir lue ? **(R26)**
+- Si l'analyse compare au concurrent ("Securimed a X, France Neir n'a pas Y"), les deux cotes ont-ils ete verifies ? **(R27)**
+- **Le test Pauline** : si le prospect ouvre les pages mentionnees dans le diagnostic et constate que les affirmations sont fausses (il y a du contenu, il y a du maillage, il y a des sous-categories), le diagnostic entier perd sa credibilite. Pour chaque affirmation sur une page specifique, se demander : "est-ce que ca tient si le prospect verifie en 30 secondes ?"
+- Si des affirmations ne tiennent pas au test Pauline, marquer PROBLEME CRITIQUE.
+
 ## Output
 
 Ecrire `.cache/deals/{deal_id}/analysis/DEVIL_ADVOCATE.md` :

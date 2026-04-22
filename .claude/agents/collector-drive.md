@@ -30,7 +30,7 @@ Retourner un resume JSON :
   "status": "ok|partial|error|skipped",
   "files_count": 0,
   "files_skipped": 0,
-  "types": {"transcript": 0, "notes_closer": 0, "document_prospect": 0, "document": 0},
+  "types": {"transcript": 0, "notes_closer": 0, "document_prospect": 0, "document": 0, "crawl_sf": 0},
   "cache_path": ".cache/deals/{deal_id}/drive/"
 }
 ```
@@ -41,3 +41,4 @@ Retourner un resume JSON :
 - Exclure les outputs systeme : DEAL-*, DECK-*, PROPOSAL-*, INTERNAL-*
 - Max 100 000 chars par fichier
 - Recursion max 3 niveaux de sous-dossiers
+- **Detection CSV Screaming Frog :** si un fichier CSV est detecte et contient les colonnes "Adresse" (ou "Address") et "Code HTTP" (ou "Status Code"), le typer comme `crawl_sf` (pas `document`). Ce fichier sera exploite par collector-website et les analystes. Voir `context/references/crawl-spec.md`.

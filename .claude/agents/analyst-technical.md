@@ -13,11 +13,12 @@ Analyser en profondeur les signaux techniques du site prospect a partir des donn
 - `deal_id` : ID du deal
 - `domain` : domaine principal du prospect
 
-## Sources (cache collecteurs)
+## Sources (cache collecteurs — cf. `context/references/cache-structure.md` pour l'arborescence exacte)
+- `.cache/deals/{deal_id}/website/crawl_sf.csv` — **PRIORITAIRE si present.** Crawl Screaming Frog avec rendering navigateur. Source de verite pour le contenu, les meta tags, le word count, les liens internes. Si present, les donnees du crawl automatique (sampled_pages) sont secondaires.
 - `.cache/deals/{deal_id}/website/homepage.json` — title, meta, schema, headings, CTA
 - `.cache/deals/{deal_id}/website/sitemap.json` — structure URLs, distribution par type
-- `.cache/deals/{deal_id}/website/sampled_pages.json` — pages echantillonnees
-- `.cache/deals/{deal_id}/website/crawl_summary.json` — synthese crawl + scoring_hints
+- `.cache/deals/{deal_id}/website/sampled_pages.json` — pages echantillonnees (crawl automatique)
+- `.cache/deals/{deal_id}/website/crawl_summary.json` — synthese crawl + scoring_hints (contient `crawl_source` et `bot_protection`)
 - `.cache/deals/{deal_id}/dataforseo/` — on_page_lighthouse, on_page_instant_pages (si collectes)
 - `.cache/deals/{deal_id}/gsc/` — performance, pages (si disponible)
 - `context/references/technical-audit.md` — grille de reference

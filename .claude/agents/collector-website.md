@@ -103,6 +103,23 @@ SAMPLE_CONFIDENCE:
   Archetypes manquants : {liste ou "aucun"}
 ```
 
+### 5. Ingestion crawl Screaming Frog (si disponible)
+
+Avant de lancer le crawl automatique, verifier si un fichier CSV Screaming Frog est present dans le cache Drive (`.cache/deals/{deal_id}/drive/files/`). Detection : un fichier CSV contenant les colonnes "Adresse" (ou "Address") et "Code HTTP" (ou "Status Code").
+
+**Si un CSV SF est detecte :**
+1. Le copier dans `.cache/deals/{deal_id}/website/crawl_sf.csv`
+2. Parser le CSV et produire un resume :
+   - Nombre total de pages
+   - Distribution par status code
+   - Si colonne "Word Count" presente : ratio pages avec/sans contenu, word count moyen
+   - Si extracteur custom present : nombre de pages avec contenu editorial extrait
+3. Flagger `crawl_source: "screaming_frog"` dans l'output JSON
+4. Le crawl automatique (etapes 1-4) est quand meme execute pour les fondamentaux (robots.txt, sitemap, homepage, detection bot) mais les donnees page-level du SF priment
+
+**Si pas de CSV SF :**
+Continuer normalement avec le crawl automatique (etapes 0-4).
+
 Cache les reponses dans `.cache/deals/{deal_id}/website/`
 
 ## Output
@@ -112,6 +129,10 @@ Retourner un resume JSON :
   "status": "ok|partial|error",
   "domain": "...",
   "business_type": "...",
+  "crawl_source": "automatic|screaming_frog|both",
+  "sf_csv_path": "...",
+  "sf_pages_count": 0,
+  "sf_pages_with_content": 0,
   "bot_protection": "none|detected",
   "bot_protection_warning": "...",
   "robots_txt": "found|not_found|blocked_by_waf",

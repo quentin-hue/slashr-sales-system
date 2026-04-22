@@ -99,6 +99,7 @@ Metriques de qualite redactionnelle mesurables automatiquement. Echec = WARNING 
 | 44 | SOFT | Au moins 1 micro-benchmark dans la proposition | `.micro-benchmark` present dans `#tab-diagnostic` OU `#tab-cas-clients` | ≥ 1 |
 | 45 | HARD | Repetition density : aucun nombre n'apparait > 6 fois dans le texte visible | Counter sur les nombres multi-digits, seuil > 6 | Aucun nombre > 6x |
 | 54 | HARD | Zero jargon diagnostic interne dans le HTML client | Memes patterns que R14 (renforcement Layer 4). Score = % de paragraphes contenant un terme interne. | 0% |
+| 55 | HARD | Causalite sourcee (R25) | Toute phrase qui attribue une cause a un constat de performance DOIT citer une source de verification directe de la page concernee. Pattern interdit : "[constat position/trafic] parce que [cause contenu/technique]" sans source page-level. Exemples REJECTS : "position 25 parce que contenu insuffisant" (sans word count source), "ne ranke pas car maillage faible" (sans comptage liens source), "listing sans contenu" (sans extraction contenu source). Exemples OK : "position 25, le word count est de 120 mots (source: crawl SF)" ou "position 25, hypothese : ciblage B2B manquant (a verifier en Phase 1)" | Regex : phrase causale (parce que, car, en raison de, du fait de) + terme negatif (insuffisant, faible, absent, manquant, vide, pauvre) dans un paragraphe qui ne contient pas de [src:] ou (source:) |
 
 ---
 

@@ -14,7 +14,7 @@ Produire une matrice concurrentielle enrichie a partir des donnees benchmark dej
 - `domain` : domaine principal du prospect
 - `competitors_business` : liste des concurrents business identifies (depuis collector-seo)
 
-## Sources (cache collecteurs)
+## Sources (cache collecteurs — cf. `context/references/cache-structure.md` pour l'arborescence exacte)
 - `.cache/deals/{deal_id}/dataforseo/competitors_domain*.json` — concurrents identifies
 - `.cache/deals/{deal_id}/dataforseo/domain_rank_overview*.json` — metriques prospect + concurrents
 - `.cache/deals/{deal_id}/dataforseo/domain_intersection*.json` — keywords communs/exclusifs
@@ -148,3 +148,5 @@ GENERATED_AT: {ISO timestamp}
 - **Pas de decouragement.** Meme un gap 10x se presente comme une opportunite de marche non captee, pas comme un retard irrecuperable.
 - **Insight benchmark = fil rouge.** Cette phrase est celle que le closer utilisera en ouverture. Elle doit etre memorable, factuelle, et orientee action.
 - **Top 3 conclusions obligatoires.** Ce bloc est lu par l'etape de confrontation croisee (Etape 1.2a-bis). Chaque conclusion doit etre factuelle, chiffree, et autonome.
+- **Comparaisons bilaterales obligatoires (R27).** Toute affirmation "le concurrent a X que le prospect n'a pas" exige la verification des DEUX cotes. Ne jamais affirmer "France Neir n'a pas de contenu sur ses categories" parce que Securimed en a. Verifier les pages du prospect avec des donnees reelles (crawl, extraction de contenu, GSC). Si les donnees ne sont pas disponibles pour le prospect, formuler : "non verifie cote prospect" et ne pas conclure.
+- **Le gap de positionnement ≠ gap de contenu (R25).** Un prospect en position 25 et un concurrent en position 4 sur le meme mot-cle, ca ne signifie pas automatiquement que le concurrent a un meilleur contenu. Ca peut etre un gap d'autorite (backlinks), de ciblage (B2B vs generaliste), ou de structure. Toujours identifier la cause probable plutot que de conclure par defaut "le contenu est moins bon".

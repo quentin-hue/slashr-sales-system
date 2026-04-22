@@ -16,6 +16,32 @@ La Pass 1 produit un **SDB compact** (pas de dumps) :
 
 ---
 
+## Completeness Score (obligatoire, en tete du SDB)
+
+Avant toute analyse, evaluer la completude des donnees collectees :
+
+```
+COMPLETENESS:
+  Pipedrive deal        : OK | ERROR | PARTIAL
+  Pipedrive emails      : OK ({N} threads) | NONE | ERROR
+  Drive files           : OK ({N} fichiers) | NONE | ERROR | PARTIAL ({N}/{total})
+  DataForSEO            : OK ({N} modules) | PARTIAL ({N}/{total} modules) | ERROR
+  GSC                   : OK | NOT_AVAILABLE | PARTIAL (couverture: {detail})
+  Google Ads            : OK | NOT_AVAILABLE | ERROR
+  Website crawl         : SF ({N} pages) | AUTO ({N} pages) | AUTO_BOT_BLOCKED | ERROR
+
+  Score : {N}/7 sources OK
+  Verdict : COMPLET (>= 5/7) | PARTIEL (3-4/7) | INSUFFISANT (< 3/7)
+```
+
+**Regles :**
+- COMPLET : diagnostic normal
+- PARTIEL : signaler au Checkpoint 1 quelles sources manquent et quel impact sur le diagnostic
+- INSUFFISANT : **STOP.** Ne pas diagnostiquer. Demander au closer de debloquer les sources manquantes (acces GSC, fichiers Drive, etc.)
+- Pipedrive deal en ERROR = toujours STOP (cf. shared.md)
+
+---
+
 ## Evidence log (obligatoire)
 
 Pour chaque chiffre cle, conserver :

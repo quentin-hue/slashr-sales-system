@@ -18,7 +18,11 @@ Pas un template. Pas une plaquette. Un argumentaire sur-mesure, base sur les don
 > **Reference unique des regles : `agents/shared.md`** (24 regles). Ci-dessous les rappels critiques pour /prepare + regles specifiques a la proposition.
 
 ### Regles shared.md applicables (rappel compact)
-R3 Francais + R16c accents | R4-5 Data-first + evidence chain (R21) | R10 ROI conservateur | R11 Pas de data inventee | R12 Verbatims exacts | R13 Test de substitution | R14 Zero pression | R15 Zero dramatisation | R16d Lexique interdit | R18 Zero tiret cadratin | R20 Diagnostic = interne | **R22 Niveaux de confiance** (VERIFIE/PROBABLE/NON VERIFIE/HYPOTHESE sur chaque finding technique) | **R23 Cross-validation 2 sources** (absence outil ≠ absence site) | **R24 CMS-aware** (suspecter le crawl avant le site sur un CMS pro)
+R3 Francais + R16c accents | R4-5 Data-first + evidence chain (R21) | R10 ROI conservateur | R11 Pas de data inventee | R12 Verbatims exacts | R13 Test de substitution | R14 Zero pression | R15 Zero dramatisation | R16d Lexique interdit | R18 Zero tiret cadratin | R20 Diagnostic = interne | **R22 Niveaux de confiance** (VERIFIE/PROBABLE/NON VERIFIE/HYPOTHESE sur chaque finding technique) | **R23 Cross-validation 2 sources** (absence outil ≠ absence site) | **R24 CMS-aware** (suspecter le crawl avant le site sur un CMS pro) | **R25 Observation ≠ cause** (position 25 ≠ contenu faible, separer constat de ranking et hypothese causale, regle HARD de validation n.55) | **R26 Verification avant affirmation** (pas de claim sur le contenu/maillage d'une page sans l'avoir lue) | **R27 Comparaisons bilaterales** (verifier les deux cotes avant de conclure un gap)
+
+### Completeness et structure cache
+- **COMPLETENESS_SCORE obligatoire** dans le SDB (cf. `context/references/sdb-template.md`). Si < 3/7 sources OK → STOP.
+- **Arborescence cache** : `context/references/cache-structure.md` — reference unique pour les chemins de fichiers.
 
 ### Regles specifiques /prepare
 - **SDB = source unique des chiffres** : la Pass 3 ne re-collecte JAMAIS les donnees. Copie exacte du SDB.
