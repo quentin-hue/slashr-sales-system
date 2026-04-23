@@ -192,6 +192,66 @@ Si `LAYOUT_MODE = "data-heavy"` (defaut) : benchmark + tables + charts, equilibr
 - **Ne pas parler dans le vide** : chaque analyse est ancree dans le secteur du prospect (concurrents nommes, dynamiques de marche, temporalite sectorielle).
 - Rappel : test de substitution, zero pression, zero dramatisation (cf. `agents/shared.md`, regles 13-15).
 
+## Principes de design éditorial (OBLIGATOIRE)
+
+### Philosophie
+La proposition est un document éditorial premium, pas un dashboard ni un template. Chaque slide raconte une étape de l'histoire. Le décideur scrolle et comprend l'arc narratif par les titres et les chiffres seuls.
+
+### Composants préférés (dx-)
+Les composants "dx-" (définis dans `context/proposal-kit-reference.md` section "DX — COMPOSANTS ÉDITORIAUX PREMIUM") sont le choix par défaut pour toutes les nouvelles propositions. Les anciens composants (highlight-box, card, kpi grid) restent disponibles comme fallback mais ne doivent PAS être le premier choix.
+
+| Besoin | Composant dx- | Ancien composant (fallback) |
+|--------|--------------|---------------------------|
+| SO WHAT / interprétation | `.dx-insight` | `.highlight-box` |
+| Chiffre clé hero | `.dx-metric` | `.kpi-large` |
+| Liste de constats | `.dx-issues` (grille numérotée) | `.grid-2` + `.card` |
+| Étapes / timeline | `.dx-steps` (numérotée) | `.timeline` |
+| Contexte client | `.dx-context-grid` (bordures) | `.context-grid` + `.context-card` |
+| Implications | `.dx-implication` (numérotée) | `.highlight-box` empilées |
+| Contenu différé | `.dx-deferred` | `.highlight-box.highlight-gradient` |
+| CTA | `.dx-cta-btn` (border gradient) | `.cta-btn` |
+
+### Anti-patterns (INTERDIT sauf justification)
+
+1. **Encadrer chaque bloc dans une card/box** — les séparations sont des lignes fines (`border-bottom: 1px solid var(--border)`), pas des rectangles avec `background: var(--surface)`
+2. **highlight-boxes comme SO WHAT** — utiliser `.dx-insight` (border-left gradient 2px, texte libre, max-width 600px)
+3. **Emojis dans des cercles colorés** — les labels de section sont textuels (`dx-tag` avec trait gradient)
+4. **Plus de 2 composants visuels par slide** — 1 visuel + 1 dx-insight max
+5. **Titres h2 pleine largeur** — contraindre à `max-width: 680px` via `.dx-title`
+6. **Paragraphes de scope** — les scopes de prestation sont en bullets courtes, jamais en pavé de texte
+7. **Grid-3 de highlight-boxes** — empiler verticalement les implications (`.dx-implication`)
+8. **Métriques géantes empilées verticalement** — si 3+ métriques, les mettre en `grid-3` côte à côte (1 slide)
+
+### Animations (OBLIGATOIRE)
+
+Chaque `.slide` dans les onglets générés par writer-tab DOIT avoir la classe `.dx-reveal`. Les éléments internes utilisent `.dx-d1` à `.dx-d4` pour le stagger.
+
+Chaque onglet DOIT inclure un script IntersectionObserver en haut :
+```js
+(function(){
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('dx-visible');
+        e.target.querySelectorAll('.dx-bar-fill[data-w]').forEach(b => {
+          b.style.width = b.dataset.w + '%';
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+  setTimeout(() => {
+    document.querySelectorAll('#tab-{TAB_ID} .dx-reveal').forEach(el => obs.observe(el));
+  }, 200);
+})();
+```
+
+### Aération
+
+- L'espace négatif (fond noir) est un élément de design, pas du vide à remplir
+- margin-top entre sections : 48-56px minimum
+- Les chiffres clés sont le premier élément lu (font-size > 48px, gradient)
+- Max-width sur les blocs de texte : 560-680px (pas pleine largeur)
+
 ---
 
 ## Etape 3.3 : Structure des onglets

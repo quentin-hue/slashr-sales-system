@@ -1,0 +1,627 @@
+<!--
+  ============================================================
+  SLASHR — SLIDE TEMPLATES (Design Editorial Premium)
+  ============================================================
+
+  QUOI : Snippets HTML copiables pour les principaux types de
+  slides. Chaque template utilise les classes dx- du design
+  editorial premium, par-dessus le systeme existant (proposal-kit).
+
+  COMMENT UTILISER :
+  1. Le writer-tab choisit le template adapte au role narratif de la slide
+  2. Il copie le snippet dans le tab-content
+  3. Il remplace les {{VARIABLES}} par les donnees du SDB/NBP
+  4. Il ajuste les classes dx-d1 a dx-d4 pour le stagger d'animation
+
+  REGLES DE COMPOSITION :
+  - 1 seul composant visuel par slide (bar-chart, grid, versus, etc.)
+  - dx-insight obligatoire apres chaque composant visuel = le SO WHAT (3 lignes max)
+  - Animations obligatoires : dx-reveal sur chaque element anime, dx-d1 a dx-d4 pour le stagger
+  - Titres (dx-title) : max-width 680px, max 8 mots
+  - Textes (dx-insight, paragraphes) : max-width 560px
+  - Chaque slide tient sur 1 ecran (1440x900) sans scroll vertical
+
+  ANTI-PATTERNS :
+  - JAMAIS 2 composants visuels sur la meme slide (splitter en 2 slides)
+  - JAMAIS de slide sans dx-insight (chaque slide doit avoir un SO WHAT)
+  - JAMAIS de titre descriptif ("Analyse du trafic") -> toujours narratif ("Un marche de 14 800 recherches, invisible")
+  - JAMAIS de dx-metric sans source tracable dans le SDB
+  - JAMAIS de slide > 4 elements animes (dx-d1 a dx-d4 max)
+  - JAMAIS d'animation sur les blobs (ils sont statiques, seul le contenu anime)
+  - JAMAIS de classe dx- inventee hors de ce fichier
+
+  CLASSES dx- REFERENCE :
+  dx-reveal ............ element anime (opacity 0 -> 1, translateY 30px -> 0)
+  dx-d1 ................ delay 0ms (premier element)
+  dx-d2 ................ delay 120ms
+  dx-d3 ................ delay 240ms
+  dx-d4 ................ delay 360ms
+  dx-tag ............... label uppercase (section-label style)
+  dx-title ............. titre h2 narratif (Funnel Display, max 680px)
+  dx-subtitle .......... sous-titre (Inter, text-70, max 560px)
+  dx-metric ............ chiffre geant (4rem+, gradient orange-magenta)
+  dx-metric-label ...... label sous le chiffre geant
+  dx-metric-source ..... source du chiffre (text-50, 0.8rem)
+  dx-insight ........... encadre SO WHAT (bordure gauche orange, max 560px)
+  dx-tag-label ......... tag inline dans le hero
+  dx-issues ............ grille 2x2 numerotee
+  dx-issue ............. item de la grille issues
+  dx-issue-num ......... numero de l'issue (gradient)
+  dx-issue-title ....... titre de l'issue
+  dx-issue-desc ........ description de l'issue
+  dx-bars .............. conteneur bar chart
+  dx-bar-row ........... ligne du bar chart
+  dx-bar-label ......... label de la barre
+  dx-bar-track ......... piste de la barre
+  dx-bar-fill .......... remplissage anime
+  dx-bar-value ......... valeur numerique
+  dx-positions ......... rangee inline de positions
+  dx-pos ............... badge position individuel
+  dx-versus ............ conteneur face-a-face
+  dx-vs-col ............ colonne du versus
+  dx-vs-name ........... nom de l'entite
+  dx-vs-metric ......... chiffre du versus
+  dx-vs-label .......... label du versus
+  dx-vs-divider ........ separateur vertical
+  dx-steps ............. liste numerotee
+  dx-step .............. etape individuelle
+  dx-step-num .......... numero de l'etape (gradient)
+  dx-step-title ........ titre de l'etape
+  dx-step-desc ......... description de l'etape
+  dx-deferred .......... bloc "phase differee" (opacite reduite)
+  dx-market-bar ........ barre segmentee de marche
+  dx-market-segment .... segment individuel
+  dx-market-legend ..... legende sous la barre
+  dx-market-legend-item  item de legende (dot + label + valeur)
+  dx-pricing-amount .... chiffre prix geant
+  dx-pricing-period .... periodicite
+  dx-pricing-scope ..... conteneur scope en colonnes
+  dx-pricing-col ....... colonne de scope
+  dx-pricing-col-title . titre de colonne
+  dx-implication ....... bloc implication avec marker
+  dx-impl-marker ....... marker colore (orange/magenta/violet)
+  dx-impl-title ........ titre de l'implication
+  dx-impl-desc ......... description de l'implication
+  dx-cta-btn ........... bouton CTA (blanc, hover gradient)
+  dx-context-grid ...... grille 2x2 de contexte
+  dx-context-item ...... item de la grille contexte
+  dx-context-label ..... label colore de l'item
+  dx-context-value ..... valeur/description de l'item
+  dx-scroll-indicator .. indicateur de scroll (fleche animee)
+
+  ============================================================
+-->
+
+
+<!-- ============================================================
+     1. SLIDE-HERO
+     ============================================================
+     QUAND : premiere slide de chaque onglet.
+     Blobs gradient en fond, tag partenariat, titre h1 narratif,
+     sous-titre, contexte (date/occasion), scroll indicator.
+     ============================================================ -->
+
+<div class="slide slide-full hero">
+  <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+
+  <span class="dx-tag-label dx-reveal dx-d1">{{TAG}}</span>
+  <!-- Ex: SLASHR x {{PROSPECT_NAME}} -->
+
+  <h1 class="dx-reveal dx-d2" style="max-width:680px;">{{HERO_TITLE}}</h1>
+  <!-- Ex: Capter les 14 800 recherches que vous laissez a vos concurrents -->
+
+  <p class="hero-subtitle dx-reveal dx-d3" style="max-width:560px;">{{HERO_SUBTITLE}}</p>
+  <!-- Ex: Diagnostic Search & recommandations strategiques -->
+
+  <p class="hero-date dx-reveal dx-d4">{{CONTEXT_LINE}}</p>
+  <!-- Ex: Avril 2026 · Suite a notre echange du 15 avril -->
+
+  <div class="dx-scroll-indicator hero-scroll dx-reveal dx-d4"
+       onclick="window.scrollBy({top:window.innerHeight-56,behavior:'smooth'})"></div>
+</div>
+
+
+<!-- ============================================================
+     2. SLIDE-METRIC
+     ============================================================
+     QUAND : poser un fait chiffre massif comme statement.
+     1 seul chiffre geant, 1 label, 1 source, 1 insight.
+     Ideal pour les constats (visibilite, trafic, part de marche).
+     ============================================================ -->
+
+<div class="slide slide-constat">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: VISIBILITE SEARCH -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{METRIC_TITLE}}</h2>
+  <!-- Ex: Un marche de 14 800 recherches, invisible -->
+
+  <div class="dx-metric dx-reveal dx-d3">
+    <div class="kpi-value">{{METRIC_VALUE}}</div>
+    <!-- Ex: < 1% -->
+    <div class="dx-metric-label">{{METRIC_LABEL}}</div>
+    <!-- Ex: de visibilite hors-marque -->
+    <p class="dx-metric-source">{{METRIC_SOURCE}}</p>
+    <!-- Ex: Source : DataForSEO, avril 2026 -->
+  </div>
+
+  <div class="dx-insight dx-reveal dx-d4" style="max-width:560px;">
+    <strong>Concretement :</strong> {{INSIGHT_TEXT}}
+    <!-- Ex: 14 800 recherches mensuelles existent sur vos produits.
+         Aujourd'hui, aucune ne mene a votre site. -->
+  </div>
+</div>
+
+
+<!-- ============================================================
+     3. SLIDE-TENSION
+     ============================================================
+     QUAND : montrer un paradoxe entre 2 chiffres opposes.
+     2 KPI geants en grid 2 colonnes avec gap 60px, connecteur
+     textuel ("pourtant", "mais", "malgre"), proof pills optionnels.
+     Ideal pour le constat-tension (marque forte + invisible).
+     ============================================================ -->
+
+<div class="slide slide-constat">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: LE PARADOXE -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{TENSION_TITLE}}</h2>
+  <!-- Ex: Une marque qui attire, un site qui n'en profite pas -->
+
+  <div class="constat-tension dx-reveal dx-d3" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;text-align:center;">
+    <div class="constat-tension-kpi positive">
+      <div class="kpi-value">{{LEFT_VALUE}}</div>
+      <!-- Ex: 14 800 -->
+      <div class="kpi-label">{{LEFT_LABEL}}</div>
+      <!-- Ex: recherches/mois sur votre marque -->
+    </div>
+    <div class="constat-tension-kpi negative">
+      <div class="kpi-value">{{RIGHT_VALUE}}</div>
+      <!-- Ex: < 1% -->
+      <div class="kpi-label">{{RIGHT_LABEL}}</div>
+      <!-- Ex: de visibilite hors-marque -->
+    </div>
+  </div>
+
+  <div class="dx-insight dx-reveal dx-d4" style="max-width:560px;margin:24px auto 0;">
+    <strong>Concretement :</strong> {{INSIGHT_TEXT}}
+  </div>
+</div>
+
+
+<!-- ============================================================
+     4. SLIDE-ISSUES
+     ============================================================
+     QUAND : lister 4 problemes ou constats structures.
+     Grille 2x2 numerotee, chaque item = numero + titre + desc.
+     Ideal pour les diagnostics, les freins identifies.
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: FREINS IDENTIFIES -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{ISSUES_TITLE}}</h2>
+  <!-- Ex: Quatre verrous qui bloquent votre croissance organique -->
+
+  <div class="dx-issues dx-reveal dx-d3" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px;">
+
+    <div class="dx-issue" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-issue-num" style="font-size:1.5rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">01</div>
+      <div class="dx-issue-title" style="font-weight:600;margin-bottom:6px;">{{ISSUE_1_TITLE}}</div>
+      <div class="dx-issue-desc" style="color:var(--text-70);font-size:0.9rem;">{{ISSUE_1_DESC}}</div>
+    </div>
+
+    <div class="dx-issue" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-issue-num" style="font-size:1.5rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">02</div>
+      <div class="dx-issue-title" style="font-weight:600;margin-bottom:6px;">{{ISSUE_2_TITLE}}</div>
+      <div class="dx-issue-desc" style="color:var(--text-70);font-size:0.9rem;">{{ISSUE_2_DESC}}</div>
+    </div>
+
+    <div class="dx-issue" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-issue-num" style="font-size:1.5rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">03</div>
+      <div class="dx-issue-title" style="font-weight:600;margin-bottom:6px;">{{ISSUE_3_TITLE}}</div>
+      <div class="dx-issue-desc" style="color:var(--text-70);font-size:0.9rem;">{{ISSUE_3_DESC}}</div>
+    </div>
+
+    <div class="dx-issue" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-issue-num" style="font-size:1.5rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">04</div>
+      <div class="dx-issue-title" style="font-weight:600;margin-bottom:6px;">{{ISSUE_4_TITLE}}</div>
+      <div class="dx-issue-desc" style="color:var(--text-70);font-size:0.9rem;">{{ISSUE_4_DESC}}</div>
+    </div>
+
+  </div>
+
+  <div class="dx-insight dx-reveal dx-d4" style="max-width:560px;margin-top:24px;">
+    <strong>Concretement :</strong> {{INSIGHT_TEXT}}
+  </div>
+</div>
+
+
+<!-- ============================================================
+     5. SLIDE-BARS
+     ============================================================
+     QUAND : benchmark horizontal (prospect vs concurrents).
+     Bar chart anime + positions inline + insight.
+     Ideal pour les comparatifs de trafic, mots-cles, autorite.
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: BENCHMARK CONCURRENTIEL -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{BARS_TITLE}}</h2>
+  <!-- Ex: Trois concurrents captent le trafic que vous n'avez pas -->
+
+  <div class="dx-bars dx-reveal dx-d3" style="margin-top:32px;">
+
+    <div class="dx-bar-row" style="display:grid;grid-template-columns:140px 1fr 80px;gap:12px;align-items:center;margin-bottom:12px;">
+      <div class="dx-bar-label" style="font-size:0.85rem;font-weight:600;color:var(--orange);">{{PROSPECT_NAME}}</div>
+      <div class="dx-bar-track" style="background:rgba(255,255,255,0.06);border-radius:6px;height:28px;overflow:hidden;">
+        <div class="dx-bar-fill" data-width="{{PROSPECT_PCT}}" style="height:100%;border-radius:6px;background:var(--orange);width:0%;transition:width 1.2s cubic-bezier(0.22,1,0.36,1);"></div>
+      </div>
+      <div class="dx-bar-value" style="font-size:0.9rem;font-weight:600;text-align:right;">{{PROSPECT_VALUE}}</div>
+    </div>
+
+    <div class="dx-bar-row" style="display:grid;grid-template-columns:140px 1fr 80px;gap:12px;align-items:center;margin-bottom:12px;">
+      <div class="dx-bar-label" style="font-size:0.85rem;color:var(--text-70);">{{COMPETITOR_1_NAME}}</div>
+      <div class="dx-bar-track" style="background:rgba(255,255,255,0.06);border-radius:6px;height:28px;overflow:hidden;">
+        <div class="dx-bar-fill" data-width="{{COMPETITOR_1_PCT}}" style="height:100%;border-radius:6px;background:var(--text-30);width:0%;transition:width 1.2s cubic-bezier(0.22,1,0.36,1);"></div>
+      </div>
+      <div class="dx-bar-value" style="font-size:0.9rem;text-align:right;color:var(--text-70);">{{COMPETITOR_1_VALUE}}</div>
+    </div>
+
+    <div class="dx-bar-row" style="display:grid;grid-template-columns:140px 1fr 80px;gap:12px;align-items:center;margin-bottom:12px;">
+      <div class="dx-bar-label" style="font-size:0.85rem;color:var(--text-70);">{{COMPETITOR_2_NAME}}</div>
+      <div class="dx-bar-track" style="background:rgba(255,255,255,0.06);border-radius:6px;height:28px;overflow:hidden;">
+        <div class="dx-bar-fill" data-width="{{COMPETITOR_2_PCT}}" style="height:100%;border-radius:6px;background:var(--text-30);width:0%;transition:width 1.2s cubic-bezier(0.22,1,0.36,1);"></div>
+      </div>
+      <div class="dx-bar-value" style="font-size:0.9rem;text-align:right;color:var(--text-70);">{{COMPETITOR_2_VALUE}}</div>
+    </div>
+
+    <!-- Ajouter autant de dx-bar-row que necessaire (3-6 barres) -->
+
+  </div>
+
+  <div class="dx-positions dx-reveal dx-d3" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
+    <span class="dx-pos" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-full);padding:6px 14px;font-size:0.85rem;color:var(--text-70);">{{KEYWORD_1}} : pos. {{POS_1}}</span>
+    <span class="dx-pos" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-full);padding:6px 14px;font-size:0.85rem;color:var(--text-70);">{{KEYWORD_2}} : pos. {{POS_2}}</span>
+    <span class="dx-pos" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-full);padding:6px 14px;font-size:0.85rem;color:var(--text-70);">{{KEYWORD_3}} : pos. {{POS_3}}</span>
+    <!-- Positions inline optionnelles, 3-5 max -->
+  </div>
+
+  <div class="dx-insight dx-reveal dx-d4" style="max-width:560px;margin-top:24px;">
+    <strong>Concretement :</strong> {{INSIGHT_TEXT}}
+  </div>
+</div>
+
+
+<!-- ============================================================
+     6. SLIDE-VERSUS
+     ============================================================
+     QUAND : face-a-face direct entre 2 entites (prospect vs
+     concurrent leader, ou avant vs apres).
+     2 colonnes avec divider vertical + metriques comparees.
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: FACE-A-FACE -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{VERSUS_TITLE}}</h2>
+  <!-- Ex: Vous vs {{COMPETITOR_NAME}} : l'ecart en chiffres -->
+
+  <div class="dx-versus dx-reveal dx-d3" style="display:grid;grid-template-columns:1fr auto 1fr;gap:32px;align-items:start;margin-top:32px;">
+
+    <div class="dx-vs-col" style="text-align:center;">
+      <div class="dx-vs-name" style="font-weight:700;font-size:1.1rem;color:var(--orange);margin-bottom:20px;">{{LEFT_NAME}}</div>
+      <div style="margin-bottom:16px;">
+        <div class="dx-vs-metric" style="font-size:2rem;font-weight:700;">{{LEFT_METRIC_1}}</div>
+        <div class="dx-vs-label" style="color:var(--text-50);font-size:0.85rem;">{{METRIC_1_LABEL}}</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div class="dx-vs-metric" style="font-size:2rem;font-weight:700;">{{LEFT_METRIC_2}}</div>
+        <div class="dx-vs-label" style="color:var(--text-50);font-size:0.85rem;">{{METRIC_2_LABEL}}</div>
+      </div>
+      <div>
+        <div class="dx-vs-metric" style="font-size:2rem;font-weight:700;">{{LEFT_METRIC_3}}</div>
+        <div class="dx-vs-label" style="color:var(--text-50);font-size:0.85rem;">{{METRIC_3_LABEL}}</div>
+      </div>
+    </div>
+
+    <div class="dx-vs-divider" style="width:1px;background:var(--border);align-self:stretch;"></div>
+
+    <div class="dx-vs-col" style="text-align:center;">
+      <div class="dx-vs-name" style="font-weight:700;font-size:1.1rem;color:var(--text-70);margin-bottom:20px;">{{RIGHT_NAME}}</div>
+      <div style="margin-bottom:16px;">
+        <div class="dx-vs-metric" style="font-size:2rem;font-weight:700;">{{RIGHT_METRIC_1}}</div>
+        <div class="dx-vs-label" style="color:var(--text-50);font-size:0.85rem;">{{METRIC_1_LABEL}}</div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div class="dx-vs-metric" style="font-size:2rem;font-weight:700;">{{RIGHT_METRIC_2}}</div>
+        <div class="dx-vs-label" style="color:var(--text-50);font-size:0.85rem;">{{METRIC_2_LABEL}}</div>
+      </div>
+      <div>
+        <div class="dx-vs-metric" style="font-size:2rem;font-weight:700;">{{RIGHT_METRIC_3}}</div>
+        <div class="dx-vs-label" style="color:var(--text-50);font-size:0.85rem;">{{METRIC_3_LABEL}}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dx-insight dx-reveal dx-d4" style="max-width:560px;margin-top:24px;">
+    <strong>Concretement :</strong> {{INSIGHT_TEXT}}
+  </div>
+</div>
+
+
+<!-- ============================================================
+     7. SLIDE-STEPS
+     ============================================================
+     QUAND : presenter un plan d'action ou une roadmap en etapes
+     numerotees. Liste verticale, 3-5 etapes max.
+     dx-deferred optionnel pour les actions differees (opacite 0.5).
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: PLAN D'ACTION -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{STEPS_TITLE}}</h2>
+  <!-- Ex: Trois leviers a activer dans les 90 premiers jours -->
+
+  <div class="dx-steps dx-reveal dx-d3" style="display:flex;flex-direction:column;gap:16px;margin-top:32px;max-width:640px;">
+
+    <div class="dx-step" style="display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;background:var(--surface);border-radius:var(--radius);padding:20px 24px;">
+      <div class="dx-step-num" style="font-size:1.3rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">01</div>
+      <div>
+        <div class="dx-step-title" style="font-weight:600;margin-bottom:4px;">{{STEP_1_TITLE}}</div>
+        <div class="dx-step-desc" style="color:var(--text-70);font-size:0.9rem;">{{STEP_1_DESC}}</div>
+      </div>
+    </div>
+
+    <div class="dx-step" style="display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;background:var(--surface);border-radius:var(--radius);padding:20px 24px;">
+      <div class="dx-step-num" style="font-size:1.3rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">02</div>
+      <div>
+        <div class="dx-step-title" style="font-weight:600;margin-bottom:4px;">{{STEP_2_TITLE}}</div>
+        <div class="dx-step-desc" style="color:var(--text-70);font-size:0.9rem;">{{STEP_2_DESC}}</div>
+      </div>
+    </div>
+
+    <div class="dx-step" style="display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;background:var(--surface);border-radius:var(--radius);padding:20px 24px;">
+      <div class="dx-step-num" style="font-size:1.3rem;font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">03</div>
+      <div>
+        <div class="dx-step-title" style="font-weight:600;margin-bottom:4px;">{{STEP_3_TITLE}}</div>
+        <div class="dx-step-desc" style="color:var(--text-70);font-size:0.9rem;">{{STEP_3_DESC}}</div>
+      </div>
+    </div>
+
+    <!-- dx-deferred : etape differee, opacite reduite -->
+    <div class="dx-step dx-deferred" style="display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;background:var(--surface);border-radius:var(--radius);padding:20px 24px;opacity:0.5;">
+      <div class="dx-step-num" style="font-size:1.3rem;font-weight:700;color:var(--text-30);">04</div>
+      <div>
+        <div class="dx-step-title" style="font-weight:600;margin-bottom:4px;color:var(--text-50);">{{STEP_DEFERRED_TITLE}}</div>
+        <div class="dx-step-desc" style="color:var(--text-30);font-size:0.9rem;">{{STEP_DEFERRED_DESC}} (Phase 2)</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     8. SLIDE-MARKET
+     ============================================================
+     QUAND : visualiser la repartition d'un marche ou d'un budget.
+     Barre segmentee horizontale coloree + legende + insight.
+     Ideal pour parts de marche, repartition trafic, split budget.
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: REPARTITION DU MARCHE -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{MARKET_TITLE}}</h2>
+  <!-- Ex: Trois acteurs se partagent 78% du trafic Search -->
+
+  <div class="dx-market-bar dx-reveal dx-d3" style="display:flex;height:40px;border-radius:var(--radius);overflow:hidden;margin-top:32px;">
+    <div class="dx-market-segment" style="width:{{SEGMENT_1_PCT}}%;background:var(--orange);"></div>
+    <div class="dx-market-segment" style="width:{{SEGMENT_2_PCT}}%;background:var(--magenta);"></div>
+    <div class="dx-market-segment" style="width:{{SEGMENT_3_PCT}}%;background:var(--violet);"></div>
+    <div class="dx-market-segment" style="width:{{SEGMENT_REST_PCT}}%;background:var(--surface);"></div>
+    <!-- Ajuster les segments et couleurs selon les donnees -->
+  </div>
+
+  <div class="dx-market-legend dx-reveal dx-d3" style="display:flex;gap:24px;flex-wrap:wrap;margin-top:16px;">
+    <div class="dx-market-legend-item" style="display:flex;align-items:center;gap:8px;">
+      <span style="width:10px;height:10px;border-radius:50%;background:var(--orange);"></span>
+      <span style="font-size:0.85rem;color:var(--text-70);">{{LEGEND_1_LABEL}} — {{LEGEND_1_VALUE}}</span>
+    </div>
+    <div class="dx-market-legend-item" style="display:flex;align-items:center;gap:8px;">
+      <span style="width:10px;height:10px;border-radius:50%;background:var(--magenta);"></span>
+      <span style="font-size:0.85rem;color:var(--text-70);">{{LEGEND_2_LABEL}} — {{LEGEND_2_VALUE}}</span>
+    </div>
+    <div class="dx-market-legend-item" style="display:flex;align-items:center;gap:8px;">
+      <span style="width:10px;height:10px;border-radius:50%;background:var(--violet);"></span>
+      <span style="font-size:0.85rem;color:var(--text-70);">{{LEGEND_3_LABEL}} — {{LEGEND_3_VALUE}}</span>
+    </div>
+    <div class="dx-market-legend-item" style="display:flex;align-items:center;gap:8px;">
+      <span style="width:10px;height:10px;border-radius:50%;background:var(--surface);border:1px solid var(--border);"></span>
+      <span style="font-size:0.85rem;color:var(--text-50);">{{LEGEND_REST_LABEL}} — {{LEGEND_REST_VALUE}}</span>
+    </div>
+  </div>
+
+  <div class="dx-insight dx-reveal dx-d4" style="max-width:560px;margin-top:24px;">
+    <strong>Concretement :</strong> {{INSIGHT_TEXT}}
+  </div>
+</div>
+
+
+<!-- ============================================================
+     9. SLIDE-PRICING
+     ============================================================
+     QUAND : presenter l'investissement (onglet Investissement).
+     Chiffre prix geant + scope en colonnes avec bullets.
+     Le prix en premier, le scope en dessous.
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: INVESTISSEMENT · PHASE 1 -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{PRICING_TITLE}}</h2>
+  <!-- Ex: 4 mois pour poser les fondations -->
+
+  <div class="dx-reveal dx-d3" style="text-align:center;margin-top:32px;">
+    <div class="dx-pricing-amount" style="font-family:var(--font-display);font-size:clamp(3rem,6vw,4.5rem);font-weight:700;background:linear-gradient(90deg,var(--orange),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">{{PRICE}}</div>
+    <!-- Ex: 12 000 EUR -->
+    <div class="dx-pricing-period" style="color:var(--text-50);font-size:1rem;margin-top:4px;">{{PRICING_PERIOD}}</div>
+    <!-- Ex: HT · Phase 1 (4 mois) -->
+  </div>
+
+  <div class="dx-pricing-scope dx-reveal dx-d4" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px;max-width:640px;">
+
+    <div class="dx-pricing-col">
+      <div class="dx-pricing-col-title" style="font-weight:600;margin-bottom:12px;color:var(--orange);">{{SCOPE_COL_1_TITLE}}</div>
+      <!-- Ex: Audit & strategie (M1) -->
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+        <li style="color:var(--text-70);font-size:0.9rem;padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--orange);">&#8250;</span> {{SCOPE_1_ITEM_1}}</li>
+        <li style="color:var(--text-70);font-size:0.9rem;padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--orange);">&#8250;</span> {{SCOPE_1_ITEM_2}}</li>
+        <li style="color:var(--text-70);font-size:0.9rem;padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--orange);">&#8250;</span> {{SCOPE_1_ITEM_3}}</li>
+      </ul>
+    </div>
+
+    <div class="dx-pricing-col">
+      <div class="dx-pricing-col-title" style="font-weight:600;margin-bottom:12px;color:var(--magenta);">{{SCOPE_COL_2_TITLE}}</div>
+      <!-- Ex: Execution (M2-M4) -->
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+        <li style="color:var(--text-70);font-size:0.9rem;padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--magenta);">&#8250;</span> {{SCOPE_2_ITEM_1}}</li>
+        <li style="color:var(--text-70);font-size:0.9rem;padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--magenta);">&#8250;</span> {{SCOPE_2_ITEM_2}}</li>
+        <li style="color:var(--text-70);font-size:0.9rem;padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:var(--magenta);">&#8250;</span> {{SCOPE_2_ITEM_3}}</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     10. SLIDE-IMPLICATIONS
+     ============================================================
+     QUAND : traduire un diagnostic en consequences business.
+     3 implications empilees avec markers colores (orange, magenta,
+     violet). Chaque implication = marker + titre + description.
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: IMPLICATIONS -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{IMPLICATIONS_TITLE}}</h2>
+  <!-- Ex: Ce que ca signifie pour votre acquisition -->
+
+  <div style="display:flex;flex-direction:column;gap:20px;margin-top:32px;max-width:640px;">
+
+    <div class="dx-implication dx-reveal dx-d2" style="display:grid;grid-template-columns:4px 1fr;gap:20px;align-items:start;">
+      <div class="dx-impl-marker" style="width:4px;height:100%;border-radius:2px;background:var(--orange);"></div>
+      <div>
+        <div class="dx-impl-title" style="font-weight:600;margin-bottom:4px;">{{IMPL_1_TITLE}}</div>
+        <div class="dx-impl-desc" style="color:var(--text-70);font-size:0.9rem;">{{IMPL_1_DESC}}</div>
+      </div>
+    </div>
+
+    <div class="dx-implication dx-reveal dx-d3" style="display:grid;grid-template-columns:4px 1fr;gap:20px;align-items:start;">
+      <div class="dx-impl-marker" style="width:4px;height:100%;border-radius:2px;background:var(--magenta);"></div>
+      <div>
+        <div class="dx-impl-title" style="font-weight:600;margin-bottom:4px;">{{IMPL_2_TITLE}}</div>
+        <div class="dx-impl-desc" style="color:var(--text-70);font-size:0.9rem;">{{IMPL_2_DESC}}</div>
+      </div>
+    </div>
+
+    <div class="dx-implication dx-reveal dx-d4" style="display:grid;grid-template-columns:4px 1fr;gap:20px;align-items:start;">
+      <div class="dx-impl-marker" style="width:4px;height:100%;border-radius:2px;background:var(--violet);"></div>
+      <div>
+        <div class="dx-impl-title" style="font-weight:600;margin-bottom:4px;">{{IMPL_3_TITLE}}</div>
+        <div class="dx-impl-desc" style="color:var(--text-70);font-size:0.9rem;">{{IMPL_3_DESC}}</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================================================
+     11. SLIDE-CTA
+     ============================================================
+     QUAND : derniere slide d'un onglet ou de la proposition.
+     Blobs gradient en fond + tag + titre + subtitle + bouton CTA.
+     Full-height, snap target.
+     ============================================================ -->
+
+<div class="slide slide-full cta-section">
+  <div class="hero-blobs" style="opacity:0.5;"><div class="hero-blob-3"></div></div>
+
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: PROCHAINE ETAPE -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;font-family:var(--font-display);font-size:clamp(28px,5vw,44px);font-weight:700;line-height:1.15;">{{CTA_TITLE}}</h2>
+  <!-- Ex: Transformons ces donnees en resultats -->
+
+  <p class="dx-subtitle dx-reveal dx-d3" style="max-width:560px;color:var(--text-70);font-size:1.1rem;margin-top:16px;">{{CTA_SUBTITLE}}</p>
+  <!-- Ex: Un call de 30 minutes pour valider le plan d'action et lancer la Phase 1. -->
+
+  <div class="cta-wrap dx-reveal dx-d4" style="margin-top:32px;">
+    <a href="mailto:{{CTA_EMAIL}}" class="dx-cta-btn cta-btn">{{CTA_LABEL}}</a>
+    <!-- Ex: Planifier le prochain echange -->
+  </div>
+</div>
+
+
+<!-- ============================================================
+     12. SLIDE-CONTEXT
+     ============================================================
+     QUAND : poser le contexte du prospect (secteur, CA, equipe,
+     enjeu). Grille 2x2 avec labels colores + valeurs.
+     Ideal pour l'ouverture de l'onglet Diagnostic apres le hero.
+     ============================================================ -->
+
+<div class="slide">
+  <p class="dx-tag dx-reveal dx-d1">{{SECTION_LABEL}}</p>
+  <!-- Ex: VOTRE CONTEXTE -->
+
+  <h2 class="dx-title dx-reveal dx-d2" style="max-width:680px;">{{CONTEXT_TITLE}}</h2>
+  <!-- Ex: Ce que nous savons de votre situation -->
+
+  <div class="dx-context-grid dx-reveal dx-d3" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:32px;">
+
+    <div class="dx-context-item" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-context-label" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--orange);margin-bottom:8px;">{{CONTEXT_1_LABEL}}</div>
+      <!-- Ex: SECTEUR -->
+      <div class="dx-context-value" style="font-size:1rem;font-weight:500;">{{CONTEXT_1_VALUE}}</div>
+      <!-- Ex: E-commerce alimentaire premium -->
+    </div>
+
+    <div class="dx-context-item" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-context-label" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--magenta);margin-bottom:8px;">{{CONTEXT_2_LABEL}}</div>
+      <!-- Ex: CHIFFRE D'AFFAIRES -->
+      <div class="dx-context-value" style="font-size:1rem;font-weight:500;">{{CONTEXT_2_VALUE}}</div>
+      <!-- Ex: 8M EUR (2025) -->
+    </div>
+
+    <div class="dx-context-item" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-context-label" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--violet);margin-bottom:8px;">{{CONTEXT_3_LABEL}}</div>
+      <!-- Ex: EQUIPE DIGITALE -->
+      <div class="dx-context-value" style="font-size:1rem;font-weight:500;">{{CONTEXT_3_VALUE}}</div>
+      <!-- Ex: 2 personnes (marketing + dev) -->
+    </div>
+
+    <div class="dx-context-item" style="background:var(--surface);border-radius:var(--radius);padding:24px;">
+      <div class="dx-context-label" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);margin-bottom:8px;">{{CONTEXT_4_LABEL}}</div>
+      <!-- Ex: ENJEU EXPRIME -->
+      <div class="dx-context-value" style="font-size:1rem;font-weight:500;">{{CONTEXT_4_VALUE}}</div>
+      <!-- Ex: Reduire la dependance aux campagnes paid -->
+    </div>
+
+  </div>
+</div>

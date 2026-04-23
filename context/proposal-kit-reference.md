@@ -7,6 +7,292 @@
 
 ---
 
+## DX — COMPOSANTS EDITORIAUX PREMIUM
+
+> Design editorial sans box, sans cards, sans emojis. Espace, typographie et gradient comme seuls outils visuels.
+> Ces composants remplacent les patterns par defaut pour l'onglet Diagnostic (et tout onglet editorial).
+
+### Reveal au scroll — animation d'entree progressive
+
+Classes : `.dx-reveal`, `.dx-visible`, `.dx-d1`, `.dx-d2`, `.dx-d3`, `.dx-d4`
+
+```html
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Label</div>
+  <div class="dx-title dx-d1">Titre principal</div>
+  <p class="dx-intro dx-d1">Sous-titre.</p>
+  <div class="dx-issues dx-d2">...</div>
+  <div class="dx-insight dx-d3">...</div>
+</div>
+```
+
+Quand utiliser : sur chaque `.slide` de l'onglet Diagnostic. `.dx-reveal` rend le conteneur invisible, `.dx-visible` est ajoute par l'IntersectionObserver JS. `.dx-d1` a `.dx-d4` ajoutent des delais d'apparition echelonnes (150ms, 300ms, 450ms, 600ms).
+
+### Tag section — label avec trait gradient
+
+Classes : `.dx-tag`
+
+```html
+<div class="dx-tag">Visibilite</div>
+```
+
+Quand utiliser : en debut de chaque slide, avant le titre. Remplace `.section-label` dans le contexte DX.
+
+### Titre display — titre principal de slide
+
+Classes : `.dx-title`
+
+```html
+<div class="dx-title">Le site est visible. Personne ne clique.</div>
+```
+
+Quand utiliser : titre principal de chaque slide DX. Max-width 680px, font Funnel Display, letter-spacing serre.
+
+### Sous-titre — introduction courte
+
+Classes : `.dx-intro`
+
+```html
+<p class="dx-intro">Le CTR a une explication technique.</p>
+```
+
+Quand utiliser : sous le titre quand une phrase de contexte est necessaire. Max-width 560px, couleur text-50.
+
+### Insight (SO WHAT) — interpretation strategique
+
+Classes : `.dx-insight`
+
+```html
+<div class="dx-insight">
+  <p><strong>Correction en 2 jours</strong> avec votre agence Webflow. Impact immediat sur le CTR.</p>
+</div>
+```
+
+Quand utiliser : en bas de chaque slide pour le SO WHAT. Border-left gradient, PAS de box/card/background. Remplace `.highlight-box` dans le contexte DX.
+
+### Metric geant — chiffre hero gradient
+
+Classes : `.dx-metric`, `.dx-metric-value`, `.dx-metric-label`, `.dx-metric-sub`
+
+```html
+<div class="dx-metric">
+  <div class="dx-metric-value">18 830</div>
+  <div class="dx-metric-label">impressions par mois</div>
+  <div class="dx-metric-sub">Source : Google Search Console, 90 derniers jours</div>
+</div>
+```
+
+Quand utiliser : pour le chiffre central d'une slide (1 ou 2 max par slide). Remplace `.kpi` dans `.grid-3` et `.kpi-large`.
+
+### Grille problemes numerotes
+
+Classes : `.dx-issues`, `.dx-issue`, `.dx-issue-num`
+
+```html
+<div class="dx-issues">
+  <div class="dx-issue">
+    <div class="dx-issue-num">01</div>
+    <h3>Title tag generique</h3>
+    <p>Google ne sait pas que vous etes un cabinet conseil.</p>
+  </div>
+  <div class="dx-issue">
+    <div class="dx-issue-num">02</div>
+    <h3>H1 absent</h3>
+    <p>La homepage n'a pas de titre principal.</p>
+  </div>
+</div>
+```
+
+Quand utiliser : pour lister 2 a 6 problemes ou constats. Grille 2 colonnes, separateurs subtils, hover discret. Remplace les cards empilees.
+
+### Bar chart minimal
+
+Classes : `.dx-bars`, `.dx-bar`, `.dx-bar-fill`
+
+```html
+<div class="dx-bars">
+  <div class="dx-bar">
+    <div class="dx-bar-name is-you">prospect.fr</div>
+    <div class="dx-bar-track"><div class="dx-bar-fill accent" data-w="15"></div></div>
+    <div class="dx-bar-num">38</div>
+  </div>
+  <div class="dx-bar">
+    <div class="dx-bar-name">concurrent.fr</div>
+    <div class="dx-bar-track"><div class="dx-bar-fill muted" data-w="80"></div></div>
+    <div class="dx-bar-num">537</div>
+  </div>
+</div>
+```
+
+Quand utiliser : benchmark concurrentiel (mots-cles, trafic, backlinks). `.accent` = orange (prospect), `.muted` = gris (concurrents), `.info` = violet (informationnels). Anime au scroll via `data-w`.
+
+### Badges position SERP
+
+Classes : `.dx-positions`, `.dx-pos`, `.dx-pos-rank`
+
+```html
+<div class="dx-positions">
+  <div class="dx-pos"><span class="dx-pos-rank">#1</span><span class="dx-pos-query">cabinet conseil CS</span></div>
+  <div class="dx-pos"><span class="dx-pos-rank">#4</span><span class="dx-pos-query">audit CS</span></div>
+</div>
+```
+
+Quand utiliser : afficher les positions cles du prospect sur ses requetes strategiques. Flex horizontal, rang en gradient.
+
+### Face-a-face (versus)
+
+Classes : `.dx-versus`, `.dx-versus-col`, `.dx-versus-num`, `.dx-versus-divider`
+
+```html
+<div class="dx-versus">
+  <div class="dx-versus-col">
+    <div class="dx-versus-num good">4,22%</div>
+    <div class="dx-versus-detail">CTR - avec brief SEO</div>
+  </div>
+  <div class="dx-versus-divider"></div>
+  <div class="dx-versus-col">
+    <div class="dx-versus-num bad">0,06%</div>
+    <div class="dx-versus-detail">CTR - sans brief SEO</div>
+  </div>
+</div>
+```
+
+Quand utiliser : comparaison directe de 2 metriques (avant/apres, avec/sans, prospect/concurrent). Grille 3 colonnes avec divider vertical et "vs" integre. `.good` = vert gradient, `.bad` = gris.
+
+### Liste numerotee sans cards (steps)
+
+Classes : `.dx-steps`, `.dx-step`, `.dx-step-num`
+
+```html
+<div class="dx-steps">
+  <div class="dx-step">
+    <div class="dx-step-num">01</div>
+    <div>
+      <h3>Optimiser l'existant</h3>
+      <p>Meta, H1, schema, canonical. Impact en 60 jours.</p>
+    </div>
+  </div>
+  <div class="dx-step">
+    <div class="dx-step-num" style="color:var(--violet);">02</div>
+    <div>
+      <h3>Construire les pages d'acquisition</h3>
+      <p>Pages piliers bottom-funnel. Impact a 6 mois.</p>
+    </div>
+  </div>
+</div>
+```
+
+Quand utiliser : plan d'action ou roadmap synthetique (2-4 etapes). Grille 2 colonnes (numero + contenu), separateurs subtils.
+
+### Barre de marche segmentee
+
+Classes : `.dx-market-bar`, `.dx-market-legend`
+
+```html
+<div class="dx-market-bar">
+  <div class="dx-market-seg" data-w="45" style="background:var(--orange);width:0;"></div>
+  <div class="dx-market-seg" data-w="45" style="background:var(--violet);width:0;"></div>
+  <div class="dx-market-seg" data-w="10" style="background:rgba(255,255,255,0.1);width:0;"></div>
+</div>
+<div class="dx-market-legend">
+  <div class="dx-market-legend-item"><span class="dot" style="background:var(--orange);"></span>45% commerciales</div>
+  <div class="dx-market-legend-item"><span class="dot" style="background:var(--violet);"></span>45% info captables</div>
+  <div class="dx-market-legend-item"><span class="dot" style="background:rgba(255,255,255,0.15);"></span>10% hors perimetre</div>
+</div>
+```
+
+Quand utiliser : repartition d'un marche ou d'un portefeuille de requetes. Barre horizontale fine (8px) animee au scroll, legende en dessous avec dots colores.
+
+### Grille contexte 2x2
+
+Classes : `.dx-context-grid`, `.dx-context-item`
+
+```html
+<div class="dx-context-grid">
+  <div class="dx-context-item">
+    <div class="dx-context-label">L'objectif</div>
+    <p>1 lead qualifie par mois via le site.</p>
+  </div>
+  <div class="dx-context-item">
+    <div class="dx-context-label">Le contexte</div>
+    <p>L'outbound n'a pas fonctionne.</p>
+  </div>
+  <div class="dx-context-item">
+    <div class="dx-context-label">La question</div>
+    <p>Comment transformer le site en canal d'acquisition ?</p>
+  </div>
+  <div class="dx-context-item">
+    <div class="dx-context-label">L'approche</div>
+    <p>Mesurer, optimiser, cibler.</p>
+  </div>
+</div>
+```
+
+Quand utiliser : slide de contexte en ouverture. 4 cellules (objectif, contexte, question, approche). Labels colores par position (orange, magenta, violet, orange). Bordures internes subtiles.
+
+### Implications numerotees
+
+Classes : `.dx-implication`, `.dx-impl-marker`
+
+```html
+<div class="dx-implication">
+  <div class="dx-impl-marker orange">1</div>
+  <div>
+    <h3>Le verrou</h3>
+    <p>Le site apparait 18 830 fois mais ne convertit pas.</p>
+  </div>
+</div>
+<div class="dx-implication">
+  <div class="dx-impl-marker violet">2</div>
+  <div>
+    <h3>L'actif inexploite</h3>
+    <p>Le contenu existe, il manque la direction Search.</p>
+  </div>
+</div>
+```
+
+Quand utiliser : slide de synthese finale (implications strategiques, 2 a 4 items). Marqueurs ronds colores (`.orange`, `.violet`, `.magenta`). Grille 2 colonnes (marqueur + contenu).
+
+### Contenu differe (muted)
+
+Classes : `.dx-deferred`
+
+```html
+<div class="dx-deferred">
+  <p><strong>Pas maintenant :</strong> Google Ads, visibilite IA, production de contenu en volume.</p>
+</div>
+```
+
+Quand utiliser : pour les actions deliberement repoussees. Fond ultra-subtil, texte muted (text-30). Signale au prospect que le perimetre est maitrise.
+
+### Bouton CTA border gradient
+
+Classes : `.dx-cta-btn`
+
+```html
+<a class="dx-cta-btn" onclick="document.querySelector('[data-tab=strategie]').click();">
+  <span>Decouvrir la strategie</span>
+</a>
+```
+
+Quand utiliser : CTA de fin d'onglet. Bordure gradient qui se remplit au hover. Le `<span>` interne est obligatoire pour le z-index.
+
+---
+
+## ANTI-PATTERNS
+
+> Composants a NE PLUS utiliser comme pattern par defaut dans les onglets editoriaux (Diagnostic, Strategie). Les anciennes classes restent dans le kit comme fallback pour les onglets Investissement et Cas Clients.
+
+| Ancien pattern | Probleme | Remplacement DX |
+|---|---|---|
+| `.highlight-box` | Box opaque, rompt le flux editorial | `.dx-insight` (border-left gradient, pas de box) |
+| `.card` avec `border-top` | Empilage de blocs lourds | `.dx-issues` ou `.dx-steps` (grille aere) |
+| `.kpi` dans `.grid-3` | Trois boxes cote a cote = mur de chiffres | `.dx-metric` (1 chiffre geant par slide) |
+| Emojis dans cercles colores | Surcharge visuelle, non premium | Supprimes. Utiliser des numeros gradient (`.dx-issue-num`, `.dx-step-num`) |
+| Plus de 2 cards empilees | Effet "mur de briques" | Interdit. Alterner grille + insight + espace blanc |
+
+---
+
 ## LAYOUT
 
 ### Nav (barre fixe avec onglets)

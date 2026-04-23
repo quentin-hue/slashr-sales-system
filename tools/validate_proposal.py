@@ -166,8 +166,8 @@ class ProposalParser(HTMLParser):
             # Stop when a new slide starts
             if "slide" in classes.split() and tag in ("div", "section"):
                 self.implique_done = True
-            # Track highlight-boxes as items
-            elif "highlight-box" in classes.split() and not self.in_implique_highlight:
+            # Track highlight-boxes (or dx-implication / dx-impl-marker) as items
+            elif ("highlight-box" in classes.split() or "dx-implication" in classes.split() or "dx-impl-marker" in classes.split()) and not self.in_implique_highlight:
                 self.in_implique_highlight = True
                 self.implique_highlight_depth = 1
                 self.implique_highlight_buffer = ""
@@ -864,7 +864,7 @@ def check_layer4(parser, html_raw, visible_text):
                 diag_slides.append(current_slide_has_highlight)
             in_diag_slide = True
             current_slide_has_highlight = False
-        if in_diag_slide and "highlight-box" in cls_list:
+        if in_diag_slide and ("highlight-box" in cls_list or "dx-insight" in cls_list):
             current_slide_has_highlight = True
     if in_diag_slide:
         diag_slides.append(current_slide_has_highlight)
@@ -876,8 +876,13 @@ def check_layer4(parser, html_raw, visible_text):
         results.append(("R43", "SO WHAT : aucune section detectee dans l'onglet Diagnostic", None))
 
     # R44: Au moins 1 .micro-benchmark dans la proposition (Diagnostic ou Cas clients)
+    # Fallback: dx- micro-benchmarks use divs with arrow text (→) in cas-clients
     has_micro = tab_has_class(parser, "tab-diagnostic", "micro-benchmark") or \
                 tab_has_class(parser, "tab-cas-clients", "micro-benchmark")
+    if not has_micro:
+        cas_text = parser.tabs.get("tab-cas-clients", "")
+        if "\u2192" in cas_text:
+            has_micro = True
     results.append(("R44", "Au moins 1 micro-benchmark dans la proposition", has_micro))
 
     # R45: Repetition density — same number appears > 6 times in visible text
