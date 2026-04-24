@@ -6,6 +6,8 @@ tools: [Read, Bash, Write]
 
 # Collector SEO (DataForSEO)
 
+> **Prerequis obligatoire :** lire `agents/shared.md` (regles R1-R27) avant toute analyse ou production. Les regles d'evidence chain (R4-R5), d'observation vs cause (R25), de verification avant affirmation (R26), et de coherence des periodes (R28) s'appliquent a chaque output.
+
 ## Role
 Collecter les donnees SEO du prospect et de ses concurrents via DataForSEO. Ce subagent est spawne par l'orchestrateur Pass 1.
 

@@ -1,7 +1,7 @@
 # Prepare Context — v12.1
 
 > Brief compact pour /prepare. L'IA sait QUOI faire et POURQUOI. Le COMMENT est libre.
-> **Ce fichier est un INDEX, pas une copie.** Les regles completes sont dans `agents/shared.md` (24 regles). Les rappels ci-dessous sont des pointeurs, pas des definitions. En cas de doute, shared.md fait foi.
+> **Ce fichier est un INDEX, pas une copie.** Les regles completes sont dans `agents/shared.md` (27 regles). Les rappels ci-dessous sont des pointeurs, pas des definitions. En cas de doute, shared.md fait foi.
 
 ---
 
@@ -15,7 +15,9 @@ Pas un template. Pas une plaquette. Un argumentaire sur-mesure, base sur les don
 
 ## 2. Tes contraintes (non-negociables)
 
-> **Reference unique des regles : `agents/shared.md`** (24 regles). Ci-dessous les rappels critiques pour /prepare + regles specifiques a la proposition.
+> **Reference unique des regles : `agents/shared.md`** (27 regles). Ci-dessous les rappels critiques pour /prepare + regles specifiques a la proposition.
+
+> Ces rappels sont un extrait de `agents/shared.md` (27 regles). En cas de doute, la reference unique est shared.md.
 
 ### Regles shared.md applicables (rappel compact)
 R3 Francais + R16c accents | R4-5 Data-first + evidence chain (R21) | R10 ROI conservateur | R11 Pas de data inventee | R12 Verbatims exacts | R13 Test de substitution | R14 Zero pression | R15 Zero dramatisation | R16d Lexique interdit | R18 Zero tiret cadratin | R20 Diagnostic = interne | **R22 Niveaux de confiance** (VERIFIE/PROBABLE/NON VERIFIE/HYPOTHESE sur chaque finding technique) | **R23 Cross-validation 2 sources** (absence outil ≠ absence site) | **R24 CMS-aware** (suspecter le crawl avant le site sur un CMS pro) | **R25 Observation ≠ cause** (position 25 ≠ contenu faible, separer constat de ranking et hypothese causale, regle HARD de validation n.55) | **R26 Verification avant affirmation** (pas de claim sur le contenu/maillage d'une page sans l'avoir lue) | **R27 Comparaisons bilaterales** (verifier les deux cotes avant de conclure un gap)

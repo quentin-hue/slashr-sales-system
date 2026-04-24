@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banner — L'Amicale du Web</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0e0e0e;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .controls {
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .controls span {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.02em;
+    }
+
+    .btn-export {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      background: #fff;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-export:hover { opacity: 0.85; }
+    .btn-export:active { transform: scale(0.98); }
+
+    /* ======= BANNER ======= */
+    .banner-wrap {
+      width: 100%;
+      max-width: 1080px;
+      aspect-ratio: 2 / 1;
+      overflow: hidden;
+    }
+
+    .banner {
+      width: 2160px;
+      height: 1080px;
+      background: #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      transform-origin: top left;
+    }
+
+    /* Gradient blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    .blob--orange {
+      width: 900px;
+      height: 900px;
+      bottom: -380px;
+      left: -120px;
+      background: radial-gradient(circle at 55% 45%, #E74601 0%, rgba(231,70,1,0.6) 30%, rgba(231,70,1,0) 65%);
+      filter: blur(120px);
+    }
+
+    .blob--magenta {
+      width: 1100px;
+      height: 800px;
+      bottom: -300px;
+      left: 400px;
+      background: radial-gradient(circle at 50% 40%, #CE08A9 0%, rgba(206,8,169,0.5) 30%, rgba(206,8,169,0) 65%);
+      filter: blur(140px);
+    }
+
+    .blob--violet {
+      width: 950px;
+      height: 950px;
+      bottom: -400px;
+      right: -180px;
+      background: radial-gradient(circle at 45% 45%, #8962FD 0%, rgba(137,98,253,0.55) 30%, rgba(137,98,253,0) 65%);
+      filter: blur(130px);
+    }
+
+    /* Noise texture overlay */
+    .noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+      opacity: 0.5;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Top vignette */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,26,26,0.7) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Content */
+    .content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px;
+    }
+
+    .logo {
+      width: 140px;
+      height: auto;
+      opacity: 0.5;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-family: 'Funnel Display', sans-serif;
+      font-weight: 700;
+      font-size: 148px;
+      line-height: 0.92;
+      letter-spacing: -0.05em;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .meta {
+      font-family: 'Inter', sans-serif;
+      font-size: 36px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    .meta .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      vertical-align: middle;
+      margin: 0 20px;
+      position: relative;
+      top: -2px;
+    }
+
+    /* Scale preview to fit viewport */
+    @media (max-width: 1100px) {
+      .banner-wrap {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="controls">
+    <button class="btn-export" onclick="exportBanner()">Exporter en PNG</button>
+    <span>2160 &times; 1080px</span>
+  </div>
+
+  <div class="banner-wrap">
+    <div class="banner" id="banner">
+
+      <!-- Blobs -->
+      <div class="blob blob--orange"></div>
+      <div class="blob blob--magenta"></div>
+      <div class="blob blob--violet"></div>
+
+      <!-- Subtle overlays -->
+      <div class="vignette"></div>
+      <div class="noise"></div>
+
+      <!-- Content -->
+      <div class="content">
+        <img src="https://agence-slashr.fr/blog/images/2024/03/LOGO-SLASHR-BLANC-1.png" alt="SLASHR" class="logo">
+        <h1 class="title">L'Amicale<br>du Web</h1>
+        <p class="meta">
+          Mardi 5 mai
+          <span class="dot"></span>
+          18h30
+          <span class="dot"></span>
+          Lille
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Scale banner to fit viewport
+    function scaleBanner() {
+      const wrap = document.querySelector('.banner-wrap');
+      const banner = document.querySelector('.banner');
+      const scale = wrap.clientWidth / 2160;
+      banner.style.transform = `scale(${scale})`;
+      wrap.style.height = `${1080 * scale}px`;
+    }
+
+    scaleBanner();
+    window.addEventListener('resize', scaleBanner);
+
+    // Export — ouvre le banner en taille reelle dans un nouvel onglet pour screenshot
+    function exportBanner() {
+      const w = window.open('', '_blank');
+      w.document.write(`
+        <!DOCTYPE html>
+        <html><head>
+        <meta charset="utf-8">
+        <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <style>
+          *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+          body { margin:0; padding:0; background:#1a1a1a; overflow:hidden; width:2160px; height:1080px; }
+          .banner { width:2160px; height:1080px; background:#1a1a1a; position:relative; overflow:hidden; }
+          .blob { position:absolute; border-radius:50%; }
+          .blob--orange { width:900px; height:900px; bottom:-380px; left:-120px; background:radial-gradient(circle at 55% 45%, #E74601 0%, rgba(231,70,1,0.6) 30%, rgba(231,70,1,0) 65%); filter:blur(120px); }
+          .blob--magenta { width:1100px; height:800px; bottom:-300px; left:400px; background:radial-gradient(circle at 50% 40%, #CE08A9 0%, rgba(206,8,169,0.5) 30%, rgba(206,8,169,0) 65%); filter:blur(140px); }
+          .blob--violet { width:950px; height:950px; bottom:-400px; right:-180px; background:radial-gradient(circle at 45% 45%, #8962FD 0%, rgba(137,98,253,0.55) 30%, rgba(137,98,253,0) 65%); filter:blur(130px); }
+          .vignette { position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,26,26,0.7) 0%, transparent 60%); pointer-events:none; z-index:3; }
+          .noise { position:absolute; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); background-repeat:repeat; background-size:256px; opacity:0.5; mix-blend-mode:overlay; pointer-events:none; z-index:5; }
+          .content { position:relative; z-index:10; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px; }
+          .logo { width:140px; opacity:0.5; margin-bottom:20px; }
+          .title { font-family:'Funnel Display',sans-serif; font-weight:700; font-size:148px; line-height:0.92; letter-spacing:-0.05em; color:#fff; text-align:center; margin-bottom:48px; }
+          .meta { font-family:'Inter',sans-serif; font-size:36px; font-weight:500; color:rgba(255,255,255,0.75); letter-spacing:0.04em; text-align:center; }
+          .dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.3); vertical-align:middle; margin:0 20px; position:relative; top:-2px; }
+          .hint { position:fixed; top:20px; left:50%; transform:translateX(-50%); font-family:'Inter',sans-serif; font-size:14px; color:rgba(255,255,255,0.5); background:rgba(0,0,0,0.6); padding:10px 24px; border-radius:8px; z-index:999; }
+        </style>
+        </head><body>
+        <div class="hint">Clic droit sur l'image > Enregistrer sous... (ou Cmd+Shift+S pour sauvegarder la page)</div>
+        <div class="banner">
+          <div class="blob blob--orange"></div>
+          <div class="blob blob--magenta"></div>
+          <div class="blob blob--violet"></div>
+          <div class="vignette"></div>
+          <div class="noise"></div>
+          <div class="content">
+            <img src="https://agence-slashr.fr/blog/images/2024/03/LOGO-SLASHR-BLANC-1.png" alt="SLASHR" class="logo" crossorigin="anonymous">
+            <h1 class="title">L'Amicale<br>du Web</h1>
+            <p class="meta">Mardi 5 mai<span class="dot"></span>18h30<span class="dot"></span>Lille</p>
+          </div>
+        </div>
+        </body></html>
+      `);
+      w.document.close();
+    }
+  </script>
+
+</body>
+</html>

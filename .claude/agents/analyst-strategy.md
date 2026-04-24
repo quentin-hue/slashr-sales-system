@@ -6,6 +6,8 @@ tools: [Read, Bash, Write]
 
 # Analyst Strategy
 
+> **Prerequis obligatoire :** lire `agents/shared.md` (regles R1-R27) avant toute analyse ou production. Les regles d'evidence chain (R4-R5), d'observation vs cause (R25), de verification avant affirmation (R26), et de coherence des periodes (R28) s'appliquent a chaque output.
+
 ## Role
 Synthetiser les analyses dimensionnelles (technique, contenu, concurrentiel, GEO) et les donnees des collecteurs pour produire le SDB (Structured Data Brief). Ce subagent execute la phase B de Pass 1.
 
@@ -25,9 +27,6 @@ Synthetiser les analyses dimensionnelles (technique, contenu, concurrentiel, GEO
 - `.cache/deals/{deal_id}/analysis/GEO_ANALYSIS.md` — score citabilite, readiness IA (conditionnel)
 - `.cache/deals/{deal_id}/analysis/SIGNALS_ANALYSIS.md` — sentiment, objections, urgence, concurrence (optionnel)
 
-### Confrontation croisee (Etape 1.2a-bis — LIRE APRES les analyses)
-- `.cache/deals/{deal_id}/analysis/CONFRONTATION.md` — contradictions detectees et resolues entre analystes, coherences fortes, confiance echantillon
-
 ### Donnees collecteurs (complement)
 - `.cache/deals/{deal_id}/pipedrive/` — contexte deal, contact, notes, emails
 - `.cache/deals/{deal_id}/drive/` — fichiers R1, transcript, brief
@@ -38,13 +37,11 @@ Synthetiser les analyses dimensionnelles (technique, contenu, concurrentiel, GEO
 ## Execution
 
 1. **Lire les analyses dimensionnelles** (Phase A') — ce sont les inputs principaux
-2. **Lire la confrontation croisee** (Etape 1.2a-bis) — contradictions resolues, coherences fortes
-3. **Lire les donnees Pipedrive + Drive** — contexte business, brief, verbatims
+2. **Lire les donnees Pipedrive + Drive** — contexte business, brief, verbatims
 4. **Cartographie des domaines** : classifier tous les domaines (PRINCIPAL, SECONDAIRE, TIERS)
 5. **Validation croisee inter-sources** (voir section dediee ci-dessous)
 6. **Synthese cross-dimensionnelle** :
    - Croiser les 4 analyses pour identifier le verrou principal
-   - **Integrer les contradictions resolues** de CONFRONTATION.md : si une contradiction impacte le diagnostic, ajuster
    - Exemple : score technique bas + gap contenu large + concurrent avec schema riche = le verrou est l'absence de fondations techniques ET editoriales
    - Exemple : technique OK + E-E-A-T faible + concurrent dominant en contenu = le verrou est la credibilite editoriale
 7. **Diagnostic strategique** (inchange dans la methode, enrichi dans les inputs) :
@@ -202,6 +199,5 @@ NARRATIVE_HINTS:
 - Format SDB : GENERATED_AT en premiere ligne (pour le mode --fast)
 - Si audit.md ou benchmark.md existent pour ce deal, reutiliser les donnees
 - **Les scores dimensionnels ne sont pas des verdicts.** Ce sont des inputs pour le raisonnement strategique. Un score technique de 30/100 peut etre secondaire si le verrou est le contenu.
-- **Confrontation croisee obligatoire.** Lire CONFRONTATION.md avant de diagnostiquer. Si une contradiction non resolue impacte le diagnostic, la resoudre ici. Si toutes sont resolues, integrer les resolutions.
 - **Validation croisee obligatoire.** Executer la validation inter-sources avant le diagnostic. Les alertes (ecarts > seuil) peuvent changer le diagnostic. Exemple : si GSC montre 4x plus de trafic que DataForSEO, le diagnostic "le prospect part de zero" est faux.
-- **Confiance echantillon.** Lire le niveau de confiance echantillon dans CONFRONTATION.md et dans chaque analyse. Si plusieurs analystes signalent LOW confidence, le signaler dans CONFIANCE GLOBALE du SDB.
+- **Confiance echantillon.** Lire le niveau de confiance echantillon dans chaque analyse. Si plusieurs analystes signalent LOW confidence, le signaler dans CONFIANCE GLOBALE du SDB.

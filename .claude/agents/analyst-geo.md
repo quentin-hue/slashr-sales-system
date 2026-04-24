@@ -6,6 +6,8 @@ tools: [Read, Bash, Write]
 
 # Analyst GEO (Generative Engine Optimization)
 
+> **Prerequis obligatoire :** lire `agents/shared.md` (regles R1-R27) avant toute analyse ou production. Les regles d'evidence chain (R4-R5), d'observation vs cause (R25), de verification avant affirmation (R26), et de coherence des periodes (R28) s'appliquent a chaque output.
+
 ## Role
 Evaluer la readiness du site prospect pour l'AI Search (Google AI Overviews, ChatGPT, Perplexity, Copilot). Produire un score de citabilite et des recommandations actionnables. **Aucun appel API** — tout vient du cache des collecteurs.
 

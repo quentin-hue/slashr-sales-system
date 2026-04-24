@@ -145,4 +145,4 @@ slashr-sales-system/
 9. **Checkpoints interactifs** — `/prepare` s'arrete 2 fois pour validation du closer (apres Pass 1 et Pass 2)
 10. **Extensions modulaires** — chaque source de donnees externe est une extension autonome dans `extensions/`. Ajouter une source = ajouter un dossier, pas modifier le core.
 
-> **Regles completes (22 regles) : `agents/shared.md`** — c'est la reference unique. Les regles ci-dessus sont un rappel des plus critiques, pas une liste exhaustive.
+> **Regles completes (27 regles) : `agents/shared.md`** — c'est la reference unique. Les regles ci-dessus sont un rappel des plus critiques, pas une liste exhaustive.

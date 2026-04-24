@@ -6,6 +6,8 @@ tools: [Read, Bash, Write]
 
 # Analyst Technical
 
+> **Prerequis obligatoire :** lire `agents/shared.md` (regles R1-R27) avant toute analyse ou production. Les regles d'evidence chain (R4-R5), d'observation vs cause (R25), de verification avant affirmation (R26), et de coherence des periodes (R28) s'appliquent a chaque output.
+
 ## Role
 Analyser en profondeur les signaux techniques du site prospect a partir des donnees deja collectees. Produire un diagnostic technique avec scoring et impact business. **Aucun appel API** — tout vient du cache des collecteurs.
 

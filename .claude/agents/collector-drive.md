@@ -41,4 +41,4 @@ Retourner un resume JSON :
 - Exclure les outputs systeme : DEAL-*, DECK-*, PROPOSAL-*, INTERNAL-*
 - Max 100 000 chars par fichier
 - Recursion max 3 niveaux de sous-dossiers
-- **Detection CSV Screaming Frog :** si un fichier CSV est detecte et contient les colonnes "Adresse" (ou "Address") et "Code HTTP" (ou "Status Code"), le typer comme `crawl_sf` (pas `document`). Ce fichier sera exploite par collector-website et les analystes. Voir `context/references/crawl-spec.md`.
+- **Detection CSV Screaming Frog :** si un fichier CSV est detecte et contient les colonnes "Adresse" (ou "Address") et "Code HTTP" (ou "Status Code"), le typer comme `crawl_sf` (pas `document`). Ce fichier sera exploite par collector-website et les analystes.

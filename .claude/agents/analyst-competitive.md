@@ -6,6 +6,8 @@ tools: [Read, Bash, Write]
 
 # Analyst Competitive
 
+> **Prerequis obligatoire :** lire `agents/shared.md` (regles R1-R27) avant toute analyse ou production. Les regles d'evidence chain (R4-R5), d'observation vs cause (R25), de verification avant affirmation (R26), et de coherence des periodes (R28) s'appliquent a chaque output.
+
 ## Role
 Produire une matrice concurrentielle enrichie a partir des donnees benchmark deja collectees. Aller au-dela du gap de trafic pour analyser qui domine ou, pourquoi, et quelles failles exploiter. **Aucun appel API** — tout vient du cache des collecteurs.
 

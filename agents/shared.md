@@ -184,7 +184,16 @@ Avant de traiter une reponse API, verifier :
 - Au-dela : prendre les 25 plus recents + log : `⚠️ Drive : trop de fichiers (>25) · selection des plus recents`
 
 
-## Regles absolues
+## Regles absolues (27 regles)
+
+### Niveaux de severite
+
+| Niveau | Definition | Exemples |
+|--------|-----------|----------|
+| **BLOCKING** | Viole la compliance, le legal ou le brand core. Arret immediat. | R1 (DRAFTS), R2 (contact prospect), R3 (francais) |
+| **CRITICAL** | Affecte directement le deal ou la credibilite. | R4-R5 (data-first), R11 (pas de data inventee), R20 (diagnostic interne), R24-R26 (intent SERP, concurrents, verification) |
+| **IMPORTANT** | Affecte le quality score et la perception. | R14-R15 (tonalite), R16c (accents), R18 (tirets), R23 (90j) |
+| **STANDARD** | Bonne pratique, deviation acceptable si justifiee. | R8b (metriques /mois), R10 (ROI conservateur) |
 
 1. **Tous les outputs sont des DRAFTS** : jamais partages au prospect sans validation du closer
 2. **Tu ne contactes jamais un prospect** : tu produis des outils pour le closer

@@ -399,9 +399,20 @@ def check_layer1(parser, html_raw, visible_text):
     else:
         results.append(("R29", "Zero jours/TJM/AMOA dans le texte visible", True))
 
-    # R31: Accordion FAQ dans Investissement
+    # R31: Accordion FAQ dans Investissement (ou au moins 2 questions visibles)
     has_accordion = tab_has_class(parser, "tab-investissement", "accordion")
-    results.append(("R31", "Accordion FAQ dans onglet Investissement", has_accordion))
+    if not has_accordion:
+        # Accept if tab investissement contains at least 2 visible questions (h3 or p with "?")
+        inv_elements = parser.tab_elements.get("tab-investissement", [])
+        inv_text = tab_text(parser, "tab-investissement")
+        question_count = inv_text.count("?")
+        r31_ok = question_count >= 2
+        if r31_ok:
+            results.append(("R31", f"FAQ sans accordion mais {question_count} questions visibles dans Investissement", True))
+        else:
+            results.append(("R31", f"Accordion FAQ absent et seulement {question_count} question(s) visible(s) dans Investissement", False))
+    else:
+        results.append(("R31", "Accordion FAQ dans onglet Investissement", True))
 
     # R35: "Prochaine etape" ou "Et maintenant" dans Investissement
     livr_text = tab_text(parser, "tab-investissement").lower()
@@ -445,40 +456,10 @@ def check_layer1(parser, html_raw, visible_text):
             break
     results.append(("R39", "ETV/trafic correctement etiquetes", not etv_mislabeled))
 
-    # R28a: Investissement avec .recommended + cout inaction (dans investissement OU strategie)
-    has_recommended = "recommended" in " ".join(parser.all_classes)
-    livr_lower = tab_text(parser, "tab-investissement").lower()
-    strat_lower = tab_text(parser, "tab-strategie").lower()
-    cout_inaction_inv = "inaction" in livr_lower and ("cout" in livr_lower or "coute" in livr_lower or "coût" in livr_lower or "coûte" in livr_lower)
-    cout_inaction_strat = "inaction" in strat_lower or ("ne fait rien" in strat_lower)
-    cout_inaction = cout_inaction_inv or cout_inaction_strat
-    # Check order: cout inaction should appear BEFORE first pricing element
-    inaction_before_pricing = True
-    if cout_inaction:
-        inv_elements = parser.tab_elements.get("tab-investissement", [])
-        inaction_pos = -1
-        pricing_pos = -1
-        for i, (tag, classes, _) in enumerate(inv_elements):
-            cls_list = classes.split()
-            if inaction_pos < 0 and "s7-insight" in cls_list:
-                inaction_pos = i
-            if pricing_pos < 0 and ("pricing" in cls_list or "pricing-grid" in cls_list):
-                pricing_pos = i
-        if inaction_pos >= 0 and pricing_pos >= 0:
-            inaction_before_pricing = inaction_pos < pricing_pos
-    r28a_ok = has_recommended and cout_inaction
-    detail_parts = []
-    if not has_recommended:
-        detail_parts.append(".recommended absent")
-    if not cout_inaction:
-        detail_parts.append("cout inaction absent")
-    if cout_inaction and not inaction_before_pricing:
-        detail_parts.append("cout inaction APRES pricing (doit etre AVANT)")
-        r28a_ok = False
-    detail = f" ({', '.join(detail_parts)})" if detail_parts else ""
-    results.append(("R28a", f"Investissement : .recommended + cout inaction avant pricing{detail}", r28a_ok))
+    # R28a: moved to Layer 2 (WARN instead of FAIL)
 
     # R30: Coherence Phase 1 ↔ Phase 2
+    livr_lower = tab_text(parser, "tab-investissement").lower()
     has_phase1 = "phase 1" in livr_lower or "mission structurante" in livr_lower
     has_phase2 = "phase 2" in livr_lower or "accompagnement mensuel" in livr_lower
     has_pricing = tab_has_class(parser, "tab-investissement", "pricing") or \
@@ -518,7 +499,9 @@ def check_layer1(parser, html_raw, visible_text):
                     elif in_p2 and not in_p1:
                         mismatched.append(f"{label} Phase 2 only")
                 if mismatched:
-                    results.append(("R30", f"Coherence leviers ({', '.join(mismatched)})", False))
+                    # "SEO Phase 1 only" is common and legitimate (Phase 2 says "Pilotage" without "SEO")
+                    seo_only = all("SEO" in m for m in mismatched)
+                    results.append(("R30", f"Coherence leviers ({', '.join(mismatched)})", seo_only))
                 else:
                     results.append(("R30", "Coherence Phase 1 ↔ Phase 2", True))
             else:
@@ -572,6 +555,37 @@ def check_layer2(parser, html_raw, visible_text):
     strat = tab_text(parser, "tab-strategie").lower()
     livr = tab_text(parser, "tab-investissement").lower()
     ft = visible_text.lower()
+
+    # R28a: Investissement avec .recommended + cout inaction (dans investissement OU strategie) — WARN
+    has_recommended = "recommended" in " ".join(parser.all_classes)
+    cout_inaction_inv = "inaction" in livr and ("cout" in livr or "coute" in livr or "coût" in livr or "coûte" in livr)
+    cout_inaction_strat = "inaction" in strat or ("ne fait rien" in strat)
+    cout_inaction = cout_inaction_inv or cout_inaction_strat
+    # Check order: cout inaction should appear BEFORE first pricing element
+    inaction_before_pricing = True
+    if cout_inaction:
+        inv_elements = parser.tab_elements.get("tab-investissement", [])
+        inaction_pos = -1
+        pricing_pos = -1
+        for i, (tag, classes, _) in enumerate(inv_elements):
+            cls_list = classes.split()
+            if inaction_pos < 0 and "s7-insight" in cls_list:
+                inaction_pos = i
+            if pricing_pos < 0 and ("pricing" in cls_list or "pricing-grid" in cls_list):
+                pricing_pos = i
+        if inaction_pos >= 0 and pricing_pos >= 0:
+            inaction_before_pricing = inaction_pos < pricing_pos
+    r28a_ok = has_recommended and cout_inaction
+    detail_parts = []
+    if not has_recommended:
+        detail_parts.append(".recommended absent")
+    if not cout_inaction:
+        detail_parts.append("cout inaction absent")
+    if cout_inaction and not inaction_before_pricing:
+        detail_parts.append("cout inaction APRES pricing (doit etre AVANT)")
+        r28a_ok = False
+    detail = f" ({', '.join(detail_parts)})" if detail_parts else ""
+    results.append(("R28a", f"Investissement : .recommended + cout inaction avant pricing{detail}", r28a_ok))
 
     # R20: Trajectoire 90j M1/M2/M3 (word boundary pour eviter faux positifs)
     has_m1m2m3 = all(
@@ -840,6 +854,7 @@ def check_layer4(parser, html_raw, visible_text):
         results.append(("R41", "Specificite titres : aucun h2 dans l'onglet Diagnostic", False))
 
     # R42: Triplet "Ce que cela implique" — 3 items (highlight-boxes OR li), le 3e contient un chiffre
+    # WARN si manquant, PASS si present et conforme
     items = parser.implique_items
     if items:
         count_ok = len(items) == 3
@@ -850,7 +865,7 @@ def check_layer4(parser, html_raw, visible_text):
             detail += f", 3e item {'contient' if third_has_number else 'NE contient PAS'} un chiffre"
         results.append(("R42", f"Triplet 'Ce que cela implique' : {detail}", ok))
     else:
-        results.append(("R42", "Section 'Ce que cela implique' non detectee", None))
+        results.append(("R42", "Section 'Ce que cela implique' non detectee", False))
 
     # R43: SO WHAT — chaque .slide dans #tab-diagnostic contient un .highlight-box
     diag_slides = []

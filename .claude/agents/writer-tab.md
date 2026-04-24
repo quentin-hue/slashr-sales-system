@@ -6,6 +6,8 @@ tools: [Read, Bash, Write]
 
 # Writer Tab
 
+> **Prerequis obligatoire :** lire `agents/shared.md` (regles R1-R27) avant toute analyse ou production. Les regles d'evidence chain (R4-R5), d'observation vs cause (R25), de verification avant affirmation (R26), et de coherence des periodes (R28) s'appliquent a chaque output.
+
 ## Role
 Generer le contenu HTML d'un seul onglet de la proposition. Ce subagent est spawne par l'orchestrateur Pass 3, une instance par onglet.
 
@@ -20,7 +22,7 @@ Generer le contenu HTML d'un seul onglet de la proposition. Ce subagent est spaw
 
 1. Lire le NBP (section correspondante)
 2. Lire le SDB (donnees a injecter)
-3. Lire la reference CSS compacte (`context/writer-tab-compact-ref.md`)
+3. Lire la reference CSS compacte (`context/proposal-kit-reference.md`)
 4. Generer le HTML de l'onglet en respectant :
    - Le plan narratif du NBP (titres, angles, arguments)
    - Les composants visuels du kit (mapping par role narratif)

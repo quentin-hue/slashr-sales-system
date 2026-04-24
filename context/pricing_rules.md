@@ -54,6 +54,8 @@ Le pack Refonte est un projet a part, vendu separement quand il y a une creation
 
 Contenu interne : AMOA SEO + plan redirections + recette & monitoring post-bascule.
 
+> **Note (v13.6) :** Pour les deals avec refonte, l'AMOA SEO est integree dans les mois de production (Phase 1 M2-M4), pas vendue comme pack separe. Le bilan de Phase 1 intervient quand le site est en production, pas a M4 calendaire. L'accompagnement run peut demarrer avant la MEP avec accord du client.
+
 ---
 
 ## Phase 1 — 4 mois (engagement)

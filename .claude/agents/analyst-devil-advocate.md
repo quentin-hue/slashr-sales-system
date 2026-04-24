@@ -20,12 +20,12 @@ Tu ne proposes pas de diagnostic alternatif. Tu forces l'agent principal a affro
 ## Sources (lire dans cet ordre — L'ORDRE COMPTE)
 
 ### ETAPE 1 : Le brief prospect (LIRE EN PREMIER, AVANT les analyses)
-1. `.cache/deals/{deal_id}/artifacts/BRIEF_EXTRACT.md` — **le point d'ancrage.** C'est la voix du prospect, extraite des sources brutes en Etape 1.1b. Lire ce fichier et noter : quelle est la demande explicite ? Quelle est la priorite ? Quelle est la douleur ? Qui sont les partenaires existants ?
+1. Lire le SDB (.cache/deals/{deal_id}/artifacts/SDB.md) — **le point d'ancrage.** C'est la synthese structuree du deal. Lire ce fichier et noter : quelle est la demande explicite ? Quelle est la priorite ? Quelle est la douleur ? Qui sont les partenaires existants ?
 
 > **Pourquoi en premier ?** Si tu lis les analyses d'abord, tu vas evaluer le brief a travers le prisme des analyses (biais de cadrage). En lisant le brief d'abord, tu evalues les analyses a travers le prisme du prospect. C'est la difference entre "est-ce que le brief colle au diagnostic ?" et "est-ce que le diagnostic repond au brief ?".
 
 ### ETAPE 2 : Les analyses et la confrontation
-2. `.cache/deals/{deal_id}/analysis/CONFRONTATION.md` — contradictions detectees, confiance echantillon
+2. SDB section DIAGNOSTIC STRATEGIQUE — contradictions et niveaux de confiance
 3. `.cache/deals/{deal_id}/analysis/TECHNICAL_ANALYSIS.md`
 4. `.cache/deals/{deal_id}/analysis/CONTENT_ANALYSIS.md`
 5. `.cache/deals/{deal_id}/analysis/COMPETITIVE_ANALYSIS.md`
@@ -75,7 +75,7 @@ Tu ne proposes pas de diagnostic alternatif. Tu forces l'agent principal a affro
 - Le prospect a-t-il les ressources internes pour absorber les recommandations (equipe tech, contenu, validation) ?
 
 ### 7. "Les contradictions ne sont pas resolues"
-- Les contradictions identifiees dans CONFRONTATION.md sont-elles vraiment resolues ou juste declarees resolues ?
+- Les contradictions entre les analyses dimensionnelles sont-elles resolues dans le SDB ou juste ignorees ?
 - Y a-t-il des contradictions que la confrontation a ratees ? Croiser manuellement les top 3 conclusions des analystes.
 - La confiance echantillon LOW est-elle correctement propagee dans les pre-conclusions ?
 

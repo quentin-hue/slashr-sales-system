@@ -6,6 +6,8 @@ tools: [Read, Bash, Write]
 
 # Analyst Content
 
+> **Prerequis obligatoire :** lire `agents/shared.md` (regles R1-R27) avant toute analyse ou production. Les regles d'evidence chain (R4-R5), d'observation vs cause (R25), de verification avant affirmation (R26), et de coherence des periodes (R28) s'appliquent a chaque output.
+
 ## Role
 Evaluer la qualite du contenu et les signaux E-E-A-T du site prospect. Identifier les gaps de contenu exploitables et les angles narratifs pour la proposition. **Aucun appel API** — tout vient du cache des collecteurs.
 
