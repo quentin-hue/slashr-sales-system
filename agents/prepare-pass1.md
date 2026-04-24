@@ -134,6 +134,18 @@ Scanner toutes les sources collectees :
 
 **Output :** Ajouter les champs `DOMAINE_PRINCIPAL`, `DOMAINES_SECONDAIRES` et `BUSINESS_TYPE` au debut du SDB.
 
+### Validation des noms de concurrents R1 (OBLIGATOIRE)
+
+Après la cartographie des domaines, l'agent DOIT vérifier les noms des concurrents cités par le prospect en R1 via une recherche SERP (`serp_organic_live_advanced` sur "{nom} + {secteur}").
+
+**Pourquoi :** les noms cités oralement peuvent être mal orthographiés (ex: "Okobo" → en réalité "Ocobo", domaine ocobo.co). Un benchmark sur le mauvais domaine invalide toute l'analyse concurrentielle.
+
+**Procédure :**
+1. Pour chaque concurrent cité en R1, lancer `serp_organic_live_advanced` sur "{nom} {secteur}"
+2. Identifier le domaine réel dans les résultats
+3. Vérifier que le domaine correspond au bon secteur (pas un homonyme)
+4. Utiliser le domaine vérifié pour le benchmark, pas le nom supposé
+
 ### Phase B : Collecte SEO (PARALLELE, sur domaine confirme)
 
 > **Prerequis :** domaine principal confirme (Etape 1.1b), brief lu, business_type identifie.

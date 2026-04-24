@@ -126,10 +126,18 @@ Budget mensuel = jours/mois x TJM (cf. `context/pricing_rules.md`).
 
 ### Criteres de choix du scenario (deterministe)
 
-L'IA choisit le scenario en fonction du deal :
-- **Pilotage** : le prospect a une equipe interne capable d'executer, OU le budget est serre et le besoin est du cadrage
-- **Production** : le prospect n'a pas d'equipe interne, OU le gap necessite de la production, OU c'est le choix par defaut quand aucun signal fort
-- **Acceleration** : le prospect a une ambition multi-leviers forte (verbatim), OU le gap concurrentiel est > 5x et le budget le permet
+Le scenario Phase 2 depend de 2 variables : la taille du marche Search et les ressources internes du client.
+
+| Marche commercial | Ressources client | Phase 1 | Phase 2 | Logique |
+|---|---|---|---|---|
+| **Petit** (< 5K rech. commerciales/mois) | Ressources (redactrice, dev, agence) | 2j/mois | **Pilotage** (1j) | Front-load en Phase 1, reduire ensuite |
+| **Petit** | Pas de ressources | 2j/mois | **Production** (2j) | SLASHR produit pour le client |
+| **Gros** (> 10K rech.) | Ressources | 2j/mois | **Production** (2j) | Le marche justifie l'investissement |
+| **Gros** + multi-canal | Peu importe | 2-3j/mois | **Acceleration** (3j) | SEO + Ads + GEO = volume |
+
+**Regle :** ne PAS choisir Production par defaut. Evaluer le marche commercial (uniquement les requetes d'achat, pas le volume total) et les ressources internes. Si le marche est petit et que le client a des ressources, Pilotage suffit en Phase 2. Mentionner la possibilite d'upgrade au bilan.
+
+**Regle Phase 1 :** la Phase 1 est toujours a 2j/mois minimum pour aller vite sur les quick wins et chantiers prioritaires, quel que soit le scenario Phase 2. C'est le front-load.
 
 ### Affichage client : UNE recommandation
 

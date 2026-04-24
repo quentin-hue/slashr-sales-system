@@ -124,6 +124,13 @@ L'ouverture suit une cascade en 3 couches. Chaque couche avance le recit, aucune
 - H2 : "80% de votre trafic cherche votre nom. Pas vos produits." (mecanisme : dependance brandee)
 - KPIs : 14 800 recherches brandees · 319 kw indexes · 55 745 EUR CA web (preuves)
 
+### Regle anti-spoiler (OBLIGATOIRE)
+
+Le hero-subtitle NE DOIT PAS contenir une donnee qui est revelee dans la premiere section du diagnostic. Le hero teaser, la slide revele.
+
+**Exemple faux :** Hero "185 personnes cliquent" → Slide 1 "18 830 impressions, 185 clics" → le prospect a deja vu le chiffre.
+**Exemple correct :** Hero "Le site est visible. Le probleme est ailleurs." → Slide 1 revele les chiffres.
+
 ---
 
 ## Etape 2.1b : Section contexte (OBLIGATOIRE, avant toute section data)
@@ -274,6 +281,12 @@ La section Opportunite se decoupe en 3 slides minimum, plus les sections conditi
 
 Max 5 slides (hors hero et CTA). La deduplication (1 argument = 1 section) et cette limite sont les deux garde-fous.
 - Chaque section doit apporter un **nouvel argument**. Si elle reformule un argument deja presente, elle n'existe pas — les donnees sont integrees dans la section existante.
+
+### Objectif prospect (OBLIGATOIRE dans le diagnostic)
+
+Le diagnostic DOIT inclure une projection vers l'objectif declare par le prospect en R1. Si le prospect a dit "1 lead par mois", le diagnostic doit montrer le calcul : volume commercial × captation × conversion = objectif atteint ou non.
+
+**Regle :** si le prospect est deja positionne sur une requete cle, anticiper l'objection "pourquoi ca ne marche pas deja ?". Expliquer pourquoi la position actuelle ne suffit pas (page generique, une seule requete, CTR bas, etc.).
 
 ---
 
@@ -544,7 +557,9 @@ Hero fullscreen propre a cet onglet (tag "Projet", subtitle "Comment on travaill
 
 **Spec complete : `agents/prepare-pass2-onglet4.md`.**
 
-Contient : Phase 1 (audit + 90j), accompagnement mensuel (echelle 4 colonnes), simulateur ROI, FAQ accordion, CTA final.
+Contient : Phase 1 (audit + 90j), accompagnement mensuel (echelle 4 colonnes), simulateur ROI, FAQ, CTA final.
+
+**FAQ : format grille, pas accordion.** Les FAQ sont presentees en grille 2×2 (question en gras + reponse en dessous), pas en accordion. Le skeleton CSS ecrase les styles inline des accordion-items. Le format grille est plus fiable et plus lisible.
 
 ### Onglet 5 : Cas clients ("Resultats observes sur des profils comparables")
 
@@ -710,6 +725,8 @@ X+0.5. Section "Ce que nous ne priorisons pas (maintenant)" · role: transparenc
    Pourquoi ici: {juste apres les priorites, avant les implications — le decideur voit qu'on a arbitre, pas ignore}
 
 X+1. Section "Ce que cela implique" · role: verrou narratif decisionnel (OBLIGATOIRE)
+   **Optionnel.** Cette section peut etre remplacee par une slide d'ouverture strategique (vision multicanal, LinkedIn + SEO, etc.) si le closer le juge plus pertinent au Checkpoint 2. Le triplet (verrou/actif/fenetre) est un format par defaut, pas une obligation.
+
    **Triplet structure obligatoire** — exactement 3 bullets, chacun avec un role distinct :
 
    | # | Role | Contenu | Source SDB |

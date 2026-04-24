@@ -1,0 +1,322 @@
+<!--
+  ═══════════════════════════════════════════════════
+  TEMPLATE ONGLET PROJET v2 — Design éditorial dx-
+  ═══════════════════════════════════════════════════
+
+  Variables à remplacer par le writer-tab :
+
+  HERO :
+    {{PROSPECT_NAME}}     — nom du prospect (h1)
+    {{HERO_DATE}}          — date (ex: Avril 2026)
+
+  EQUIPE :
+    {{CDP_DESCRIPTION}}    — 1-2 phrases sur le rôle du CDP adapté au deal
+    Les 3 consultants (SEO, GEO, Ads) sont TOUJOURS présents. Ça montre l'expertise
+    de l'agence même si tous les leviers ne sont pas activés en Phase 1.
+    Seules les descriptions sont adaptées au deal.
+
+  PRODUCTION (3 colonnes) :
+    {{PROD_COL1_ITEMS}}    — liste <p> de la colonne Stratégie
+    {{PROD_COL2_ITEMS}}    — liste <p> de la colonne Production
+    {{PROD_COL3_ITEMS}}    — liste <p> de la colonne Amplification
+
+  DEROULEMENT :
+    {{PHASE1_TITLE}}       — ex: "Audit"
+    {{PHASE1_DESC}}        — ex: "Cartographie complète du marché..."
+    {{PHASE1_SIGNAL}}      — ex: "Livrable : audit complet + roadmap"
+    {{PHASE2_TITLE}}       — ex: "Quick wins et chantiers prioritaires"
+    {{PHASE2_DESC}}
+    {{PHASE2_SIGNAL}}
+    {{PHASE3_TITLE}}       — ex: "Bilan et accompagnement"
+    {{PHASE3_DESC}}
+    {{PHASE3_SIGNAL}}
+
+  DEMARRAGE :
+    {{ONBOARD_S1}}         — ex: "Réunion de lancement, accès GSC, crawl..."
+    {{ONBOARD_S24}}        — ex: "Audit livré, validation roadmaps..."
+    {{ONBOARD_M2}}         — ex: "Quick wins CTR, fondations, premier comité..."
+
+  SECTIONS FIXES (ne pas modifier) :
+    - Slide Système (19 outils, R&D)
+    - Slide Collaboration (comité, reporting, accès, outils)
+    - Slide Janus (monitoring IA, pricing prompts)
+    - Associés (Anthony L., Quentin C., Benoît D.)
+-->
+
+<!-- Reveal observer -->
+<script>
+(function(){
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('dx-visible');
+    });
+  }, { threshold: 0.15 });
+  setTimeout(() => {
+    document.querySelectorAll('#tab-projet .dx-reveal').forEach(el => obs.observe(el));
+  }, 200);
+})();
+</script>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+  <span class="hero-tag">Projet</span>
+  <h1>{{PROSPECT_NAME}}</h1>
+  <p class="hero-subtitle">Comment on travaille ensemble.</p>
+  <p class="hero-date">{{HERO_DATE}}</p>
+  <div class="hero-scroll" onclick="window.scrollBy({top:window.innerHeight-56,behavior:'smooth'})"></div>
+</section>
+
+<!-- ═══ EQUIPE (variable : CDP + consultants) ═══ -->
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Équipe</div>
+  <div class="dx-title dx-d1">Votre équipe dédiée</div>
+
+  <div style="margin-top:56px;" class="dx-d2">
+    <!-- CDP -->
+    <div style="display:grid;grid-template-columns:56px 1fr;gap:24px;align-items:start;padding-bottom:40px;border-bottom:1px solid var(--border);">
+      <img src="https://agence-slashr.fr/blog/images/2024/03/LOGO-SLASHR-BLANC-1.png" alt="SLASHR" style="width:56px;height:56px;object-fit:contain;border-radius:12px;background:rgba(255,255,255,0.05);padding:8px;">
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--orange);font-weight:600;margin-bottom:10px;">Chef de projet senior</p>
+        <p style="font-size:14px;color:var(--text-50);line-height:1.5;">{{CDP_DESCRIPTION}}</p>
+      </div>
+    </div>
+
+    <!-- Consultants métier -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;padding:40px 0;border-bottom:1px solid var(--border);" class="dx-d3">
+      <!-- FIXE : toujours 3 consultants -->
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--violet);font-weight:600;margin-bottom:8px;">Consultant SEO</p>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;">{{CONSULTANT_SEO_DESC}}</p>
+      </div>
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--violet);font-weight:600;margin-bottom:8px;">Consultant GEO</p>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;">{{CONSULTANT_GEO_DESC}}</p>
+      </div>
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--violet);font-weight:600;margin-bottom:8px;">Consultant Ads</p>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;">{{CONSULTANT_ADS_DESC}}</p>
+      </div>
+    </div>
+
+    <!-- Associés (FIXE) + Stack (FIXE) -->
+    <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0;padding-top:32px;" class="dx-d4">
+      <div style="padding-right:32px;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-30);font-weight:600;margin-bottom:16px;">Associés en appui</p>
+        <div style="display:flex;gap:24px;">
+          <div>
+            <p style="font-size:14px;color:var(--text);font-weight:600;">Anthony L.</p>
+            <p style="font-size:12px;color:var(--text-30);">Stratégie</p>
+          </div>
+          <div>
+            <p style="font-size:14px;color:var(--text);font-weight:600;">Quentin C.</p>
+            <p style="font-size:12px;color:var(--text-30);">Business</p>
+          </div>
+          <div>
+            <p style="font-size:14px;color:var(--text);font-weight:600;">Benoît D.</p>
+            <p style="font-size:12px;color:var(--text-30);">Technique</p>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--border);"></div>
+      <div style="padding-left:32px;">
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-30);font-weight:600;margin-bottom:16px;">Stack technologique</p>
+        <p style="font-size:14px;color:var(--text);font-weight:600;">19 outils internes · 10 projets R&D</p>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;margin-top:8px;">Crawl, monitoring, briefs, audit, reporting, analyse concurrentielle. L'IA est intégrée dans les pipelines de production, pas en surcouche.</p>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;margin-top:8px;">Le temps que nos outils nous font gagner, nous le réinvestissons dans l'amélioration continue de nos systèmes. Chaque client bénéficie des avancées produites pour tous.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SYSTEME (FIXE) ═══ -->
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Système</div>
+  <div class="dx-title dx-d1" style="max-width:none;">Votre budget finance un système</div>
+
+  <div style="margin-top:56px;" class="dx-d2">
+    <p style="font-family:var(--font-display);font-size:clamp(48px,8vw,72px);font-weight:700;line-height:1;letter-spacing:-0.04em;color:var(--text);">19</p>
+    <p style="font-size:15px;color:var(--text-50);margin-top:16px;max-width:520px;">outils internes et 10 projets R&D. Crawl, monitoring, briefs, audit, reporting, analyse concurrentielle. L'IA est intégrée dans les pipelines de production, pas en surcouche.</p>
+  </div>
+
+  <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--border);max-width:520px;" class="dx-d3">
+    <p style="font-size:14px;color:var(--text-50);line-height:1.6;">Le temps que nos outils nous font gagner, nous le réinvestissons dans l'amélioration continue de nos systèmes. <strong style="color:var(--text);">Chaque client bénéficie des avancées produites pour tous.</strong></p>
+  </div>
+</div>
+
+<!-- ═══ PRODUCTION (variable : 3 colonnes d'items) ═══ -->
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Production</div>
+  <div class="dx-title dx-d1" style="max-width:none;">Ce que le système produit pour vous</div>
+
+  <div style="margin-top:56px;" class="dx-d2">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:48px;">
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--orange);font-weight:600;margin-bottom:20px;">Stratégie</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {{PROD_COL1_ITEMS}}
+        </div>
+      </div>
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--violet);font-weight:600;margin-bottom:20px;">Production</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {{PROD_COL2_ITEMS}}
+        </div>
+      </div>
+      <div>
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--magenta);font-weight:600;margin-bottom:20px;">Amplification</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          {{PROD_COL3_ITEMS}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEROULEMENT (variable : 3 phases) ═══ -->
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Déroulement</div>
+  <div class="dx-title dx-d1" style="max-width:none;">Un projet en 3 temps</div>
+
+  <div style="margin-top:64px;position:relative;" class="dx-d2">
+    <div style="position:absolute;top:28px;left:0;right:0;height:2px;background:var(--border);z-index:0;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;position:relative;z-index:1;">
+      <div style="text-align:center;padding:0 24px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--bg);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+          <span style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--orange);">M1</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">{{PHASE1_TITLE}}</h3>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;">{{PHASE1_DESC}}</p>
+        <p style="font-size:11px;color:var(--text-30);margin-top:12px;">{{PHASE1_SIGNAL}}</p>
+      </div>
+      <div style="text-align:center;padding:0 24px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--bg);border:2px solid var(--violet);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+          <span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--violet);">M2-4</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">{{PHASE2_TITLE}}</h3>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;">{{PHASE2_DESC}}</p>
+        <p style="font-size:11px;color:var(--text-30);margin-top:12px;">{{PHASE2_SIGNAL}}</p>
+      </div>
+      <div style="text-align:center;padding:0 24px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--bg);border:2px solid var(--magenta);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+          <span style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--magenta);">M5+</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">{{PHASE3_TITLE}}</h3>
+        <p style="font-size:13px;color:var(--text-50);line-height:1.5;">{{PHASE3_DESC}}</p>
+        <p style="font-size:11px;color:var(--text-30);margin-top:12px;">{{PHASE3_SIGNAL}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dx-insight dx-d3" style="margin-top:48px;">
+    <p>Chaque mois produit des données. Chaque donnée ajuste la stratégie. <strong>On apprend, on optimise, on adapte.</strong> Pas de plan figé sur 12 mois.</p>
+  </div>
+</div>
+
+<!-- ═══ COLLABORATION (FIXE) ═══ -->
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Collaboration</div>
+  <div class="dx-title dx-d1">Comment ça se passe concrètement</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:56px;" class="dx-d2">
+    <div style="padding:24px 32px 24px 0;border-bottom:1px solid var(--border);border-right:1px solid var(--border);">
+      <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--orange);font-weight:600;margin-bottom:8px;">Chaque mois</p>
+      <p style="font-size:14px;color:var(--text-50);line-height:1.5;">Un comité de 45 minutes. Résultats, ajustements, priorités du mois suivant.</p>
+    </div>
+    <div style="padding:24px 0 24px 32px;border-bottom:1px solid var(--border);">
+      <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--violet);font-weight:600;margin-bottom:8px;">En continu</p>
+      <p style="font-size:14px;color:var(--text-50);line-height:1.5;">Reporting partagé : positions, trafic, résultats business.</p>
+    </div>
+    <div style="padding:24px 32px 24px 0;border-right:1px solid var(--border);">
+      <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--magenta);font-weight:600;margin-bottom:8px;">À la demande</p>
+      <p style="font-size:14px;color:var(--text-50);line-height:1.5;">Accès direct à votre chef de projet. Réponse sous 48h ouvrées.</p>
+    </div>
+    <div style="padding:24px 0 24px 32px;">
+      <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--green);font-weight:600;margin-bottom:8px;">Inclus</p>
+      <p style="font-size:14px;color:var(--text-50);line-height:1.5;">Outils, licences, accès Janus. Rien à payer en plus.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ JANUS (FIXE) ═══ -->
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Outil propriétaire</div>
+  <div class="dx-title dx-d1">Janus - Monitoring visibilité IA</div>
+  <p class="dx-intro dx-d1">Mesurez votre présence dans les réponses de ChatGPT, Gemini, Perplexity et les AI Overviews.</p>
+
+  <div style="margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;" class="dx-d2">
+    <div>
+      <p style="font-size:15px;color:var(--text-50);line-height:1.6;">Janus interroge les LLMs chaque mois sur vos requêtes stratégiques et mesure si votre marque est citée, recommandée ou ignorée. Vous suivez votre visibilité IA comme vous suivez vos positions Google.</p>
+      <p style="font-size:15px;color:var(--text-50);line-height:1.6;margin-top:16px;">Développé en interne par SLASHR. Inclus dans l'accompagnement, pas en option.</p>
+      <p style="font-size:12px;color:var(--text-30);margin-top:16px;"><a href="https://janus.agence-slashr.fr/" target="_blank" rel="noopener" style="color:var(--text-30);text-decoration:underline;">janus.agence-slashr.fr</a></p>
+    </div>
+    <div>
+      <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--orange);font-weight:600;margin-bottom:20px;">Prompts inclus par mois</p>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:14px;color:var(--text-50);">Pilotage (1j/mois)</span>
+          <span style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);">10 prompts</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:14px;color:var(--orange);font-weight:600;">Production (2j/mois)</span>
+          <span style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--orange);">100 prompts</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:14px;color:var(--text-50);">Accélération (3j/mois)</span>
+          <span style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text);">200 prompts</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:16px 0;">
+          <span style="font-size:14px;color:var(--text-30);">Prompt supplémentaire</span>
+          <span style="font-size:14px;color:var(--text-30);">1 EUR/mois</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DEMARRAGE (variable : 3 étapes onboarding) ═══ -->
+<div class="slide dx-reveal">
+  <div class="dx-tag dx-d1">Démarrage</div>
+  <div class="dx-title dx-d1">Et après la signature ?</div>
+  <p class="dx-intro dx-d1">Pas de tunnel de 3 mois. Les premières optimisations sont visibles dès les premières semaines.</p>
+
+  <div class="dx-timeline dx-d2">
+    <div class="dx-tl-item">
+      <div class="dx-tl-dot"></div>
+      <div>
+        <div class="dx-tl-label">Semaine 1</div>
+        <h3>Kick-off et prise en main</h3>
+        <p>{{ONBOARD_S1}}</p>
+      </div>
+    </div>
+    <div class="dx-tl-item">
+      <div class="dx-tl-dot"></div>
+      <div>
+        <div class="dx-tl-label">Semaines 2 à 4</div>
+        <h3>Audit livré et validation</h3>
+        <p>{{ONBOARD_S24}}</p>
+      </div>
+    </div>
+    <div class="dx-tl-item">
+      <div class="dx-tl-dot"></div>
+      <div>
+        <div class="dx-tl-label">Mois 2</div>
+        <h3>Premières optimisations et reporting</h3>
+        <p>{{ONBOARD_M2}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CTA ═══ -->
+<div class="slide" style="display:flex;align-items:center;justify-content:center;text-align:center;position:relative;">
+  <div class="hero-blobs"><div class="hero-blob-3"></div></div>
+  <div style="position:relative;z-index:10;">
+    <div class="dx-tag" style="justify-content:center;margin-bottom:24px;">Prochaine étape</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:-0.03em;margin-bottom:16px;color:var(--text);">Voir l'investissement</h2>
+    <p style="color:var(--text-50);max-width:480px;margin:0 auto 40px;font-size:15px;">Phase 1, accompagnement mensuel et prochaine étape.</p>
+    <a class="dx-cta-btn" onclick="document.querySelector('[data-tab=investissement]').click();var t=document.querySelector('#tab-investissement');if(t){t.scrollTop=0;}">
+      <span>Découvrir l'investissement</span>
+    </a>
+  </div>
+</div>

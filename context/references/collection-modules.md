@@ -245,6 +245,16 @@ Ce checkpoint est informatif, pas un hard stop. L'objectif est d'eviter les deal
 | **Informationnel captable** | `informational` + legitimite marque | Le chercheur ne veut pas acheter MAIS la marque a une legitimite pour capter ce trafic et le rediriger (recette du fabricant, guide de l'expert) | "recette palet breton", "galette bretonne" |
 | **Informationnel non-captable** | `informational` + pas de legitimite | Requete trop eloignee du business, pas monetisable | "histoire de la Bretagne", "culture normande" |
 
+### Vérification intent par SERP (OBLIGATOIRE pour les keywords > 1000 vol/mois)
+
+Pour chaque keyword à volume > 1000/mois classé comme "captable", vérifier QUI est dans la SERP :
+- Si la SERP est dominée par des job boards, des écoles ou des sites RH → le keyword est "informationnel RH", PAS "captable" par le prospect
+- Si la SERP contient des prestataires/consultants du même secteur → le keyword est réellement captable
+
+**Exemple :** "customer success manager" (4 400/mois) → SERP = Welcome to the Jungle, HelloWork, Studi → requête RH, pas la cible d'un cabinet conseil CS.
+
+**Règle :** ne jamais construire un argument de vente sur un keyword dont la SERP ne correspond pas à la cible du prospect.
+
 **Criteres de legitimite pour le bucket "Informationnel captable" :**
 - Le prospect est fabricant/expert du produit recherche
 - Un CTA produit naturel existe (recette → "goutez l'original")
@@ -609,6 +619,16 @@ Le consultant peut aussi deposer un document dans le dossier Drive du deal (pref
 | `SEARCH_STATE` | Metriques actuelles : trafic organique estime (visites/mois), keywords, ETV (valeur EUR/mois), repartition marque/hors-marque. **IMPORTANT : ne pas confondre trafic (visites) et ETV (equivalent budget ads en EUR). Toujours etiqueter clairement : "trafic organique estime" (source: domain_rank_overview, champ organic_count = visites) vs "valeur trafic ETV" (source: domain_rank_overview, champ etv = EUR).** Enrichir avec les donnees Module 11 (si disponibles) : pages sitemap (total + distribution product/blog/pages), ratio editorial vs catalogue, Schema.org types trouves + manquants recommandes, profondeur heading, images sans alt. |
 | `COMPETITIVE_GAP` | **Concurrents business** (meme secteur, meme offre) en priorite, concurrents semantiques en contexte. Metriques comparatives, keywords exclusifs, ratio de gap. Si Module 4c active : preciser la source (SERP analysis) et la methode. |
 | `INTENT_MARKET_MAP` | Segmentation intent du marche : buckets Commercial / Info captable / Info non-captable, volumes par bucket, top keywords, strategie par bucket |
+
+**Segmentation par pertinence business (OBLIGATOIRE) :**
+Le SDB doit distinguer :
+- **Commercial direct** : requêtes d'achat, la cible du prospect cherche un prestataire
+- **Informationnel métier** : la cible se renseigne, le prospect a la légitimité
+- **Informationnel hors cible** : les chercheurs ne sont PAS la cible du prospect (RH, étudiants, etc.)
+- **Générique** : trop large pour être attribué
+
+Ne JAMAIS présenter le volume total comme "captable" sans cette segmentation. Le chiffre affiché dans la proposition = uniquement le commercial + l'info métier.
+
 | `OPPORTUNITIES` | Quick wins (pages en top 10-20, donnees structurees manquantes), territoires non couverts par bucket intent, clusters a creer |
 | `RISKS` | Red flags, contraintes (budget, timeline, decideur absent, multi-presta) |
 | `CONDITIONAL_DATA` | Resultats des modules 5-10 (si actives), organises par module |

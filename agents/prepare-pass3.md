@@ -221,6 +221,8 @@ Les composants "dx-" (définis dans `context/proposal-kit-reference.md` section 
 6. **Paragraphes de scope** — les scopes de prestation sont en bullets courtes, jamais en pavé de texte
 7. **Grid-3 de highlight-boxes** — empiler verticalement les implications (`.dx-implication`)
 8. **Métriques géantes empilées verticalement** — si 3+ métriques, les mettre en `grid-3` côte à côte (1 slide)
+9. **FAQ en accordion** — le skeleton CSS écrase les styles inline des `.accordion-item`. Utiliser une grille 2×2 (question en gras + réponse) sans composant accordion.
+10. **Titres qui wrappent** — si un titre h2 est court (< 10 mots), ajouter `style="max-width:none;white-space:nowrap;"` pour forcer une seule ligne.
 
 ### Animations (OBLIGATOIRE)
 
@@ -244,6 +246,8 @@ Chaque onglet DOIT inclure un script IntersectionObserver en haut :
   }, 200);
 })();
 ```
+
+**IDs de tabs (CRITIQUE) :** le sélecteur `#tab-{TAB_ID}` dans l'observer JS DOIT utiliser des tirets (pas des underscores). Le skeleton utilise `tab-cas-clients` (tiret), pas `tab-cas_clients` (underscore). Un mismatch rend toutes les slides invisibles (opacity:0 permanent).
 
 ### Aération
 
@@ -306,7 +310,7 @@ Le `hero-context` et le `hero-date` sont identiques sur tous les onglets.
 
 **Onglet Projet** (obligatoire) : template fixe + variables deal-specific
 
-> **Template HTML de reference : `templates/tab-projet-template.html`.**
+> **Template HTML de reference : `templates/tab-projet-v2.html`.** (design éditorial dx-, 8 slides)
 > L'agent utilise ce template et remplace les variables `{{...}}` par les valeurs du deal. La structure, le design et le wording des sections fixes ne doivent PAS etre reinventes a chaque deal.
 
 **Sections modulaires (adaptees par deal) :**
