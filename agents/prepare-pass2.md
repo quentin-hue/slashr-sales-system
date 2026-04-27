@@ -465,7 +465,20 @@ Chaque slide a un **role unique**. Deux slides ne peuvent pas couvrir le meme su
 | 1 | **Le plan** | Timeline / projection immediate | Decision strategique ("Nous recommandons...") + timeline contextuelle (Phase 1 M1-M3 + Phase 2 M4+). Le plan est cale sur l'evenement structurant du deal. |
 | 2 | **ROI Simulateur** | Quantification de l'impact | Hypotheses sourcees + sliders + calcul JS + scenario recommande. Chaine de calcul visible. |
 | 3 | **Trajectoire globale** | Vision chiffree | Synthese des leviers (SEO, SEA si applicable, UX) avec contribution chiffree de chacun. Les donnees paid sont integrees ICI (pas dans une slide separee). |
-| 4 | **Comment nous travaillons** | Methode / processus | Phase 1 (livrables) + Phase 2 (cadence). Pas de reprise du contenu timeline. |
+| 4 | **Comment nous travaillons** | Methode / processus | Phase 1 (livrables avec profondeur methodologique) + Phase 2 (cadence). Pas de reprise du contenu timeline. |
+
+**Slide 4 — Profondeur methodologique des livrables (OBLIGATOIRE) :**
+
+Chaque livrable Phase 1 doit montrer CE QUE SLASHR FAIT CONCRETEMENT et POURQUOI le prospect ne peut pas le faire seul avec un export SEMrush. Pas de formules vendeuses — de la precision factuelle sur la methode.
+
+Pour chaque livrable, ajouter 1-2 lignes de methodologie specifique. Exemples (a contextualiser au deal) :
+
+- **Recherche d'opportunites** : "Croisement multi-sources (GSC, DataForSEO, crawl semantique, Google Ads si disponible). Clustering par intention de recherche — pas par volume brut. Detection des opportunites invisibles dans un export classique : requetes a fort CTR potentiel, gaps concurrentiels, cannibalisation interne."
+- **Attribution page/objectif** : "Chaque page recoit un objectif de positionnement precis, defini par l'intersection de 3 criteres : intention de recherche, volume reel (GSC > estimations), et niveau de concurrence SERP. C'est cette attribution qui evite les erreurs d'arborescence et de maillage en aval."
+- **Production de contenu** (si dans le scope) : "Contenus IA cle en main, optimises SEO, calibres sur votre ton de voix et votre ADN de marque. Chaque contenu est genere a partir de nos outils d'analyse semantique (entites requises, structure SERP, maillage cible) — pas un prompt generique, un pipeline branche sur vos donnees."
+- **GEO / visibilite IA** (si dans le scope) : "Monitoring continu de votre presence dans les reponses de ChatGPT, Gemini, Perplexity et Google AI Overviews. Peu d'agences mesurent cette visibilite — nous l'industrialisons avec un outil proprietaire dedie."
+
+**Regle :** la profondeur methodologique doit etre CONTEXTUELLE (utiliser les donnees du deal, pas des descriptions generiques). Ex : "On a identifie 6 pages avec plus de 1 000 impressions et un CTR < 2% — c'est ce type d'opportunite invisible que l'analyse multi-sources revele."
 | 5 | **(conditionnel) Strategie Paid** | Positionnement paid | Uniquement si SEA_POSTURE = PILOTE ou CONSEIL. Sinon les donnees paid sont integrees dans les slides 1 et 3. |
 
 **ROI Simulateur (details) :**
@@ -494,7 +507,7 @@ Avant de creer les slides, verifier :
 
 Hero fullscreen propre a cet onglet (tag "Projet", subtitle "Comment on travaille ensemble.").
 
-**Structure : 5 slides obligatoires**
+**Structure : 8 slides (1 slide = 1 message)**
 
 #### Slide 1 : Votre equipe
 - **Titre court** : ex "Une seule personne a appeler"
@@ -509,25 +522,41 @@ Hero fullscreen propre a cet onglet (tag "Projet", subtitle "Comment on travaill
   - Benoit D. / Technique : garant de l'expertise et de la qualite des livrables
   - NE PAS inventer d'anciennete ou de chiffres non verifies
 
-#### Slide 2 : Notre approche
-- **Titre** : "On ne vend pas du temps. On vend un systeme."
-- **3 piliers** (grid-3, cards avec border-top coloree) :
-  1. "Vos donnees, pas des moyennes" (diagnostic sur mesure)
-  2. "Production automatisee" (PAS "Agents & workflows internes")
-  3. "Validation humaine" (PAS "Verification humaine")
-- **Highlight-box** : "Votre budget finance un systeme qui tourne, pas des heures de consultant."
-- **Ligne stack** compacte : "{N} outils internes · {N} projets R&D en cours" + lien vers agence-slashr.fr/r-and-d/
-  - NE PAS lister les noms d'outils internes (Brief Generator, Janus, AI Ranker = bruit pour le prospect)
-  - NE PAS lister DataForSEO dans les outils client-facing
+#### Slide 2 : Le systeme SLASHR (avantage concurrentiel)
+- **Message unique de cette slide** : SLASHR investit massivement dans une stack d'outils proprietaires et de R&D, pilotee par des seniors du Search. C'est un avantage concurrentiel, pas un gadget.
+- **Titre** : "Votre budget finance un systeme, pas des heures de consultant"
+- **Contenu factuel** (pas de marketing creux) :
+  - "{N} outils proprietaires en production" — ces outils sont utilises quotidiennement dans la production de chaque client (audit, briefs, analyse, monitoring)
+  - "{N} projets R&D actifs" — le systeme evolue en continu, chaque amelioration beneficie a tous les clients
+  - "Pilote par des seniors" — ces outils amplifient l'expertise humaine, ils ne la remplacent pas. Chaque livrable est produit et valide par un consultant senior du Search.
+- **Highlight-box** : "Certains de ces outils vous sont mis a disposition : analyse d'entites, intent SERP, exploration Knowledge Graph, et d'autres selon votre besoin."
+- **Lien** : agence-slashr.fr/r-and-d/
+- **INTERDIT** : lister les noms d'outils internes (Brief Generator, AI Ranker = bruit). Decrire ce qu'ils FONT, pas comment ils s'appellent.
+- **INTERDIT** : lister DataForSEO dans les outils client-facing
+- **INTERDIT** : formulations creuses ("a la pointe", "de demain", "innovant"). Rester factuel.
 
-#### Slide 3 : Production
-- **Titre** : "Le bon contenu, au bon format, au bon moment"
-- **3 formats** (grid-3) : Guides/articles, Pages categories/fiches, Optimisations de l'existant
-  - Exemples personnalises au deal (pas generiques)
-  - Volumes adaptes a la Phase 1
-- **Highlight-box** : "Pourquoi on ne compte pas en articles ?"
+#### Slide 3 : Production de contenu (avantage concurrentiel)
+- **Message unique de cette slide** : SLASHR produit des contenus IA cle en main, optimises SEO, calibres sur le ton de voix et l'ADN du client — pas des textes generiques.
+- **Titre** : "Des contenus prets a publier, pas une liste de mots-cles"
+- **Contenu** :
+  - La chaine de production : analyse semantique (entites, SERP, concurrence) → brief structure → generation IA calibree (ton de voix, ADN marque) → optimisation SEO (maillage, structure, meta) → livraison cle en main
+  - Les outils de production sont branches sur la stack d'analyse SEO : chaque contenu est informe par les donnees de positionnement, les entites requises, la structure des resultats Google
+  - Le client recoit un contenu pret a publier, pas un brief a sous-traiter
+- **Exemples personnalises** au deal (types de contenu pertinents pour le prospect)
+- **Highlight-box** : "Pourquoi on ne compte pas en articles ? Parce que la valeur est dans la pertinence strategique de chaque contenu, pas dans le volume."
 
-#### Slide 4 : Collaboration
+#### Slide 4 : GEO — Visibilite IA (avantage concurrentiel)
+- **Message unique de cette slide** : SLASHR monitore et optimise la visibilite dans les moteurs IA (ChatGPT, Gemini, Perplexity, AI Overviews) — un terrain que la plupart des agences ne couvrent pas.
+- **Titre** : contextualise au deal (ex: "Votre visibilite ne s'arrete pas a Google")
+- **Contenu** :
+  - Le Search evolue : ChatGPT, Perplexity, Gemini et les AI Overviews de Google cannibalisent le trafic traditionnel. Etre cite dans une reponse IA = nouveau levier d'acquisition.
+  - SLASHR a developpe un outil proprietaire (Janus) qui monitore en continu la presence d'une marque et de ses concurrents dans les reponses des moteurs IA.
+  - Inclus dans l'accompagnement : monitoring GEO sur un panier de requetes cibles, avec reporting integre.
+- **Pricing Janus** (transparent) : 3 tiers selon le volume de requetes monitorees (10 / 100 / 200 prompts/mois, +1 EUR/prompt additionnel). Inclus dans l'accompagnement au tier adapte au deal.
+- **INTERDIT** : promettre des resultats GEO chiffres (le domaine est trop jeune). Rester sur le monitoring et l'optimisation.
+- **NOTE** : si le deal n'a PAS de composante GEO explicite, cette slide reste presente mais en mode "veille" : "On surveille ce terrain pour vous. Si une opportunite emerge, vous serez les premiers informes." Montrer que c'est un avantage inclus, pas un upsell.
+
+#### Slide 5 : Collaboration
 - **Titre** : "Comment ca se passe concretement"
 - **4 cards** (grid-2 x2) avec labels temporels colores (pas de lettres cryptiques) :
   - "Chaque mois" → Comite de pilotage (45 min)
@@ -536,13 +565,23 @@ Hero fullscreen propre a cet onglet (tag "Projet", subtitle "Comment on travaill
   - "Inclus" → Outils et licences (lister seulement les outils du site agence)
 - NE PAS dire "KPIs" → dire "indicateurs", "resultats", "conversions, chiffre d'affaires"
 
-#### Slide 5 : Demarrage (onboarding)
+#### Slide 6 : Deroulement
+- **Titre** : contextualise (ex: "4 mois pour poser les fondations")
+- **Frise visuelle** : M1 → M2-4 → M5+ avec cercles connectes
+  - M1 : audit + setup (acces, crawl, donnees)
+  - M2-4 : execution Phase 1 (quick wins, arborescence, contenus)
+  - M5+ : accompagnement mensuel (production, monitoring, ajustements)
+- Adapte au contexte du deal (refonte, saisonnalite, evenement structurant)
+
+#### Slide 7 : Demarrage (onboarding)
 - **Titre** : "Et apres la signature ?"
 - **Timeline 3 etapes** :
   - S1 : acces, crawl, prise en main des donnees
   - S2-3 : audit livre, premieres optimisations, plan d'action partage
   - M1 : premier comite de pilotage, resultats quick wins, priorites M2
 - **Highlight-box** : "Pas de tunnel de 3 mois avant de voir quelque chose. Les premieres actions sont visibles des les premieres semaines."
+
+#### Slide 8 : CTA vers Investissement
 
 **CTA final** : bouton vers l'onglet Investissement.
 

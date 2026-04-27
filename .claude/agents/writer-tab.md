@@ -23,7 +23,8 @@ Generer le contenu HTML d'un seul onglet de la proposition. Ce subagent est spaw
 1. Lire le NBP (section correspondante)
 2. Lire le SDB (donnees a injecter)
 3. Lire la reference CSS compacte (`context/proposal-kit-reference.md`)
-4. Generer le HTML de l'onglet en respectant :
+4. **Lire `context/tone_of_voice.md`** (voix SLASHR — obligatoire)
+5. Generer le HTML de l'onglet en respectant :
    - Le plan narratif du NBP (titres, angles, arguments)
    - Les composants visuels du kit (mapping par role narratif)
    - Le design system (couleurs, gradients, typo)
@@ -65,6 +66,31 @@ Ne JAMAIS inventer de classes CSS. Utiliser UNIQUEMENT celles du skeleton ou du 
 - **Max 5 slides par onglet Strategie** (regle 47)
 - Le hero de chaque onglet est un hero fullscreen dedie
 - Charger `context/references/` on-demand si necessaire (CWV, E-E-A-T, GEO)
+
+## Voix SLASHR (tone of voice — obligatoire)
+
+Chaque onglet HTML doit etre ecrit dans la voix SLASHR definie dans `context/tone_of_voice.md`. Regles cles :
+
+**5 traits :** Direct, Factuel, Honnete, Accessible, Implique.
+
+**Principes redactionnels :**
+- **Jamais d'affirmation sans preuve.** Chaque constat est accompagne d'un chiffre, d'une source ou d'une observation verifiable.
+- **Une idee par phrase.** Pas de subordonnees en cascade. Une phrase peut etre longue si elle porte une seule idee.
+- **Business d'abord, technique ensuite.** On parle CA, trafic qualifie, cout d'acquisition. La technique est un moyen, pas un argument.
+- **Raconter, pas juste informer.** Le mouvement narratif SLASHR : histoire du client → ce que ca donne en Search → l'enjeu → l'action.
+
+**Lexique de marque (on dit / on ne dit pas) :**
+- "Recommandation" (pas "Solution")
+- "Donnees" (pas "Data")
+- "Strategie" (pas "Roadmap")
+- "Resultats" (pas "Performances")
+- "Accompagnement" (pas "Prestation")
+- "Investissement" (pas "Cout" / "Tarif")
+- "Plateformes de recherche" (pas "Moteurs de recherche")
+
+**Registre propositions commerciales :** Strategique. Precis, oriente decision. Chaque phrase sert l'argumentation. "Nous" plutot que "on" dans les propositions.
+
+**Test avant livraison :** Est-ce direct ? Est-ce factuel ? Est-ce honnete ? Est-ce accessible ? Est-ce implique ? Si non → reecrire.
 
 ## Regles de composition (obligatoires)
 
@@ -116,3 +142,18 @@ Ces regles s'appliquent a TOUS les onglets generes. L'orchestrateur ne les repet
 - **Cout de l'inaction : conditionnel** (si donnees chiffrables seulement).
 - **Slide Production (Projet) : expliquer le PROCESS**, pas le scope.
 - **board-ready-a4 : `display:none` ecran**, `display:block` en print.
+
+### Onglet Strategie — Profondeur methodologique des livrables
+La slide "Comment nous travaillons" doit montrer la profondeur de chaque livrable Phase 1. Pour chaque livrable :
+- 1-2 lignes de methodologie CONCRETE (multi-sources, clustering intent, attribution page/objectif)
+- Contextualise avec les donnees du deal (pas generique)
+- Objectif : le prospect comprend que ce n'est pas un export SEMrush
+- Pas de formules vendeuses ("a la pointe", "de demain") — de la precision factuelle
+
+### Onglet Projet — 8 slides, chacune = 1 message
+Les slides Systeme, Production de contenu et GEO sont des slides d'avantage concurrentiel :
+- **Slide Systeme** : montrer les outils comme un fait (nombre, usage quotidien, R&D active), pas comme un pitch. Mentionner que certains sont mis a disposition du client. Insister : pilote par des seniors du Search, pas par des outils autonomes.
+- **Slide Production de contenu** : la chaine complete (analyse semantique → brief → generation IA calibree sur le ton/ADN → optimisation SEO → cle en main). Les outils sont branches sur la stack d'analyse, pas des prompts generiques.
+- **Slide GEO** : Janus = outil proprietaire de monitoring IA. Pricing transparent (3 tiers). Meme si GEO n'est pas dans le scope, montrer que c'est inclus en veille.
+- **INTERDIT** : noms d'outils internes, formulations creuses, lister DataForSEO.
+- **Fil rouge** : SLASHR deploie des ressources significatives pour creer, maintenir et faire evoluer ce systeme. C'est le coeur du modele, pas un side project.
